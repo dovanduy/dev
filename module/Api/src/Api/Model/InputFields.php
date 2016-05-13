@@ -188,7 +188,10 @@ class InputFields extends AbstractModel {
     {
         $self = self::find(
             array(            
-                'where' => array('_id' => $param['_id'])
+                'where' => array(
+                    '_id' => $param['_id'],
+                    'website_id' => $param['website_id'],
+                )
             ),
             self::RETURN_TYPE_ONE
         );   
@@ -202,10 +205,7 @@ class InputFields extends AbstractModel {
         }
         if (isset($param['sort'])) {
             $set['sort'] = $param['sort'];
-        }
-        if (isset($param['website_id'])) {
-            $set['website_id'] = $param['website_id'];
-        }
+        }        
         if (self::update(
             array(
                 'set' => $set,
@@ -229,6 +229,7 @@ class InputFields extends AbstractModel {
         $detail = self::getDetail(array(
             '_id' => $param['_id'],
             'locale' => $param['locale'],
+            'website_id' => $param['website_id']
         ));
         if (empty($detail)) {
             self::errorNotExist('_id');
@@ -251,7 +252,7 @@ class InputFields extends AbstractModel {
             $values['locale'] = $param['locale'];
             return self::insert($values);
         }
-        return self::update(
+        $ok = self::update(
             array(
                 'set' => $values,
                 'where' => array(
@@ -260,6 +261,24 @@ class InputFields extends AbstractModel {
                 ),
             )
         );
+        if ($ok && $detail['name'] !== $param['name']) {
+            $urlIdModel = new UrlIds;
+            $inputOptionModel = new InputOptions;
+            $optionList = $inputOptionModel->getAll(array(
+                'field_id' => $detail['field_id'],
+                'locale' => $detail['locale']
+            ));
+            if (!empty($optionList)) {
+                foreach ($optionList as $option) {
+                    $urlIdModel->addUpdateByOptionId(array(
+                        'option_id' => $option['option_id'],
+                        'url' => name_2_url($param['name'] . '-' . $option['name']),
+                        'website_id' => $param['website_id'],
+                    ));
+                }
+            }
+        }
+        return $ok;
     }
 
     public function getDetail($param)

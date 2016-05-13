@@ -82,7 +82,7 @@ return array(
                 'import-products' => array(
                     'options' => array(
                         // add [ and ] if optional ( ex : [<doname>] )
-                        'route' => 'import products [--verbose|-v] <website>', 
+                        'route' => 'import products [--verbose|-v] <website> <category>', 
                         'defaults' => array(
                             '__NAMESPACE__' => 'Api\Controller',
                             'controller' => 'batch',

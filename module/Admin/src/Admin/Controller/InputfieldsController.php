@@ -234,7 +234,7 @@ class InputfieldsController extends AppController
                             }
                         } 
                     } else {
-                        $form->setData($post);     
+                        $form->setData($post);  
                         if ($form->isValid()) {                       
                             Api::call('url_inputfields_update', $post);  
                             if (empty(Api::error())) {

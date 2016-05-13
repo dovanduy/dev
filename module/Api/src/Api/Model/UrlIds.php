@@ -332,7 +332,7 @@ class UrlIds extends AbstractModel {
     
     public function addUpdateByOptionId($param)
     {
-        if (empty($param['option_id']) || empty($param['url'])) {
+        if (empty($param['option_id']) || empty($param['url']) || empty($param['website_id'])) {
             self::errorParamInvalid('option_id_or_url');
             return false;
         }
@@ -344,25 +344,21 @@ class UrlIds extends AbstractModel {
                 )
             ),
             self::RETURN_TYPE_ONE
-        );
-        if (!empty($self)) {
-            $set = array();        
-            if (isset($param['url'])) {
-                $set['url'] = $param['url'];
-            }
-            if (isset($param['website_id'])) {
-                $set['website_id'] = $param['website_id'];
-            }
+        );       
+        if (!empty($self)) {           
             if (self::update(
                 array(
-                    'set' => $set,
+                    'set' => array(
+                        'url' => $param['url']
+                    ),
                     'where' => array(
-                        'id' => $self['id']
+                        'id' => $self['id'],
+                        'website_id' => $param['website_id'],
                     ),
                 )
             )) {                                 
                 return true;
-            } 
+            }
         } else {
             $values = array(
                 'option_id' => $param['option_id'] ,               

@@ -63,7 +63,7 @@ class AddProductForm extends AbstractForm
                         'class' => 'btn btn-primary ajax-submit',                   
                         'data-callback' => "                            
                             $('#modal-message').html(result.message).show(); 
-                            window.location.reload();
+                            //window.location.reload();
                         ",  
                     ),
                 ),

@@ -29,10 +29,11 @@ class BatchController extends AppController {
  
         // Get system service name  from console and check if the user used --verbose or -v flag
         $website = $request->getParam('website', false);
+        $category = $request->getParam('category', 0);
         $verbose = $request->getParam('verbose');
         
         
-        echo $this->$website();
+        echo $this->$website($category);
         
         /*
         $shell = "ps aux";
@@ -233,8 +234,8 @@ class BatchController extends AppController {
         return $attrs;
     }
     
-    // php index.php import products --verbose nguonhangtot
-    public function nguonhangtot() {
+    // php index.php import products --verbose nguonhangtot 1
+    public function nguonhangtot($category = 0) {        
         include_once getcwd() . '/include/simple_html_dom.php';
         $domain = 'http://nguonhangtot.com';
         $productList = array(
@@ -261,7 +262,7 @@ class BatchController extends AppController {
                 'max_images' => 4
             ),
             array(   
-                'disable' => 1,
+                'disable' => 0,
                 'category_id' => 4,
                 'warranty' => '',
                 'made_in' => 'VN',
@@ -304,7 +305,7 @@ class BatchController extends AppController {
                 'max_images' => 2
             ),          
             array(        
-                'disable' => 1,
+                'disable' => 0,
                 'category_id' => 7,
                 'warranty' => '',
                 'made_in' => 'VN',
@@ -324,11 +325,55 @@ class BatchController extends AppController {
                 'size_id' => array(),
                 'max_images' => 4
             ),
+            array(        
+                'disable' => 0,
+                'category_id' => 8,
+                'warranty' => '',
+                'made_in' => 'VN',
+                'vat' => '1',                
+                'url' => 'http://nguonhangtot.com/collections/tui-cheo-chi-tiet',
+                'id' => '1000317492',
+                'short' => "✓ Chất liệu simili 100%
+                    ✓ Không thấm nước, không bong tróc
+                    ✓ Công nghệ in Nhật Bản cho hình in đẹp
+                ",
+                'content' => "
+                    <p>- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn</p>                    
+                    <p>- Túi hộp lớn kích thước 32x23x9 (cm), có ngăn để vừa giấy A4, phù hợp cho đi học thêm hoặc đi chơi.</p>                    
+                    <p>- Túi hộp nhỏ kích thước 25x17x2 (cm), có ngăn để vừa giấy A5, ipad mini, điện thoại di động. Phù hợp đi chơi.</p>                    
+                    <p>- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.</p>
+                ",
+                'detail_url' => array(),
+                'size_id' => array(7, 8),
+                'max_images' => 3
+            ),
+            array(        
+                'disable' => 0,
+                'category_id' => 9,
+                'warranty' => '',
+                'made_in' => 'VN',
+                'vat' => '1',                
+                'url' => 'http://nguonhangtot.com/collections/tui-du-lich',
+                'id' => '1000195308',
+                'short' => "✓ Chất liệu vải dù
+                    ✓ Không thấm nước, không bong tróc
+                    ✓ Công nghệ in Nhật Bản cho hình in đẹp
+                ",
+                'content' => "
+                    <p>- Chất liệu vải dù dày dặn có dây đeo tháo rời</p> 
+                    <p>- Kích thước 47x26x20 (cm)</p>                    
+                    <p>- Không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.</p>
+                    <p>- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.</p>
+                ",
+                'detail_url' => array(),
+                'size_id' => array(),
+                'max_images' => 3
+            ),
         );
        
         $importList = array();
         foreach ($productList as $item) {    
-            if ($item['disable'] === 0) {
+            if ($item['disable'] === 0 && $item['category_id'] == $category) {
                 $importList[] = $item;
             }
         }
@@ -339,7 +384,8 @@ class BatchController extends AppController {
         }
         
         $this->categories(true);
-        $attrs = $this->nguonhangtot_attr(true);         
+        $attrs = $this->nguonhangtot_attr(true);      
+        
         $inputFieldModel = $this->getServiceLocator()->get('InputFields');
         $field = $inputFieldModel->getDetail(
             array(
@@ -387,7 +433,7 @@ class BatchController extends AppController {
                                 break;
                             }
                         }
-                    } 
+                    }
                 }                
             } else {            
                 foreach($html->find('div[class=product-details]') as $element) { 
@@ -408,7 +454,8 @@ class BatchController extends AppController {
         foreach ($importList as $item) {
             $product = $item;
             $productAttr = array();
-            // get product attr list            
+            // get product attr list  
+            
             foreach ($attrs as &$attr) {               
                 $url = "http://nguonhangtot.com/search?q=filter=((collectionid:product={$item['id']})&&(collectionid:product={$attr['id']}))";
                 // find total page

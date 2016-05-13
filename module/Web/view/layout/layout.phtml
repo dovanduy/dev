@@ -43,6 +43,15 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
         <script>        
             var isMobile = <?php echo Application\Lib\Util::isMobile()?>;        
         </script>
+        <!--Start of Zopim Live Chat Script-->
+        <script type="text/javascript">
+        window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+        d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+        _.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
+        $.src="//v2.zopim.com/?trlYn0VsBwCPBr1dKNoAMm39xHxUndGM";z.t=+new Date;$.
+        type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
+        </script>
+        <!--End of Zopim Live Chat Script-->
     </head>    
     
     <body class="wide<?php if (Application\Lib\Util::isMobile()) echo ' body-mobile'?>" id="<?php echo "{$controller}_{$action}"?>">
@@ -83,7 +92,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
         
         <!-- Scripts -->
         <?php echo $this->headScript()
-			->prependFile('//uhchat.net/code.php?f=0d243a') 
+			//->prependFile('//uhchat.net/code.php?f=0d243a') 
 			->prependFile($this->basePath('/web/js/style-switcher.js')) 
 			->prependFile($this->basePath('/web/js/main.js')) 
             //->prependFile($this->basePath('/web/plugins/bootstrap-slider/bootstrap-slider.js'))            
@@ -113,6 +122,6 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
             ->prependFile($this->basePath('/web/plugins/jquery-ui/jquery-ui.js'))  
             ->prependFile($this->basePath('/web/js/jquery.min.js'))    
         ; ?>
-        <?php echo $this->inlineScript() ?>
+        <?php echo $this->inlineScript() ?>        
     </body>
 </html>

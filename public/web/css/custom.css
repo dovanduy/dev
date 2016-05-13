@@ -64,6 +64,9 @@ File Description: Place here your custom CSS styles
 .mr10 {
     margin-right: 10px !important;
 }
+.mb-30 {
+	margin-bottom: 30px;
+}
 .paging_bootstrap {
     margin-top: -8px;
 }
@@ -1321,17 +1324,46 @@ img {
 	margin: 30px auto;
 	width: 100%;
 }
-.body-mobile  #detailForm .product {
-	width: 100%;
-	margin-bottom: 10px;
+#detailForm .product {
 	float: left;
 }
 .body-mobile  #detailForm .product {
 	width: 100%;
 	margin-bottom: 10px;
 	float: left;
+	text-align: center;
 }
+
 .body-mobile .section-mobile-pv-30 {
 	padding-top: 0px;
 	padding-bottom: 0px
+}
+
+.body-mobile .collapse-style-1 .panel-heading {
+    background: none;
+}
+.body-mobile .panel-group .panel-heading {
+    padding: 0;
+}
+.body-mobile .panel-default > .panel-heading {
+    color: #333;
+	background: none;
+    border-color: #ddd;
+}
+.body-mobile .footer {
+    padding: 5px 0;
+}
+.body-mobile .footer .row{
+    padding: 8px 8px 0px 8px;
+}
+.scrollToTop {	
+	bottom: 38px;
+	right: 10px;
+}
+.body-mobile  .scrollToTop {
+	right: 16px;
+	bottom: 0px;
+}
+.body-mobile  #uhchat {
+    right: 70px !important;
 }
