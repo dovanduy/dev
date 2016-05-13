@@ -1,0 +1,118 @@
+<?php echo $this->doctype(); ?>
+<html lang="en" class=" js touch csstransitions" xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:og="http://opengraphprotocol.org/schema/" 
+xmlns:fb="http://www.facebook.com/2008/fbml">
+    <head>
+        <meta charset="utf-8">
+		<?php 
+            echo $this->headTitle()
+                ->setSeparator(' - ')
+                ->setAutoEscape(false);
+            
+            echo $this->headMeta();
+            
+            echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                ->prependStylesheet($this->basePath('/web/css/custom.css')) 
+                //->prependStylesheet($this->basePath('/web/plugins/bootstrap-slider/slider.css'))  
+                ->prependStylesheet($this->basePath('/web/plugins/lightbox/jquery.lightbox-0.5.css')) 
+                ->prependStylesheet($this->basePath('/web/plugins/select2/select2.css'))  
+                ->prependStylesheet($this->basePath('/web/plugins/nivo-slider/themes/default/default.css'))  
+                ->prependStylesheet($this->basePath('/web/plugins/nivo-slider/nivo-slider.css'))  
+                ->prependStylesheet($this->basePath('/web/plugins/jquery-ui/jquery-ui.css'))  
+                ->prependStylesheet($this->basePath('/web/plugins/datepicker/datepicker3.css')) 
+                ->prependStylesheet($this->basePath('/web/plugins/timepicker/bootstrap-timepicker.css'))
+                ->prependStylesheet($this->basePath('/web/plugins/datatables/dataTables.bootstrap.css')) 
+                ->prependStylesheet($this->basePath('/web/css/style-switcher.css')) 
+                ->prependStylesheet($this->basePath('/web/css/light_blue.css')) 
+                ->prependStylesheet($this->basePath('/web/css/style.css')) 
+                ->prependStylesheet($this->basePath('/web/css/hover-min.css')) 
+                ->prependStylesheet($this->basePath('/web/css/owl.transitions.css'))   
+                ->prependStylesheet($this->basePath('/web/css/owl.carousel.css')) 
+                ->prependStylesheet($this->basePath('/web/css/animations.css')) 
+                ->prependStylesheet($this->basePath('/web/css/settings.css'))              
+                ->prependStylesheet($this->basePath('/web/css/magnific-popup.css'))     
+                ->prependStylesheet($this->basePath('/web/css/fontello.css'))                  
+                ->prependStylesheet($this->basePath('/web/css/font-awesome.css'))                  
+                ->prependStylesheet($this->basePath('/web/css/bootstrap.css'))
+                //->prependStylesheet('//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css')
+                ->prependStylesheet('//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic')
+                ->prependStylesheet('//fonts.googleapis.com/css?family=Raleway:700,400,300')
+                ->prependStylesheet('//fonts.googleapis.com/css?family=Pacifico')
+                ->prependStylesheet('//fonts.googleapis.com/css?family=PT+Serif')
+        ;?>
+        <script>        
+            var isMobile = <?php echo Application\Lib\Util::isMobile()?>;        
+        </script>
+    </head>    
+    
+    <body class="wide" id="<?php echo "{$controller}_{$action}"?>">
+	
+		<!-- scrollToTop -->
+		<!-- ================ -->		
+		<div class="scrollToTop circle"><i class="icon-up-open-big"></i></div>
+		
+		<!-- page wrapper start -->
+		<!-- ================ -->
+		<div class="page-wrapper">
+			<?php                
+                echo $this->partial('web/header');
+            ?>
+			<?php 
+                if (!in_array($controller, array('index', 'page'))) {
+                    echo $this->navigation('web_navigation')                            
+                                ->breadcrumbs()      
+                                ->setLinkLast(true)  
+                                ->setMinDepth(0)
+                                ->setMaxDepth(10) 
+                                ->setPartial('web/breadcrumb');   
+                }                
+            ?>
+            <div class="container">
+            <?php
+				echo $this->flashMessenger()->renderCurrent('error', array('alert', 'alert-dismissible', 'alert-danger'));
+				echo $this->flashMessenger()->renderCurrent('success', array('alert', 'alert-dismissible', 'alert-success'));
+				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('success');
+				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('error');
+            ?>
+            </div> 
+            <?php 
+                echo $this->content; 
+			?>  	
+			<?php echo $this->partial('web/footer'); ?>  
+		</div>
+        
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+			->prependFile('//uhchat.net/code.php?f=0d243a') 
+			->prependFile($this->basePath('/web/js/style-switcher.js')) 
+			->prependFile($this->basePath('/web/js/main.js')) 
+            //->prependFile($this->basePath('/web/plugins/bootstrap-slider/bootstrap-slider.js'))            
+            ->prependFile($this->basePath('/web/plugins/lightbox/jquery.lightbox-0.5.js'))           
+            ->prependFile($this->basePath('/web/plugins/notification/js/jquery_notification_v.1.js'))
+            ->prependFile($this->basePath('/web/plugins/select2/select2.js'))
+            ->prependFile($this->basePath('/web/plugins/datepicker/bootstrap-datepicker.js'))    
+            ->prependFile($this->basePath('/web/plugins/timepicker/bootstrap-timepicker.js'))            
+            ->prependFile($this->basePath('/web/plugins/nivo-slider/jquery.nivo.slider.js'))
+            ->prependFile($this->basePath('/web/plugins/autoNumeric/autoNumeric.js'))
+            ->prependFile($this->basePath('/web/plugins/jquery-number/jquery.number.min.js'))
+			->prependFile($this->basePath('/web/js/template.js')) 			
+			->prependFile($this->basePath('/web/js/SmoothScroll.js')) 
+			->prependFile($this->basePath('/web/js/jquery.browser.js')) 
+			->prependFile($this->basePath('/web/js/owl.carousel.js')) 
+			->prependFile($this->basePath('/web/js/jquery.vide.js'))
+			->prependFile($this->basePath('/web/js/jquery.validate.js')) 
+			->prependFile($this->basePath('/web/js/jquery.parallax-1.1.3.js')) 
+			->prependFile($this->basePath('/web/js/jquery.countTo.js')) 
+			->prependFile($this->basePath('/web/js/jquery.waypoints.min.js')) 
+			->prependFile($this->basePath('/web/js/jquery.magnific-popup.min.js')) 
+			->prependFile($this->basePath('/web/js/isotope.pkgd.min.js')) 
+			->prependFile($this->basePath('/web/js/jquery.themepunch.revolution.min.js')) 
+			->prependFile($this->basePath('/web/js/jquery.themepunch.tools.min.js')) 
+			->prependFile($this->basePath('/web/js/modernizr.js')) 
+			->prependFile($this->basePath('/web/js/bootstrap.min.js'))            
+            ->prependFile($this->basePath('/web/plugins/jquery-ui/jquery-ui.js'))  
+            ->prependFile($this->basePath('/web/js/jquery.min.js'))    
+        ; ?>
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

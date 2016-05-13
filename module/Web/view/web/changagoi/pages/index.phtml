@@ -1,0 +1,46 @@
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">       
+		<div class="row">
+            <div class="col-md-3">
+                <form>                
+                    <div class="sidebar">
+                        <?php if (!empty($pages)): ?>
+                        <div class="block clearfix">
+                            <nav>
+                                <ul itemscope itemtype="http://schema.org/ItemList" class="nav nav-pills nav-stacked">
+                                    <?php foreach ($pages as $page) : ?>  
+                                    <?php if (!empty($page['title'])) : ?>  
+                                    <li<?php if ($pageDetail['_id']==$page['_id']) echo ' class="active"'?>>
+                                        <a href="<?php                                            
+                                            echo $this->url(
+                                                'web/pages', 
+                                                array(
+                                                    'name' => name_2_url($page['title'], '.html')
+                                                )
+                                            )?>">
+                                            <span itemprop="name"><?php echo nl2br($page['title']) ?></span>                                            
+                                        </a>
+                                    </li>
+                                    <?php endif ?>                                
+                                    <?php endforeach ?>                                
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endif ?>
+                    </div>
+                </form>
+            </div>
+			<div class="col-md-9"> 
+				<h1 class="page-title"><?php echo nl2br($pageDetail['title'])?></h1>
+                <div class="separator-2"></div>
+                <!-- page-title end -->
+                <div class="row page-content">                    
+                    <?php echo $pageDetail['content']?>                                      
+                </div>
+			</div>
+		</div>
+	</div>
+</section>

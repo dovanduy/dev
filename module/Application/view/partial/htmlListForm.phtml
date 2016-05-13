@@ -1,0 +1,220 @@
+<?php 
+$dataset = $form->getDataset();
+$form->prepare();
+if (!$form->getAttribute('noFormTag')) {
+    echo $this->form()->openTag($form);
+}
+$keyId = '_id';
+if ($form->getAttribute('keyId')) {
+    $keyId = $form->getAttribute('keyId');
+}
+if (!isset($dataset['count']) && !isset($dataset['limit']) && !isset($dataset['data'])) {
+    $dataset = array(
+        'count' => count($dataset),
+        'limit' => count($dataset),
+        'data' => $dataset
+    );
+}
+?>
+<div class="box-body box-body-table">
+    <table class="table table-hover dataTable">
+        <thead>
+            <tr>
+            <?php
+                $request = $this->requestHelper();   
+                $fromQuery = $form->getController()->params()->fromQuery();                                        
+                foreach ($fromQuery as $name => $value) {
+                    if ($name != 'sort' && $name != 'page') {
+                        $param[] = "{$name}={$value}";  
+                    }
+                }
+                $url = parse_url($request->getRequestUri())['path'] . '?';
+                if (!empty($param)) {
+                    $url = $url . implode('&', $param) . '&';
+                }
+                $fields = array();
+                $columns = $form->columns();
+                if ($form->getAttribute('sortable')) {
+                    $columns = array_merge(
+                        array(
+                            array(
+                                'name' => 'sortArrow',
+                                'title' => '',
+                                'type' => 'html',
+                                'innerHtml' => '<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>',
+                            )
+                        ),
+                        $columns
+                    );
+                }
+                // find default sort
+                foreach ($columns as $column) {
+                    if (empty($fromQuery['sort']) && !empty($column['sort']) && !is_bool($column['sort'])) {
+                        $fromQuery['sort'] = "{$column['name']}-{$column['sort']}";
+                        break;
+                    }
+                }
+                foreach ($columns as $column) {
+                    $fields[] = $column['name'];
+                    if (empty($column['title'])) {
+                        $column['title'] = '';
+                    }
+                    if (!empty($fromQuery['sort']) && !empty($column['sort'])) {
+                        preg_match("/({$column['name']})-(asc|desc)+/", $fromQuery['sort'], $match);
+                        $sortClass = 'sorting';
+                        $sortDirection = 'asc';                        
+                        if (count($match) == 3) {
+                            $sortDirection = $match[2];
+                            $sortClass .= '_' . $sortDirection;
+                        }
+                        $sortData = $url . "sort={$column['name']}-" . ($sortDirection == 'asc' ? 'desc' : 'asc');
+                        echo "<th data-sort=\"{$sortData}\" class=\"{$sortClass} th_{$column['name']} sortable\">{$this->escapeHtml($this->translate($column['title']))}</th>";
+                    } else {
+                        echo "<th class=\"th_{$column['name']}\">{$this->escapeHtml($this->translate($column['title']))}</th>";
+                    }                  
+                }
+            ?>
+            </tr>        
+        </thead>
+        <tbody>
+            <?php   
+                foreach ($dataset['data'] as $row) {
+                    $search = $replace = array();
+                    foreach ($row as $field => $value) {
+                        if (!is_array($value)) {
+                            $search[] = '{' . $field . '}';
+                            $replace[] = $value;
+                        }
+                    }
+                    $trClass = 'form-table-row';
+                    if (isset($row[$keyId])) {
+                        $trClass = $trClass . '-' . str_replace($search, $replace, $row[$keyId]);
+                    }
+                    echo "<tr class=\"{$trClass}\">";
+                    foreach ($columns as $column) {
+                        $field = $column['name'];  
+                        if (!empty($column['innerHtml'])) {
+                            $column['innerHtml'] = str_replace($search, $replace, urldecode($column['innerHtml']));
+                        }
+                        $attribs = array();
+                        if (!empty($column['attributes'])) {
+                            foreach ($column['attributes'] as $key => $val) {
+                                $val = str_replace($search, $replace, urldecode($val));
+                                if (isset($column['type']) && in_array($column['type'], array('radio', 'checkbox')) && $key == 'checked' && $val != 'checked') {
+                                    continue;
+                                }
+                                $column['attributes'][$key] = $val;
+                                $attribs[] = "{$key}='{$val}'"; 
+                                if ($key == 'number' && $val == true && is_numeric($row[$field])) {                                    
+                                    $row[$field] = number_format($row[$field]);
+                                }
+                                if ($key == 'datetime' && $val == true && is_numeric($row[$field])) {                                    
+                                    $row[$field] = date('Y-m-d H:i', $row[$field]);
+                                }
+                                if ($key == 'date' && $val == true && is_numeric($row[$field])) {                                    
+                                    $row[$field] = date('Y-m-d', $row[$field]);
+                                }
+                            }                         
+                        }
+                        if (isset($row[$field]) && !isset($column['type'])) {                        
+                            echo "<td class=\"td_{$field}\">{$this->escapeHtml($row[$field])}</td>";
+                        } else {
+                            echo "<td class=\"td_{$field}\">";
+                            if (isset($column['type'])) {
+                                switch ($column['type']) {
+                                    case 'image':
+                                        if (!empty($column['attributes']['src'])) {
+                                            $column['attributes'] = implode(' ', $attribs); 
+                                            echo $this->partial('partial/image.phtml', array(
+                                                'element' => $column
+                                            ));             
+                                        }
+                                        break;
+                                    case 'link':
+                                        if (!empty($column['attributes']['href'])) {
+                                            $column['attributes'] = implode(' ', $attribs);                                         
+                                            echo $this->partial('partial/link.phtml', array(
+                                                'element' => $column
+                                            ));          
+                                        }
+                                        break;
+                                    case 'checkbox': 
+                                        $column['attributes'] = implode(' ', $attribs); 
+                                        echo $this->partial('partial/checkbox.phtml', array(
+                                            'element' => $column
+                                        ));                                  
+                                        break;
+                                    case 'radio':
+                                        $column['attributes'] = implode(' ', $attribs);
+                                        echo $this->partial('partial/radio.phtml', array(
+                                            'element' => $column
+                                        ));                                  
+                                        break;
+                                    case 'select': 
+                                        if (!empty($column['options']['value_options'])) {                                        
+                                            $column['attributes'] = implode(' ', $attribs); 
+                                            $column['value'] = $row[$field];
+                                            echo $this->partial('partial/select.phtml', array(
+                                                'element' => $column
+                                            ));
+                                        }
+                                        break;
+                                    case 'text': 
+                                        $column['attributes'] = implode(' ', $attribs); 
+                                        echo $this->partial('partial/text.phtml', array(
+                                            'element' => $column
+                                        ));
+                                        break; 
+                                    case 'toggle':
+                                        $column['attributes'] = implode(' ', $attribs); 
+                                        $column['value'] = $row[$field];
+                                        $column['url'] = $url;
+                                        echo $this->partial('partial/toggle.phtml', array(
+                                            'element' => $column
+                                        ));
+                                        break;
+                                    case 'html':
+                                        if (!empty($column['innerHtml'])) {
+                                            echo $column['innerHtml'];
+                                        }
+                                }
+                            }
+                            echo "</td>";
+                        }
+                    }
+                    echo "</tr>";
+                }
+            ?>
+        </tbody>
+        <?php if ($form->tfoot()): ?>            
+        <tfoot>
+           <?php echo $form->tfoot(); ?>
+        </tfoot>   
+        <?php endif; ?>
+    </table>
+</div>
+<div class="box-footer clearfix">
+<?php   
+    if ($dataset['count'] > $dataset['limit']) {
+    echo $this->paginatorHelper(
+            $form->getController()->params()->fromQuery(), 
+            $dataset['count'], 
+            $dataset['limit']
+        );
+    }
+?>
+</div>
+
+<?php if ($form->elements()): ?>       
+<div class="form-button-group">
+<?php
+    echo $this->formCollection($form);
+?>
+</div>
+<?php endif; ?>
+
+<?php
+if (!$form->getAttribute('noFormTag')) {
+    echo $this->form()->closeTag();
+}
+unset($form);

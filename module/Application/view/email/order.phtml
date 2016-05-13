@@ -1,0 +1,149 @@
+<table style='width: 100%'>
+    <tbody>        
+        <tr>
+            <td>
+                <p>
+                    Xin chào khách hàng <?php echo $data['user_name']?>.<br/>
+                    <?php echo $data['website_url']?> vừa nhận được đơn hàng #<?php echo $data['code']?> của quý khách đặt ngày <?php echo date('Y-m-d H:i:s', $data['created'])?> với hình thức thanh toán là Cash on Delivery. Chúng tôi sẽ gửi thông báo đến quý khách qua một email khác ngay khi sản phẩm được giao cho đơn vị vận chuyển.
+                </p>
+            </td>           
+        </tr>
+    </tbody>
+</table> 
+<br/>
+<table style='width: 100%'>   
+    <tbody>                        
+        <tr>
+            <td width="180"><?php echo $this->translate('Code')?></td>
+            <td><?php echo $data['code']?></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Order date')?></td>
+            <td><?php echo date('Y-m-d H:i:s', $data['created'])?></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Order status')?></td>
+            <td class="information invoice-col">
+                <?php 
+                    if ($data['status'] == 'new') {
+                        echo $this->translate('Processing');
+                    } elseif ($data['status'] == 'shipping') {
+                        echo $this->translate('Shipping');
+                    } elseif ($data['status'] == 'paid') {
+                        echo $this->translate('Paid');
+					} elseif ($data['status'] == 'done') {
+                        echo $this->translate('Done');
+                    } elseif ($data['status'] == 'cancel') {
+                        echo $this->translate('Canceled');
+                    }  
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Memo')?></td>
+            <td><?php echo $data['note']?></td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+<table style='width: 100%'>
+    <thead>
+        <tr bgcolor='#ddd'>
+            <th colspan="2" align="left"><?php echo $this->translate('Customer information')?></th>
+        </tr>
+    </thead>
+    <tbody>      
+        <tr>
+            <td width="180"><?php echo $this->translate('Full name')?></td>
+            <td><?php echo $data['user_name']?></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->translate('Address')?></td>
+            <td><?php echo $data['address']?></td>
+        </tr>      
+        <?php if (!empty($data['user_phone'])): ?>
+        <tr>
+            <td><?php echo $this->translate('Phone')?></td>
+            <td><?php echo $data['user_phone']?></td>
+        </tr>
+        <?php endif ?>
+        <?php if (!empty($data['user_mobile'])): ?>
+        <tr>
+            <td><?php echo $this->translate('Mobile')?></td>
+            <td><?php echo $data['user_mobile']?></td>
+        </tr>
+        <?php endif ?>
+        <?php if (!empty($data['user_email'])): ?>
+        <tr>
+            <td><?php echo $this->translate('Email')?></td>
+            <td><?php echo $data['user_email']?></td>
+        </tr>
+        <?php endif ?>
+    </tbody>
+</table>
+<br/>
+<table style='width: 100%'>
+    <thead>
+        <tr bgcolor='#ddd'>
+            <th colspan="4" align="left"><?php echo $this->translate('Order Detail')?></th>
+        </tr>
+    </thead>
+    <thead>       
+        <tr>
+            <th><?php echo $this->translate('Product name') ?></th>
+            <th width="120" align="right"><?php echo $this->translate('Quantity') ?></th>
+            <th width="120" align="right"><?php echo $this->translate('Price') ?></th>
+            <th width="120" align="right"><?php echo $this->translate('Subtotal') ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($data['products'] as $product): ?>
+        <tr>
+            <td><?php echo $product['product_name']; ?></td>
+            <td align="right"><?php echo $product['quantity']; ?></td>                        
+            <td align="right"><?php echo money_format($product['price']); ?></td>                        
+            <td width="120" align="right"><?php echo money_format($product['total_money']); ?></td>
+        </tr>
+        <?php endforeach ?> 
+        <tr>
+            <td></td>
+            <td></td>
+            <th align="right"><?php echo $this->translate('Tax money') ?></th>
+            <td width="120" align="right"><?php echo !empty($data['tax']) ? money_format($data['tax']) : 0; ?></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <th align="right"><?php echo $this->translate('Shipping money') ?></th>
+            <td width="120" align="right"><?php echo !empty($data['shipping']) ? money_format($data['shipping']) : 0; ?></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <th align="right"><?php echo $this->translate('Payment total')?></th>
+            <td width="120" align="right"><strong><?php echo money_format($data['total_money'])?></strong></td>
+        </tr>    
+    </tbody>
+</table>
+<br/>
+<table style='width: 100%'>
+    <tbody>
+        <tr>
+            <td>
+                Cảm quý khách đã mua hàng tại <?php echo $data['website_url']?>. Quý khách vui lòng thông báo cho chúng tôi biết trong trường hợp quá thời gian dự kiến mà bạn vẫn chưa nhận được hàng.
+                <?php echo $data['website_url']?> rất hân hạnh được phục vụ quý khách.
+            </td>           
+        </tr> 
+        <tr>
+            <td>
+                <p>
+                    Đơn vị chủ quản: <?php echo !empty($data['website_company_name']) ? $data['website_company_name'] : $data['website_name']?><br/>
+                    <?php echo $data['website_address']?><br/>
+                    <?php echo $this->translate('Hotline')?>: <?php echo $data['website_phone']?><br/>
+                    Email: <?php echo $data['website_email']?><br/> 
+                    Website: <?php echo $data['website_url']?>
+                </p>
+            </td>           
+        </tr>
+    </tbody>
+</table>

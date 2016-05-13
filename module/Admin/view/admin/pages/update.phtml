@@ -1,0 +1,28 @@
+<?php  
+    $locales = \Application\Module::getConfig('general.locales');
+    $request = $this->requestHelper();    
+    $tab = $request->getQuery('tab'); 
+    $backUrl = $request->getQuery('backurl'); 
+    $url = parse_url($request->getRequestUri())['path'];    
+?>
+<div class="row">
+    <div class="col-md-10">    
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs pull-left">
+                <li class="<?php if ($tab == '') echo "active" ?>"><a href="<?php echo $url . '?backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('General') ?></a></li>
+                <?php if (count($locales) > 1) : ?>
+                <?php foreach ($locales as $locale => $name) : ?>
+                    <li class="<?php if ($tab==$locale) echo "active" ?>"><a href="<?php echo $url . '?tab=' . $locale . '&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $name ?></a></li>
+                <?php endforeach; ?>
+                <?php endif ?>                
+            </ul>
+            <div class="tab-content no-padding">
+                <div class="box-body">
+                <?php  
+                    echo $this->htmlForm($form);  
+                ?>         
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

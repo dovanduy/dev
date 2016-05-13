@@ -1,0 +1,1087 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ZendSkeletonApplication\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-28 10:08+0700\n"
+"PO-Revision-Date: 2016-05-13 07:59+0700\n"
+"Last-Translator: Do Nhu Vy <donhuvy@hotmail.com>\n"
+"Language-Team: ZF Contibutors <zf-devteam@zend.com>\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: translate\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../src/Application/View/Helper/PaginatorHelper.php:87
+#, php-format
+msgid "In total of %s entries, showing %s to %s"
+msgstr ""
+
+#: ../view/application/index/index.phtml:2
+#, php-format
+msgid "Welcome to %sZend Framework 2%s"
+msgstr "Chào mừng bạn sử dụng %sZend Framework 2%s"
+
+#: ../view/application/index/index.phtml:3
+#, php-format
+msgid ""
+"Congratulations! You have successfully installed the %sZF2 Skeleton "
+"Application%s. You are currently running Zend Framework version %s. This "
+"skeleton can serve as a simple starting point for you to begin building your "
+"application on ZF2."
+msgstr ""
+"Xin chúc mừng! Bạn đã cài đặt thành công %sZF2 Skeleton Application%s. Bạn "
+"hiện đang sử dụng Zend Framework phiên bản %s. Ứng dung khung có thể phục vụ "
+"bạn như một điểm bắt đầu đơn giản để bạn bắt tay vào việc xây dựng ứng dụng "
+"riêng của mình trên nền ZF2."
+
+#: ../view/application/index/index.phtml:4
+msgid "Fork Zend Framework 2 on GitHub"
+msgstr "Rẽ nhánh Zend Framework 2 trên GitHub"
+
+#: ../view/application/index/index.phtml:12
+msgid "Follow Development"
+msgstr "Theo dõi Quá trình phát triển"
+
+#: ../view/application/index/index.phtml:15
+#, php-format
+msgid ""
+"Zend Framework 2 is under active development. If you are interested in "
+"following the development of ZF2, there is a special ZF2 portal on the "
+"official Zend Framework website which provides links to the ZF2 %swiki%s, "
+"%sdev blog%s, %sissue tracker%s, and much more. This is a great resource for "
+"staying up to date with the latest developments!"
+msgstr ""
+"Zend Framework 2 đang trong quá trình phát triển năng động. Nếu bạn quan tâm "
+"đến việc theo dõi quá trình phát triển của ZF2, có cổng thông tin đặc biệt "
+"danh cho ZF2 trên trang chính thức của website Zend Framework - nơi sẽ cung "
+"cấp đường dẫn tới %swiki%s, %sdev blog%s, %sissue tracker%s của ZF2, và hơn "
+"nhiều thứ khác nữa. Đó là nguồn tài nguyên tuyệt vời để nắm bắt các thông "
+"tin mới nhất trong quá trình phát triển!"
+
+#: ../view/application/index/index.phtml:16
+msgid "ZF2 Development Portal"
+msgstr "Cổng thông tin Tiến trình phát triển ZF2"
+
+#: ../view/application/index/index.phtml:24
+msgid "Discover Modules"
+msgstr "Khám phá các mô-đun"
+
+#: ../view/application/index/index.phtml:27
+#, php-format
+msgid ""
+"The community is working on developing a community site to serve as a "
+"repository and gallery for ZF2 modules. The project is available %son GitHub"
+"%s. The site is currently live and currently contains a list of some of the "
+"modules already available for ZF2."
+msgstr ""
+"Côngn đồng đang phát triển trang dành cho chính cộng đồng, đó là các kho mã "
+"nguồn và nơi trưng bày các mô-đun ZF2. Dự án sẵn có trên %son GitHub%s. Nơi "
+"nay đang hoạt động và hiện tại chứa danh sách vài mô-đun sẵn có cho ZF2."
+
+#: ../view/application/index/index.phtml:28
+msgid "Explore ZF2 Modules"
+msgstr "Khám phá các mô-đun dành cho ZF2"
+
+#: ../view/application/index/index.phtml:36
+msgid "Help &amp; Support"
+msgstr "Hướng dẫn &amp; Hỗ trợ"
+
+#: ../view/application/index/index.phtml:39
+#, php-format
+msgid ""
+"If you need any help or support while developing with ZF2, you may reach us "
+"via IRC: %s#zftalk on Freenode%s. We'd love to hear any questions or "
+"feedback you may have regarding the beta releases. Alternatively, you may "
+"subscribe and post questions to the %smailing lists%s."
+msgstr ""
+"Nếu bạn có bất kỳ hướng dẫn hay trợ giúp trong quá trình phát triển ZF2, bạn "
+"có thể gặp chúng tôi qua IRC: %s#zftalk on Freenode%s. Chúng tôi sẵn long "
+"lắng nghe bất kỳ câu hỏi hoặc phản hồi nào của bạn liên quan đến phiên bản "
+"thử nghiệm. Một cách khác, bạnn có thể đăng ký theo dõi và gửi câu hỏi đến "
+"%smailing lists%s."
+
+#: ../view/application/index/index.phtml:40
+msgid "Ping us on IRC"
+msgstr "Hỏi chúng tôi trên IRC"
+
+#: ../view/error/404.phtml:1
+msgid "A 404 error occurred"
+msgstr "Lỗi 404 xảy ra"
+
+#: ../view/error/404.phtml:10
+msgid "The requested controller was unable to dispatch the request."
+msgstr "Trình điều khiển được yêu cầu không thể xử lý được truy vấn."
+
+#: ../view/error/404.phtml:13
+msgid ""
+"The requested controller could not be mapped to an existing controller class."
+msgstr ""
+"Trình điều khiển được yêu cầu không thể được ánh xạ đến class trình điều "
+"khiển sẵn có."
+
+#: ../view/error/404.phtml:16
+msgid "The requested controller was not dispatchable."
+msgstr "Trình điều khiển được yêu cầu không thể xử lý yêu cầu."
+
+#: ../view/error/404.phtml:19
+msgid "The requested URL could not be matched by routing."
+msgstr "Đường dẫn được yêu cầu không phù hợp với việc định tuyến."
+
+#: ../view/error/404.phtml:22
+msgid "We cannot determine at this time why a 404 was generated."
+msgstr ""
+"Tại thời điểm này, chúng tôi không thể xác định tại sao lỗi 404 sinh ra."
+
+#: ../view/error/404.phtml:34
+msgid "Controller"
+msgstr "Trình điều khiển"
+
+#: ../view/error/404.phtml:41
+#, php-format
+msgid "resolves to %s"
+msgstr "phân giải đến %s"
+
+#: ../view/error/404.phtml:53 ../view/error/index.phtml:8
+msgid "Additional information"
+msgstr "Thông tin bổ sung"
+
+#: ../view/error/404.phtml:56 ../view/error/404.phtml:81
+#: ../view/error/index.phtml:11 ../view/error/index.phtml:36
+msgid "File"
+msgstr "Tập tin"
+
+#: ../view/error/404.phtml:60 ../view/error/404.phtml:85
+#: ../view/error/index.phtml:15 ../view/error/index.phtml:40
+msgid "Message"
+msgstr "Thông điệp"
+
+#: ../view/error/404.phtml:64 ../view/error/404.phtml:89
+#: ../view/error/index.phtml:19 ../view/error/index.phtml:44
+msgid "Stack trace"
+msgstr "Vết tiến trình thực thi"
+
+#: ../view/error/404.phtml:75 ../view/error/index.phtml:30
+msgid "Previous exceptions"
+msgstr "Ngoại lệ trước"
+
+#: ../view/error/404.phtml:109 ../view/error/index.phtml:64
+msgid "No Exception available"
+msgstr "Không tồn tại ngoại lệ nào"
+
+#: ../view/error/index.phtml:1
+msgid "An error occurred"
+msgstr "Có lỗi xảy ra"
+
+#: ../view/layout/layout.phtml:6 ../view/layout/layout.phtml:37
+#, fuzzy
+msgid "Skeleton Application"
+msgstr "Ứng dung khung"
+
+#: ../view/layout/layout.phtml:41
+msgid "Home"
+msgstr "Trang chủ"
+
+#: ../view/layout/layout.phtml:51
+msgid "All rights reserved."
+msgstr "Bảo lưu mọi quyền."
+
+msgid "Edit"
+msgstr "Sửa"
+
+msgid "Save"
+msgstr "Lưu"
+
+msgid "Delete"
+msgstr "Xoá"
+
+msgid "Artist"
+msgstr "Ca sĩ"
+
+msgid "Value is required and can't be empty"
+msgstr "Giá trị không thể rỗng"
+
+msgid "The input is less than {min} characters long"
+msgstr "Chiều dài dữ liệu nhỏ hơn {min} ký tự"
+
+msgid "The input is more than {max} characters long"
+msgstr "Chiều dài dữ liệu lớn hơn {max} ký tự"
+
+msgid "Success"
+msgstr "Thành công"
+
+msgid "Products"
+msgstr "Sản phẩm"
+
+msgid "Product"
+msgstr "Sản phẩm"
+
+msgid "Brands"
+msgstr "Thương hiệu"
+
+msgid "Brand"
+msgstr "Thương hiệu"
+
+msgid "Exception"
+msgstr "Ngoại lệ"
+
+msgid "Price"
+msgstr "Giá"
+
+msgid "Latest Arrivals"
+msgstr "Hàng mới về"
+
+msgid "Featured"
+msgstr "Nổi bật"
+
+msgid "Top Sellers"
+msgstr "Hàng bán chạy"
+
+msgid "Add to cart"
+msgstr "Thêm vào giỏ hàng"
+
+msgid "Prev"
+msgstr "Trước"
+
+msgid "Next"
+msgstr "Sau"
+
+msgid "Detail Description"
+msgstr "Mô tả chi tiết"
+
+msgid "Brand information"
+msgstr "Thông tin thương hiệu"
+
+msgid "Reviews"
+msgstr "Nhận xét"
+
+msgid "Review"
+msgstr "Nhận xét"
+
+msgid "Related Products"
+msgstr "Sản phẩm liên quan"
+
+msgid "Add your Review"
+msgstr "Nhận xét của bạn"
+
+msgid "Full name"
+msgstr "Họ và tên"
+
+msgid "Rating"
+msgstr "Đánh giá"
+
+msgid "View cart"
+msgstr "Xem giỏ hàng"
+
+msgid "cart"
+msgstr "Giỏ hàng"
+
+msgid "Shopping cart"
+msgstr "Giỏ hàng"
+
+msgid "Checkout"
+msgstr "Thanh toán"
+
+msgid "Account"
+msgstr "Tài khoản"
+
+msgid "My address"
+msgstr "Sổ địa chỉ"
+
+msgid "My orders"
+msgstr "Đơn hàng của tôi"
+
+msgid "Change password"
+msgstr "Đổi mật khẩu"
+
+msgid "Logout"
+msgstr "Thoát"
+
+msgid "Remove"
+msgstr "Xoá"
+
+msgid "Quantity"
+msgstr "Số lượng"
+
+msgid "Qty"
+msgstr "SL"
+
+msgid "Total"
+msgstr "Tổng tiền"
+
+msgid "Subtotal"
+msgstr "Tổng tiền"
+
+msgid "Payment total"
+msgstr "Tổng tiền thanh toán"
+
+msgid "Product name"
+msgstr "Tên sản phẩm"
+
+msgid "Choose"
+msgstr "Chọn"
+
+msgid "Address type"
+msgstr "Loại địa chỉ"
+
+msgid "State/Province"
+msgstr "Tỉnh/Thành phố"
+
+msgid "City/District"
+msgstr "Quận/Huyện"
+
+msgid "Street"
+msgstr "Đường"
+
+msgid "Add new address"
+msgstr "Thêm địa chỉ mới"
+
+msgid "Delivery address"
+msgstr "Địa chỉ giao hàng"
+
+msgid "Choose a delivery address"
+msgstr "Chọn một địa chỉ giao hàng"
+
+msgid "Address (number, street, ward)"
+msgstr "Địa chỉ (số nhà, đường, phường)"
+
+msgid "Login"
+msgstr "Đăng nhập"
+
+msgid "Sign up"
+msgstr "Đăng ký"
+
+msgid "Go back"
+msgstr "Trờ về"
+
+msgid "Back to cart"
+msgstr "Về trang giỏ hàng"
+
+msgid "Next step"
+msgstr "Bước kế tiếp"
+
+msgid "Complete your order"
+msgstr "Đặt hàng và hoàn tất"
+
+msgid "Total Items"
+msgstr "Tồng số sản phẩm"
+
+msgid "Billing Information"
+msgstr "Thông tin hoá đơn"
+
+msgid "Home phone"
+msgstr "Số ĐT nhà"
+
+msgid "Mobile"
+msgstr "Số di động"
+
+msgid "Address"
+msgstr "Địa chỉ"
+
+msgid "Memo"
+msgstr "Ghi chú"
+
+msgid "Thank you"
+msgstr "Cám ơn"
+
+msgid "Continue shopping!"
+msgstr "Tiếp tục mua hàng"
+
+msgid "Sign out"
+msgstr "Thoát"
+
+msgid "General"
+msgstr "Tổng quát"
+
+msgid "Profile"
+msgstr "Hồ sơ"
+
+msgid "Address list"
+msgstr "Danh sách địa chỉ"
+
+msgid "Order list"
+msgstr "Danh sách đơn hàng"
+
+msgid "Password"
+msgstr "Mật khẩu"
+
+msgid "Display name"
+msgstr "Tên hiện thị"
+
+msgid "Passport"
+msgstr "Số hộ chiếu"
+
+msgid "Identify"
+msgstr "Số CMND"
+
+msgid "Default address"
+msgstr "Địa chỉ mặc định"
+
+msgid "Avatar"
+msgstr "Hình đại diện"
+
+msgid "Gender"
+msgstr "Giới tính"
+
+msgid "Sex"
+msgstr "Giới tính"
+
+msgid "Male"
+msgstr "Nam"
+
+msgid "Female"
+msgstr "Nữ"
+
+msgid "Work address"
+msgstr "Địa chỉ nơi làm việc"
+
+msgid "Home address"
+msgstr "Địa chỉ nhà"
+
+msgid "Order date"
+msgstr "Ngày đặt hàng"
+
+msgid "Order status"
+msgstr "Trạng thái đơn hàng"
+
+msgid "Code"
+msgstr "Mã số"
+
+msgid "Total money"
+msgstr "Tổng tiền"
+
+msgid "Cancel"
+msgstr "Huỷ"
+
+msgid "Canceled"
+msgstr "Đa huỷ"
+
+msgid "New"
+msgstr "Mới"
+
+msgid "Paid"
+msgstr "Đã thanh toán"
+
+msgid "Country"
+msgstr "Quốc gia"
+
+msgid "--Select one--"
+msgstr "--Chọn một--"
+
+msgid "Close"
+msgstr "Đóng"
+
+msgid "Shipping"
+msgstr "Đang giao hàng"
+
+msgid "Shipping money"
+msgstr "Tiền vận chuyển"
+
+msgid "Shipping date"
+msgstr "Ngày giao hàng"
+
+msgid "Payment date"
+msgstr "Ngày thanh toán"
+
+msgid "Status"
+msgstr "Trạng thái"
+
+msgid "Tax"
+msgstr "Thuế"
+
+msgid "Tax money"
+msgstr "Tiền thuế"
+
+msgid "Order detail"
+msgstr "Chi tiết đơn hàng"
+
+msgid "Search"
+msgstr "Tìm kiếm"
+
+msgid "Subject"
+msgstr "Chủ đề"
+
+msgid "Content"
+msgstr "Nội dung"
+
+msgid "Phone"
+msgstr "Điện thoại"
+
+msgid "Send"
+msgstr "Gửi"
+
+msgid "Contact"
+msgstr "Liên hệ"
+
+msgid "Contact form"
+msgstr "Biểu mẫu liên hệ"
+
+msgid "Contact information"
+msgstr ""
+"It would be great to hear from you! Just drop us a line and ask for anything "
+"with which you think we could be helpful. We are looking forward to hearing "
+"from you!"
+
+msgid "Checkout review"
+msgstr "Xác nhận thông tin đơn hàng"
+
+msgid "Status updated successfully"
+msgstr "Cập nhật trạng thái thành công"
+
+msgid "Data saved successfully"
+msgstr "Dữ liệu đã lưu thành công"
+
+msgid "Invalid Email or password. Please try again"
+msgstr "Email hoặc mật khẩu không đúng, vui lòng thử lại"
+
+msgid "Or login with"
+msgstr "Hoặc đăng nhập với"
+
+msgid "Forgot your password?"
+msgstr "Quên mật khẩu?"
+
+msgid "Remember me"
+msgstr "Ghi nhớ đăng nhập"
+
+msgid "Sign Up"
+msgstr "Đăng ký"
+
+msgid "Contact Us"
+msgstr "Liên hệ với chúng tôi"
+
+msgid "Find Us"
+msgstr "Tìm chúng tôi"
+
+msgid "Show Map"
+msgstr "Xem bản đồ"
+
+msgid "Number, street, ward"
+msgstr "Số nhà, đường, phường/xã"
+
+msgid "Personal Info"
+msgstr "Thông tin cá nhân"
+
+msgid "Billing information"
+msgstr "Thông tin đơn hàng"
+
+msgid "Address added successfully"
+msgstr "Địa chỉ đã đăng ký thành công"
+
+msgid "New address"
+msgstr "Địa chỉ mới"
+
+msgid "Password confirmation"
+msgstr "Nhập lại mật khẩu"
+
+msgid "Password confirmation does not match Password"
+msgstr "Xác nhận mật khẩu không đúng"
+
+msgid "Account registed successfully"
+msgstr "Tài khoản đã đăng ký thành công"
+
+msgid "Other delivery address"
+msgstr "* Địa chỉ giao hàng khác"
+
+msgid "Signup Account and Go next step"
+msgstr "Đăng ký tài khoản và đến bước kế tiếp"
+
+msgid "Signup Account"
+msgstr "Đăng ký tài khoản"
+
+msgid "Invoice"
+msgstr "Đơn hàng"
+
+msgid "Customer information"
+msgstr "Thông tin khách hàng"
+
+msgid "Your order has been received and is being processed"
+msgstr "Đơn hàng của bạn đã được tiếp nhận và đã đang được xử lý"
+
+msgid "Confirmation"
+msgstr "Xác nhận"
+
+msgid "Order confirmation"
+msgstr "Xác nhận đặt hàng"
+
+msgid "Please choose order confirmation"
+msgstr "Vui lòng chọn xác nhận đặt hàng"
+
+msgid "View Details"
+msgstr "Xem chi tiết"
+
+msgid "Update"
+msgstr "Cập nhật"
+
+msgid "Old password"
+msgstr "Mật khẩu hiện tại"
+
+msgid "New password"
+msgstr "Mật khẩu mới"
+
+msgid "Process"
+msgstr "Xử lý"
+
+msgid "Add/Update adddress"
+msgstr "Thêm/Sửa địa chỉ"
+
+msgid "Are you sure delete this address?"
+msgstr "Xoá địa chỉ này?"
+
+msgid "Edit address"
+msgstr "Sửa địa chỉ"
+
+msgid "Add address"
+msgstr "Sửa địa chỉ"
+
+msgid "Delete address"
+msgstr "Xoá địa chỉ"
+
+msgid "Detail"
+msgstr "Chi tiết"
+
+msgid "Cancel order"
+msgstr "Huỷ đơn hàng"
+
+msgid "Cancel date"
+msgstr "Ngày huỷ đơn hàng"
+
+msgid "Are you sure cancel this order?"
+msgstr "Bạn đồng ý huỷ đơn hàng này?"
+
+msgid "Add to Wishlist"
+msgstr "Thích"
+
+msgid "Devivery information"
+msgstr "Thông tin giao hàng"
+
+msgid "Payment"
+msgstr "Hình thức thanh toán"
+
+msgid "COD"
+msgstr "Thanh toán khi nhận hàng"
+
+msgid "--Choose one--"
+msgstr "--Chọn một--"
+
+msgid "1 Star"
+msgstr "1 Sao"
+
+msgid "2 Stars"
+msgstr "2 Sao"
+
+msgid "3 Stars"
+msgstr "3 Sao"
+
+msgid "4 Stars"
+msgstr "4 Sao"
+
+msgid "5 Stars"
+msgstr "5 Sao"
+
+msgid "Photos"
+msgstr "Hình ảnh"
+
+msgid "Main photo"
+msgstr "Hình đại diện"
+
+msgid "About Shop/company"
+msgstr "Giới thiệu shop/công ty"
+
+msgid "Shop/company name"
+msgstr "Tên shop/công ty"
+
+msgid "Shop/company address"
+msgstr "Địa chỉ shop/công ty"
+
+msgid "Enter product name or brand name"
+msgstr "Tên sản phẩm hoặc thương hiệu"
+
+msgid "Search result by keyword"
+msgstr "Kết quả tìm kiếm từ khoá"
+
+msgid "result"
+msgstr "kết quả"
+
+msgid "Processing"
+msgstr "Đang xử lý"
+
+msgid "Login with registed account"
+msgstr "Đăng nhập với tài khoản đã đăng ký"
+
+msgid "Admin List"
+msgstr "Danh sách Admin"
+
+msgid "Add Admin"
+msgstr "Thêm Admin"
+
+msgid "Update Admin"
+msgstr "Sửa Admin"
+
+msgid "Name"
+msgstr "Tên"
+
+msgid "Birthday"
+msgstr "Ngày sinh nhật"
+
+msgid "Home Banner List"
+msgstr "Danh sách Banner"
+
+msgid "Add Home Banner"
+msgstr "Thêm Banner"
+
+msgid "Product Block List"
+msgstr "Danh sách Block sản phẩm"
+
+msgid "Add Product Block"
+msgstr "Thêm Block sản phẩm"
+
+msgid "Homepage"
+msgstr "Trang chủ"
+
+msgid "Add new"
+msgstr "Thêm mới"
+
+msgid "Members"
+msgstr "Thành viên"
+
+msgid "Member List"
+msgstr "Danh sách thành viên"
+
+msgid "Add Member"
+msgstr "Thêm thành viên"
+
+msgid "Update Member"
+msgstr "Sửa thành viên"
+
+msgid "Website Profile"
+msgstr "Hồ sơ website"
+
+msgid "Title"
+msgstr "Tiêu đề"
+
+msgid "Short"
+msgstr "Mô tả ngắn"
+
+msgid "Brand List"
+msgstr "Danh sách thương hiệu"
+
+msgid "Add Brand"
+msgstr "Thêm thương hiệu"
+
+msgid "Update Brand"
+msgstr "Sửa thương hiệu"
+
+msgid "About"
+msgstr "Giới thiệu"
+
+msgid "Update And Back"
+msgstr "Cập nhật và về trang trước"
+
+msgid "Sort"
+msgstr "Sắp xếp"
+
+msgid "Email ASC"
+msgstr "Email Tăng"
+
+msgid "Email DESC"
+msgstr "Email Giảm"
+
+msgid "Full Name ASC"
+msgstr "Họ và Tên Tăng"
+
+msgid "Full Name DESC"
+msgstr "Họ và Tên Giảm"
+
+msgid "Display Name ASC"
+msgstr "Tên Hiện Thị Tăng"
+
+msgid "Display Name DESC"
+msgstr "Họ và Tên Giảm"
+
+msgid "Active"
+msgstr "Hiện"
+
+msgid "Record/Page"
+msgstr "Số Mẫu Tin/Trang"
+
+msgid "Photo"
+msgstr "Hình"
+
+msgid "Image 1"
+msgstr "Hình 1"
+
+msgid "Image 2"
+msgstr "Hình 2"
+
+msgid "Image 3"
+msgstr "Hình 3"
+
+msgid "Image 4"
+msgstr "Hình 4"
+
+msgid "Image 5"
+msgstr "Hình 5"
+
+msgid "Image 6"
+msgstr "Hình 6"
+
+msgid "Image 7"
+msgstr "Hình 7"
+
+msgid "Image 8"
+msgstr "Hình 8"
+
+msgid "Image 9"
+msgstr "Hình 9"
+
+msgid "Image 10"
+msgstr "Hình 10"
+
+msgid "Main Address"
+msgstr "Địa chỉ chính"
+
+msgid "Address List"
+msgstr "Sổ địa chỉ"
+
+msgid "Order List"
+msgstr "Danh sách đơn hàng"
+
+msgid "Change Password"
+msgstr "Đổi mật khẩu"
+
+msgid "Pages"
+msgstr "Trang"
+
+msgid "Page List"
+msgstr "Danh sách trang"
+
+msgid "Add Page"
+msgstr "Thêm trang"
+
+msgid "Orders"
+msgstr "Đơn hàng"
+
+msgid "Add Order"
+msgstr "Thêm đơn hàng"
+
+msgid "Customer name"
+msgstr "Tên khách hàng"
+
+msgid "Note"
+msgstr "Ghi chú"
+
+msgid "Created"
+msgstr "Ngày tạo"
+
+msgid "Updated"
+msgstr "Ngày sửa"
+
+msgid "Order Detail"
+msgstr "Chi tiết đơn hàng"
+
+msgid "Website List"
+msgstr "Danh sách website"
+
+msgid "Product List"
+msgstr "Danh sách sản phẩm"
+
+msgid "Add Product"
+msgstr "Thêm sản phẩm"
+
+msgid "Edit Product"
+msgstr "Sửa sản phẩm"
+
+msgid "Category List"
+msgstr "Danh sách loại"
+
+msgid "Product Category List"
+msgstr "Danh sách loại sản phẩm"
+
+msgid "News Category List"
+msgstr "Danh sách loại tin tức"
+
+msgid "Website Category List"
+msgstr "Danh sách loại website"
+
+msgid "Original price"
+msgstr "Gía trước đây"
+
+msgid "Warranty"
+msgstr "Bảo hành"
+
+msgid "Weight (kg)"
+msgstr "Trọng lượng (kg)"
+
+msgid "Size (depth x width x height cm)"
+msgstr "Kích thước (dài x rộng x cao cm)"
+
+msgid "Add Product From Link"
+msgstr "Thêm sản phẩm từ liên kết"
+
+msgid "Link"
+msgstr "Liên kết"
+
+msgid "Video URL"
+msgstr "URL Video"
+
+msgid "Other URL"
+msgstr "URL khác"
+
+msgid "Brand name"
+msgstr "Tên thương hiệu"
+
+msgid "Product category"
+msgstr "Loại sản phẩm"
+
+msgid "Product type (Latest arrival/Featured/Top seller)"
+msgstr "Sản phẩm (Mới về/Nổi bậc/Bán chạy)"
+
+msgid "Latest arrival"
+msgstr "Mới về"
+
+msgid "Top seller"
+msgstr "Bán chạy"
+
+msgid "Attribute List"
+msgstr "Danh sách thuộc tính"
+
+msgid "Add Attribute"
+msgstr "Thêm thuộc tính"
+
+msgid "Edit Attribute"
+msgstr "Sửa thuộc tính"
+
+msgid "Attribute name"
+msgstr "Tên thuộc tính"
+
+msgid "Attribute type"
+msgstr "Loại thuộc tính"
+
+msgid "Add Product Category"
+msgstr "Thêm loại sản phẩm"
+
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+msgid "Product ID"
+msgstr "ID sản phẩm"
+
+msgid "Cart"
+msgstr "Giỏ hàng"
+
+msgid "Money"
+msgstr "Tiền"
+
+msgid "--All--"
+msgstr "Tất cả"
+
+msgid "Product Detail"
+msgstr "Chi tiết sản phẩm"
+
+msgid "Product description"
+msgstr "Mô tả sản phẩm"
+
+msgid "News"
+msgstr "Tin tức"
+
+msgid "Add News"
+msgstr "Thêm tin tức"
+
+msgid "Edit News"
+msgstr "Sửa tin tức"
+
+msgid "News List"
+msgstr "Danh sách tin tức"
+
+msgid "Add News Category"
+msgstr "Thêm loại tin tức"
+
+msgid "Add News From Link"
+msgstr "Thêm tin tức từ liên kết"
+
+msgid "Parent news category"
+msgstr "Loại tin tức cấp cha"
+
+msgid "Parent product category"
+msgstr "Loại sản phẩm cấp cha"
+
+msgid "Category name"
+msgstr "Tên loại"
+
+msgid "Edit Product Category"
+msgstr "Sửa loại sản phẩm"
+
+msgid "Wesbite Category List"
+msgstr "Danh sách loại website"
+
+msgid "Add Wesbite Category"
+msgstr "Thêm loại website"
+
+msgid "Edit Wesbite Category"
+msgstr "Sửa loại website"
+
+msgid "Add Website"
+msgstr "Thêm Website"
+
+msgid "Parent website category"
+msgstr "Loại website cấp cha"
+
+msgid "Edit Website Category"
+msgstr "Sửa loại website"
+
+msgid "Edit Website"
+msgstr "Sửa website"
+
+msgid "Made in"
+msgstr "Nơi sản xuất"
+
+msgid "Size name"
+msgstr "Tên kích thước"
+
+msgid "Product Size List"
+msgstr "Danh sách kích thước"
+
+msgid "Add Product Size"
+msgstr "Thêm kích thước"
+
+msgid "Edit Product Size"
+msgstr "Sửa kích thước"
+
+msgid "Edit Order"
+msgstr "Sửa đơn hàng"
+
+msgid "%s have received the order %s"
+msgstr "%s đã nhận được đơn hàng %s"
+
+msgid "Done date"
+msgstr "Ngày hoàn tất"
+
+msgid "Done"
+msgstr "Hoàn tất"
+
+msgid "Website name"
+msgstr "Tên website"
+
+msgid "Company name"
+msgstr "Tên công ty"
+
+msgid "I want to have this order"
+msgstr "Tôi đồng ý đặt đơn hàng này"
+
+msgid "Ooops! Page Not Found"
+msgstr "ÔI! CHÚNG TÔI KHÔNG TÌM THẤY TRANG BẠN YÊU CẦU"
+
+msgid ""
+"The requested URL was not found on this server. Make sure that the Web site "
+"address displayed in the address bar of your browser is spelled and "
+"formatted correctly"
+msgstr ""
+"Có vẻ như các trang mà bạn đang cố gắng tiếp cận không tồn tại nữa hoặc có "
+"thể nó vừa di chuyển. Nếu bạn đang tìm kiếm một sản phẩm, hãy thử tìm kiếm "
+"nâng cao hơn"
+
+msgid "Product not found"
+msgstr "Không tìm thấy sản phẩm"

@@ -1,0 +1,11 @@
+<input 
+    <?php echo $element['attributes']; ?>    
+    <?php if (!empty($element['value'])) echo "checked=\"checked\"";?>
+    type="checkbox" 
+    class="toggle-event" 
+    data-url="<?php echo $element['url'] ?>"
+	data-field="<?php echo isset($element['field']) ? $element['field'] : 'active' ?>"
+    data-toggle="toggle" 
+    data-onstyle="primary" 
+    data-style="ios" 
+    data-size="mini" />

@@ -1,0 +1,26 @@
+<h1>
+<?php
+    if (count($this->pages) == 1) {        
+        echo $this->translate($this->pages[count($this->pages) - 1]->getLabel());        
+    } elseif (count($this->pages) == 2) {
+        echo $this->translate($this->pages[count($this->pages) - 2]->getLabel());
+        echo "&nbsp;<small>{$this->translate($this->pages[count($this->pages) - 1]->getLabel())}</small>";
+    } else {
+        echo $this->translate('Home');
+    }
+?>
+</h1> 
+<ol class="breadcrumb">
+	<li><a href="<?php echo $this->url('admin')?>"><i class="fa fa-dashboard"></i> <?php echo $this->translate('Home')?></a></li>
+    <?php 
+        foreach ($this->pages as $key => $page) {
+            echo "<li>";
+            if ($key < count($this->pages) - 1) {
+                echo "<a href=\"{$page->getHref()}\">{$this->translate($page->getLabel())}</a>";
+            } else {
+                echo $this->translate($page->getLabel());
+            }                
+            echo "</li>";
+        }
+    ?>
+</ol>

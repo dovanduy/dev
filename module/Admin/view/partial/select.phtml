@@ -1,0 +1,5 @@
+<select <?php echo $element['attributes']; ?>>
+<?php foreach($element['options']['value_options'] as $value => $name) : ?>
+<option value="<?php echo $value;?>" <?php if (isset($element['value']) && $element['value'] == $value) echo "selected=\"selected\"";?>><?php echo $name;?></option>
+<?php endforeach; ?>
+</select>

@@ -1,0 +1,28 @@
+<?php if (!empty($this->pages)): ?>
+<div class="breadcrumb-container">
+    <div class="container">
+        <ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb">            
+            <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <i class="fa fa-home pr-10"></i>
+                <a itemprop="item" href="<?php echo $this->url('web')?>">
+                    <span itemprop="name"><?php echo $this->translate('Home')?></span>
+                </a>
+            </li>        
+            <?php    
+            $container = $this->navigation()->breadcrumbs();
+            foreach ($this->pages as $key => $page) {
+                if ($page->getLabel()) {
+                    echo "<li itemprop=\"itemListElement\" itemscope itemtype=\"http://schema.org/ListItem\">";
+                    if ($page->getHref() != '' && $key < count($this->pages) - 1) {
+                        echo "<a itemprop=\"item\" href=\"{$page->getHref()}\"><span itemprop=\"name\">{$this->translate($page->getLabel())}</span></a>";
+                    } else {     
+                        echo "<span itemprop=\"name\">{$this->translate($page->getLabel())}</span>";
+                    }                
+                    echo "</li>";
+                }
+            }
+            ?>
+        </ol>
+    </div>
+</div>
+<?php endif ?>

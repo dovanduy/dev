@@ -1,0 +1,119 @@
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">        
+            
+			<div class="col-md-12">
+                
+				<div class="tab-content clear-style">
+					<div class="tab-pane active">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+                        <?php  
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper();    
+                            $products = !empty($result['data']) ? $result['data'] : array();
+                            $limit = !empty($result['limit']) ? $result['limit'] : 20;
+                            $count = !empty($result['count']) ? $result['count'] : 0;                       
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    $product['url'] = $this->url(
+                                        'web/products', 
+                                        array(
+                                            'name' => name_2_url($product['name'])
+                                        )
+                                    );
+                                    $product['url_add_to_cart'] = $this->url(
+                                        'web/carts', 
+                                        array(
+                                            'action' => 'additem',
+                                            'id' => $product['_id']
+                                        )
+                                    );     
+                                    $product['url_add_to_wishlist'] = '#';
+                                    $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
+                                    $product['price'] = money_format($product['price']);
+                                    $product['name'] = truncate($product['name'], 60);
+                                    $product['short'] = nl2br(truncate($product['short'], 80));
+                                    echo "
+                                        <div class=\"col-md-3 col-sm-6 masonry-grid-item\">
+                                            <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
+                                                <div class=\"overlay-container\">
+                                                    <div class=\"image\">
+                                                        <img alt=\"{$product['name']}\" src=\"{$product['url_image']}\" alt=\"\">
+                                                    </div>
+                                                    <a class=\"overlay-link popup-img-single\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
+                                                    <div class=\"overlay-to-top links\">
+                                                        <span class=\"small\">
+                                                            <!--<a href=\"{$product['url_add_to_wishlist']}#\" class=\"btn-sm-link\"><i class=\"fa fa-heart-o pr-10\"></i>{$this->translate('Add to Wishlist')}</a>-->
+                                                            <a itemprop=\"url\" href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>{$this->translate('View Details')}</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class=\"body\">
+                                                    <h3><a itemprop=\"url\" href=\"{$product['url']}\"><span itemprop=\"name\">{$product['name']}</span></a></h3>                                                    
+                                                    <div class=\"elements-list clearfix\">
+                                                        <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
+                                                        <a  itemprop=\"url\" href=\"#\" 
+                                                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
+                                                            data-url=\"{$product['url_add_to_cart']}\"
+                                                            data-callback=\"
+                                                                loadCart(1);                                    
+                                                                showMessage('{$this->translate('Added to cart')}')
+                                                            \">{$this->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
+                                                        </a>                                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ";                                                                                 
+                                }
+                            }
+                        ?>  
+						</div>
+					</div>
+                    <!-- pagination start -->
+                    <nav class="text-center">
+                        <?php   
+                            if ($count > $limit) {
+                                echo $this->paginatorHelper(
+                                    $params, 
+                                    $count, 
+                                    $limit
+                                );
+                            }
+                        ?>
+                    </nav>
+                </div>
+                
+			</div>
+		</div>
+	</div>
+</section>
+<!-- section end -->
+
+<!-- section start -->
+<!-- ================ -->
+<!--
+<section class="section dark-translucent-bg background-img-2" style="background-position: 50% 52%;">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="call-to-action text-center">
+					<div class="row">
+						<div class="col-sm-8">
+							<h1 class="title">Don't Miss Out Our Offers</h1>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem quasi explicabo consequatur consectetur, a atque voluptate officiis eligendi nostrum.</p>
+						</div>
+						<div class="col-sm-4">
+							<br>
+							<p><a href="/" class="btn btn-lg btn-default btn-animated">Learn More<i class="fa fa-arrow-right pl-20"></i></a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+-->
+<!-- section end -->

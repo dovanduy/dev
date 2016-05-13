@@ -1,0 +1,228 @@
+<?php  
+    $request = $this->requestHelper();    
+    $tab = $request->getQuery('tab'); 
+    $backUrl = $request->getQuery('backurl'); 
+    $url = parse_url($request->getRequestUri())['path'];
+?>
+
+<!-- main-container start -->
+<!-- ================ -->
+<section class="main-container">
+
+    <div class="container">
+        <div class="row">
+
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-md-12">
+                <div class="row">                    
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs pull-left">
+                            <li class="<?php if ($tab == '') echo "active" ?>"><a href="<?php echo $url . '?backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Profile') ?></a></li>
+                            <li class="<?php if ($tab=='address') echo "active" ?>"><a href="<?php echo $url . '?tab=address&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('My address') ?></a></li>
+                            <li class="<?php if ($tab=='productorder') echo "active" ?>"><a href="<?php echo $url . '?tab=productorder&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Order list') ?></a></li>
+                            <li class="<?php if ($tab=='password') echo "active" ?>"><a href="<?php echo $url . '?tab=password&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Change password') ?></a></li>
+                        </ul>
+                        <div class="tab-content no-padding">
+                            <div class="box-body">
+                            <?php if ($tab == ''): ?>
+                                
+                                <div class="contact-form">
+                                    <?php 
+                                        $form->prepare();
+                                        echo $this->form()->openTag($form);
+                                    ?>  
+                                    <div class="form-group has-feedback">
+                                        <label for="image_id"><?php echo $this->formLabel($form->get('url_image')); ?></label>
+                                        <?php echo $this->formFile($form->get('url_image')); ?>  
+                                        <?php echo $this->formErrorMessage($form->get('url_image')); ?>
+                                        <i class="fa fa-image form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="name"><?php echo $this->formLabel($form->get('name')); ?></label>
+                                        <?php echo $this->formText($form->get('name')); ?>  
+                                        <?php echo $this->formErrorMessage($form->get('name')); ?>
+                                        <i class="fa fa-user form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="display_name"><?php echo $this->formLabel($form->get('display_name')); ?></label>
+                                        <?php echo $this->formText($form->get('display_name')); ?>  
+                                        <?php echo $this->formErrorMessage($form->get('display_name')); ?>
+                                        <i class="fa fa-user form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="email"><?php echo $this->formLabel($form->get('email')); ?></label>
+                                        <?php echo $this->formText($form->get('email')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('email')); ?>
+                                        <i class="fa fa-envelope form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="birthday"><?php echo $this->formLabel($form->get('birthday')); ?></label>
+                                        <?php echo $this->formDateCalendar($form->get('birthday')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('birthday')); ?>
+                                        <i class="fa fa-calendar form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="gender"><?php echo $this->formLabel($form->get('gender')); ?></label>
+                                        <?php echo $this->formSelect($form->get('gender')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('gender')); ?>                                        
+                                    </div>                                    
+                                    <div class="form-group has-feedback">
+                                        <label for="phone"><?php echo $this->formLabel($form->get('phone')); ?></label>
+                                        <?php echo $this->formText($form->get('phone')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('phone')); ?>
+                                        <i class="fa fa-phone form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="mobile"><?php echo $this->formLabel($form->get('mobile')); ?></label>
+                                        <?php echo $this->formText($form->get('mobile')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('mobile')); ?>
+                                        <i class="fa fa-mobile form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="passport"><?php echo $this->formLabel($form->get('passport')); ?></label>
+                                        <?php echo $this->formText($form->get('passport')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('passport')); ?>
+                                        <i class="fa fa-pencil form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="identify"><?php echo $this->formLabel($form->get('identify')); ?></label>
+                                        <?php echo $this->formText($form->get('identify')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('identify')); ?>
+                                        <i class="fa fa-pencil form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="address_id"><?php echo $this->formLabel($form->get('address_id')); ?></label>
+                                        <?php echo $this->formSelect($form->get('address_id')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('address_id')); ?>                                       
+                                    </div>
+                                    <input type="submit" value="<?php echo $this->translate('Update') ?>" class="submit-button btn btn-default">
+                                    <?php                       
+                                        echo $this->form()->closeTag();
+                                        unset($form);
+                                    ?>
+                                    <?php //echo $this->htmlForm($form); ?> 
+                                </div>
+                                
+                            <?php elseif ($tab == 'address'): ?>
+                                
+                                <div id="add-address-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">            
+                                            <div class="modal-header"> 
+                                                <h4 class="modal-title">
+                                                    <span><?php echo $this->translate('Add address') ?></span>
+                                                    <a  href='#'
+                                                        style="margin-right: 5px;"
+                                                        data-dismiss='modal'
+                                                        class="pull-right">
+                                                        <i class="fa fa-close"></i>
+                                                    </a>  
+                                                </h4>
+                                            </div>          
+                                            <div class="modal-body">
+                                                <div class="contact-form">
+                                                    <?php 
+                                                        $form->prepare();
+                                                        echo $this->form()->openTag($form);
+                                                    ?> 
+                                                    <div class="form-group has-feedback hide">
+                                                        <label for="country_code"><?php echo $this->formLabel($form->get('country_code'));?></label>                                                       
+                                                        <?php echo $this->formSelect($form->get('country_code'));?>
+                                                        <?php echo $this->formErrorMessage($form->get('country_code')); ?>
+                                                    </div>
+                                                    <div class="form-group has-feedback">
+                                                        <label for="state_code"><?php echo $this->formLabel($form->get('state_code'));?></label>                                                      
+                                                        <?php echo $this->formSelect($form->get('state_code'));?>
+                                                        <?php echo $this->formErrorMessage($form->get('state_code')); ?> 
+                                                    </div>
+                                                    <div class="form-group has-feedback">
+                                                        <label for="city_code"><?php echo $this->formLabel($form->get('city_code'));?></label>                                                       
+                                                        <?php echo $this->formSelect($form->get('city_code'));?>
+                                                        <?php echo $this->formErrorMessage($form->get('city_code')); ?> 
+                                                    </div>
+                                                    <div class="form-group has-feedback">
+                                                        <label for="street"><?php echo $this->formLabel($form->get('street'));?></label>                                                        
+                                                        <?php echo $this->formText($form->get('street'));?>
+                                                        <?php echo $this->formErrorMessage($form->get('street')); ?>
+                                                    </div>
+                                                    <div class="form-group has-feedback">
+                                                        <label for="name"><?php echo $this->formLabel($form->get('name'));?></label>                                                     
+                                                        <?php echo $this->formSelect($form->get('name'));?>
+                                                        <?php echo $this->formErrorMessage($form->get('name')); ?> 
+                                                    </div>
+                                                    <?php echo $this->formHidden($form->get('_id'));?>
+                                                    <input type="submit" value="<?php echo $this->translate('Update') ?>" class="submit-button btn btn-default ajax-submit">
+                                                    <input type="button" value="<?php echo $this->translate('Cancel') ?>" class="btn" data-dismiss="modal">
+                                                </div> 
+                                                <?php                       
+                                                    echo $this->form()->closeTag();
+                                                    unset($form);
+                                                ?> 
+                                            </div>   
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <?php
+                                    echo $this->htmlListForm($listForm);
+                                ?>   
+                                
+                            <?php elseif ($tab == 'productorder'): ?>
+                                
+                            <?php
+                                echo $this->htmlListForm($listForm);
+                            ?>
+                                
+                            <?php else: ?>   
+                                
+                                <div class="contact-form">
+                                    <?php 
+                                        $form->prepare();
+                                        echo $this->form()->openTag($form);
+                                    ?>                                    
+                                    <div class="form-group has-feedback">
+                                        <label for="password_old"><?php echo $this->formLabel($form->get('password_old')); ?></label>
+                                        <?php echo $this->formPassword($form->get('password_old')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('password_old')); ?>  
+                                        <i class="fa fa-lock form-control-feedback"></i>
+                                    </div>                                   
+                                    <div class="form-group has-feedback">
+                                        <label for="password"><?php echo $this->formLabel($form->get('password')); ?></label>
+                                        <?php echo $this->formPassword($form->get('password')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('password')); ?>  
+                                        <i class="fa fa-lock form-control-feedback"></i>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label for="password"><?php echo $this->formLabel($form->get('password_confirmation')); ?></label>
+                                        <?php echo $this->formPassword($form->get('password_confirmation')); ?> 
+                                        <?php echo $this->formErrorMessage($form->get('password_confirmation')); ?>  
+                                        <i class="fa fa-lock form-control-feedback"></i>
+                                    </div>
+                                    <input type="submit" value="<?php echo $this->translate('Update') ?>" class="submit-button btn btn-default">
+                                    <?php                       
+                                        echo $this->form()->closeTag();
+                                        unset($form);
+                                    ?>                                   
+                                </div> 
+                                
+                            <?php endif ?> 
+                            </div>
+                        </div>            
+                    </div>
+                </div>
+            </div>
+            <!-- main end -->
+
+        </div>
+    </div>
+</section>
+<!-- main-container end -->
+
+<div id="dialog-modal" class="modal fade" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">            
+
+        </div>
+    </div>
+</div>

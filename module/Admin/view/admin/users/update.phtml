@@ -1,0 +1,45 @@
+<?php  
+    $request = $this->requestHelper();    
+    $tab = $request->getQuery('tab'); 
+    $backUrl = $request->getQuery('backurl'); 
+    $url = parse_url($request->getRequestUri())['path'];
+?>
+<div class="row">
+    <div class="col-md-10">    
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs pull-left">
+                <li class="<?php if ($tab == '') echo "active" ?>"><a href="<?php echo $url . '?backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('General') ?></a></li>
+                <li class="<?php if ($tab=='address') echo "active" ?>"><a href="<?php echo $url . '?tab=address&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Address List') ?></a></li>
+                <li class="<?php if ($tab=='productorder') echo "active" ?>"><a href="<?php echo $url . '?tab=productorder&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Order List') ?></a></li>
+                <li class="<?php if ($tab=='password') echo "active" ?>"><a href="<?php echo $url . '?tab=password&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Change Password') ?></a></li>
+            </ul>
+            <div class="tab-content no-padding">
+                <div class="box-body">
+                <?php if ($tab == 'address'): ?>
+                    <div id="add-address-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">            
+                                <div class="modal-header">               
+                                    <h4 class="modal-title" id="myModalLabel"><?php echo $this->translate('Add/Update adddress') ?></h4>
+                                </div>          
+                                <div class="modal-body">
+                                    <?php echo $this->htmlForm($form); ?> 
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                        echo $this->htmlListForm($listForm);
+                    ?>
+                <?php elseif ($tab == 'productorder'): ?>
+                    <?php
+                        echo $this->htmlListForm($listForm);
+                    ?>
+                <?php else: ?>   
+                    <?php echo $this->htmlForm($form); ?> 
+                <?php endif ?> 
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>

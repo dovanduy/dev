@@ -1,0 +1,197 @@
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <?php if (!empty($categories)): ?>
+                    <div class="block clearfix">
+                        <h3 class="title"><?php echo $this->translate('Products')?></h3>
+                        <div class="separator-2"></div>
+                        <nav class="app-category">
+                            <ul class="nav nav-pills nav-stacked">
+                                <?php foreach ($categories as $category) : ?>  
+                                <?php if (!empty($category['sub'])) : ?>                                  
+                                    <li class="dropdown">
+                                        <a  class="dropdown-toggle" 
+                                            data-toggle="dropdown" 
+                                            href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <?php echo $category['name'] ?>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <?php foreach ($category['sub'] as $subCategory) : ?> 
+                                            <?php if (!empty($subCategory['sub'])) : ?>  
+                                            <li class="divider"></li>
+                                            <li class="dropdown-header"><?php echo $subCategory['name'] ?></li>
+                                            <?php foreach ($subCategory['sub'] as $subCategory2) : ?>
+                                            <li class="sub-category2">
+                                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($subCategory2['name'])))?>">
+                                                    <?php echo $subCategory2['name'] ?>
+                                                </a>                                        
+                                            </li>    
+                                            <?php endforeach ?>  
+                                            <?php else: ?>     
+                                            <li>
+                                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($subCategory['name'])))?>">
+                                                    <?php echo $subCategory['name'] ?>
+                                                </a>                                        
+                                            </li>
+                                            <?php endif ?>
+                                            <?php endforeach ?>                                            
+                                            <!--<li class="divider"></li>-->
+                                            <!--<li class="dropdown-header">Nav header</li>-->                                            
+                                        </ul>
+                                    </li>                                
+                                <?php else: ?>     
+                                     <li>
+                                        <a  href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <?php echo $category['name'] ?>
+                                        </a>                                        
+                                    </li>  
+                                <?php endif ?>                                
+                                <?php endforeach ?>                                
+                            </ul>
+                        </nav>
+                    </div>
+                    <?php endif ?>
+                </div>
+            </div>  
+            <?php if (!empty($banners)): ?>
+            <div class="col-md-9 hidden-xs">
+                <div class="slider-wrapper theme-default app-banner">
+                    <div id="slider" class="nivoSlider"> 
+                        <?php foreach ($banners as $i => $banner) : ?>
+                            <a href="<?php echo $banner['url']?>">
+                                <img src="<?php echo $banner['url_image']?>" data-thumb="<?php echo $banner['url_image']?>" alt="" /> 
+                            </a> 
+                        <?php endforeach; ?>	                        
+                    </div>                    
+                </div>
+            </div>
+            <?php endif ?>
+        </div>
+        
+        <?php if (!empty($featuredBrands)) : ?> 
+		<div class="row">            
+            <div class="col-md-12"> 
+                <!-- section start -->
+                <!-- ================ -->
+                <section class="section clearfix">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!--
+                                <h3 class="logo-font"><?php echo $this->translate('Brands')?></h3>
+                                <div class="separator-2"></div>          
+                                -->
+                                <div class="clients-container">
+                                    <div itemscope itemtype="http://schema.org/Brand" class="clients">
+                                        <?php 
+                                        foreach ($featuredBrands as $brand) {                                             
+                                            $brand['url'] = $this->url(
+                                                'web/products', 
+                                                array(                                                  
+                                                    'name' => name_2_url($brand['name'])
+                                                )
+                                            );                                         
+                                            echo "
+                                            <div class=\"client-image object-non-visible animated object-visible fadeIn\" data-animation-effect=\"fadeIn\" data-effect-delay=\"100\">
+                                                <a itemprop=\"url\" href=\"{$brand['url']}\"><img itemprop=\"image\" src=\"{$brand['url_image']}\" alt=\"\"></a>
+                                            </div>
+                                            ";
+                                        }
+                                        ?>                                                                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- section end -->
+            </div>
+            <?php endif ?>
+            
+			<div class="col-md-12">          
+                
+                <?php foreach ($blocks as $block) : ?> 
+                <?php if (!empty($block['products'])) : ?> 
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="active">
+                        <a href="#" onclick="return false;"><strong><?php echo $block['name'] ?></strong></a>
+                    </li>                 
+                </ul>
+                <!-- Tab panes -->
+				<div class="tab-content clear-style">
+					<div class="tab-pane active">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+                        <?php       
+                            $products = $block['products'];
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper(); 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    $product['url'] = $this->url(
+                                        'web/products', 
+                                        array(
+                                            'name' => name_2_url($product['name'])
+                                        )
+                                    );
+                                    $product['url_add_to_cart'] = $this->url(
+                                        'web/carts', 
+                                        array(
+                                            'action' => 'additem',
+                                            'id' => $product['_id']
+                                        )
+                                    );     
+                                    $product['url_add_to_wishlist'] = '#';
+                                    $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
+                                    $product['price'] = money_format($product['price']);
+                                    $product['name'] = truncate($product['name'], 60);
+                                    $product['short'] = nl2br(truncate($product['short'], 80));
+                                    echo "
+                                        <div class=\"col-md-3 col-sm-6 masonry-grid-item\">
+                                            <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
+                                                <div class=\"overlay-container\">
+                                                    <div class=\"image\">
+                                                        <img alt=\"{$product['name']}\" src=\"{$product['url_image']}\" alt=\"\">
+                                                    </div>
+                                                    <a class=\"overlay-link popup-img-single\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
+                                                    <div class=\"overlay-to-top links\">
+                                                        <span class=\"small\">
+                                                            <!--<a href=\"{$product['url_add_to_wishlist']}#\" class=\"btn-sm-link\"><i class=\"fa fa-heart-o pr-10\"></i>{$this->translate('Add to Wishlist')}</a>-->
+                                                            <a itemprop=\"url\" href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>{$this->translate('View Details')}</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class=\"body\">
+                                                    <h3><a itemprop=\"url\" href=\"{$product['url']}\"><span itemprop=\"name\">{$product['name']}</span></a></h3>                                                    
+                                                    <div class=\"elements-list clearfix\">
+                                                        <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
+                                                        <a  itemprop=\"url\" href=\"#\" 
+                                                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
+                                                            data-url=\"{$product['url_add_to_cart']}\"
+                                                            data-callback=\"
+                                                                loadCart(1);                                    
+                                                                showMessage('{$this->translate('Added to cart')}')
+                                                            \">{$this->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
+                                                        </a>                                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ";                                                                                 
+                                }
+                            }
+                        ?>  
+						</div>
+					</div>
+                </div>
+                <?php endif ?>
+                <?php endforeach ?>                
+			</div>
+		</div>
+	</div>
+</section>
+<!-- section end -->

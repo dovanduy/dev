@@ -1,0 +1,68 @@
+<?php
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
+<?php if (!empty($cartItems)) : ?>
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <i class="fa fa-fw fa-cart-plus"></i>
+    <span class="label label-success total-quantity"><span><?php echo $totalQuantity ?></span></span>
+</a>
+<ul class="dropdown-menu">
+    <li>
+        <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; min-height: 50px;"><ul class="menu" style="overflow: hidden; width: 100%; max-height: 400px;">
+            <?php foreach ($cartItems as $item) : ?>
+            <li class="cart-item-row-<?php echo $item['product_id']?>">
+                <a href="#">
+                    <div class="pull-left">
+                        <img src="<?php echo $item['url_image']?>" class="img-circle" alt="<?php echo $item['name']?>">
+                    </div>
+                    <h4 title="<?php echo $item['name']?>">
+                        <?php echo truncate($item['name'], 30)?>
+                        <small
+                            title="<?php echo $this->translate('Delete')?>"
+                            class="ajax-submit"
+                            data-callback = " 
+                                var li = btn.closest('li'); 
+                                li.remove();
+                                $('.total-quantity span').html(result.totalQuantity);
+                                $('.total-money span').html(result.totalMoney);
+                            "
+                            data-url="                                                
+                            <?php echo $this->url(
+                                    'admin/carts', 
+                                    array(
+                                        'action' => 'removeitem',
+                                        'id' => $item['_id']
+                                    ))
+                            ?>">
+                            <i class="fa fa-fw fa-remove"></i>
+                        </small>
+                    </h4>
+                    <p>
+                        <span class="cart-item-quantity-<?php echo $item['product_id']?>"><?php echo $item['quantity']?></span> 
+                        x 
+                        <span class="cart-item-price-<?php echo $item['product_id']?>"><?php echo money_format($item['price'])?></span> 
+                        = 
+                        <span class="cart-item-total-money-<?php echo $item['product_id']?>"><?php echo money_format($item['quantity'] * $item['price'])?></span>
+                    </p>
+                </a>
+            </li>
+            <?php endforeach ?>                                
+        </div>  
+    </li>
+    <li class="footer total-money">
+        <?php echo $this->translate('Total')?>: <span><?php echo money_format($totalMoney)?></span>
+    </li>
+    <li class="footer add-order">
+        <a href="<?php echo $this->url('admin/productorders', array('action' => 'add'))?>"><i class="fa fa-fw fa-arrow-right"></i><?php echo $this->translate('Add order')?></a>
+    </li>
+</ul>
+<?php endif ?>
+<?php exit; ?>

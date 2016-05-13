@@ -1,0 +1,335 @@
+<?php
+$isMobile = Application\Lib\Util::isMobile();
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
+<!-- header-container start -->
+<div class="header-container">
+	
+	<!-- header-top start -->
+	<!-- classes:  -->
+	<!-- "dark": dark version of header top e.g. class="header-top dark" -->
+	<!-- "colored": colored version of header top e.g. class="header-top colored" -->
+	<!-- ================ -->
+	<div class="header-top dark ">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-3 col-sm-6 col-md-9">
+					<!-- header-top-first start -->
+					<!-- ================ -->
+					<div class="header-top-first clearfix">
+						<ul class="social-links circle small clearfix hidden-xs">
+                            <?php if (!empty($website['facebook'])): ?>
+                            <li class="facebook"><a target="_blank" href="<?php echo $website['facebook']; ?>"><i class="fa fa-facebook"></i></a></li>
+                            <?php endif ?>
+
+                            <?php if (!empty($website['twitter'])): ?>
+                            <li class="twitter"><a target="_blank" href="<?php echo $website['twitter']; ?>"><i class="fa fa-twitter"></i></a></li>
+                            <?php endif ?>
+
+                            <?php if (!empty($website['linkedin'])): ?>
+                            <li class="linkedin"><a target="_blank" href="<?php echo $website['linkedin']; ?>"><i class="fa fa-linkedin"></i></a></li>
+                            <?php endif ?>
+
+                            <?php if (!empty($website['youtube'])): ?>
+                            <li class="youtube"><a target="_blank" href="<?php echo $website['youtube']; ?>"><i class="fa fa-youtube"></i></a></li>
+                            <?php endif ?>                                    
+						</ul>
+						
+                        <div class="social-links hidden-lg hidden-md hidden-sm circle small">
+                            <div class="btn-group dropdown">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share-alt"></i></button>
+                                <ul class="dropdown-menu dropdown-animation">
+                                    <?php if (!empty($website['facebook'])): ?>
+                                    <li class="facebook"><a target="_blank" href="<?php echo $website['facebook']; ?>"><i class="fa fa-facebook"></i></a></li>
+                                    <?php endif ?>
+
+                                    <?php if (!empty($website['twitter'])): ?>
+                                    <li class="twitter"><a target="_blank" href="<?php echo $website['twitter']; ?>"><i class="fa fa-twitter"></i></a></li>
+                                    <?php endif ?>
+
+                                    <?php if (!empty($website['linkedin'])): ?>
+                                    <li class="linkedin"><a target="_blank" href="<?php echo $website['linkedin']; ?>"><i class="fa fa-linkedin"></i></a></li>
+                                    <?php endif ?>
+
+                                    <?php if (!empty($website['youtube'])): ?>
+                                    <li class="youtube"><a target="_blank" href="<?php echo $website['youtube']; ?>"><i class="fa fa-youtube"></i></a></li>
+                                    <?php endif ?>
+                                </ul>
+                            </div>
+                        </div>
+                        
+						<ul class="list-inline hidden-sm hidden-xs">
+                            <?php if (!empty($website['address'])): ?> 
+							<li>                                
+                                <i class="fa fa-map-marker pr-5 pl-10"></i>
+                                <a itemprop="address" itemscope itemtype="http://schema.org/PostalAddress" href="<?php echo $this->url('web/contact')?>">
+                                    <?php echo $website['address']; ?>
+                                </a>
+                            </li>
+							<?php endif ?>
+                            
+                            <?php if (!empty($website['phone'])): ?> 
+                            <li>
+                                <i class="fa fa-phone pr-5 pl-10"></i>
+                                <span itemprop="telephone"><?php echo $website['phone']; ?></span>
+                            </li>
+							<?php endif ?>
+                            
+                            <?php if (!empty($website['email'])): ?> 
+                            <li>                                
+                                <i class="fa fa-envelope-o pr-5 pl-10"></i>
+                                <a itemprop="email" href="mailto:<?php echo $website['email']?>">
+                                    <?php echo $website['email']; ?>
+                                </a>
+                            </li>
+                            <?php endif ?>
+						</ul>
+					</div>
+					<!-- header-top-first end -->
+				</div>
+				<div class="col-xs-9 col-sm-6 col-md-3">
+
+					<!-- header-top-second start -->
+					<!-- ================ -->
+					<div id="header-top-second" class="clearfix">
+
+						<!-- header top dropdowns start -->
+						<!-- ================ -->
+						<div class="header-top-dropdown text-right">
+                        <?php if (!empty($AppUI)): ?> 
+                            <!-- User Account: style can be found in dropdown.less -->
+                            <div class="navbar-custom-menu">
+                                <ul class="nav navbar-nav"> 
+                                    <li class="dropdown user user-menu">
+                                        <a itemscope itemtype="http://schema.org/Person" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <?php if (!empty($AppUI->url_image)): ?>
+                                            <img itemprop="image" src="<?php echo $AppUI->url_image;?>" class="user-image" alt="<?php echo $AppUI->display_name;?>">
+                                            <?php endif ?>
+                                            <span itemprop="name" class="hidden-xs"><?php echo $AppUI->display_name;?></span>
+                                        </a>
+                                        <ul itemscope itemtype="http://schema.org/ItemList" class="dropdown-menu">                                            
+                                            <li itemprop="itemListElement" class="user-body">
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/my')?>">
+                                                        <span itemprop="name"><?php echo $this->translate('Profile')?></span>
+                                                    </a>
+                                                </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'address')))?>">
+                                                        <span itemprop="name"><?php echo $this->translate('My address')?></span>
+                                                    </a>
+                                                </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'productorder')))?>">
+                                                        <span itemprop="name"><?php echo $this->translate('Order list')?></span>
+                                                    </a>
+                                                </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'password')))?>"><?php echo $this->translate('Change password')?></a>
+                                                </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/page', array('action' => 'logout'))?>">
+                                                        <span itemprop="name"><?php echo $this->translate('Sign out')?></span>
+                                                    </a>
+                                                </div>
+                                            </li>                                            
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php else: ?>                
+							<div class="btn-group">
+								<a itemprop="url" href="<?php echo $this->url('web/signup')?>" class="btn btn-default btn-sm">
+                                    <i class="fa fa-user pr-10"></i> 
+                                    <span itemprop="name"><?php echo $this->translate('Sign up')?></span>
+                                </a>
+							</div>
+							<div class="btn-group">
+                                <a itemprop="url" href="<?php echo $this->url('web/login')?>" class="btn btn-default btn-sm">
+                                    <i class="fa fa-lock pr-10"></i> 
+                                    <span itemprop="name"><?php echo $this->translate('Login')?></span>
+                                </a>								
+                            </div>
+						<?php endif; ?>
+                        </div>
+                        
+						<!--  header top dropdowns end -->
+					</div>
+					<!-- header-top-second end -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- header-top end -->
+				
+	<!-- header start -->
+	<!-- classes:  -->
+	<!-- "fixed": enables fixed navigation mode (sticky menu) e.g. class="header fixed clearfix" -->
+	<!-- "dark": dark version of header e.g. class="header dark clearfix" -->
+	<!-- "full-width": mandatory class for the full-width menu layout -->
+	<!-- "centered": mandatory class for the centered logo layout -->
+	<!-- ================ --> 
+	<header class="header  fixed   clearfix">
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3">
+					<!-- header-left start -->
+					<!-- ================ -->
+					<div class="header-left clearfix">
+
+						<!-- logo -->
+						<div itemscope itemtype="http://schema.org/Organization" id="logo" class="logo mb-10">
+                            <?php if (!empty($website['url_image'])): ?>
+							<a itemprop="url" href="/"><img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>"></a>
+                            <?php endif ?>                             
+                        </div>
+					</div>
+					<!-- header-left end -->
+
+				</div>
+				<div class="col-md-9">
+		
+					<!-- header-right start -->
+					<!-- ================ -->
+					<div class="header-right clearfix">
+						
+					<!-- main-navigation start -->
+					<!-- classes: -->
+					<!-- "onclick": Makes the dropdowns open on click, this the default bootstrap behavior e.g. class="main-navigation onclick" -->
+					<!-- "animated": Enables animations on dropdowns opening e.g. class="main-navigation animated" -->
+					<!-- "with-dropdown-buttons": Mandatory class that adds extra space, to the main navigation, for the search and cart dropdowns -->
+					<!-- ================ -->
+					<div class="main-navigation animated with-dropdown-buttons">
+
+						<!-- navbar start -->
+						<!-- ================ -->
+						<nav class="navbar navbar-default" role="navigation">
+							<div class="container-fluid">
+
+								<!-- Toggle get grouped for better mobile display -->
+								<div class="navbar-header">
+									<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+										<span class="sr-only">Toggle navigation</span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+									</button>
+									
+								</div>
+
+								<!-- Collect the nav links, forms, and other content for toggling -->
+								<div class="collapse navbar-collapse" id="navbar-collapse-1">
+									<!-- main-menu -->
+									<ul itemscope itemtype="http://schema.org/ItemList" class="nav navbar-nav">
+                                        <?php foreach ($headerMenus as $menu) : ?>
+                                        <li <?php if (!empty($menu['sub'])) : ?>class="dropdown"<?php endif; ?>>                                            
+                                            <a itemprop="url" href="<?php echo $menu['url']?>" class="dropdown-toggle" <?php if (!empty($menu['sub'])) : ?> data-toggle="dropdown"<?php endif; ?>>
+                                                <span itemprop="name"><?php echo $menu['name']?></span>
+                                            </a>
+                                            <?php if (!empty($menu['sub'])) : ?> 
+                                            <ul itemprop="itemListElement" class="dropdown-menu">
+                                                <?php foreach ($menu['sub'] as $subMenu) : ?>                                         
+                                                <li <?php if (!empty($subMenu['sub'])) : ?>class="dropdown"<?php endif; ?>>                                            
+                                                    <a itemprop="url" class="dropdown-toggle" <?php if (!empty($subMenu['sub'])) : ?> data-toggle="dropdown"<?php endif; ?> href="<?php echo $subMenu['url']?>">
+                                                        <span itemprop="name"><?php echo $subMenu['name']?></span>
+                                                    </a>
+                                                    <?php if (!empty($subMenu['sub'])) : ?> 
+                                                    <ul itemprop="itemListElement" class="dropdown-menu to-left">
+                                                        <?php foreach ($subMenu['sub'] as $subMenu2) : ?> 
+                                                        <li><a itemprop="url" href="<?php echo $subMenu2['url']?>"><span itemprop="name"><?php echo $subMenu2['name']?></span></a></li>
+                                                        <?php endforeach ?>   
+                                                    </ul>
+                                                    <?php endif; ?>                                                                                       
+                                                </li>  
+                                                <?php endforeach ?>                                         
+                                            </ul>
+                                            <?php endif; ?>	
+                                        </li>
+                                        <?php endforeach ?>
+									</ul>
+									<!-- main-menu end -->
+									
+									<!-- header dropdown buttons -->                                    
+									<div id="searchArea" class="header-dropdown-buttons hidden-xs">
+										<div class="btn-group dropdown">
+											<button id="showSearchFormBtn" type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i></button>
+											<ul class="dropdown-menu dropdown-menu-right dropdown-animation">
+												<li>
+                                                    <form id="searchForm" action="/search" role="search" class="search-box margin-clear">
+                                                        <div class="form-group has-feedback">
+                                                            <input id="q" name="q" type="text" class="form-control" placeholder="<?php echo $this->translate('Enter product name or brand name')?>">
+                                                            <i class="icon-search form-control-feedback"></i>
+                                                        </div>
+                                                    </form>
+												</li>
+											</ul>
+										</div>
+										<div class="btn-group dropdown" id="dropdown-cart">
+											<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                                <i class="icon-basket-1"></i><span class="cart-count default-bg"><?php echo $totalQuantity ?></span>
+                                            </button> 
+                                            <?php if (!empty($cartItems)) : ?>
+											<ul class="dropdown-menu dropdown-menu-right dropdown-animation cart">
+												<li>
+													<table class="table table-hover">
+														<thead>
+															<tr>
+																<th class="quantity"><?php echo $this->translate('Qty')?></th>
+																<th class="product"><?php echo $this->translate('Product name')?></th>
+																<th class="amount"><?php echo $this->translate('Subtotal')?></th>
+															</tr>
+														</thead>
+														<tbody>
+                                                            <?php foreach ($cartItems as $item) : ?>
+															<tr class="cart-item-row-<?php echo $item['product_id']?>">
+																<td class="quantity"><?php echo $item['quantity']?> x</td>
+																<td class="product"><a href="<?php echo $this->url('web/products', array('action' => 'detail', 'id' => $item['_id']))?>"><?php echo $item['custom_name']?></a></td>
+																<td class="amount"><?php echo money_format($item['quantity'] * $item['price'])?></td>
+															</tr>
+                                                            <?php endforeach ?>                                                            
+                                                            <tr class="footer total-money">
+                                                                <td align="right" colspan="3">
+                                                                    <?php echo $this->translate('Total')?>: <span><?php echo money_format($totalMoney)?></span>
+                                                                </td>
+                                                            </tr>
+														</tbody>
+													</table>
+													<div class="panel-body text-right">	
+                                                        <a href="<?php echo $this->url('web/carts', array('action' => 'view'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('View cart')?></a>
+                                                        <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('Checkout')?></a>
+                                                    </div>
+												</li>
+											</ul>
+                                            <?php endif; ?>
+										</div>
+									</div>                                    
+									<!-- header dropdown buttons end-->
+									
+								</div>
+
+							</div>
+						</nav>
+						<!-- navbar end -->
+
+					</div>
+					<!-- main-navigation end -->	
+					</div>
+					<!-- header-right end -->
+		
+				</div>
+			</div>
+		</div>
+		
+	</header>
+	<!-- header end -->
+</div>
+<!-- header-container end -->

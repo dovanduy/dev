@@ -1,0 +1,173 @@
+<?php
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
+?>
+<!-- main-container start -->
+<!-- ================ -->
+<section class="main-container">
+
+    <div class="container">
+        <div class="row">
+
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-md-12">
+
+                <!-- page-title start -->
+                <!-- ================ -->
+                <h1 class="page-title"><?php echo $this->translate('Checkout review')?></h1>
+                <div class="separator-2"></div>
+                <!-- page-title end -->
+
+                <table class="table cart">
+                    <thead>
+                        <tr>
+                            <th><?php echo $this->translate('Product name')?></th>
+                            <th><?php echo $this->translate('Price')?></th>
+                            <th><?php echo $this->translate('Quantity')?></th>
+                            <th class="amount"><?php echo $this->translate('Total')?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cartItems as $item) : ?>
+                        <tr>
+                            <td class="product">
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($item['name'])))?>">
+                                    <?php echo $item['name']?>
+                                </a> 
+                            </td>
+                            <td class="price"><?php echo money_format($item['price'])?></td>
+                            <td class="quantity">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" value="<?php echo $item['quantity']?>" disabled="">
+                                </div>											
+                            </td>
+                            <td class="amount"><?php echo money_format($item['quantity'] * $item['price'])?></td>
+                        </tr>
+                        <?php endforeach ?>                        
+                        <tr>
+                            <td class="total-quantity" colspan="3"><?php echo $this->translate('Total Items')?>: <?php echo money_format($totalQuantity)?></td>
+                            <td class="total-amount"><?php echo money_format($totalMoney)?></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="space-bottom"></div>
+                
+                <form method="post" novalidate="novalidate">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th colspan="2"><?php echo $this->translate('Devivery information')?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($checkoutInfo['name'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Full name')?></td>
+                            <td class="information"><?php echo $checkoutInfo['name'];?></td>
+                        </tr>
+                        <?php endif ?>                        
+                        <?php if (!empty($checkoutInfo['phone'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Home phone')?></td>
+                            <td class="information"><?php echo $checkoutInfo['phone'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <?php if (!empty($checkoutInfo['mobile'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Mobile')?></td>
+                            <td class="information"><?php echo $checkoutInfo['mobile'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <?php if (!empty($checkoutInfo['email'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Email')?></td>
+                            <td class="information"><?php echo $checkoutInfo['email'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <tr>
+                            <td><?php echo $this->translate('Delivery address')?></td>
+                            <td class="information">
+                                <?php
+                                    $address = array();
+                                    if (!empty($checkoutInfo['street'])) {
+                                        $address[] = $checkoutInfo['street'];
+                                    }
+                                    if (!empty($checkoutInfo['city_code']) 
+                                        && !empty($checkoutInfo['state_code']) 
+                                        && !empty($checkoutInfo['country_code'])) {
+                                        $cities = \Application\Model\LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code']);                                                
+                                        $address[] = $cities[$checkoutInfo['city_code']];
+                                    }   
+                                    if (!empty($checkoutInfo['state_code']) 
+                                        && !empty($checkoutInfo['country_code'])) {
+                                        $states = \Application\Model\LocaleStates::getAll($checkoutInfo['country_code']);                                                
+                                        $address[] = $states[$checkoutInfo['state_code']];
+                                    }                                   
+                                    if (!empty($checkoutInfo['country_code'])) {
+                                        $countries = \Application\Model\LocaleCountries::getAll();  
+                                        $address[] = $countries[$checkoutInfo['country_code']];
+                                    }                                    
+                                    echo implode(', ', $address);
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Memo')?></td>
+                            <td class="information">
+                                <textarea name="note" id="note" class="form-control" rows="4"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="information">                                
+                                <span><input id="confirmation" name="confirmation" type="checkbox" style="width:20px; float:left;"/></span>                                
+                                <span><?php echo $this->translate('Order confirmation')?></span>                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="text-right">	
+                    <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
+                    <a 
+                        href="<?php echo $this->url('web/checkout', array('action' => 'completed'))?>" 
+                        class="btn btn-group btn-default ajax-submit"
+                        onclick = "                             
+                            if ($('#confirmation').is(':checked') == false) {
+                                $('#confirmation').focus();
+                                alert('<?php echo $this->translate('Please choose order confirmation')?>');
+                                return false;
+                            }                            
+                        "
+                        data-callback = "                                
+                            return true;
+                        "
+                        data-url="                                                
+                        <?php echo $this->url(
+                            'web/checkout', 
+                            array(
+                                'action' => 'order'
+                            ))
+                        ?>"
+                    >
+                        <i class="icon-check"></i> <?php echo $this->translate('Complete your order')?>
+                    </a>
+                </div>
+                </form>
+                
+            </div>
+            <!-- main end -->
+
+        </div>
+    </div>
+</section>
+<!-- main-container end -->

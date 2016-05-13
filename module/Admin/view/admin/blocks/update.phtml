@@ -1,0 +1,20 @@
+<?php  
+    $locales = \Application\Module::getConfig('general.locales');
+    $request = $this->requestHelper();    
+    $tab = $request->getQuery('tab'); 
+    $backUrl = $request->getQuery('backurl'); 
+    $url = parse_url($request->getRequestUri())['path'];    
+?>
+<div class="row">
+    <div class="col-md-10">    
+        <div class="nav-tabs-custom">            
+            <div class="tab-content no-padding">
+                <div class="box-body">
+                <?php  
+                    echo $this->htmlForm($form);   
+                ?>         
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

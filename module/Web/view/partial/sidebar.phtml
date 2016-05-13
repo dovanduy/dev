@@ -1,0 +1,169 @@
+<?php
+    $request = $this->requestHelper();  
+    $tab = $request->getQuery('tab', '');
+?>
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar" style="height: auto;">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            
+        </div>        
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+       
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="active">
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>                     
+                </a>                
+            </li> 
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'websitecategories', 
+                            'websites'
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-futbol-o"></i> <span><?php echo $this->translate('Websites')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($controller == 'websitecategories' && $action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/websitecategories')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Category List')?></a></li>
+                    <li<?php if ($controller == 'websitecategories' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/websitecategories', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Category')?></a></li>
+                    <li<?php if ($controller == 'websites' && $action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/websites')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Website List')?></a></li>
+                    <li<?php if ($controller == 'websites' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/websites', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Website')?></a></li>
+                </ul>
+            </li>
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'admins', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-wrench"></i> <span><?php echo $this->translate('Admins')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/admins')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Admin List')?></a></li>
+                    <li<?php if ($action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/admins', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Admin')?></a></li>
+                </ul>
+            </li>
+            
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'users', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-user"></i> <span><?php echo $this->translate('Users')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/users')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('User List')?></a></li>
+                    <li<?php if ($action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/users', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add user')?></a></li>
+                </ul>
+            </li>            
+            
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'productorders', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-fw fa-money"></i> <span><?php echo $this->translate('Orders')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productorders')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Order List')?></a></li>
+                    <li<?php if ($action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productorders', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add order')?></a></li>
+                </ul>
+            </li>
+            
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'productcategories', 
+                            'products', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-book"></i> <span><?php echo $this->translate('Products')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($controller == 'productcategories' && $action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productcategories')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Category List')?></a></li>
+                    <li<?php if ($controller == 'productcategories' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productcategories', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Category')?></a></li>
+                    <li<?php if ($controller == 'products' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Product List')?></a></li>
+                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product')?></a></li>
+                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='link') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'), array('query' => array('tab' => 'link')))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product From Link')?></a></li>
+                </ul>
+            </li>
+            
+             <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'newscategories', 
+                            'news', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-fw fa-newspaper-o"></i> <span><?php echo $this->translate('News')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($controller == 'newscategories' && $action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/newscategories')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Category List')?></a></li>
+                    <li<?php if ($controller == 'newscategories' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/newscategories', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Category')?></a></li>
+                    <li<?php if ($controller == 'news' && $action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/news')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('News List')?></a></li>
+                    <li<?php if ($controller == 'news' && $action=='add' && $tab=='') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/news', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add News')?></a></li>
+                    <li<?php if ($controller == 'news' && $action=='add' && $tab=='link') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/news', array('action' => 'add'), array('query' => array('tab' => 'link')))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add News From Link')?></a></li>
+                </ul>
+            </li>
+            
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'brands', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-fw fa-amazon"></i> <span><?php echo $this->translate('Brands')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/brands')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Brand List')?></a></li>
+                    <li<?php if ($action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/brands', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add brand')?></a></li>
+                </ul>
+            </li>
+            
+            <li class="treeview
+                <?php 
+                    if (in_array($controller, 
+                        array(
+                            'inputfields', 
+                        )
+                    )) echo "active"?>">
+                <a href="#">
+                    <i class="fa fa-fw fa-check-square-o"></i> <span><?php echo $this->translate('Fields')?></span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li<?php if ($action=='index' || $action=='update') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/inputfields')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Field List')?></a></li>
+                    <li<?php if ($action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/inputfields', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add field')?></a></li>
+                </ul>
+            </li>            
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>

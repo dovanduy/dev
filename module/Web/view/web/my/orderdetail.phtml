@@ -1,0 +1,193 @@
+<?php
+$request = $this->requestHelper();
+if (empty($data['tax'])) {
+    $data['tax'] = 0;
+}
+if (empty($data['shipping'])) {
+    $data['shipping'] = 0;
+}
+?>
+<div class="modal-header">               
+    <h4 class="modal-title">
+        <?php echo $this->translate('Order detail') ?>
+        <a  href='#'
+            style="margin-right: 5px;"
+            data-dismiss='modal'
+            class="pull-right">
+            <i class="fa fa-close"></i>
+        </a>  
+    </h4>
+</div>
+<div class="modal-body">
+    <section class="invoice">    
+
+        <!-- info row -->
+        <div class="row invoice-info">
+            <div class="col-sm-6 invoice-col">
+                <address>
+                    <?php echo $this->translate('Full name') ?>: <?php echo !empty($data['user_name']) ? $data['user_name'] : '-'; ?><br>
+                    <?php echo $this->translate('Address') ?>: <?php echo !empty($data['address']) ? $data['address'] : '-'; ?><br>
+                    
+                    <?php echo $this->translate('Mobile') ?>: <?php echo !empty($data['user_mobile']) ? $data['user_mobile'] : '-'; ?><br>
+                                      
+                    <?php if (!empty($data['user_phone'])): ?>
+                    <?php echo $this->translate('Home phone') ?>: <?php echo $data['user_phone'] ?><br>
+                    <?php endif ?>
+                    
+                    <?php if (!empty($data['user_email'])): ?>
+                    <?php echo $this->translate('Email') ?>: <?php echo $data['user_email'] ?><br>
+                    <?php endif ?>
+                </address>
+            </div>
+            <div class="col-sm-6 invoice-col">
+                <?php echo $this->translate('Code') ?>: <strong><?php echo $data['code']; ?></strong><br>
+                
+                <?php echo $this->translate('Order date') ?>:
+                <span class="invoice-date order-date"><?php echo !empty($data['created']) ? datetime_format($data['created']) : '-'; ?></span><br>
+                    
+                <div class="status-date" <?php if ($data['status'] == 'cancel') echo 'style="display:none"' ?>>            
+                                      
+                    <?php if (!empty($data['shipping_date'])): ?>
+                    <?php echo $this->translate('Shipping date') ?>:
+                    <span class="invoice-date shipping-date"><?php echo !empty($data['shipping_date']) ? datetime_format($data['shipping_date']) : '-'; ?></span><br>
+                    <?php endif ?>
+                    
+                    <?php if (!empty($data['payment_date'])): ?>
+                    <?php echo $this->translate('Payment date') ?>: 
+                    <span class="invoice-date payment-date"><?php echo !empty($data['payment_date']) ? datetime_format($data['payment_date']) : '-'; ?></span><br>
+                    <?php endif ?>
+                    
+                </div>
+                
+                <div class="status-cancel-date" <?php if ($data['status'] != 'cancel') echo 'style="display:none"' ?>>            
+                    <?php echo $this->translate('Cancel date') ?>:
+                    <span class="cancel-date"><?php echo !empty($data['cancel_date']) ? datetime_format($data['cancel_date']) : '-'; ?></span><br>
+                </div>
+
+                <?php echo $this->translate('Order status') ?>:            
+                <span <?php if ($data['status'] == 'new') echo 'style="display:inline"' ?> class="btn btn-flat order-status new"><?php echo $this->translate('Processing'); ?></span>
+                <span <?php if ($data['status'] == 'shipping') echo 'style="display:inline"' ?>class="btn btn-flat order-status shipping"><?php echo $this->translate('Shipping'); ?></span>
+                <span <?php if ($data['status'] == 'paid') echo 'style="display:inline"' ?>class="btn btn-flat order-status paid"><?php echo $this->translate('Paid'); ?></span>
+                <span <?php if ($data['status'] == 'cancel') echo 'style="display:inline"' ?>class="btn btn-flat order-status cancel"><?php echo $this->translate('Canceled'); ?></span>
+                <br>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+       
+        <!-- Table row -->
+        <?php if (!empty($data['products'])): ?>
+        <div class="row mt10">
+            
+            <table class='table cart table-bordered'>
+                <thead>
+                    <tr>
+                        <th><?php echo $this->translate('Product name') ?></th>
+                        <th><?php echo $this->translate('Quantity') ?></th>
+                        <th><?php echo $this->translate('Price') ?></th>
+                        <th><?php echo $this->translate('Subtotal') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data['products'] as $product): ?>
+                    <tr>
+                        <td><?php echo $product['product_name']; ?></td>
+                        <td><?php echo $product['quantity']; ?></td>                        
+                        <td><?php echo money_format($product['price']); ?></td>                        
+                        <td><?php echo money_format($product['total_money']); ?></td>
+                    </tr>
+                    <?php endforeach ?>                    
+                </tbody>
+            </table>
+            
+        </div>
+        <!-- /.row -->
+        <?php endif ?>
+
+        <div class="row" style="margin-top: 5px;">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+                <?php if (!empty($data['note'])): ?>
+                <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                    <?php echo nl2br($data['note']); ?>
+                </p>
+                <?php endif ?>
+            </div>
+            <!-- /.col -->
+            <div class="col-xs-6">
+                <!--
+                <p class="lead">Amount Due 2/22/2014</p>
+                -->
+                
+                    <table class='table cart table-bordered'>
+                        <tbody>
+                            <tr>
+                                <th style="width:50%"><?php echo $this->translate('Subtotal') ?>:</th>
+                                <td><?php echo money_format($data['total_money']); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $this->translate('Tax money') ?></th>
+                                <td><?php echo money_format($data['tax']); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $this->translate('Shipping money') ?></th>
+                                <td><?php echo money_format($data['shipping']); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $this->translate('Payment total') ?></th>
+                                <td><strong><?php echo money_format($data['total_money'] + $data['tax'] + $data['shipping']); ?></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <!-- this row will not appear when printing -->
+        <div class="row no-print">
+            <div class="col-xs-12">               
+                <a  href='#'
+                    style="margin-left: 5px;"
+                    data-dismiss='modal'
+                    class="btn btn-default pull-right">
+                    <i class="fa fa-close"></i> <?php echo $this->translate('Close') ?>
+                </a>                 
+                <?php if ($data['status'] == 'new'): ?>
+                <a href='#'                             
+                   data-url="<?php echo $this->url(
+                             'web/my', 
+                             array(
+                                 'action' => 'cancelorder',
+                                 'id' => $data['_id']
+                             ))
+                   ?>"
+                   data-confirmmessage='<?php echo $this->translate('Are you sure cancel this order?') ?>'
+                   data-callback="
+                        if ($('#btn-submit-shipping').length > 0) {
+                            $('#btn-submit-shipping').remove();
+                        }
+                        if ($('#btn-submit-payment').length > 0) {
+                            $('#btn-submit-payment').remove();
+                        }
+                        if ($('#btn-submit-cancel').length > 0) {
+                            $('#btn-submit-cancel').remove();
+                        }
+                        $('.invoice-col .order-status').hide();
+                        $('.invoice-col .cancel').show();
+                        $('.invoice-col .status-date').hide();
+                        $('.invoice-col .status-cancel-date').show();
+                        $('.invoice-col .cancel-date').html(result.date);
+                    "
+                    style="margin-left: 5px;"
+                    id="btn-submit-cancel"
+                    class="btn btn-danger ajax-submit pull-right">
+                    <i class="fa fa-remove"></i> <?php echo $this->translate('Cancel order') ?>
+                </a>  
+                <?php endif ?> 
+            </div>
+        </div>
+    </section>
+</div>
+<?php exit; ?>
