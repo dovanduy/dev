@@ -1321,3 +1321,17 @@ img {
 	margin: 30px auto;
 	width: 100%;
 }
+.body-mobile  #detailForm .product {
+	width: 100%;
+	margin-bottom: 10px;
+	float: left;
+}
+.body-mobile  #detailForm .product {
+	width: 100%;
+	margin-bottom: 10px;
+	float: left;
+}
+.body-mobile .section-mobile-pv-30 {
+	padding-top: 0px;
+	padding-bottom: 0px
+}

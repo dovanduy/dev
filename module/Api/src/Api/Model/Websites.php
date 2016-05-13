@@ -362,7 +362,7 @@ class Websites extends AbstractModel {
             $values['copyright'] = $param['copyright'];
         }
         if (isset($param['meta_keyword'])) {
-            $values['meta_keyword'] = $param['meta_keyword'];
+            $values['meta_keyword'] = mb_strtolower($param['meta_keyword']);
         }
         if (isset($param['meta_description'])) {
             $values['meta_description'] = $param['meta_description'];

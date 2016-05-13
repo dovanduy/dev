@@ -332,10 +332,10 @@ class Products extends AbstractModel {
                 'product_has_fields', 
                 static::$tableName . '.product_id = product_has_fields.product_id',
                 array(
-                    'field_id'                    
+                    'field_id'                   
                 )
             );
-            $select->where(new Expression("product_has_fields.value_id IN ({$param['option_id']})"));
+            $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
             $select->where('product_has_fields.active = 1');
         }
         if (isset($param['block_id'])
@@ -542,6 +542,21 @@ class Products extends AbstractModel {
     
     public function add($param, &$id = 0)
     {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $detail = self::getByName(
+            array(
+                'website_id' => $param['website_id'],
+                'name' => $param['name'],
+                'locale' => $param['locale'],
+            ),
+            self::RETURN_TYPE_ONE
+        );
+        if (!empty($detail)) {
+            $id = $detail['product_id'];
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // products._id        
         $values = array(
             '_id' => $_id,            
@@ -657,7 +672,13 @@ class Products extends AbstractModel {
             } 
             if (isset($param['content'])) {
                 $localeValues['content'] = $param['content'];
-            }           
+            }         
+            if (isset($param['meta_keyword'])) {
+                $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
+            }        
+            if (isset($param['meta_description'])) {
+                $localeValues['meta_description'] = $param['meta_description'];
+            }
             self::insert($localeValues, 'product_locales');            
             
             if (empty(self::error()) && !empty($param['name'])) {
@@ -675,7 +696,7 @@ class Products extends AbstractModel {
                     'product_id' => $id,
                     'category_id' => $param['category_id']
                 )
-            ); 
+            );
             
             if (isset($param['size_id'])) {
                 $productHasSizesModel = new ProductHasSizes();
@@ -684,7 +705,7 @@ class Products extends AbstractModel {
                         'product_id' => $id,
                         'size_id' => $param['size_id']
                     )
-                ); 
+                );
             }                               
             return $_id;
         }        
@@ -836,7 +857,7 @@ class Products extends AbstractModel {
             $values['content'] = $param['content'];
         }
         if (isset($param['meta_keyword'])) {
-            $values['meta_keyword'] = $param['meta_keyword'];
+            $values['meta_keyword'] = mb_strtolower($param['meta_keyword']);
         }
         if (isset($param['meta_description'])) {
             $values['meta_description'] = $param['meta_description'];
@@ -998,6 +1019,71 @@ class Products extends AbstractModel {
                 $result['url_id'] = $detailUrlId; 
             }
         }
+        return $result;
+    }
+    
+    public function getByName($param)
+    {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from('products')  
+            ->columns(array(                
+                'product_id', 
+                '_id', 
+                'brand_id',
+                'code',
+                'model',
+                'price',
+                'original_price',
+                'vat',
+                'quantity',
+                'url_video',
+                'url_other',
+                'website_id',
+                'provider_id',
+                'warranty',
+                'weight',
+                'size',
+                'made_in',                
+                'active',
+                'image_id'
+            ))
+            ->join(               
+                array(
+                    'product_locales' => 
+                    $sql->select()
+                        ->from('product_locales')
+                        ->where("locale = ". self::quote($param['locale']))
+                ),                    
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(
+                    'locale', 
+                    'name', 
+                    'short',
+                    'content',
+                    'meta_keyword',
+                    'meta_description',
+                )   
+            );                      
+        if (!empty($param['_id'])) {            
+            $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
+        }
+        if (!empty($param['website_id'])) {            
+            $select->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));  
+        }
+        if (!empty($param['product_id'])) {            
+            $select->where(static::$tableName . '.product_id = '. self::quote($param['product_id']));  
+        }
+        if (!empty($param['name'])) {            
+            $select->where('product_locales.name = '. self::quote($param['name']));  
+        }
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ONE
+        );        
         return $result;
     }
     

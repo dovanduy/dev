@@ -11,6 +11,7 @@ namespace Application;
 
 use Application\Lib\Arr;
 use Application\Lib\Mail;
+use Application\Lib\Util;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Cache\StorageFactory;
@@ -36,22 +37,31 @@ class Module implements AutoloaderProviderInterface,
         $api = include __DIR__ . '/config/api.config.php';
         $config = $module + $api;
         
-        if (isset($_SERVER['SERVER_NAME'])) {
-            $serverName = explode('.', $_SERVER['SERVER_NAME']);
-            if ($_SERVER['SERVER_NAME'] !== 'localhost'
-                && count($serverName) >= 2) {
-                if (count($serverName) >= 3 && in_array($serverName[0], array('admin', 'api'))) {
-                    $domain = $serverName[1] . '.' . $serverName[2];
-                } else {
-                    $domain = $serverName[0] . '.' . $serverName[1];
-                }
-                $file = __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $domain . '.php';
-                if (file_exists($file)) {
-                    $domainConfig = include $file;
-                    $config = array_replace_recursive($config, $domainConfig);
-                }            
-            }       
-        }       
+        if (isset($_SERVER['SERVER_NAME']) && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php')) {
+            $domainConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php';
+            $config = array_replace_recursive($config, $domainConfig);
+        }
+        if (Util::isMobile() && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php')) {
+            $mobileConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php';
+            $config = array_replace_recursive($config, $mobileConfig);
+        }
+//        
+//        if (isset($_SERVER['SERVER_NAME'])) {
+//            $serverName = explode('.', $_SERVER['SERVER_NAME']);
+//            if ($_SERVER['SERVER_NAME'] !== 'localhost'
+//                && count($serverName) >= 2) {
+//                if (count($serverName) >= 3 && in_array($serverName[0], array('admin', 'api'))) {
+//                    $domain = $serverName[1] . '.' . $serverName[2];
+//                } else {
+//                    $domain = $serverName[0] . '.' . $serverName[1];
+//                }
+//                $file = __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $domain . '.php';
+//                if (file_exists($file)) {
+//                    $domainConfig = include $file;
+//                    $config = array_replace_recursive($config, $domainConfig);
+//                }            
+//            }       
+//        }       
         if (!empty($name)) {
             return Arr::get($config, $name, $default);
         }

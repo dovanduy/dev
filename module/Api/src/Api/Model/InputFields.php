@@ -133,18 +133,23 @@ class InputFields extends AbstractModel {
         );        
     }    
     
-    public function add($param)
+    public function add($param, &$id = 0)
     {
-        $_id = mongo_id();  // input_fields._id
-        
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['field_id'];
+            return $detail['_id'];
+        }
+        $_id = mongo_id();  // input_fields._id        
         $values = array(
             '_id' => $_id,
             'sort' => self::max(array('field' => 'sort')) + 1,
+            'type' => $param['type'],
             'website_id' => $param['website_id'],
-        );
-        if (isset($param['type'])) {
-            $values['type'] = $param['type'];
-        }
+        );        
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'field_id' => $id,
@@ -158,9 +163,22 @@ class InputFields extends AbstractModel {
             } 
             if (isset($param['content'])) {
                 $localeValues['content'] = $param['content'];
+            }           
+            self::insert($localeValues, 'input_field_locales');
+            if (!empty($param['input_options']) && is_array($param['input_options'])) {
+                $optionModel = new InputOptions;
+                foreach ($param['input_options'] as $option) {
+                    if (!empty($option['name'])) {                        
+                        $optionModel->add(
+                            array(
+                                'website_id' => $param['website_id'],
+                                'field_id' => $id,
+                                'name' => $option['name'],
+                            )
+                        );
+                    }
+                }
             }
-            self::$tableName = 'input_field_locales';
-            self::insert($localeValues);
             return $_id;
         }        
         return false;
@@ -272,10 +290,15 @@ class InputFields extends AbstractModel {
                     'short',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
-            ->where("_id = ". self::quote($param['_id']));    
+            );    
         if (!empty($param['website_id'])) {            
             $select->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));  
+        }        
+        if (!empty($param['_id'])) {
+            $select->where(static::$tableName . "._id = ". self::quote($param['_id'])); 
+        }
+        if (!empty($param['name'])) {
+            $select->where("input_field_locales.name = ". self::quote($param['name'])); 
         }
         $row = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 

@@ -195,8 +195,13 @@ class Brands extends AbstractModel {
             if (isset($param['about'])) {
                 $localeValues['about'] = $param['about'];
             }
-            self::$tableName = 'brand_locales';
-            self::insert($localeValues);
+            if (isset($param['meta_keyword'])) {
+                $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
+            }        
+            if (isset($param['meta_description'])) {
+                $localeValues['meta_description'] = $param['meta_description'];
+            }
+            self::insert($localeValues, 'brand_locales');
             if (empty(self::error()) && !empty($param['image_id'])) {
                 $image = new Images();
                 $image->updateInfo(array(
@@ -324,7 +329,7 @@ class Brands extends AbstractModel {
             $values['about'] = $param['about'];
         }
         if (isset($param['meta_keyword'])) {
-            $values['meta_keyword'] = $param['meta_keyword'];
+            $values['meta_keyword'] = mb_strtolower($param['meta_keyword']);
         }
         if (isset($param['meta_description'])) {
             $values['meta_description'] = $param['meta_description'];

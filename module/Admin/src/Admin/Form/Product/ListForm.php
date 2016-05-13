@@ -82,25 +82,15 @@ class ListForm extends AbstractForm
                         showMessage(\"" . $this->translate('Added to cart') . "\");
                     "                   
                 ),                             
-            ),
-            /*
+            ),           
             array(            
-                'name' => 'product_id',
-                'type' => 'link',
+                'name' => 'product_id',                
                 'title' => 'ID', 
                 'innerHtml' => '{product_id}', 
                 'attributes' => array(
-                    'href' => $this->getController()->url()->fromRoute(
-                        'admin/products', 
-                        array(
-                            'action' => 'detail', 
-                            'id' => '{_id}'
-                        )
-                    )
+                    
                 )
-            ),
-            * 
-            */
+            ),           
             array(            
                 'name' => 'url_image',
                 'type' => 'image',

@@ -28,7 +28,7 @@ class Module
      * @return void
      */
     public function onBootstrap(MvcEvent $e)
-    { 
+    {
         $translator = $e->getApplication()->getServiceManager()->get('translator');         
         $translator->setLocale('vi_VN');
         AbstractValidator::setDefaultTranslator($translator);
@@ -71,7 +71,7 @@ class Module
         if (Util::isMobile() && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php')) {
             $mobileConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php';
             $config = array_replace_recursive($config, $mobileConfig);
-        }        
+        }  
         if (!empty($name)) {
             return Arr::get($config, $name, $default);
         }
@@ -108,7 +108,7 @@ class Module
      * @return void
      */
     public function onDispatch($e)
-    {      
+    {
         $sm = $e->getApplication()->getServiceManager();
         $matches = $e->getRouteMatch();
         $action = $matches->getParam('action');

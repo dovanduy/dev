@@ -92,8 +92,7 @@ class ProductCategoryHasFields extends AbstractModel {
         }
         if (is_array($param['category_id'])) {
             $param['category_id'] = implode(',', $param['category_id']);
-        }
-        static::$tableName = 'input_fields';
+        }        
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from('input_fields')  
@@ -132,7 +131,7 @@ class ProductCategoryHasFields extends AbstractModel {
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
             ->where('input_fields.active = 1')     
-            ->order('active DESC')
+            ->order('input_fields.active DESC')
             ->order('input_fields.sort');
         $rows = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 

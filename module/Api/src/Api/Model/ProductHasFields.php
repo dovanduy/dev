@@ -43,7 +43,7 @@ class ProductHasFields extends AbstractModel {
                 $values[] = array(
                     'field_id' => $fieldId,
                     'product_id' => $param['product_id'],
-                    'value_id' => is_array($value) ? implode(',', $value) : $value,
+                    'value_id' => '[' . (is_array($value) ? implode('],[', $value) : $value) . ']',
                     'value' => '',
                 );
             } else {
@@ -53,7 +53,7 @@ class ProductHasFields extends AbstractModel {
                     'value_id' => 0,
                     'value' => $value,
                 );
-            }            
+            }           
         }
         if (self::batchInsert(
                 $values, 
@@ -126,10 +126,19 @@ class ProductHasFields extends AbstractModel {
             }
             $select->where(static::$tableName . '.field_id IN ('. $param['field_id'] . ')');  
         }
-        return self::response(
+        $data = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
         );
+        if (!empty($data)) {
+            foreach ($data as &$row) {
+                if (!empty($row['value_id'])) {
+                    $row['value_id'] = str_replace(array('[', ']'), '', $row['value_id']);
+                }
+            }
+            unset($row);
+        }
+        return $data;
     } 
     
 }

@@ -109,7 +109,7 @@ return array(
         'template_map' => array(
             'application/layout' => __DIR__ . '/../view/layout/layout.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
-            'error/index' => __DIR__ . '/../view/error/index1.phtml',
+            'error/index' => __DIR__ . '/../view/error/index.phtml',
             'htmlForm' => __DIR__ . '/../view/partial/htmlForm.phtml',
             'htmlListForm' => __DIR__ . '/../view/partial/htmlListForm.phtml',
             'email/layout' => __DIR__ . '/../view/layout/email.phtml',
@@ -135,7 +135,7 @@ return array(
     'upload' => array(
         'image' => array(
             'path' => './data/upload/img',
-            'url' => 'http://img.ken.dev',
+            'url' => 'http://img.balodoc.com',
             'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
             'extension' => array('jpeg', 'jpg', 'gif', 'png'),
             'filename_prefix' => 'balo_',

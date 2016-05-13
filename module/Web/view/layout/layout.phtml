@@ -45,7 +45,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
         </script>
     </head>    
     
-    <body class="wide" id="<?php echo "{$controller}_{$action}"?>">
+    <body class="wide<?php if (Application\Lib\Util::isMobile()) echo ' body-mobile'?>" id="<?php echo "{$controller}_{$action}"?>">
 	
 		<!-- scrollToTop -->
 		<!-- ================ -->		

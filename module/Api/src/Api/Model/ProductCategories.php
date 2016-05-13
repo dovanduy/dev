@@ -145,8 +145,16 @@ class ProductCategories extends AbstractModel {
         );        
     }    
     
-    public function add($param)
+    public function add($param, &$id = 0)
     {
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['category_id'];
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // product_categories._id
         if ($_FILES) {
             $uploadResult = Util::uploadImage();
@@ -180,15 +188,20 @@ class ProductCategories extends AbstractModel {
             );
             if (isset($param['name'])) {
                 $localeValues['name'] = $param['name'];
-            } 
+            }
             if (isset($param['short'])) {
                 $localeValues['short'] = $param['short'];
             } 
             if (isset($param['content'])) {
                 $localeValues['content'] = $param['content'];
-            }
-            self::$tableName = 'product_category_locales';
-            self::insert($localeValues);
+            }        
+            if (isset($param['meta_keyword'])) {
+                $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
+            }        
+            if (isset($param['meta_description'])) {
+                $localeValues['meta_description'] = $param['meta_description'];
+            }        
+            self::insert($localeValues, 'product_category_locales');
             if (empty(self::error()) && !empty($param['image_id'])) {
                 $image = new Images();
                 $image->updateInfo(array(
@@ -307,7 +320,7 @@ class ProductCategories extends AbstractModel {
             $values['content'] = $param['content'];
         }
         if (isset($param['meta_keyword'])) {
-            $values['meta_keyword'] = $param['meta_keyword'];
+            $values['meta_keyword'] = mb_strtolower($param['meta_keyword']);
         }
         if (isset($param['meta_description'])) {
             $values['meta_description'] = $param['meta_description'];
@@ -339,6 +352,9 @@ class ProductCategories extends AbstractModel {
 
     public function getDetail($param)
     {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  
@@ -367,8 +383,16 @@ class ProductCategories extends AbstractModel {
                     'meta_description',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
-            ->where("_id = ". self::quote($param['_id']));                      
+            );
+        if (!empty($param['website_id'])) {
+            $select->where(static::$tableName . ".website_id = ". self::quote($param['website_id'])); 
+        }
+        if (!empty($param['_id'])) {
+            $select->where(static::$tableName . "._id = ". self::quote($param['_id'])); 
+        }
+        if (!empty($param['name'])) {
+            $select->where("product_category_locales.name = ". self::quote($param['name'])); 
+        }
         $row = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE

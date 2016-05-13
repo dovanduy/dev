@@ -259,7 +259,12 @@ class ProductsController extends AppController
             if (!empty($data['image_id'])) {
                 $data['url_image'] = Images::getUrl($data['image_id'], 'products', true);                
             }
-            
+            if (empty($data['meta_keyword'])) {
+                $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
+            }
+            if (empty($data['meta_description'])) {
+                $data['meta_description'] = 'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'];
+            }
             $this->setHead(array(
                 'title' => $data['name'],
                 'meta_name' => array(
@@ -274,7 +279,7 @@ class ProductsController extends AppController
                     'og:image' => !empty($data['url_image']) ? $data['url_image'] : '',
                     'og:price:amount' => !empty($data['price']) ? money_format($data['price']) : '0',
                     'og:price:currency' => 'VND',
-                ),
+                ),                
             ));
 
             $reviewList = Api::call('url_products_reviews_all', array('product_id' => $data['product_id']));
