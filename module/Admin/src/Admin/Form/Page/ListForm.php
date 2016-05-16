@@ -71,6 +71,13 @@ class ListForm extends AbstractForm
                 ),
             ),                 
             array(
+                'name' => 'url',
+                'title' => 'Url',               
+                'attributes' => array(
+                  
+                ),
+            ),                 
+            array(
                 'name' => 'sort',
                 'type' => 'text',
                 'title' => 'Sort',

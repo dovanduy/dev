@@ -350,6 +350,20 @@ return array (
                     ),
                 ),
                 
+                'productcolors' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/productcolors[/:action][/:id]',
+                        'constraints' => array(
+                            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        ),
+                        'defaults' => array(
+                            'controller' => 'productcolors',
+                            'action' => 'index',
+                        ),
+                    ),
+                ),
+                
                 'systems' => array(
                     'type'    => 'Segment',
                     'options' => array(

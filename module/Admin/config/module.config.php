@@ -36,6 +36,7 @@ return array(
             'Admin\Controller\Newscategories' => 'Admin\Controller\NewscategoriesController',
             'Admin\Controller\Productcategories' => 'Admin\Controller\ProductcategoriesController',
             'Admin\Controller\Productsizes' => 'Admin\Controller\ProductsizesController',
+            'Admin\Controller\Productcolors' => 'Admin\Controller\ProductcolorsController',
             'Admin\Controller\Websitecategories' => 'Admin\Controller\WebsitecategoriesController',
             'Admin\Controller\Users' => 'Admin\Controller\UsersController',
             'Admin\Controller\News' => 'Admin\Controller\NewsController',

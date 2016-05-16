@@ -42,10 +42,10 @@ if (empty($data['shipping'])) {
 
                     <b><?php echo $this->translate('Shipping date') ?>:</b> 
                     <span class="invoice-date shipping-date"><?php echo !empty($data['shipping_date']) ? datetime_format($data['shipping_date']) : '-'; ?></span><br>
-
+                                        
                     <b><?php echo $this->translate('Payment date') ?>:</b> 
                     <span class="invoice-date payment-date"><?php echo !empty($data['payment_date']) ? datetime_format($data['payment_date']) : '-'; ?></span><br>
-
+                    
                     <b><?php echo $this->translate('Done date') ?>:</b> 
                     <span class="invoice-date done-date"><?php echo !empty($data['done_date']) ? datetime_format($data['done_date']) : '-'; ?></span><br>                    
                 </div>
@@ -57,8 +57,7 @@ if (empty($data['shipping'])) {
 
                 <b><?php echo $this->translate('Status') ?>:</b>             
                 <span <?php if ($data['status'] == 'new') echo 'style="display:inline"' ?> class="btn btn-flat order-status new"><?php echo $this->translate('Processing'); ?></span>
-                <span <?php if ($data['status'] == 'shipping') echo 'style="display:inline"' ?>class="btn btn-flat order-status shipping"><?php echo $this->translate('Shipping'); ?></span>
-                <span <?php if ($data['status'] == 'paid') echo 'style="display:inline"' ?>class="btn btn-flat order-status paid"><?php echo $this->translate('Paid'); ?></span>
+                <span <?php if ($data['status'] == 'shipping') echo 'style="display:inline"' ?>class="btn btn-flat order-status shipping"><?php echo $this->translate('Shipping'); ?></span>               
                 <span <?php if ($data['status'] == 'cancel') echo 'style="display:inline"' ?>class="btn btn-flat order-status cancel"><?php echo $this->translate('Cancel'); ?></span>
                 <span <?php if ($data['status'] == 'done') echo 'style="display:inline"' ?>class="btn btn-flat order-status done"><?php echo $this->translate('Done'); ?></span>
                 <br>
@@ -163,7 +162,7 @@ if (empty($data['shipping'])) {
                     class="btn btn-default pull-right">
                     <i class="fa fa-edit"></i> <?php echo $this->translate('Edit') ?>
                 </a> 
-                <?php if ($data['status'] != 'paid' && $data['status'] != 'cancel'): ?>
+                <?php if ($data['status'] != 'done' && $data['status'] != 'cancel'): ?>
                 <a href='#'                             
                    data-url="<?php echo $this->url(
                              'admin/productorders', 
@@ -197,7 +196,7 @@ if (empty($data['shipping'])) {
                 </a>  
                 <?php endif ?>  
 
-                <?php if ($data['status'] != 'paid' && $data['status'] != 'cancel'): ?>
+                <?php if (empty($data['is_paid'])): ?>
                 <a href='#'                             
                    data-url="<?php echo $this->url(
                             'admin/productorders', 
@@ -207,21 +206,10 @@ if (empty($data['shipping'])) {
                             ))
                     ?>"
                     data-confirmmessage='<?php echo $this->translate('Are you sure?') ?>'
-                    data-callback="
-                        if ($('#btn-submit-shipping').length > 0) {
-                            $('#btn-submit-shipping').remove();
-                        }
+                    data-callback="                        
                         if ($('#btn-submit-payment').length > 0) {
                             $('#btn-submit-payment').remove();
-                        }
-                        if ($('#btn-submit-cancel').length > 0) {
-                            $('#btn-submit-cancel').remove();
-                        }
-                        $('.invoice-col .order-status').hide();
-                        $('.invoice-col .paid').show();
-                        if ($('.invoice-col .shipping-date').html() == '-') {
-                            $('.invoice-col .shipping-date').html(result.date);
-                        }
+                        } 
                         $('.invoice-col .payment-date').html(result.date);
                         showMessage('<?php echo $this->translate('Status updated successfully') ?>')
                     "
@@ -232,7 +220,7 @@ if (empty($data['shipping'])) {
                 </a> 
                 <?php endif ?>  
 
-                <?php if ($data['status'] == 'paid'): ?>
+                <?php if ($data['status'] == 'shipping'): ?>
                 <a href='#'                             
                    data-url="<?php echo $this->url(
                             'admin/productorders', 
@@ -245,10 +233,7 @@ if (empty($data['shipping'])) {
                     data-callback="
                         if ($('#btn-submit-shipping').length > 0) {
                             $('#btn-submit-shipping').remove();
-                        }
-                        if ($('#btn-submit-payment').length > 0) {
-                            $('#btn-submit-payment').remove();
-                        }
+                        }                        
                         if ($('#btn-submit-cancel').length > 0) {
                             $('#btn-submit-cancel').remove();
                         }
@@ -283,7 +268,7 @@ if (empty($data['shipping'])) {
                     data-callback="
                         if ($('#btn-submit-shipping').length > 0) {
                             $('#btn-submit-shipping').remove();
-                        }                    
+                        }                   
                         $('.invoice-col .order-status').hide();
                         $('.invoice-col .shipping').show();
                         $('.invoice-col .shipping-date').html(result.date);

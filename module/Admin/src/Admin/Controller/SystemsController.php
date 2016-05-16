@@ -43,6 +43,25 @@ class SystemsController extends AppController
         Cache::flush();
         $this->addSuccessMessage('Cached data delected successfully');
         return $this->redirect()->toRoute('admin');
-    }    
+    }   
+    
+    /**
+     * Refresh data
+     *
+     * @return Zend\View\Model
+     */
+    public function refreshAction()
+    {  
+        $ok = Api::call(
+            'url_websites_refresh', 
+            array()
+        );
+        if ($ok) {
+            $this->addSuccessMessage('Data refreshed successfully');
+        } else {
+            $this->addSuccessMessage('System error');
+        }
+        return $this->redirect()->toRoute('admin');
+    } 
     
 }

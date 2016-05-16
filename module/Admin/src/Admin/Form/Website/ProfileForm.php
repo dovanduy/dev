@@ -60,7 +60,19 @@ class ProfileForm extends AbstractForm
                     'allow_empty' => true, // custom
                 ),
                 'validators' => \Admin\Module::getValidatorConfig('general.image')
-            ), 
+            ),
+            array(
+                'name' => 'logo_text',
+                'attributes' => array(
+                    'id' => 'logo_text',
+                    'type' => 'text',
+                    'required' => false,
+                    'class' => 'form-control'
+                ),
+                'options' => array(
+                    'label' => 'Logo Text',
+                )
+            ),
             array(            
                 'name' => 'url',
                 'type' => 'Zend\Form\Element\Url',

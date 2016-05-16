@@ -40,7 +40,7 @@ class SearchForm extends AbstractForm
                 'type' => 'Application\Form\Element\Select2',
                 'name' => 'parent_id',
                 'options' => array(
-                    'label' => 'Parent category',
+                    'label' => 'Parent menu',
                     'value_options' =>
                         array('0' => '--Select one--') +
                         $menus
@@ -84,8 +84,9 @@ class SearchForm extends AbstractForm
                         '' => '--Select one--',                        
                         'name-asc' => 'Name ASC',
                         'name-desc' => 'Name DESC',
-                        'sort-asc' => 'Sequence ASC',
-                        'sort-desc' => 'Sequence DESC',
+                        'sort-asc' => 'Sort ASC',
+                        'sort-desc' => 'Sort DESC',
+                        'updated-desc' => 'Update Date DESC',
                     ),
                 ),
                 'attributes' => array(

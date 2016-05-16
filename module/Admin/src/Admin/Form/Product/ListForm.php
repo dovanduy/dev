@@ -86,7 +86,8 @@ class ListForm extends AbstractForm
             array(            
                 'name' => 'product_id',                
                 'title' => 'ID', 
-                'innerHtml' => '{product_id}', 
+                'innerHtml' => '{product_id}',
+                'sort' => true,
                 'attributes' => array(
                     
                 )
@@ -104,11 +105,7 @@ class ListForm extends AbstractForm
                 'name' => 'name',
                 'type' => 'html',
                 'title' => 'Product name',  
-                'innerHtml' => '
-                    <a href="/products/detail/{_id}">{name}</a>
-                    <br/>SKU: {code}                    
-                    <br/>Model: {model}                    
-                ',  
+                'innerHtml' => '<a href="/products/detail/{_id}">{name}</a><br/>' . $this->translate('SKU') . ': {code}',           
                 'sort' => true,                
             ),            
             array(

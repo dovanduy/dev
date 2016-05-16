@@ -418,5 +418,29 @@ return array(
             ),
         ), 
         
+        array(
+            'id' => 'admin_productcolors_index',
+            'label' => 'Product Color List',
+            'module' => 'admin',
+            'controller' => 'productcolors',
+            'action' => 'index',
+            'pages' => array(
+                array(
+                    'id' => 'admin_productcolors_add',
+                    'label' => 'Add Product Color',
+                    'module' => 'admin',
+                    'controller' => 'productcolors',
+                    'action' => 'add',
+                ),
+                array(
+                    'id' => 'admin_productcolors_update',
+                    'label' => 'Edit Product Color',
+                    'module' => 'admin',
+                    'controller' => 'productcolors',
+                    'action' => 'update',
+                ),
+            ),
+        ),
+        
     ),     
 );

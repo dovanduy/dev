@@ -45,7 +45,7 @@ class ListForm extends AbstractForm
                 'name' => 'addnew',
                 'attributes' => array(
                     'type' => 'button',
-                    'value' => 'Add new',
+                    'value' => $this->translate('Add Menu'),
                     'class' => 'btn btn-primary',
                     'onclick' => "location.href='" . 
                         $this->getController()->url()->fromRoute(
@@ -87,6 +87,14 @@ class ListForm extends AbstractForm
                 'attributes' => array(
                     'value' => '{title}',
                     'style' => 'width:100%'
+                ),
+            ),            
+            array(
+                'name' => 'url',
+                'title' => 'Url',
+                'sort' => true,
+                'attributes' => array(
+                    
                 ),
             ),            
             array(

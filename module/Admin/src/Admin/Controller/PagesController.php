@@ -184,7 +184,7 @@ class PagesController extends AppController
                 if ($request->isPost()) {
                     $post = (array) $request->getPost();          
                     $form->setData($post);
-                    if ($form->isValid()) {        
+                    if ($form->isValid()) {
                         Api::call('url_pages_update', $post);  
                         if (empty(Api::error())) {
                             Pages::removeCache($id);

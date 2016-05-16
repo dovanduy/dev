@@ -46,7 +46,7 @@ class ProductsController extends AppController
         $param = $this->getParams(array(
             'page' => 1,
             'limit' => \Application\Module::getConfig('general.default_limit'),
-            'sort' => 'sort-asc',            
+            'sort' => 'updated-desc',  
         ));
         
         $request = $this->getRequest();

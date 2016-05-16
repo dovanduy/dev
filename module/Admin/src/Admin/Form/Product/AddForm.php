@@ -6,6 +6,7 @@ use Application\Form\AbstractForm;
 use Application\Model\Brands;
 use Application\Model\ProductCategories;
 use Application\Model\ProductSizes;
+use Application\Model\ProductColors;
 
 /**
  * Category Add Form
@@ -37,6 +38,7 @@ class AddForm extends AbstractForm
         $branbs = Brands::getAll();
         $categories = ProductCategories::getForSelect($lastLevel);
         $sizes = ProductSizes::getAll(); 
+        $colors = ProductColors::getAll(); 
         return array(           
             array(
                 'type' => 'Application\Form\Element\Select2',
@@ -62,6 +64,19 @@ class AddForm extends AbstractForm
                 ),
                 'attributes' => array(
                     'id' => 'size_id',
+                    'class' => 'form-control',
+                    'multiple' => true
+                )
+            ),
+            array(
+                'type' => 'Application\Form\Element\Select2',
+                'name' => 'color_id',
+                'options' => array(
+                    'label' => 'Product Color List',
+                    'value_options' => $colors
+                ),
+                'attributes' => array(
+                    'id' => 'color_id',
                     'class' => 'form-control',
                     'multiple' => true
                 )

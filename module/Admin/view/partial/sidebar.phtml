@@ -84,6 +84,7 @@
                         array(
                             'productcategories', 
                             'productsizes', 
+                            'productcolors', 
                             'products', 
                             'brands', 
                             'inputfields'
@@ -94,6 +95,10 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
+                    <li<?php if ($controller == 'products' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Product List')?></a></li>
+                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product')?></a></li>
+                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='link') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'), array('query' => array('tab' => 'link')))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product From Link')?></a></li>
+                    <li class="divider"></li>
                     <li<?php if ($controller == 'brands' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/brands')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Brand List')?></a></li>
                     <li<?php if ($controller == 'brands' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/brands', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Brand')?></a></li>
                     <li class="divider"></li>
@@ -103,10 +108,9 @@
                     <li<?php if ($controller == 'productsizes' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productsizes')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Product Size List')?></a></li>
                     <li<?php if ($controller == 'productsizes' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productsizes', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product Size')?></a></li>
                     <li class="divider"></li>
-                    <li<?php if ($controller == 'products' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Product List')?></a></li>
-                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product')?></a></li>
-                    <li<?php if ($controller == 'products' && $action=='add' && $tab=='link') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/products', array('action' => 'add'), array('query' => array('tab' => 'link')))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product From Link')?></a></li>
-                    <li class="divider"></li>
+                    <li<?php if ($controller == 'productcolors' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productcolors')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Product Color List')?></a></li>
+                    <li<?php if ($controller == 'productcolors' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/productcolors', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Product Color')?></a></li>
+                    <li class="divider"></li>                    
                     <li<?php if ($controller == 'inputfields' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/inputfields')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Attribute List')?></a></li>
                     <li<?php if ($controller == 'inputfields' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/inputfields', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Attribute')?></a></li>
                     
@@ -180,6 +184,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li<?php if ($action=='deletecache') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/systems', array('action' => 'deletecache'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Delete cache')?></a></li>
+                    <li<?php if ($action=='refresh') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/systems', array('action' => 'refresh'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Refresh data')?></a></li>
                 </ul>
             </li>
             

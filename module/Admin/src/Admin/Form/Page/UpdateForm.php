@@ -37,7 +37,19 @@ class UpdateForm extends AbstractForm
                 'attributes' => array(
                     'type' => 'hidden',
                 ),
-            ),              
+            ),     
+             array(
+                'name' => 'url',
+                'attributes' => array(
+                    'id' => 'url',
+                    'type' => 'text',
+                    'readonly' => true,
+                    'class' => 'form-control'
+                ),
+                'options' => array(
+                    'label' => 'Url',
+                ),
+            ), 
         );
         $locales = \Application\Module::getConfig('general.locales');
         if (count($locales) == 1) { 

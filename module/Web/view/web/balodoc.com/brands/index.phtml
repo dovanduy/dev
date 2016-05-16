@@ -1,0 +1,172 @@
+<?php 
+    $request = $this->requestHelper();
+    $priceFrom = $request->getQuery('price_from', '');
+    $priceTo = $request->getQuery('price_to', '');
+    $categoryId = $request->getQuery('category_id', '');
+    $brandId = $request->getQuery('brand_id', '');
+?>		
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">        
+		<div class="row">
+            <div class="col-md-3">
+                <form>
+                <input type="hidden" name="category_id" value="<?php echo $request->getQuery('category_id') ?>"/>
+                <div class="sidebar"> 
+                    <?php if (!empty($filter['category'])): ?>
+                    <div class="block clearfix">
+                        <h3 class="title"><?php echo $this->translate('Products') ?></h3>
+                        <div class="separator-2"></div>
+                        <nav>
+                            <ul class="nav nav-pills nav-stacked">
+                                <?php foreach ($filter['category'] as $category) : ?>  
+                                <li><a href="<?php 
+                                    echo $this->url('web/brands', 
+                                    array(
+                                        'action' => 'index',
+                                        'url_id' => $brand['url_id']
+                                    ), 
+                                    array('query' => array( 
+                                        'category_id' => $category['category_id'],                                       
+                                    )))?>"><?php echo $category['category_name'] ?></a>
+                                </li>
+                                <?php endforeach ?>                                
+                            </ul>
+                        </nav>
+                    </div>
+                    <?php endif ?>
+                    
+                    <div class="block clearfix">
+                        <h3 class="title"><?php echo $this->translate('Price') ?></h3>
+                        <div class="separator-2"></div>
+                        <?php
+                            $slideValue = $filter['price']['min'] . ',' . $filter['price']['max'];
+                            if ($priceFrom !== '' && $priceTo !== '') {
+                                $slideValue = db_float($priceFrom) . ',' . db_float($priceTo);
+                            }
+                            echo $this->sliderHelper(
+                                'price-range', 
+                                'price_from', 
+                                'price_to',
+                                $filter['price']['min'],
+                                $filter['price']['max'],
+                                '50000',
+                                $slideValue
+                            );
+                        ?>                                                   
+                    </div>
+                </div>                    
+                </form>
+            </div>
+			<div class="col-md-9">
+                
+				<!-- pills start -->
+				<!-- ================ -->
+				<!-- Nav tabs -->
+                <!--
+				<ul class="nav nav-pills" role="tablist">
+					<li class="active"><a href="/index-shop.html#pill-1" role="tab" data-toggle="tab" title="Latest Arrivals"><i class="icon-star"></i> Latest Arrivals</a></li>
+					<li><a href="/index-shop.html#pill-2" role="tab" data-toggle="tab" title="Featured"><i class="icon-heart"></i> Featured</a></li>
+					<li><a href="/index-shop.html#pill-3" role="tab" data-toggle="tab" title="Top Sellers"><i class=" icon-up-1"></i> Top Sellers</a></li>
+				</ul>
+                -->
+				<!-- Tab panes -->
+				<div class="tab-content clear-style">
+					<div class="tab-pane active" id="pill-1">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 1082.02px;">
+                        <?php                         
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper();    
+                            $products = !empty($result['data']) ? $result['data'] : array();
+                            $limit = !empty($result['limit']) ? $result['limit'] : 10;
+                            $count = !empty($result['count']) ? $result['count'] : 0; 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    $product['url'] = $this->url(
+                                        'web/products', 
+                                        array(
+                                            'action' => 'detail',
+                                            'id' => $product['_id']
+                                        )
+                                    );
+                                    $product['url_add_to_cart'] = $this->url(
+                                        'web/carts', 
+                                        array(
+                                            'action' => 'additem',
+                                            'id' => $product['_id']
+                                        )
+                                    );     
+                                    $product['url_add_to_wishlist'] = '#';
+                                    $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
+                                    $product['price'] = money_format($product['price']);
+                                    $product['name'] = truncate($product['name'], 60);
+                                    $product['short'] = nl2br(truncate($product['short'], 80)); 
+                                    echo "
+                                        <div class=\"col-sm-6 col-lg-4 masonry-grid-item\">
+                                            <div class=\"listing-item white-bg bordered mb-20\">
+                                                <div class=\"overlay-container\">
+                                                    <img src=\"{$product['url_image']}\" alt=\"\">
+                                                    <a class=\"overlay-link popup-img-single\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
+                                                    <div class=\"overlay-to-top links\">
+                                                        <span class=\"small\">
+                                                            <a href=\"{$product['url_add_to_wishlist']}#\" class=\"btn-sm-link\"><i class=\"fa fa-heart-o pr-10\"></i>{$this->translate('Add to Wishlist')}</a>
+                                                            <a href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>View Details</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class=\"body\">
+                                                    <h3><a href=\"{$product['url']}\">{$product['name']}</a></h3>
+                                                    <p class=\"small\">{$product['short']}</p>
+                                                    <div class=\"elements-list clearfix\">
+                                                        <span class=\"price\">{$product['price']}</span>
+                                                        <a  href=\"#\" 
+                                                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
+                                                            data-url=\"{$product['url_add_to_cart']}\"
+                                                            data-callback=\"
+                                                                loadCart(1);                                    
+                                                                showMessage('{$this->translate('Added to cart')}')
+                                                            \">{$this->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
+                                                        </a>                                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ";                                                                                 
+                                }
+                            }
+                        ?>   
+						</div>
+					</div>
+                    <!-- pills end -->
+                    <!-- pagination start -->
+                    <nav class="text-center">
+                        <?php   
+                            if ($count > $limit) {
+                                echo $this->paginatorHelper(
+                                    $params, 
+                                    $count, 
+                                    $limit
+                                );
+                            }
+                        ?>
+                    </nav>
+                    <!-- pagination end -->
+					<div class="tab-pane" id="pill-2">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 0px;">
+							
+						</div>
+					</div>
+					<div class="tab-pane" id="pill-3">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 0px;">
+							
+						</div>
+					</div>
+				</div>
+				<!-- pills end -->
+			</div>
+		</div>
+	</div>
+</section>
+<!-- section end -->

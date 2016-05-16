@@ -6,6 +6,7 @@ use Application\Form\AbstractForm;
 use Application\Model\Brands;
 use Application\Model\ProductCategories;
 use Application\Model\ProductSizes;
+use Application\Model\ProductColors;
 
 /**
  * Category Update Form
@@ -36,7 +37,8 @@ class UpdateForm extends AbstractForm
     public function elements() {
         $branbs = Brands::getAll();
         $categories = ProductCategories::getForSelect($lastLevel);     
-        $sizes = ProductSizes::getAll();     
+        $sizes = ProductSizes::getAll();  
+        $colors = ProductColors::getAll();
         $elements = array(
             array(
                 'name' => '_id',
@@ -50,6 +52,7 @@ class UpdateForm extends AbstractForm
                     'type' => 'hidden',
                 ),
             ),
+            /*
             array(
                 'type' => 'Application\Form\Element\Select2',
                 'name' => 'type',
@@ -68,6 +71,8 @@ class UpdateForm extends AbstractForm
                     'allow_options' => array('latestarrival', 'featured', 'topseller'),
                 )
             ),
+            * 
+            */
             array(
                 'type' => 'Application\Form\Element\Select2',
                 'name' => 'category_id',
@@ -96,6 +101,19 @@ class UpdateForm extends AbstractForm
                 )
             ),
             array(
+                'type' => 'Application\Form\Element\Select2',
+                'name' => 'color_id',
+                'options' => array(
+                    'label' => 'Product Color List',
+                    'value_options' => $colors
+                ),
+                'attributes' => array(
+                    'id' => 'color_id',
+                    'class' => 'form-control',
+                    'multiple' => true
+                )
+            ),
+            array(
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'brand_id',
                 'options' => array(
@@ -118,6 +136,7 @@ class UpdateForm extends AbstractForm
                     'label' => 'SKU',
                 ),
             ),
+            /*
             array(            
                 'name' => 'model',
                 'attributes' => array(
@@ -129,6 +148,8 @@ class UpdateForm extends AbstractForm
                     'label' => 'Model',
                 ),
             ),
+             * 
+             */
             array(
                 'name' => 'url_image',
                 'attributes' => array(

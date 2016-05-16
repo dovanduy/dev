@@ -576,7 +576,8 @@ class ProductordersController extends AppController
             && $request->isXmlHttpRequest()) {
             $post = array(
                 '_id' => $id,
-                'is_paid' => '1',
+                'is_paid' => 1,
+                'send_email' => 1
             );
             Api::call('url_productorders_update', $post);  
             if (empty(Api::error())) {
