@@ -100,6 +100,7 @@ return array(
         'url_websites_addupdatelocale' => 'websites/addupdatelocale',
         'url_websites_updatesort' => 'websites/updatesort',
         'url_websites_onoff' => 'websites/onoff',
+        'url_websites_refresh' => 'websites/refresh',
         
         'url_admins_lists' => 'admins/lists',
         'url_admins_all' => 'admins/all',
@@ -151,6 +152,15 @@ return array(
         'url_productsizes_updatesort' => 'productsizes/updatesort',
         'url_productsizes_onoff' => 'productsizes/onoff',        
         
+		'url_productcolors_lists' => 'productcolors/lists',
+        'url_productcolors_all' => 'productcolors/all',
+        'url_productcolors_add' => 'productcolors/add',
+        'url_productcolors_update' => 'productcolors/update',
+        'url_productcolors_detail' => 'productcolors/detail',
+        'url_productcolors_addupdatelocale' => 'productcolors/addupdatelocale',
+        'url_productcolors_updatesort' => 'productcolors/updatesort',
+        'url_productcolors_onoff' => 'productcolors/onoff',    
+		
         'url_products_lists' => array('products/lists', 'get'),
         'url_products_all' => array('products/all', 'get'),
         'url_products_add' => 'products/add',

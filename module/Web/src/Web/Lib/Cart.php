@@ -65,9 +65,9 @@ class Cart {
         return false;
     }
     
-    public static function addProduct($id, $quantity = 1, $sizeId = 0) 
+    public static function addProduct($id, $quantity = 1, $sizeId = 0, $colorId = 0) 
     { 
-        $keyId = $id . '_' . $sizeId;
+        $keyId = $id . '_' . $sizeId . '_' . $colorId;
         $quantity = db_int($quantity);
         $items = static::get();
         if (isset($items[$keyId])) {
@@ -86,11 +86,19 @@ class Cart {
             }
             $price = $data['price'];
             $name = $customName = $data['name'];
-            if (!empty($sizeId)) {
+            
+            if (!empty($colorId) && !empty($data['colors'])) {
+                foreach ($data['colors'] as $color) {
+                    if ($color['color_id'] == $colorId) {                       
+                        $customName = $name . ' - ' . $color['name'];
+                    }
+                }
+            }
+            if (!empty($sizeId) && !empty($data['sizes'])) {
                 foreach ($data['sizes'] as $size) {
                     if ($size['size_id'] == $sizeId && !empty($size['price'])) {
                         $price = $size['price'];
-                        $customName = $name . ' (' . $size['name'] .')';
+                        $customName = $customName . ' (' . $size['name'] .')';
                     }
                 }
             }
@@ -102,6 +110,7 @@ class Cart {
                 '_id' => $data['_id'],
                 'product_id' => $data['product_id'],
                 'size_id' => $sizeId,
+                'color_id' => $colorId,
                 'name' => $name,                
                 'custom_name' => $customName,                
                 'quantity' => $quantity,

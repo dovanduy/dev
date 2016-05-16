@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ZendSkeletonApplication\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-28 10:08+0700\n"
-"PO-Revision-Date: 2016-05-13 07:59+0700\n"
+"PO-Revision-Date: 2016-05-16 16:23+0700\n"
 "Last-Translator: Do Nhu Vy <donhuvy@hotmail.com>\n"
 "Language-Team: ZF Contibutors <zf-devteam@zend.com>\n"
 "Language: vi_VN\n"
@@ -200,15 +200,6 @@ msgstr "Xoá"
 
 msgid "Artist"
 msgstr "Ca sĩ"
-
-msgid "Value is required and can't be empty"
-msgstr "Giá trị không thể rỗng"
-
-msgid "The input is less than {min} characters long"
-msgstr "Chiều dài dữ liệu nhỏ hơn {min} ký tự"
-
-msgid "The input is more than {max} characters long"
-msgstr "Chiều dài dữ liệu lớn hơn {max} ký tự"
 
 msgid "Success"
 msgstr "Thành công"
@@ -577,7 +568,7 @@ msgid "Password confirmation"
 msgstr "Nhập lại mật khẩu"
 
 msgid "Password confirmation does not match Password"
-msgstr "Xác nhận mật khẩu không đúng"
+msgstr "Nhập lại mật khẩu không trùng khới với mật khẩu"
 
 msgid "Account registed successfully"
 msgstr "Tài khoản đã đăng ký thành công"
@@ -589,7 +580,7 @@ msgid "Signup Account and Go next step"
 msgstr "Đăng ký tài khoản và đến bước kế tiếp"
 
 msgid "Signup Account"
-msgstr "Đăng ký tài khoản"
+msgstr "Đăng ký tài khoản mua hàng"
 
 msgid "Invoice"
 msgstr "Đơn hàng"
@@ -1085,3 +1076,90 @@ msgstr ""
 
 msgid "Product not found"
 msgstr "Không tìm thấy sản phẩm"
+
+msgid "ID ASC"
+msgstr "ID 0-9"
+
+msgid "ID DESC"
+msgstr "ID 9-0"
+
+msgid "Name ASC"
+msgstr "Tên A-Z"
+
+msgid "Name DESC"
+msgstr "Tên Z-A"
+
+msgid "SKU ASC"
+msgstr "Mã hàng A-Z"
+
+msgid "SKU DESC"
+msgstr "Mã hàng Z-A"
+
+msgid "Sort ASC"
+msgstr "Sắp xếp 0-9"
+
+msgid "Sort DESC"
+msgstr "Sắp xếp 9-0"
+
+msgid "Update Date DESC"
+msgstr "Mới cập nhật"
+
+msgid "SKU"
+msgstr "Mã hàng"
+
+msgid "Value is required and can't be empty"
+msgstr "Thông tin yêu cầu nhập"
+
+msgid "The input is less than {min} characters long"
+msgstr "Thông tin phải ít nhất {min} ký tự"
+
+msgid "The input is more than {max} characters long"
+msgstr "Thông tin phải ít hơn {max} ký tự"
+
+msgid "The email is duplicate data"
+msgstr "Email này được sử dụng đăng ký tài khoản"
+
+msgid "The password is less than 4 characters long"
+msgstr "Mật khẩu phải ít nhất 4 ký tự"
+
+msgid "The password is more than 256 characters long"
+msgstr "Mật khẩu phải ít hơn 256 ký tự"
+
+msgid "The mobile is less than 10 characters long"
+msgstr "Số di động phải ít nhất 10 ký tự"
+
+msgid "The mobile is more than 256 characters long"
+msgstr "Số di động phải ít hơn 256 ký tự"
+
+msgid "Color code"
+msgstr "Mã màu"
+
+msgid "Color name"
+msgstr "Tên màu"
+
+msgid "Product Color List"
+msgstr "Danh sách màu sản phẩm"
+
+msgid "Add Product Color"
+msgstr "Thêm màu sản phẩm"
+
+msgid "Edit Product Color"
+msgstr "Sửa màu sản phẩm"
+
+msgid "Color"
+msgstr "Màu sắc"
+
+msgid "Size"
+msgstr "Kích thước"
+
+msgid "Add Menu"
+msgstr "Thêm Menu"
+
+msgid "Parent menu"
+msgstr "Menu cha"
+
+msgid "Content is updating"
+msgstr "Nội dung đang được cập nhật"
+
+msgid "Catalog"
+msgstr "Danh mục"

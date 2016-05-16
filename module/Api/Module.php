@@ -132,15 +132,21 @@ class Module {
                 'BlockProducts' => function ($sm) {
                     return new Model\BlockProducts($sm->get('db'), $sm);
                 },
+                'ProductHasFields' => function ($sm) {
+                    return new Model\ProductHasFields($sm->get('db'), $sm);
+                },
                 'ProductSizes' => function ($sm) {
                     return new Model\ProductSizes($sm->get('db'), $sm);
                 },
                 'ProductHasSizes' => function ($sm) {
                     return new Model\ProductHasSizes($sm->get('db'), $sm);
                 },
-                'ProductHasFields' => function ($sm) {
-                    return new Model\ProductHasFields($sm->get('db'), $sm);
+                'ProductColors' => function ($sm) {
+                    return new Model\ProductColors($sm->get('db'), $sm);
                 },
+                'ProductHasColors' => function ($sm) {
+                    return new Model\ProductColors($sm->get('db'), $sm);
+                },                
             ),
         );
     }

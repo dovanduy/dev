@@ -24,10 +24,17 @@
                                     <ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
                                     <?php foreach ($menu['sub'] as $subMenu) : ?>  
                                         <li>
+                                            <?php if (!empty($subMenu['url'])): ?>
                                             <a itemprop="url" href="<?php echo !empty($subMenu['url']) ? $subMenu['url'] : '#'?>">
                                                 <i class="fa fa-chevron-circle-right"></i> 
                                                 <span itemprop="name"><?php echo $subMenu['name']?></span>
-                                            </a>
+                                            </a>                                                
+                                            <?php else: ?>
+                                            <div>
+                                                <i class="fa fa-chevron-circle-right"></i> 
+                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
+                                            </div>
+                                            <?php endif ?>
                                         </li>
                                     <?php endforeach ?>                                         
                                     </ul>

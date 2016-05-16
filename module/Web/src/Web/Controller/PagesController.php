@@ -31,11 +31,10 @@ class PagesController extends AppController
     public function indexAction()
     {  
         $urlName = $this->params()->fromRoute('name', '');
-        $detailUrl = UrlIds::getDetail($urlName);        
-        if (empty($detailUrl)) {
+        UrlIds::getDetail($urlName, $categoryId, $brandId, $productId, $optionId, $id);        
+        if (empty($id)) {
             return $this->notFoundAction();
-        }        
-        $id = $detailUrl['page_id'];
+        }
         $pageDetail = Pages::getDetail($id);
         if (empty($pageDetail)) {
             return $this->notFoundAction();

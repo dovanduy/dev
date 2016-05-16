@@ -69,19 +69,19 @@ class Menus extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(name|sort)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(updated|name|sort)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
                         $select->order("menu_locales.{$match[1]} " . $match[2]);
                         break;
-                    case 'sort':
+                    default:
                         $select->order(static::$tableName . '.' . $match[1] . ' ' . $match[2]);
                         break;
                 }                
             }            
         } else {
-            $select->order(static::$tableName . '.sort ASC');
+            $select->order(static::$tableName . '.updated DESC');
         }         
         $selectString = $sql->getSqlStringForSqlObject($select);
         return array(

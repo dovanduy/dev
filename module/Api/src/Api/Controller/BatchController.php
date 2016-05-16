@@ -234,7 +234,9 @@ class BatchController extends AppController {
         return $attrs;
     }
     
-    // php index.php import products --verbose nguonhangtot 1
+    // php index.php import products --verbose nguonhangtot 3
+    // php index.php import products --verbose nguonhangtot 4
+    // php index.php import products --verbose nguonhangtot 7
     public function nguonhangtot($category = 0) {        
         include_once getcwd() . '/include/simple_html_dom.php';
         $domain = 'http://nguonhangtot.com';
@@ -285,7 +287,7 @@ class BatchController extends AppController {
                 'max_images' => 2
             ),
             array(               
-                'disable' => 1,
+                'disable' => 0,
                 'category_id' => 5,
                 'warranty' => '',
                 'made_in' => 'VN',

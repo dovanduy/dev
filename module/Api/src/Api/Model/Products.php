@@ -261,27 +261,43 @@ class Products extends AbstractModel {
             ->join(
                 'product_has_categories', 
                 static::$tableName . '.product_id = product_has_categories.product_id',
-                array('category_id'),
+                array(
+                    'category_id'
+                ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
             ->join(               
                 array(
                     'product_category_locales' => 
                     $sql->select()
+                        ->columns(array(
+                            'category_id',
+                            'category_name' => new Expression('GROUP_CONCAT(product_category_locales.name SEPARATOR  \',\')')
+                        ))
                         ->from('product_category_locales')                        
                         ->where("locale = ". self::quote($param['locale']))
-                ),                    
+                        ->group('category_id')
+                ),                 
                 'product_category_locales.category_id = product_has_categories.category_id',
                 array(
-                    'category_name' => new Expression('GROUP_CONCAT(product_category_locales.name SEPARATOR  \', \')')
+                    'category_name'
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )  
-            ->join(               
-                'product_has_sizes',                    
+            )             
+            ->join(  
+                array(
+                    'product_has_sizes' => 
+                    $sql->select()
+                        ->columns(array(
+                            'product_id',
+                            'size_id' => new Expression('GROUP_CONCAT(product_has_sizes.size_id SEPARATOR  \',\')')
+                        ))
+                        ->from('product_has_sizes')                        
+                        ->group('product_id')
+                ),             
                 static::$tableName . '.product_id = product_has_sizes.product_id',
                 array(
-                    'size_id' => new Expression('GROUP_CONCAT(product_has_sizes.size_id SEPARATOR  \',\')')
+                    'size_id'
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
@@ -314,16 +330,14 @@ class Products extends AbstractModel {
                 array('url_image'),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
+            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']))
             ->where("product_locales.locale = ". self::quote($param['locale']));        
         if (isset($param['active']) && $param['active'] !== '') {            
             $select->where(static::$tableName . '.active = '. self::quote($param['active']));  
-        }
-        if (!empty($param['website_id'])) {            
-            $select->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));  
-        }
+        }        
         if (!empty($param['brand_id'])) {            
             $select->where(static::$tableName . '.brand_id = '. self::quote($param['brand_id']));  
-        }       
+        }      
         if (!empty($param['option_id'])) {   
             if (is_array($param['option_id'])) {
                 $param['option_id'] = implode(',', $param['option_id']);
@@ -338,54 +352,22 @@ class Products extends AbstractModel {
             $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
             $select->where('product_has_fields.active = 1');
         }
-        if (isset($param['block_id'])
-            || isset($param['get_featured']) 
-            || isset($param['get_latest_arrival']) 
-            || isset($param['get_top_seller'])) {
-            if (isset($param['block_id'])) {    
-                if (is_array($param['block_id'])) {
-                    $param['block_id'] = implode(',', $param['block_id']);
-                }
-                $select->join(
-                    'block_products', 
-                    static::$tableName . '.product_id = block_products.product_id',
-                    array(
-                        'block_id', 
-                        'sort', 
-                        'active'
-                    )
-                );
-                $select->where(new Expression("block_products.block_id IN ({$param['block_id']})"));
-                $select->where('block_products.active = 1');
-                $sortTable = 'block_products';
+        if (isset($param['block_id'])) {    
+            if (is_array($param['block_id'])) {
+                $param['block_id'] = implode(',', $param['block_id']);
             }
-            if (isset($param['get_featured'])) {
-                $select->join(
-                   'product_featureds', 
-                   static::$tableName . '.product_id = product_featureds.product_id',
-                   array('sort', 'active')
-                );
-                $select->where('product_featureds.active = 1');
-                $sortTable = 'product_featureds';
-           }
-           if (isset($param['get_latest_arrival'])) {
-                $select->join(
-                   'product_latest_arrivals', 
-                    static::$tableName . '.product_id = product_latest_arrivals.product_id',
-                    array('sort', 'active')
-                );
-                $select->where('product_latest_arrivals.active = 1');
-                $sortTable = 'product_latest_arrivals';
-           }
-           if (isset($param['get_top_seller'])) {
-                $select->join(
-                   'product_top_sellers', 
-                   static::$tableName . '.product_id = product_top_sellers.product_id',
-                   array('sort', 'active')
-                );
-                $select->where('product_top_sellers.active = 1');
-                $sortTable = 'product_top_sellers';
-           }
+            $select->join(
+                'block_products', 
+                static::$tableName . '.product_id = block_products.product_id',
+                array(
+                    'block_id', 
+                    'sort', 
+                    'active'
+                )
+            );
+            $select->where(new Expression("block_products.block_id IN ({$param['block_id']})"));
+            $select->where('block_products.active = 1');
+            $sortTable = 'block_products';                       
         } else {
             $columns[] = 'active';
             $columns[] = 'sort';
@@ -403,12 +385,19 @@ class Products extends AbstractModel {
             $select->where(new Expression(static::$tableName . ".price <= {$param['price_to']}"));
         }
         if (!empty($param['category_id'])) {
+            if (is_numeric($param['category_id'])) {
+                $categoryModel = new ProductCategories;
+                $categories = $categoryModel->getAll(array(
+                    'website_id' => $param['website_id'],
+                    'locale' => $param['locale'],
+                    'parent_id' => $param['category_id'],
+                ));
+                if (!empty($categories)) {
+                    $param['category_id'] = implode(',', Arr::field($categories, 'category_id'));
+                }
+            }
             $select->where(new Expression(
-                static::$tableName .  ".product_id IN (
-                    SELECT product_id 
-                    FROM product_has_categories 
-                    WHERE category_id IN ({$param['category_id']})
-                )"
+                "product_has_categories.category_id IN ({$param['category_id']})"
             ));
         }
         if (!empty($param['limit'])) {
@@ -418,7 +407,7 @@ class Products extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(name|price|sort|updated)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(product_id|name|price|sort|updated)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
@@ -426,20 +415,19 @@ class Products extends AbstractModel {
                         break;
                     case 'sort':  
                         if (isset($sortTable)) {
-                            $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);
-                            break;
-                        }                        
-                    case 'updated':
-                    case 'price':
+                            $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);                           
+                        }     
+                        break;
+                    default:
                         $select->order(static::$tableName . '.' . $match[1] . ' ' . $match[2]);
                         break;
                 }                
             }            
         } else {
-            $select->order(static::$tableName . '.sort ASC');
+            $select->order(static::$tableName . '.updated DESC');
         } 
-        $select->group('product_id');
-        $selectString = $sql->getSqlStringForSqlObject($select);
+        $select->group('product_id');        
+        $selectString = $sql->getSqlStringForSqlObject($select);        
         return array(
             'count' => static::count($selectString),
             'limit' => $param['limit'],
@@ -485,18 +473,30 @@ class Products extends AbstractModel {
                 array('url_image'),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
-            ->where(static::$tableName . '.active = 1');     
-        if (!empty($param['website_id'])) {            
-            $select->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));  
-        }
+            ->where(static::$tableName . '.active = 1')
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));     
         if (!empty($param['category_id'])) {
-            $select->where(new Expression(
-                static::$tableName .  ".product_id IN (
-                    SELECT product_id 
-                    FROM product_has_categories 
-                    WHERE category_id IN ({$param['category_id']})
-                )"
-            ));
+            if (is_numeric($param['category_id'])) {
+                $categoryModel = new ProductCategories;
+                $categories = $categoryModel->getAll(array(
+                    'website_id' => $param['website_id'],
+                    'locale' => $param['locale'],
+                    'parent_id' => $param['category_id'],
+                ));
+                if (!empty($categories)) {
+                    $param['category_id'] = implode(',', Arr::field($categories, 'category_id'));
+                }
+            }
+            $select->join(
+                    'product_has_categories', 
+                    static::$tableName . '.product_id = product_has_categories.product_id',
+                    array(
+                        'category_id'
+                    )    
+                )
+                ->where(new Expression(
+                    "product_has_categories.category_id IN ({$param['category_id']})"
+                ));            
         }
         if (!empty($param['not_in_product_id'])) {
             $select->where(new Expression(
@@ -706,7 +706,18 @@ class Products extends AbstractModel {
                         'size_id' => $param['size_id']
                     )
                 );
-            }                               
+            }   
+            
+            if (isset($param['color_id'])) {
+                $productHasColorsModel = new ProductHasColors();
+                $productHasColorsModel->addUpdate(
+                    array(
+                        'product_id' => $id,
+                        'color_id' => $param['color_id']
+                    )
+                );
+            }    
+            
             return $_id;
         }        
         return false;
@@ -760,7 +771,7 @@ class Products extends AbstractModel {
         }  
         if (isset($param['size'])) {
             $set['size'] = $param['size'];
-        }
+        }        
         if (isset($param['brand_id'])) {
             $set['brand_id'] = $param['brand_id'];
         }
@@ -826,6 +837,13 @@ class Products extends AbstractModel {
                 array(
                     'product_id' => $self['product_id'],
                     'size_id' => $param['size_id']
+                )
+            );
+            $productHasColorModel = new ProductHasColors();
+            $productHasColorModel->addUpdate(
+                array(
+                    'product_id' => $self['product_id'],
+                    'color_id' => $param['color_id']
                 )
             );
             return true;
@@ -971,6 +989,15 @@ class Products extends AbstractModel {
                 'size_id'
             ); 
             
+            $productHasColorsModel = new ProductHasColors();
+            $result['colors'] = $productHasColorsModel->getAll(array(
+                'product_id' => $result['product_id']
+            ));
+            $result['color_id'] = Arr::field(
+                $result['colors'],
+                'color_id'
+            );
+            
             $productCategoryHasFields = new ProductCategoryHasFields();
             $result['attributes'] = $productCategoryHasFields->getAll(array(
                 'category_id' => $result['category_id'],
@@ -1017,6 +1044,14 @@ class Products extends AbstractModel {
                 $result['url_id'] = $param;
             } else {
                 $result['url_id'] = $detailUrlId; 
+            }
+            
+            if (isset($param['get_product_reviews'])) {
+                $reviewModel = new ProductReviews;
+                $result['product_reviews'] = $reviewModel->getAll(array(
+                    'product_id' => $result['product_id'],
+                    'website_id' => $result['website_id']
+                ));
             }
         }
         return $result;
@@ -1083,7 +1118,7 @@ class Products extends AbstractModel {
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE
-        );        
+        ); 
         return $result;
     }
     
@@ -1263,6 +1298,65 @@ class Products extends AbstractModel {
         $product = new ProductLatestArrivals();
         $result = $product->updateSort($param);
         return $result;
+    }
+    
+    public function updateNoUrlId($param)
+    {        
+        $param['locale'] = \Application\Module::getConfig('general.default_locale');        
+        $sql = new Sql(self::getDb());        
+        $select = $sql->select()
+            ->from(static::$tableName)
+            ->columns(array(
+                'website_id',
+                'product_id',
+            ))
+            ->join(
+                'product_locales',
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(
+                    'name'                
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT 
+            )
+            ->join(
+                'url_ids',
+                static::$tableName . '.product_id = url_ids.product_id',
+                array(
+                    'url'                
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT 
+            )       
+            ->where(static::$tableName . ".website_id = ". $param['website_id'])
+            ->where("url_ids.website_id = ". $param['website_id'])
+            ->where("product_locales.locale = ". self::quote($param['locale']))
+            ->where(new Expression(
+                "(url_ids.url IS NULL OR url_ids.url = '')"
+            ));
+        $selectString = $sql->getSqlStringForSqlObject($select);
+        \Application\Lib\Log::info($selectString);
+        $data = self::response(
+            static::selectQuery($selectString), 
+            self::RETURN_TYPE_ALL
+        );
+        $result = array();
+        if (!empty($data)) {
+            $urlIds = new UrlIds();
+            foreach ($data as $row) {         
+                $url = name_2_url($row['name']);
+                $ok = $urlIds->addUpdateByProductId(array(
+                    'url' => $url,
+                    'product_id' => $row['product_id'],
+                    'website_id' => $row['website_id']
+                ));
+                if ($ok) {
+                    $result[] = array(
+                        'product_id' => $row['product_id'],
+                        'url' => $url,
+                    );
+                }
+            }         
+        }
+        return $result;        
     }
     
 }

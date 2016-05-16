@@ -37,7 +37,7 @@
                 <div class="footer-inner">
                     <div itemscope itemtype="http://schema.org/ItemList" class="row">
                         <?php foreach ($footerMenus as $menu) : ?>                        
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="footer-content">
                                 <h4 itemprop="name" class="title text-default"><?php echo $menu['name']?></h4>
                                 <nav class="mb-20">
@@ -45,10 +45,17 @@
                                     <ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
                                     <?php foreach ($menu['sub'] as $subMenu) : ?>  
                                         <li>
+                                            <?php if (!empty($subMenu['url'])): ?>
                                             <a itemprop="url" href="<?php echo !empty($subMenu['url']) ? $subMenu['url'] : '#'?>">
                                                 <i class="fa fa-chevron-circle-right"></i> 
                                                 <span itemprop="name"><?php echo $subMenu['name']?></span>
-                                            </a>
+                                            </a>                                                
+                                            <?php else: ?>
+                                            <div>
+                                                <i class="fa fa-chevron-circle-right"></i> 
+                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
+                                            </div>
+                                            <?php endif ?>
                                         </li>
                                     <?php endforeach ?>                                         
                                     </ul>

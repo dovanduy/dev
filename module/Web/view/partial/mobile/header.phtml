@@ -191,9 +191,16 @@ if (!empty($cartItems)) {
                                 <span class="icon-bar custom_icon_bar"></span>
                                 <span class="icon-bar custom_icon_bar"></span>
                             </button>
+                            
+                            <!-- logo -->                           
+                            <a itemprop="url" href="/">
                             <?php if (!empty($website['url_image'])): ?>
-							<a itemprop="url" href="/"><img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>"></a>
-                            <?php endif ?>                             
+                                <img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>">
+                            <?php else: ?>  
+                                <span class="logo-text"><?php echo $website['logo_text']; ?></span>
+                            <?php endif ?>  
+                            </a>
+                            
                             <div id="mCart" class="btn-group" onclick="location.href='/carts/view'">
                                 <button type="button" class="btn">
                                     <i class="icon-basket-1"></i><span class="cart-count default-bg"><?php echo $totalQuantity ?></span>

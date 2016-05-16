@@ -87,7 +87,11 @@ class ProductItemHelper extends AbstractHtmlElement
                 <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
                     <div class=\"overlay-container\">
                         <div class=\"image\">
-                            <img itemprop=\"image\" alt=\"{$product['name']}\" src=\"{$product['url_image']}\" alt=\"\">
+                            <img itemprop=\"image\" 
+                                class=\"lazy lazy-hidden\"                                 
+                                style=\"width:100%;height:100%;\"                                 
+                                alt=\"{$product['name']}\" 
+                                data-original=\"{$product['url_image']}\">
                         </div>
                         <a class=\"overlay-link popup-img-single\" alt=\"{$product['name']}\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
                         <div class=\"overlay-to-top links\">

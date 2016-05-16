@@ -123,9 +123,9 @@ function domain() {
         return null;
     }
     $domain = 'localhost';
-    preg_match("/^([a-zA-Z0-9-.]+)(.com.vn|.vn|.com|.in|.co|.info|.name|.dev)$/", $_SERVER['SERVER_NAME'], $match);
-    if (!empty($match[1])) {
-        return $match[1];
+    preg_match("/^([a-zA-Z0-9-.]+)(.com.vn|.vn|.com|.in|.co|.info|.name|.dev)$/", $_SERVER['SERVER_NAME'], $match);   
+    if (!empty($match[0])) {
+        return $match[0];
     }
     return $domain;
 }
@@ -463,10 +463,10 @@ function app_file_get_contents($url, $retry = true) {
 }
 
 function app_file_put_contents($targetFileName, $content) {
-    $retry = 9;
+    $retry = 99;
     do {
         $ok = @file_put_contents($targetFileName, $content);        
-        echo $targetFileName . ' Retying' . PHP_EOL;
+        echo $targetFileName . ' Retrying' . PHP_EOL;
         $retry--;
         sleep(3);
     } while ($ok === false && $retry > 0);

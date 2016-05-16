@@ -82,8 +82,8 @@ return array(
             </div>  
             <div class="guide">  
                 <div class="title">Hướng Dẫn Mua Hàng</div>
-                <p><span>1</span> Mua hàng trực tiếp tại website balodoc.com</p>
-                <p><span>2</span> Gọi điện thoại <strong style="color:#D4232B">098 65 60 943</strong> để mua hàng</p>           
+                <p><span>1</span> Đặt hàng trực tiếp tại website balodoc.com, xem <a target="_blank" href="http://balodoc.com/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></p>
+                <p><span>2</span> Gọi điện thoại <strong style="color:#D4232B">098 65 60 943</strong></p>           
                 <p><span>3</span> Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>
             </div>
         </div>

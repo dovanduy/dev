@@ -592,6 +592,9 @@ tfoot .total-money {
 .td_status_name .paid, .invoice-col .paid {
     background-color: #00a65a;
 }
+.td_status_name .done, .invoice-col .done {
+    background-color: #00a65a;
+}
 .modal .invoice {
     padding: 10px;
     margin: 0px 0px;
@@ -1192,6 +1195,7 @@ fieldset .form-control, fieldset .form-control:focus {
 #mCart .btn {
 	padding-left: 8px;
 	padding-right: 8px;
+	margin-top: 13px;
 }
 /*
 #cartForm .th-remove {
@@ -1327,12 +1331,7 @@ img {
 #detailForm .product {
 	float: left;
 }
-.body-mobile  #detailForm .product {
-	width: 100%;
-	margin-bottom: 10px;
-	float: left;
-	text-align: center;
-}
+
 
 .body-mobile .section-mobile-pv-30 {
 	padding-top: 0px;
@@ -1366,4 +1365,107 @@ img {
 }
 .body-mobile  #uhchat {
     right: 70px !important;
+}
+.body-mobile .section {
+    padding: 0px;
+}
+.custom_navbar_mobile {
+	margin: 0px !important;
+}
+.body-mobile #searchArea {
+	margin-top: 12px;
+}
+.body-mobile .panel-group {
+    margin-bottom: 10px;
+}
+#sidebar_products_index_form {
+	margin: 10px 0px;
+}
+#sidebar_products_index_form  .nav-pills.nav-stacked:not(.list-style-icons)>li>a:after, .process .nav-pills>li+li:after {
+	content: '';
+}
+.lazy-hidden {
+    background: #eee url('/web/images/lazyload.gif') no-repeat 50% 50%;
+}
+#logo a, a:hover, a:active, a:visited {
+	text-decoration: none;
+}
+
+#logo h2 {
+	font-size: 18px !important;
+	font-weight: bold;
+}
+.header-left {
+    padding: 8px 0px 8px 0px;
+}
+#searchArea {
+	top: 15px !important;
+}
+
+#commitment_and_guide {
+
+	
+}
+#commitment_and_guide p  {
+	float: left
+	width: 100%;
+}
+#commitment_and_guide p span {
+	float: left;
+    background: #000;
+    border: 1px solid #000;
+    margin-right: 5px;
+    display: block;
+    color: #fff;
+    text-shadow: 0 1px 1px #333;
+    -webkit-text-shadow: 0 1px 1px #333;
+    -ms-text-shadow: 0 1px 1px #333;
+    -o-text-shadow: 0 1px 1px #333;
+    -moz-text-shadow: 0 1px 1px #333;
+    width: 22px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    text-shadown: border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+#commitment_and_guide .guide {
+	float: left;
+	margin-top: 15px;		
+}
+#commitment_and_guide  .title{
+	float: left;
+	font-weight: bold;
+    background: #666;
+    color: #fff;
+    padding: 3px 0;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 13px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+.footer {
+    padding-top: 10px;
+    padding-bottom: 0px;
+}
+.nav-pills.nav-stacked.list-style-icons > li > div > i {
+    color: #cdcdcd;
+	padding-right: 10px;
+    font-size: 14px;
+}
+.nav-pills.nav-stacked.list-style-icons>li>div {
+    padding: 4px 0;
+	font-size: 13px;
+}
+.logo-text {
+	vertical-align: middle;
+    font-size: 28px;
+	font-weight: bold;
+    color: #555;    
 }

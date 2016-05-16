@@ -53,15 +53,15 @@ return array(
                     'min' => 4,
                     'max' => 50,
                     'messages' => array(
-                        \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
-                        \Zend\Validator\StringLength::TOO_LONG => 'The input is more than {max} characters long'
+                        \Zend\Validator\StringLength::TOO_SHORT => 'The password is less than {min} characters long',
+                        \Zend\Validator\StringLength::TOO_LONG => 'The password is more than {max} characters long'
                     )
                 ),
             )
         ),
         'password_confirmation' => array(
             array(
-                'name'    => 'Identical',
+                'name' => 'Identical',
                 'options' => array(
                     'token' => 'password',
                     'messages' => array(
@@ -137,65 +137,12 @@ return array(
                 'name' => 'StringLength',
                 'options' => array(
                     'min' => 10,
-                    'max' => 20,
+                    'max' => 256,
                     'messages' => array(
                         \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
                         \Zend\Validator\StringLength::TOO_LONG => 'The input is more than {max} characters long'
                     )
                 ),
-            )
-        ),
-    ),
-
-    'place_locales' => array(
-        'name' => array(
-            array(
-                'name' => 'StringLength',
-                'options' => array(
-                    'min' => 2,
-                    'max' => 150,
-                    'messages' => array(
-                        \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
-                        \Zend\Validator\StringLength::TOO_LONG => 'The input is more than {max} characters long'
-                    )
-                ),
-            )
-        ),
-        'tag' => array(
-            array(
-                'name' => 'StringLength',
-                'options' => array(
-                    'min' => 2,
-                    'max' => 100,
-                    'messages' => array(
-                        \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
-                        \Zend\Validator\StringLength::TOO_LONG => 'The input is more than {max} characters long'
-                    )
-                )
-            )
-        ),
-        'short' => array(
-            array(
-                'name' => 'StringLength',
-                'options' => array(
-                    'min' => 2,
-                    'max' => 512,
-                    'messages' => array(
-                        \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
-                        \Zend\Validator\StringLength::TOO_LONG => 'The input is more than {max} characters long'
-                    )
-                )
-            )
-        ),
-        'content' => array(
-            array(
-                'name' => 'StringLength',
-                'options' => array(
-                    'min' => 2,
-                    'messages' => array(
-                        \Zend\Validator\StringLength::TOO_SHORT => 'The input is less than {min} characters long',
-                    )
-                )
             )
         ),
     ),

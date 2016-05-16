@@ -188,9 +188,13 @@ if (!empty($cartItems)) {
 
 						<!-- logo -->
 						<div itemscope itemtype="http://schema.org/Organization" id="logo" class="logo mb-10">
+                            <a itemprop="url" href="/">
                             <?php if (!empty($website['url_image'])): ?>
-							<a itemprop="url" href="/"><img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>"></a>
-                            <?php endif ?>                             
+                                <img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>">
+                            <?php else: ?>  
+                                <h2><?php echo $website['logo_text']; ?></h2> 
+                            <?php endif ?>  
+                            </a>
                         </div>
 					</div>
 					<!-- header-left end -->

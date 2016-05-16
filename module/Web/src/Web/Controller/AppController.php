@@ -103,8 +103,12 @@ class AppController extends AbstractAppController {
         $resolver = $this->getServiceLocator()->get('Zend\View\Resolver\TemplatePathStack');    
         if (empty($templateName)) {
             $templateName = $action;
-        }
-        $domain = explode('.', $_SERVER['SERVER_NAME'])[0];     
+        }        
+        $domain = domain();        
+        if (Util::isMobile() && $resolver->resolve("{$module}/{$domain}/mobile/{$controller}/{$templateName}.phtml")) {
+            $view->setTemplate("{$module}/{$domain}/mobile/{$controller}/{$templateName}.phtml");           
+            return $view;
+        }        
         if ($resolver->resolve("{$module}/{$domain}/{$controller}/{$templateName}.phtml")) {
             $view->setTemplate("{$module}/{$domain}/{$controller}/{$templateName}.phtml");           
         } else {

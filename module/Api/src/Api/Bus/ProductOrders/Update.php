@@ -25,7 +25,9 @@ class Update extends AbstractBus {
             $model = $sm->get('ProductOrders');
             $this->_response = $model->updateInfo($param);
             if (empty($model->error()) && isset($param['send_email'])) { 
-                if (!empty($param['is_shipping']) || !empty($param['is_done'])) {
+                if (!empty($param['is_shipping']) 
+                    || !empty($param['is_paid'])
+                    || !empty($param['is_done'])) {
                     if (isset($param['get_detail'])) {
                         $order = $this->_response;
                     } else {
@@ -37,7 +39,10 @@ class Update extends AbstractBus {
                     if (!empty($order['user_email'])) {                  
                         $mail = $sm->get("Mail");        
                         $viewModel = new ViewModel(array('data' => $order));
-                        if (!empty($param['is_shipping'])) {
+                        if (!empty($param['is_paid'])) {
+                            $viewModel->setTemplate('email/order_paid');
+                            $mail->setSubject(sprintf('%s xác nhận đơn hàng %s của quý khách đã thanh toán thành công', $order['website_url'], $order['code']));
+                        } elseif (!empty($param['is_shipping'])) {
                             $viewModel->setTemplate('email/order_shipping');
                             $mail->setSubject(sprintf('%s đang giao đơn hàng %s', $order['website_url'], $order['code']));
                         } else {

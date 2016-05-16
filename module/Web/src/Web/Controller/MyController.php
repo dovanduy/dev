@@ -335,11 +335,11 @@ class MyController extends AppController
                 $orderList = Api::call('url_productorders_lists', $param);                
                 if (!empty($orderList)) {
                     foreach ($orderList['data'] as &$order) {
-                        $order['created'] = datetime_format($order['created']);
+                        $order['created'] = datetime_format($order['created']);                        
                         $order['total_money'] = money_format($order['total_money']);
                         switch ($order['status']) {
-                            case 'paid':
-                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status paid\">" . $this->translate('Paid') . "</span>" ;
+                            case 'done':
+                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status done\">" . $this->translate('Done') . "</span>" ;
                                 break;
                             case 'shipping':
                                 $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status shipping\">" . $this->translate('Shipping') . "</span>" ;

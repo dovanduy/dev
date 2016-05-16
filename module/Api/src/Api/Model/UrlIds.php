@@ -387,7 +387,10 @@ class UrlIds extends AbstractModel {
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE
-        );        
+        ); 
+        if (empty($result)) {
+            
+        }
         return $result;
     }  
     

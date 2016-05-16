@@ -16,6 +16,7 @@ class OrderHasProducts extends AbstractModel {
         'product_id',
         'product_name',
         'size_id',
+        'color_id',
         'quantity',
         'price',
         'active',
@@ -57,6 +58,7 @@ class OrderHasProducts extends AbstractModel {
             'product_id' => $param['product_id'],
             'order_id' => $param['order_id'],
             'size_id' => $param['size_id'],
+            'color_id' => $param['color_id'],
             'quantity' => $param['quantity'],
             'price' => $product['price'],
         );
@@ -90,6 +92,7 @@ class OrderHasProducts extends AbstractModel {
                 'product_id' => $productId,
                 'order_id' => $param['order_id'],
                 'size_id' => $param['size_id'],
+                'color_id' => $param['color_id'],
                 'quantity' => $value['quantity'],
                 'price' => $value['price'],
             );      
@@ -113,6 +116,7 @@ class OrderHasProducts extends AbstractModel {
                                     'product_id' => $product['product_id'],
                                     'order_id' => $param['order_id'],
                                     'size_id' => $param['size_id'],
+                                    'color_id' => $param['color_id'],
                                 ),
                             )
                         )) {
@@ -139,6 +143,7 @@ class OrderHasProducts extends AbstractModel {
                 'product_id', 
                 'product_name', 
                 'size_id', 
+                'color_id', 
                 'quantity', 
                 'price',
                 'active',
@@ -195,15 +200,15 @@ class OrderHasProducts extends AbstractModel {
         if (isset($param['products'])) {
             $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
             foreach ($products as $product) {
-                $value = array(
+                $values[] = array(
                     'order_id' => $param['order_id'],               
                     'product_id' => $product['product_id'],
                     'product_name' => !empty($product['custom_name']) ? $product['custom_name'] : $product['name'],
                     'size_id' => $product['size_id'],
+                    'color_id' => $product['color_id'],
                     'quantity' => $product['quantity'],                
                     'price' => $product['price'],                
                 );
-                $values[] = $value;
             }       
         } elseif (isset($param['quantity']) && isset($param['price'])) { 
             $param['quantity'] = \Zend\Json\Decoder::decode($param['quantity'], \Zend\Json\Json::TYPE_ARRAY);        
@@ -222,6 +227,7 @@ class OrderHasProducts extends AbstractModel {
                         'order_id' => $param['order_id'],               
                         'product_id' => $find['product_id'],                       
                         'size_id' => $find['size_id'],
+                        'color_id' => $find['color_id'],
                         'quantity' => $quantity,                                                        
                     );
                     if (isset($param['price'][$id])) {

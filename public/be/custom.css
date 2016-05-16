@@ -217,6 +217,7 @@
     display: inline-block;
     padding-right: 8px;
     margin-top: 8px;
+	padding-top: 7px;
 }
 .button-group {
     float: left;
@@ -569,6 +570,9 @@ tfoot .total-money {
     background-color: #ff851b;
 }
 .invoice-col .paid {
+    background-color: #00a65a;
+}
+.invoice-col .done {
     background-color: #00a65a;
 }
 .modal .invoice {

@@ -72,4 +72,12 @@ class WebsitesController extends AppController {
             $this->getParams()
         );
     }
+	
+	public function refreshAction()
+    {
+        return \Api\Bus\Websites\Refresh::getInstance()->execute(
+            $this->getServiceLocator(),
+            $this->getParams()
+        );
+    }
 }

@@ -7,7 +7,7 @@ use Application\Lib\Cache;
 
 class UrlIds {    
     
-    public static function getDetail($url, &$categoryId, &$brandId, &$productId, &$optionId) {
+    public static function getDetail($url, &$categoryId, &$brandId, &$productId, &$optionId, &$pageId = 0) {
         $key = URLIDS_DETAIL . md5($url);     
         if (!($data = Cache::get($key))) {
             $data = Api::call('url_urlids_detail', array('url' => $url));
@@ -23,6 +23,8 @@ class UrlIds {
             $productId = $data['product_id'];
         } elseif (!empty($data['option_id'])) {
             $optionId = $data['option_id'];
+        } elseif (!empty($data['page_id'])) {
+            $pageId = $data['page_id'];
         }
         return $data;
     }

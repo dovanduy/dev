@@ -62,8 +62,9 @@ class CartsController extends AppController
         if ($request->isXmlHttpRequest() && !empty($id)) {
             $post = $request->getPost();
             $sizeId = !empty($post['size_id']) ? $post['size_id'] : 0;
+            $colorId = !empty($post['color_id']) ? $post['color_id'] : 0;
             $quantity = !empty($post['quantity']) ? $post['quantity'] : 1;
-            Cart::addProduct($id, $quantity, $sizeId);
+            Cart::addProduct($id, $quantity, $sizeId, $colorId);
             $result['status'] = 'OK';            
             die(\Zend\Json\Encoder::encode($result));
         }

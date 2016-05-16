@@ -454,6 +454,12 @@ initJs = function () {
 		});
 	}
 	
+    if ($('img.lazy').length > 0) {        
+        $("img.lazy").lazyload({
+            //effect : "fadeIn"
+        });
+	}
+    
 	if ($('#detailForm #productSize').length > 0) {
 		 $('#detailForm #productSize').change(function(){
 			var price = $(this).find(':selected').data('price');

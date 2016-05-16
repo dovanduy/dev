@@ -43,7 +43,9 @@ class ProductOrders extends AbstractModel {
         'created',
         'updated',
         'active',        
-        'address_id',        
+        'address_id', 
+        'created',
+        'updated',
     );
     
     protected static $primaryKey = 'order_id';
@@ -79,8 +81,11 @@ class ProductOrders extends AbstractModel {
                 'is_paid',
                 'is_shipping',
                 'is_cancel',
+                'is_done',
                 'payment_date',
+                'shipping_date',
                 'cancel_date',
+                'done_date',
                 'created',
                 'updated',
                 'active', 
@@ -175,8 +180,8 @@ class ProductOrders extends AbstractModel {
             
             if ($row['is_cancel']) {
                 $row['status'] = 'cancel';
-            } elseif ($row['is_paid']) {
-                $row['status'] = 'paid';
+            } elseif ($row['is_done']) {
+                $row['status'] = 'done';
             } elseif ($row['is_shipping']) {
                 $row['status'] = 'shipping';
             } elseif ($row['is_new']) {
@@ -402,32 +407,28 @@ class ProductOrders extends AbstractModel {
         $set = array();
         if (isset($param['is_cancel']) && $param['is_cancel'] !== '') {
             $set['is_cancel'] = $param['is_cancel'];
-            $set['cancel_date'] = self::unix_timestamp();
+            if (!empty($param['is_cancel'])) {
+                $set['cancel_date'] = self::unix_timestamp();            
+            }
         }        
         if (isset($param['is_shipping']) && $param['is_shipping'] !== '') {
             $set['is_shipping'] = $param['is_shipping'];
-            $set['shipping_date'] = self::unix_timestamp();
+            if (!empty($param['is_shipping'])) {
+                $set['shipping_date'] = self::unix_timestamp();
+            }
         }
-        if (isset($param['is_paid']) && $param['is_paid'] !== '') {
-            if (!empty($self['is_paid'])) {
-                if (empty($self['is_shipping'])) {
-                    $set['is_shipping'] = 1;
-                    $set['shipping_date'] = self::unix_timestamp();
-                }
+        if (isset($param['is_paid']) && $param['is_paid'] !== '') {           
+            $set['is_paid'] = $param['is_paid'];  
+            if (!empty($param['is_paid'])) {
                 $set['payment_date'] = self::unix_timestamp();
             }
-            $set['is_paid'] = $param['is_paid'];                        
         }
         if (isset($param['is_done']) && $param['is_done'] !== '') {
-            if (!empty($self['is_done'])) {
-                if (empty($self['is_shipping'])) {
-                    $set['is_shipping'] = 1;
-                    $set['shipping_date'] = self::unix_timestamp();
-                }
-                if (empty($self['is_paid'])) {
-                    $set['is_paid'] = 1;
-                    $set['payment_date'] = self::unix_timestamp();
-                }
+            if (empty($self['is_shipping']) || empty($self['is_paid'])) {
+                self::errorOther(ERROR_CODE_OTHER_1, 'is_done');
+                return false;
+            }
+            if (!empty($param['is_done'])) {                               
                 $set['done_date'] = self::unix_timestamp(); 
             }            
             $set['is_done'] = $param['is_done'];                       
@@ -590,13 +591,11 @@ class ProductOrders extends AbstractModel {
         );
         if ($result) {            
             if ($result['is_cancel']) {
-                $result['status'] = 'cancel';
-            } elseif ($result['is_paid']) {
-                $result['status'] = 'paid';
-            } elseif ($result['is_shipping']) {
-                $result['status'] = 'shipping';
+                $result['status'] = 'cancel';    
             } elseif ($result['is_done']) {
                 $result['status'] = 'done';
+            } elseif ($result['is_shipping']) {
+                $result['status'] = 'shipping';            
             } elseif ($result['is_new']) {
                 $result['status'] = 'new';
             } else {

@@ -196,6 +196,7 @@ class ProductsController extends AppController
                     'product_id' => $id, 
                     'locale' => $locale,
                     'get_images' => 1,
+                    'get_product_reviews' => 1,
                 )
             );
             // not found data
@@ -231,7 +232,7 @@ class ProductsController extends AppController
                         ));
                         $metaArea[] = trim($category['name']);
                     }
-                }
+                } 
                 $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);
                 if (!empty($page)) {
                     $page->addPage(array(                        
@@ -265,6 +266,15 @@ class ProductsController extends AppController
             if (empty($data['meta_description'])) {
                 $data['meta_description'] = 'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'];
             }
+            $dom = new \DOMDocument();            
+            @$dom->loadHTML(mb_convert_encoding($data['content'], 'HTML-ENTITIES', 'UTF-8'));
+            foreach ($dom->getElementsByTagName('img') as $img) {
+                $img->setAttribute('data-original', $img->getAttribute('src'));
+                $img->setAttribute('src', '');                
+                $img->setAttribute('class', 'lazy lazy-hidden');               
+                $img->setAttribute('alt', $data['name']);
+            }
+            $data['content'] = $dom->saveHTML();
             $this->setHead(array(
                 'title' => $data['name'],
                 'meta_name' => array(
@@ -281,9 +291,10 @@ class ProductsController extends AppController
                     'og:price:currency' => 'VND',
                 ),                
             ));
-
-            $reviewList = Api::call('url_products_reviews_all', array('product_id' => $data['product_id']));
-
+            
+            //$reviewList = Api::call('url_products_reviews_all', array('product_id' => $data['product_id']));
+            $reviewList = $data['product_reviews'];
+            
             $reviewForm = new ReviewForm();  
             $reviewForm ->setController($this)
                         ->setAttribute('id', 'comment-form')
@@ -344,7 +355,7 @@ class ProductsController extends AppController
                         die($this->getErrorMessageForAjax(array(), $error)); 
                     }
                 }
-            }
+            } 
             return $this->getViewModel(array(
                     'data' => $data,
                     'reviewForm' => $reviewForm,

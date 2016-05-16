@@ -226,7 +226,7 @@ class CheckoutController extends AppController
                 $post = (array) $request->getPost();     
                 $registerForm->setData($post);   
                 if ($registerForm->isValid()) {
-                    $id = Api::call('url_users_register', $post); 
+                    $id = Api::call('url_users_register', $post);
                     if (Api::error()) {
                         $this->addErrorMessage($this->getErrorMessage(array(), Api::error()));
                     } else {

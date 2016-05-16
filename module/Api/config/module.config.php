@@ -104,6 +104,7 @@ return array(
             'Api\Controller\Blocks' => 'Api\Controller\BlocksController',
             'Api\Controller\Batch' => 'Api\Controller\BatchController',
             'Api\Controller\Productsizes' => 'Api\Controller\ProductsizesController',
+            'Api\Controller\Productcolors' => 'Api\Controller\ProductcolorsController',
         ),
     ),
     'view_manager' => array(

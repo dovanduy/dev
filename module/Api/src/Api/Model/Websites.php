@@ -15,6 +15,7 @@ class Websites extends AbstractModel {
         '_id',
         'sort',
         'url',        
+        'logo_text',        
         'created',
         'updated',
         'active',
@@ -189,6 +190,9 @@ class Websites extends AbstractModel {
         if (isset($param['linkedin'])) {
             $values['linkedin'] = $param['linkedin'];
         }        
+        if (isset($param['logo_text'])) {
+            $values['logo_text'] = $param['logo_text'];
+        }        
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'website_id' => $id,
@@ -300,6 +304,9 @@ class Websites extends AbstractModel {
         if (isset($param['image_id'])) {
             $set['image_id'] = $param['image_id'];
         }
+        if (isset($param['logo_text'])) {
+            $set['logo_text'] = $param['logo_text'];
+        }
         if (self::update(
             array(
                 'set' => $set,
@@ -403,6 +410,7 @@ class Websites extends AbstractModel {
                 'twitter',
                 'youtube',
                 'linkedin',
+                'logo_text',
             ))
             ->join(               
                 array(

@@ -29,16 +29,36 @@ class Pages extends AbstractModel {
     
     public function getList($param)
     {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  
-            ->join(
-                'page_locales', 
+            ->join(               
+                array(
+                    'page_locales' => 
+                    $sql->select()
+                        ->from('page_locales')
+                        ->where("locale = ". self::quote($param['locale']))
+                ),                    
                 static::$tableName . '.page_id = page_locales.page_id',
-                array('title', 'short')
-            )            
-            ->where("page_locales.locale = ". self::quote(\Application\Module::getConfig('general.default_locale')));  
-        
+                array(
+                    'locale', 
+                    'title', 
+                    'short',
+                    'content',
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(               
+                'url_ids',                    
+                static::$tableName . '.page_id = url_ids.page_id',
+                array(
+                    'url'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            );        
         if (isset($param['active']) && $param['active'] !== '') {            
             $select->where(static::$tableName . '.active = '. $param['active']);  
         }
@@ -103,7 +123,8 @@ class Pages extends AbstractModel {
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )            
-            ->where(static::$tableName . '.active = 1')     
+            ->where(static::$tableName . '.active = 1')   
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
             ->order('sort');     
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
@@ -242,6 +263,14 @@ class Pages extends AbstractModel {
                     'title', 
                     'short',
                     'content',
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(               
+                'url_ids',                    
+                static::$tableName . '.page_id = url_ids.page_id',
+                array(
+                    'url'
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             );            

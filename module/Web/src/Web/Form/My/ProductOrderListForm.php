@@ -67,7 +67,7 @@ class ProductOrderListForm extends AbstractForm
                             <tr>
                                 <td>{$this->getController()->translate('Order date')}</td>
                                 <td class='information'>{created}</td>
-                            </tr>
+                            </tr>                            
                             <tr>
                                 <td>{$this->getController()->translate('Total money')}</td>
                                 <td class='information'>{total_money}</td>
@@ -89,67 +89,7 @@ class ProductOrderListForm extends AbstractForm
                         </tbody>
                     </table>      
                 ",                      
-            ), 
-            /*                    
-            array(            
-                'name' => 'code',
-                'type' => 'link',
-                'title' => $this->getController()->translate('Code'),
-                'innerHtml' => '{code}',                                
-                'attributes' => array(
-                    'href' => '#',
-                    'class' => 'show-model',
-                    'data-modelid' => '#dialog-modal',                    
-                    'data-url' => $this->getController()->url()->fromRoute(
-                        'web/my', 
-                        array(
-                            'action' => 'orderdetail', 
-                            'id' => '{_id}'
-                        )                        
-                    )
-                ),                             
-            ),          
-            array(            
-                'name' => 'address',
-                'title' => $this->getController()->translate('Address'),
-                'sort' => true,
-            ),            
-            array(
-                'name' => 'total_money',
-                'title' => $this->getController()->translate('Total money'), 
-                'sort' => true,
-                'attributes' => array(
-                    'number' => true
-                ),
-            ),           
-            array(            
-                'name' => 'status_name',
-                'type' => 'link',
-                'title' => $this->getController()->translate('Order status'),
-                'innerHtml' => '{status_name}',                                
-                'attributes' => array(
-                    'href' => '#',
-                    'class' => 'show-model',
-                    'data-modelid' => '#dialog-modal',                    
-                    'data-url' => $this->getController()->url()->fromRoute(
-                        'web/my', 
-                        array(
-                            'action' => 'orderdetail', 
-                            'id' => '{_id}'
-                        )                        
-                    )
-                ),                             
-            ), 
-            array(
-                'name' => 'created',
-                'title' => $this->getController()->translate('Order date'), 
-                'sort' => 'desc',
-                'attributes' => array(
-                    'datetime' => true
-                ),
-            )  
-            * 
-            */                     
+            ),                                
         );
     }
 

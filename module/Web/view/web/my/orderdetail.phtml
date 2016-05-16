@@ -67,7 +67,7 @@ if (empty($data['shipping'])) {
                 <?php echo $this->translate('Order status') ?>:            
                 <span <?php if ($data['status'] == 'new') echo 'style="display:inline"' ?> class="btn btn-flat order-status new"><?php echo $this->translate('Processing'); ?></span>
                 <span <?php if ($data['status'] == 'shipping') echo 'style="display:inline"' ?>class="btn btn-flat order-status shipping"><?php echo $this->translate('Shipping'); ?></span>
-                <span <?php if ($data['status'] == 'paid') echo 'style="display:inline"' ?>class="btn btn-flat order-status paid"><?php echo $this->translate('Paid'); ?></span>
+                <span <?php if ($data['status'] == 'done') echo 'style="display:inline"' ?>class="btn btn-flat order-status done"><?php echo $this->translate('Done'); ?></span>
                 <span <?php if ($data['status'] == 'cancel') echo 'style="display:inline"' ?>class="btn btn-flat order-status cancel"><?php echo $this->translate('Canceled'); ?></span>
                 <br>
             </div>
@@ -164,13 +164,7 @@ if (empty($data['shipping'])) {
                              ))
                    ?>"
                    data-confirmmessage='<?php echo $this->translate('Are you sure cancel this order?') ?>'
-                   data-callback="
-                        if ($('#btn-submit-shipping').length > 0) {
-                            $('#btn-submit-shipping').remove();
-                        }
-                        if ($('#btn-submit-payment').length > 0) {
-                            $('#btn-submit-payment').remove();
-                        }
+                   data-callback="                                               
                         if ($('#btn-submit-cancel').length > 0) {
                             $('#btn-submit-cancel').remove();
                         }
