@@ -208,7 +208,40 @@ if (!empty($cartItems)) {
                             </div> 
                         </div>
                         <!-- Collect the nav links, forms, and other content for toggling -->
-                        <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1" aria-expanded="false" style="height: 0px;">
+                        <div class="navbar-collapse collapse navbar-submenu" id="bs-example-navbar-collapse-1" aria-expanded="false" style="height: 0px;">
+                            <div class="panel-group collapse-style-3">
+                                <?php foreach ($categories as $index => $category): ?>
+                                <div class="panel panel-default" <?php if ($index==0) echo "style='border-top:0px'"?>>
+                                    <div class="panel-heading">
+                                        <h4 itemprop="name" class="panel-title">
+                                            <a itemprop="url" data-toggle="collapse" href="#collapse_category_<?php echo $index?>" aria-expanded="false" class="collapsed">
+                                                <span itemprop="name"><?php echo $category['name']?></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse_category_<?php echo $index?>" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                        <div class="panel-body">
+                                            <nav>
+                                                <?php if (!empty($category['sub'])) : ?> 
+                                                <ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
+                                                <?php foreach ($category['sub'] as $subCategory) : ?>  
+                                                    <li>                                                        
+                                                        <a itemprop="url" href="<?php echo $this->url('web/products', array('name' => name_2_url($subCategory['name'])))?>">
+                                                            <i class="fa fa-chevron-circle-right"></i> 
+                                                            <span itemprop="name"><?php echo $subCategory['name']?></span>
+                                                        </a> 
+                                                    </li>
+                                                <?php endforeach ?>                                         
+                                                </ul>
+                                                <?php endif; ?>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endforeach ?>
+                            </div>
+                            
+                            <!--
                             <ul itemscope itemtype="http://schema.org/ItemList" class="nav navbar-nav">
                                 <?php if (!empty($headerMenus)): ?>
                                 <?php foreach ($headerMenus as $menu) : ?>
@@ -239,6 +272,7 @@ if (!empty($cartItems)) {
                                 <li class="divider"></li>                                
                                 <?php endif ?>      
                                 
+                                
                                 <?php if (!empty($categories)): ?>                                
                                 <?php foreach ($categories as $category): ?>
                                      <li>
@@ -248,7 +282,11 @@ if (!empty($cartItems)) {
                                     </li>                                                                       
                                 <?php endforeach ?>  
                                 <?php endif ?>
-                            </ul>                 
+                               
+                               
+                            </ul>    
+                            -->
+                            
                         </div><!-- /.navbar-collapse -->
                     </div><!-- /.container-fluid -->
                 </nav>

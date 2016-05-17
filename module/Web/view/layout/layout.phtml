@@ -12,7 +12,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
             echo $this->headMeta();
             
             echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-                ->prependStylesheet($this->basePath('/web/css/custom.css')) 
+                ->prependStylesheet($this->basePath('/web/css/custom.css'))                
                 //->prependStylesheet($this->basePath('/web/plugins/bootstrap-slider/slider.css'))  
                 ->prependStylesheet($this->basePath('/web/plugins/lightbox/jquery.lightbox-0.5.css')) 
                 ->prependStylesheet($this->basePath('/web/plugins/select2/select2.css'))  
@@ -43,16 +43,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
         <script>        
             var isMobile = <?php echo Application\Lib\Util::isMobile()?>;        
         </script>
-        <!--Start of Zopim Live Chat Script-->
-        <script type="text/javascript">
-        window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
-        d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
-        _.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
-        $.src="//v2.zopim.com/?trlYn0VsBwCPBr1dKNoAMm39xHxUndGM";z.t=+new Date;$.
-        type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
-        </script>
-        <!--End of Zopim Live Chat Script-->
-    </head>    
+    </head>   
     
     <body class="wide<?php if (Application\Lib\Util::isMobile()) echo ' body-mobile'?>" id="<?php echo "{$controller}_{$action}"?>">
 	
@@ -123,6 +114,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
             ->prependFile($this->basePath('/web/plugins/jquery-ui/jquery-ui.js'))  
             ->prependFile($this->basePath('/web/js/jquery.min.js'))    
         ; ?>
-        <?php echo $this->inlineScript() ?>        
+        <?php echo $this->inlineScript() ?> 
+        <script type='text/javascript'>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>
     </body>
 </html>

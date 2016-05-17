@@ -1,3 +1,15 @@
+<?php
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
+?>
 <!-- main-container start -->
 <!-- ================ -->
 <section class="main-container">
@@ -8,176 +20,79 @@
             <!-- main start -->
             <!-- ================ -->
             <div class="main col-md-12">
-
-                <!-- page-title start -->
-                <!-- ================ -->
-                <h1 class="page-title"><?php echo $this->translate('Checkout Payment')?></h1>
-                <div class="separator-2"></div>
-                <!-- page-title end -->
-
+                
+                <ul class="step clearfix" id="order_step">
+                    <li class="step_todo first">
+                        <span><em>01.</em> <?php echo $this->translate('Cart')?></span>
+                    </li>
+                    <li class="step_todo second">
+                        <span><em>02.</em> <?php echo $this->translate('Customer information')?></span>
+                    </li>
+                    <li class="step_current third">
+                        <span><em>03.</em> <?php echo $this->translate('Checkout')?></span>
+                    </li>
+                    <li id="step_end" class="step_todo last">
+                        <span><em>04.</em> <?php echo $this->translate('Confirm')?></span>
+                    </li>
+                </ul>
+                
+                <table class="table cart">
+                    <thead>
+                        <tr>
+                            <th><strong><?php echo $this->translate('Product name')?></strong></th>
+                            <th><strong><?php echo $this->translate('Price')?></strong></th>
+                            <th><strong><?php echo $this->translate('Quantity')?></strong></th>
+                            <th class="amount"><strong><?php echo $this->translate('Total')?></strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cartItems as $item) : ?>
+                        <tr>
+                            <td class="product">
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($item['name'])))?>">
+                                    <?php echo $item['custom_name']?>
+                                </a> 
+                            </td>
+                            <td class="price"><?php echo money_format($item['price'])?></td>
+                            <td class="quantity">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" value="<?php echo $item['quantity']?>" disabled="">
+                                </div>											
+                            </td>
+                            <td class="amount"><?php echo money_format($item['quantity'] * $item['price'])?></td>
+                        </tr>
+                        <?php endforeach ?>                        
+                        <tr class="row-total-payment">                           
+                            <td colspan="4" align="right">
+                                <div class="p-20">
+                                    <strong><?php echo $this->translate('Total payment')?>:</strong> 
+                                    <span class="total-amount"><?php echo money_format($totalMoney)?></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="space-bottom"></div> 
+                
                 <fieldset>
-                    <legend><?php echo $this->translate('Payment')?></legend>
-                    <form role="form" class="form-horizontal" id="payment-information">
-                        <div class="row">
-                            <div class="col-lg-3">
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
-                                        Credit Card<i class="fa fa-cc-visa pl-10"></i><i class="fa fa-cc-amex pl-10"></i><i class="fa fa-cc-mastercard pl-10"></i>
-                                    </label>
-                                </div>
-                                <div class="space-bottom"></div>
-                            </div>
-                            <div class="col-lg-9">
-                                <div class="form-group">
-                                    <label for="paymentFirstName" class="col-md-3 control-label">First Name<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <input type="text" class="form-control" id="paymentFirstName" value="First Name">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="paymentLastName" class="col-md-3 control-label">Last Name<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <input type="text" class="form-control" id="paymentLastName" value="Last Name">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Credit Card<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <select class="form-control">
-                                                    <option value="visa" selected="selected">VISA</option>
-                                                    <option value="master-card">Master Card</option>
-                                                    <option value="american-express">American Express</option>
-                                                </select>															
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Card Number<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-2">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-xs-6 col-sm-2">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="clearfix space-bottom visible-xs"></div>
-                                            <div class="col-xs-6 col-sm-2">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                            <div class="col-xs-6 col-sm-2">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Expiration Date<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-2">
-                                                <select class="form-control">
-                                                    <option value="01" selected="selected">01</option>
-                                                    <option value="03">02</option>
-                                                    <option value="03">03</option>
-                                                    <option value="04">04</option>
-                                                    <option value="05">05</option>
-                                                    <option value="06">06</option>
-                                                    <option value="07">07</option>
-                                                    <option value="08">08</option>
-                                                    <option value="09">09</option>
-                                                    <option value="10">10</option>
-                                                    <option value="11">11</option>
-                                                    <option value="12">12</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-xs-6 col-sm-2">
-                                                <select class="form-control">
-                                                    <option value="2014" selected="selected">2014</option>
-                                                    <option value="2015">2015</option>
-                                                    <option value="2016">2016</option>
-                                                    <option value="2017">2017</option>
-                                                    <option value="2018">2018</option>
-                                                    <option value="2019">2019</option>
-                                                    <option value="2020">2020</option>
-                                                    <option value="2021">2021</option>
-                                                    <option value="2022">2022</option>
-                                                    <option value="2023">2023</option>
-                                                    <option value="2024">2024</option>
-                                                    <option value="2025">2025</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">CVS<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-2">
-                                                <input type="text" class="form-control">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <legend><strong><?php echo $this->translate('Payment')?></strong></legend>                    
+                    <form method="post" id="paymentForm" class="form-horizontal" novalidate="novalidate">
+                        <div class="row mb-10">
+                            <span><input value="COD" id="cod" name="payment" type="radio" <?php if (empty($checkoutInfo['payment']) || $checkoutInfo['payment'] == 'COD') echo "checked"?> style="width:20px; float:left;"/></span>                                
+                            <span><?php echo $this->translate('COD')?></span>
                         </div>
-                        <div class="space"></div>
                         <div class="row">
-                            <div class="col-lg-3">
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                                        Paypal<i class="fa fa-cc-paypal pl-10"></i>
-                                    </label>
-                                </div>
-                                <div class="space-bottom"></div>
-                            </div>
-                            <div class="col-lg-9">
-                                <div class="form-group">
-                                    <label for="paymentEmail" class="col-md-3 control-label">Email<small class="text-default">*</small></label>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <input type="email" class="form-control" id="paymentEmail" value="Email">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="space"></div>
-                        <div class="row">
-                            <div class="col-lg-3">
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
-                                        Cash On Delivery
-                                    </label>
-                                </div>
-                                <div class="space-bottom"></div>
-                            </div>
-                            <div class="col-lg-9">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, quo, non sint nisi, corrupti fuga qui quod autem totam, molestias reiciendis ex unde. Molestias, nostrum numquam, beatae totam esse ab.</p>
-                            </div>
+                            <span><input value="ATM" id="atm" name="payment" type="radio" <?php if ($checkoutInfo['payment'] == 'ATM') echo "checked"?> style="width:20px; float:left;"/></span>                                
+                            <span><?php echo $this->translate('Transfer via Bank')?></span>
+                            <div class="bank-account"><?php echo \Web\Module::getConfig('bank_account')?></div>
                         </div>
                     </form>
-                </fieldset>
-                <div class="text-right">	
-                    <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> Go Back</a>
-                    <a href="<?php echo $this->url('web/checkout', array('action' => 'review'))?>" class="btn btn-group btn-default">Review and Complete Your Order <i class="icon-right-open-big"></i></a>
+                </div>
+            
+                <div class="text-right checkout-button">
+                    <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
+                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
                 </div>
 
             </div>
@@ -187,3 +102,13 @@
     </div>
 </section>
 <!-- main-container end -->
+<?php
+$this->headScript()->offsetSetScript(100, " 
+    $(function() {
+        var address_id = $('#address_id').val(); 
+        if (address_id == '') {
+            $('#new-address').removeClass('hide');
+        }
+    });
+");
+?>	

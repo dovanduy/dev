@@ -63,6 +63,8 @@ class PageController extends AppController
     
     public function loginAction()
     {
+        $backUrl = $this->params()->fromQuery('backurl', '/');
+        
         $AppUI = $this->getLoginInfo();
         if (!empty($AppUI)) {
             return $this->redirect()->toRoute('web');
@@ -95,7 +97,7 @@ class PageController extends AppController
                             $this->getResponse()->getHeaders()->addHeader($cookie);
                         }
                     }
-                    return $this->redirect()->toRoute('web');
+                    return $this->redirect()->toUrl($backUrl);
                 } else {
                     $this->addErrorMessage('Invalid Email or password. Please try again');
                 }

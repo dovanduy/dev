@@ -138,48 +138,48 @@
                                 <?php endif ?>
                             </div>
                             <?php endif ?>
-							<div class="light-gray-bg p-20 bordered clearfix">
-                            <div class="product">                                
-								<i class="icon-tag pr-10"></i>
-                                <span id="productPrice" itemprop="price" class="price">
-								<?php 	
-                                    
-                                    if (!empty($data['price'])) {
-                                        echo money_format($data['price']); 
-                                    } else {
-                                        echo $this->translate('Price contact');
-                                    }                                    
-                                ?>
-                                </span>
-                                <?php if (!empty($data['original_price'])):?>
-                                <span itemprop="price" class="original-price">
-                                    <?php echo money_format($data['original_price'])?>
-                                </span>
-                                <?php endif?>
-							</div>
-                            <div class="product elements-list pull-right clearfix">
-                                <input 
-									type="button" 
-									value="<?php echo $this->translate('Add to cart') ?>" 
-									data-url="<?php echo $this->url(
-											'web/carts', 
-											array(
-												'action' => 'additem',
-												'id' => $data['_id']
-											))
-									?>"
-									data-callback="	
-                                        if (isMobile == 0) {
-                                            loadCart(1);        
-                                        } else {                          
-                                            $('#mCart .cart-count').html(parseInt($('#mCart .cart-count').html())+1);
-                                            $('html, body').animate({scrollTop: 0}, 'slow');
-                                        }                                 
-										showMessage('<?php echo $this->translate('Added to cart') ?>')
-									"
-									class="margin-clear btn btn-default ajax-submit">
+							<div class="detail-price light-gray-bg p-20 bordered clearfix">
+                                <div class="product">                                
+                                    <i class="icon-tag pr-10"></i>
+                                    <span id="productPrice" itemprop="price" class="price">
+                                    <?php 	
+
+                                        if (!empty($data['price'])) {
+                                            echo money_format($data['price']); 
+                                        } else {
+                                            echo $this->translate('Price contact');
+                                        }                                    
+                                    ?>
+                                    </span>
+                                    <?php if (!empty($data['original_price'])):?>
+                                    <span itemprop="price" class="original-price">
+                                        <?php echo money_format($data['original_price'])?>
+                                    </span>
+                                    <?php endif?>
+                                </div>
+                                <div class="product elements-list pull-right clearfix">
+                                    <input 
+                                        type="button" 
+                                        value="<?php echo $this->translate('Add to cart') ?>" 
+                                        data-url="<?php echo $this->url(
+                                                'web/carts', 
+                                                array(
+                                                    'action' => 'additem',
+                                                    'id' => $data['_id']
+                                                ))
+                                        ?>"
+                                        data-callback="	
+                                            if (isMobile == 0) {
+                                                loadCart(1);        
+                                            } else {                          
+                                                $('#mCart .cart-count').html(parseInt($('#mCart .cart-count').html())+1);
+                                                $('html, body').animate({scrollTop: 0}, 'slow');
+                                            }                                 
+                                            showMessage('<?php echo $this->translate('Added to cart') ?>')
+                                        "
+                                        class="margin-clear btn btn-default ajax-submit">
+                                </div>
                             </div>
-                        </div>
 						</form>
 					</div>
                     <div class="col-md-3">

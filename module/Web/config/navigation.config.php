@@ -58,19 +58,19 @@ return array(
 
         array(         
             'id' => 'web_checkout_index',
-            'label' => 'Checkout',
+            'label' => 'Customer information',
             'module' => 'web',
             'controller' => 'checkout',
             'action' => 'index', 
             'pages' => array(                    
                 array(                      
-                    'label' => 'Checkout payment',
+                    'label' => 'Checkout',
                     'module' => 'web',
                     'controller' => 'checkout',
                     'action' => 'payment',
-                ),   
+                ), 
                 array(                      
-                    'label' => 'Checkout review',
+                    'label' => 'Confirm',
                     'module' => 'web',
                     'controller' => 'checkout',
                     'action' => 'review',
@@ -80,7 +80,7 @@ return array(
                     'module' => 'web',
                     'controller' => 'checkout',
                     'action' => 'completed',
-                ),  
+                ),
             ),
         ),
     ),

@@ -40,6 +40,7 @@ class ProductOrders extends AbstractModel {
         'shipping_date',
         'cancel_date',
         'done_date',
+        'payment',
         'created',
         'updated',
         'active',        
@@ -86,6 +87,7 @@ class ProductOrders extends AbstractModel {
                 'shipping_date',
                 'cancel_date',
                 'done_date',
+                'payment',
                 'created',
                 'updated',
                 'active', 
@@ -239,6 +241,7 @@ class ProductOrders extends AbstractModel {
                 'user_street',
                 'note',
                 'is_new',
+                'payment',
                 'created',
                 'updated',
                 'active', 
@@ -259,6 +262,9 @@ class ProductOrders extends AbstractModel {
     
     public function add($param)
     {
+        if (empty($param['payment']) || !in_array($param['payment'], array('COD', 'ATM'))) {
+            $param['payment'] = 'COD';
+        }
         $_id = mongo_id();  // product_orders._id                
         $values = array(
             '_id' => $_id,
@@ -376,6 +382,9 @@ class ProductOrders extends AbstractModel {
         } 
         if (isset($param['is_new'])) {
             $values['is_new'] = $param['is_new'];
+        }
+        if (isset($param['payment'])) {
+            $values['payment'] = $param['payment'];
         }
         if (isset($param['note'])) {
             $values['note'] = $param['note'];
@@ -531,6 +540,7 @@ class ProductOrders extends AbstractModel {
                 'shipping_date',
                 'payment_date',
                 'done_date',
+                'payment',
                 'created',
                 'updated',
                 'active',

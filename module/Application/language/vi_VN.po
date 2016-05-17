@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ZendSkeletonApplication\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-28 10:08+0700\n"
-"PO-Revision-Date: 2016-05-16 16:23+0700\n"
+"PO-Revision-Date: 2016-05-17 15:00+0700\n"
 "Last-Translator: Do Nhu Vy <donhuvy@hotmail.com>\n"
 "Language-Team: ZF Contibutors <zf-devteam@zend.com>\n"
 "Language: vi_VN\n"
@@ -232,7 +232,7 @@ msgid "Top Sellers"
 msgstr "Hàng bán chạy"
 
 msgid "Add to cart"
-msgstr "Thêm vào giỏ hàng"
+msgstr "Mua ngay"
 
 msgid "Prev"
 msgstr "Trước"
@@ -587,6 +587,9 @@ msgstr "Đơn hàng"
 
 msgid "Customer information"
 msgstr "Thông tin khách hàng"
+
+msgid "Confirm"
+msgstr "Xác nhận"
 
 msgid "Your order has been received and is being processed"
 msgstr "Đơn hàng của bạn đã được tiếp nhận và đã đang được xử lý"
@@ -1060,7 +1063,7 @@ msgid "Company name"
 msgstr "Tên công ty"
 
 msgid "I want to have this order"
-msgstr "Tôi đồng ý đặt đơn hàng này"
+msgstr "Tôi xác nhận đặt đơn hàng này"
 
 msgid "Ooops! Page Not Found"
 msgstr "ÔI! CHÚNG TÔI KHÔNG TÌM THẤY TRANG BẠN YÊU CẦU"
@@ -1163,3 +1166,12 @@ msgstr "Nội dung đang được cập nhật"
 
 msgid "Catalog"
 msgstr "Danh mục"
+
+msgid "Checkout payment"
+msgstr "Thanh toán"
+
+msgid "Transfer via Bank"
+msgstr "Chuyển khoản qua ngân hàng"
+
+msgid "Total payment"
+msgstr "Tổng tiền thanh toán"

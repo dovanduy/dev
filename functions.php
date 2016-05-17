@@ -201,7 +201,7 @@ if (!function_exists('truncate')) {
     
 function money_format($value) {        
     if (is_numeric($value)) {
-        return number_format($value);
+        return number_format($value, 0, ',', '.') . ' VND';
     }
     return $value;
 }
@@ -240,11 +240,11 @@ function app_datetime_format($time = null, $onlyDate = false) {
 }
 	
 function db_int($value) {        
-    return str_replace(array(',', '.'), '', $value); 
+    return str_replace(array(',', '.','VND',' '), '', $value); 
 }
 
 function db_float($value) {        
-    return str_replace(array(',', '.'), '', $value); 
+    return str_replace(array(',', '.','VND',' '), '', $value); 
 }
 
 /**

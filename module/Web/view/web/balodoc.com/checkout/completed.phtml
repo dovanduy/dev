@@ -17,7 +17,14 @@
                 <p class="lead text-center red">
                     <?php echo $this->translate('Your order has been received and is being processed')?>                    
                 </p>
+                
+                
                 <div class="row">
+                    <?php if (!empty($data['payment']) && $data['payment'] == 'ATM'): ?>
+                    <div class="bank-account" style="padding-left: 0px; margin-bottom: 15px;">
+                        <?php echo \Web\Module::getConfig('bank_account')?>
+                    </div>
+                    <?php endif ?>
                     
                     <table class='table cart table-bordered'>
                         <thead>

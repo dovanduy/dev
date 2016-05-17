@@ -91,7 +91,7 @@
                                 -->
                                 <div class="clients-container">
                                     <div itemscope itemtype="http://schema.org/Brand" class="clients">
-                                        <?php 
+                                        <?php
                                         foreach ($featuredBrands as $brand) {                                             
                                             $brand['url'] = $this->url(
                                                 'web/products', 
@@ -127,7 +127,7 @@
                 <!-- Tab panes -->
 				<div class="tab-content clear-style">
 					<div class="tab-pane active">
-						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+						<div id="grid-4" class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
                         <?php       
                             $products = $block['products'];
                             $locales = \Application\Module::getConfig('general.locales');

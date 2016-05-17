@@ -178,10 +178,11 @@ class CheckoutController extends AppController
                         'city_code' => $post['city_code'],
                         'street' => $post['street'],
                         'address_name' => $post['address_name'], 
+                        'payment' => 'COD', 
                     ));                       
                     return $this->redirect()->toRoute(
                         'web/checkout',
-                        array('action' => 'review')
+                        array('action' => 'payment')
                     );                        
                 } else {
                     $checkoutInfo['address_id'] = $post['address_id'];
@@ -382,6 +383,9 @@ class CheckoutController extends AppController
                 $countries = \Application\Model\LocaleCountries::getAll();  
                 $post['user_country_name'] = $countries[$checkoutInfo['country_code']];
             }
+            if (!empty($checkoutInfo['payment'])) {
+                $post['payment'] = $checkoutInfo['payment'];
+            }
             $cartItems = Cart::get(true);
             $totalQuantity = 0;
             $totalMoney = 0;
@@ -417,8 +421,20 @@ class CheckoutController extends AppController
      * @return Zend\View\Model
      */
     public function paymentAction()
-    { 
+    {
         $request = $this->getRequest(); 
+        if ($request->isPost()) {
+            $post = (array) $request->getPost();
+            if (!empty($post['payment'])) {
+                $checkoutInfo = Session::get('checkout_step1');
+                $checkoutInfo['payment'] = $post['payment'];
+                Session::set('checkout_step1', $checkoutInfo);                       
+                return $this->redirect()->toRoute(
+                    'web/checkout',
+                    array('action' => 'review')
+                );   
+            }
+        }
         return $this->getViewModel(array(
                              
             )

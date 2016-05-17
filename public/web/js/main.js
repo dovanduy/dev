@@ -471,8 +471,15 @@ initJs = function () {
 	}
 	
 	if ($('#checkout_index #registerForm').length > 0) {
-		 $('#checkout-next').click(function(){
+		 $('#checkout_index #checkout-next').click(function(){
 			$('#checkout_index #registerForm').submit();
+			return false;			
+		});
+	}
+    
+	if ($('#checkout_payment #paymentForm').length > 0) {
+		 $('#checkout_payment #checkout-next').click(function(){
+			$('#checkout_payment #paymentForm').submit();
 			return false;			
 		});
 	}
@@ -819,7 +826,7 @@ db_float = function(str) {
 }
 
 function money_format(number) {
-    return number_format(number, 0, '.', ',');
+    return number_format(number, 0, ',', '.') + ' VND';
 }
 
 function number_format(number, decimals, dec_point, thousands_sep) {

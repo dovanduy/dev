@@ -65,7 +65,7 @@ return array(
                 <p><span>4</span> Chất lượng đảm bảo</p>
                 <p><span>5</span> Cam kết hàng giống hình</p>           
                 <p><span>6</span> Hotline: <strong style="color:#D4232B">098 65 60 943</strong></p>
-                <p><span>7</span> Skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
+                <p><span>7</span> Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
             </div>              
         </div>
     ',
@@ -87,6 +87,22 @@ return array(
                 <p><span>3</span> Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>
             </div>
         </div>
-    '
+    ',
+    
+    'bank_account' => '
+        <div class="payment-account">
+            <p>✓ Thông tin ngân hàng chuyển khoản:</p>             
+            <p><span>1</span> Ngân hàng Đông Á HCM, PGD Lê Văn Sỹ, Chủ TK: Lai Hạc Thại, Số TK: 010-661-3274</p> 
+            <p><span>2</span> Ngân hàng ACB HCM, PGD Bình Tiên, Chủ TK: Lai Hạc Thại, Số TK: 154-956-849</p>  
+            <p><span>3</span> Ngân hàng Agribank HCM, PGD Nam Hoa, Chủ TK: Lai Hạc Thại, Số TK:  622-120-514-3981</p>  
+            <p><span>4</span> Ngân hàng Vietcombank HCM, PGD Bình Tây, Chủ TK: Lai Hạc Thại, Số TK:  025-100-268-8542</p>  
+            <p><span>5</span> Ngân hàng Vietinbank HCM, PGD Tô Hiến Thành, Chủ TK: Lai Hạc Thại, Số TK:  711AA-836-5617</p>  
+            <p><span>6</span> Ngân hàng Techcombank HCM, PGD An Đông, Chủ TK: Lai Hạc Thại, Số TK:  190-285-917-35015</p>  
+            <p><span>7</span> Ngân hàng Sacombank HCM, PGD Nguyễn Trãi, Chủ TK: Lai Hạc Thại, Số TK:  0601-0046-9841</p>
+            <p>✓ Sau khi đặt hàng thành công, vui lòng chuyển số tiền phải thanh toán vào tài khoản ngân hàng của chúng tôi, ngay sau khi nhận được tiền, chúng tôi sẽ xác nhận với bạn bằng email và điện thoại</p>
+            <p>✓ Hotline: <strong style="color:#D4232B">098 65 60 943</strong></p>
+            <p>✓ Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
+        </div>
+    ',
     
 );

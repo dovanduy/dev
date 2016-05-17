@@ -90,6 +90,23 @@ class Products extends AbstractModel {
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT 
             )
+            ->join(  
+                array(
+                    'product_has_sizes' => 
+                    $sql->select()
+                        ->columns(array(
+                            'product_id',
+                            'size_id' => new Expression('GROUP_CONCAT(product_has_sizes.size_id SEPARATOR  \',\')')
+                        ))
+                        ->from('product_has_sizes')                        
+                        ->group('product_id')
+                ),             
+                static::$tableName . '.product_id = product_has_sizes.product_id',
+                array(
+                    'size_id'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
             ->join(
                 'product_images', 
                 static::$tableName . '.image_id = product_images.image_id',

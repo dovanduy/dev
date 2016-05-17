@@ -116,8 +116,8 @@ class CartsController extends AppController
                     $totalQuantity = 0;
                     $totalMoney = 0;
                     foreach ($cartItems as &$item) {
-                        $totalQuantity += $item['quantity'];
-                        $totalMoney += $item['quantity'] * $item['price'];
+                        $totalQuantity += db_int($item['quantity']);
+                        $totalMoney += db_int($item['quantity']) * db_float($item['price']);
                         $item['price'] = money_format($item['price']);
                         $item['total_money'] = money_format($item['total_money']);
                     }                    
