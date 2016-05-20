@@ -28,12 +28,12 @@ if (!empty($cartItems)) {
                 <tr class="cart-item-row-<?php echo $item['product_id']?>">
                     <td class="quantity"><?php echo $item['quantity']?> x</td>
                     <td class="product"><a href="<?php echo $this->url('web/products', array('action' => 'detail', 'id' => $item['_id']))?>"><?php echo $item['custom_name']?></a></td>
-                    <td class="amount"><?php echo money_format($item['quantity'] * $item['price'])?></td>
+                    <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
                 </tr>
                 <?php endforeach ?>                                                            
                 <tr class="footer total-money">
                     <td align="right" colspan="3">
-                        <?php echo $this->translate('Total')?>: <span><?php echo money_format($totalMoney)?></span>
+                        <?php echo $this->translate('Total')?>: <span><?php echo app_money_format($totalMoney)?></span>
                     </td>
                 </tr>
             </tbody>

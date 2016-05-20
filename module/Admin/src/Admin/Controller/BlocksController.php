@@ -2,7 +2,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\Block\AddProductForm;
 use Admin\Form\Block\SearchProductForm;
 use Admin\Form\Block\ListProductForm;

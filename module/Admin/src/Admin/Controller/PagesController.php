@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\Pages;
 use Admin\Form\Page\SearchForm;
 use Admin\Form\Page\ListForm;

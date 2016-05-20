@@ -45,18 +45,18 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                     <?php echo $item['name']?>
                                 </a> 
                             </td>
-                            <td class="price"><?php echo money_format($item['price'])?></td>
+                            <td class="price"><?php echo app_money_format($item['price'])?></td>
                             <td class="quantity">
                                 <div class="form-group">
                                     <input type="text" class="form-control" value="<?php echo $item['quantity']?>" disabled="">
                                 </div>											
                             </td>
-                            <td class="amount"><?php echo money_format($item['quantity'] * $item['price'])?></td>
+                            <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
                         </tr>
                         <?php endforeach ?>                        
                         <tr>
-                            <td class="total-quantity" colspan="3"><?php echo $this->translate('Total Items')?>: <?php echo money_format($totalQuantity)?></td>
-                            <td class="total-amount"><?php echo money_format($totalMoney)?></td>
+                            <td class="total-quantity" colspan="3"><?php echo $this->translate('Total Items')?>: <?php echo app_money_format($totalQuantity)?></td>
+                            <td class="total-amount"><?php echo app_money_format($totalMoney)?></td>
                         </tr>
                     </tbody>
                 </table>

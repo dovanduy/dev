@@ -147,6 +147,9 @@ class Module {
                 'ProductHasColors' => function ($sm) {
                     return new Model\ProductColors($sm->get('db'), $sm);
                 },                
+                'Vouchers' => function ($sm) {
+                    return new Model\Vouchers($sm->get('db'), $sm);
+                },               
             ),
         );
     }

@@ -137,11 +137,9 @@ class Brands extends AbstractModel {
                 array('url_image'),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
+            ->where(static::$tableName . '.website_id = '. $param['website_id'])
             ->where(static::$tableName . '.active = 1')     
-            ->order('sort');  
-        if (!empty($param['website_id'])) {            
-            $select->where(static::$tableName . '.website_id = '. $param['website_id']);  
-        }
+            ->order('sort');
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL

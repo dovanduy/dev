@@ -38,12 +38,12 @@ class ProductItemHelper extends AbstractHtmlElement
             'web/carts', 
             array(
                 'action' => 'additem',
-                'id' => $product['_id']
+                'id' => $product['product_id']
             )
         );     
         $product['url_add_to_wishlist'] = '#';
-        $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
-        $product['price'] = money_format($product['price']);
+        $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
+        $product['price'] = app_money_format($product['price']);
         $product['name'] = truncate($product['name'], 60);
         $product['short'] = nl2br(truncate($product['short'], 80));
         $isMobile = Util::isMobile();

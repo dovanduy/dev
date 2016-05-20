@@ -38,6 +38,14 @@ if (!function_exists('mongo_id')) {
 
 }
 
+if (!function_exists('voucher_code')) {
+
+    function voucher_code() {
+        return strtoupper(substr(md5(mt_rand()/mt_getrandmax()) . md5(mt_rand()/ mt_getrandmax()), 1, 5));
+    }
+
+}
+
 if (!function_exists('str_no_vi')) {
     function str_no_vi($string, $length = 100, $strSymbol = '-', $isToLower = 1)
 	{
@@ -116,6 +124,17 @@ if (!function_exists('mk_dir')) {
 
 		return false;
 	}
+}
+
+function allowIp($ip = null) {	
+	if (empty($ip)) {
+		$ip = $_SERVER["REMOTE_ADDR"];
+	}
+	$allowIp = array(
+		'127.0.0.1',
+		'10.10.8.25',		
+	);
+	return in_array($ip, $allowIp) ? 1 : 0;
 }
 
 function domain() {
@@ -199,19 +218,21 @@ if (!function_exists('truncate')) {
     }
 }
     
-function money_format($value) {        
-    if (is_numeric($value)) {
-        return number_format($value, 0, ',', '.') . ' VND';
+if (!function_exists('app_money_format')) {
+    function app_money_format($value) {        
+        if (is_numeric($value)) {
+            return number_format($value, 0, ',', '.') . ' VND';
+        }
+        return $value;
     }
-    return $value;
 }
 
-function datetime_format($value = '') { 
+function datetime_format($value = '', $format = 'Y-m-d H:i') { 
     if (empty($value)) {
-        return date('Y-m-d H:i');
+        return date($format);
     }
     if (is_numeric($value)) {
-        return date('Y-m-d H:i', $value);
+        return date($format, $value);
     }
     return $value;
 }
@@ -471,4 +492,8 @@ function app_file_put_contents($targetFileName, $content) {
         sleep(3);
     } while ($ok === false && $retry > 0);
     return $ok;
+}
+
+if (!allowIp()) {
+    exit;
 }

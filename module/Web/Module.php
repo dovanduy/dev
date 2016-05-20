@@ -71,7 +71,7 @@ class Module
         if (Util::isMobile() && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php')) {
             $mobileConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php';
             $config = array_replace_recursive($config, $mobileConfig);
-        }  
+        }       
         if (!empty($name)) {
             return Arr::get($config, $name, $default);
         }
@@ -128,12 +128,14 @@ class Module
             }
         }
           
+        $website = \Web\Model\Websites::getDetail(); 
+      
         if (!$request->isXmlHttpRequest()) { // not ajax request             
-            $headerMenus = \Web\Model\Menus::getSubMenu2(array(), $lastLevel = array(), 0, 0, $type = 'header');
-            $footerMenus = \Web\Model\Menus::getSubMenu2(array(), $lastLevel = array(), 0, 0, $type = 'footer');
+            $headerMenus = \Web\Model\Menus::getSubMenu2($website['menus'], $lastLevel = array(), 0, 0, $type = 'header');
+            $footerMenus = \Web\Model\Menus::getSubMenu2($website['menus'], $lastLevel = array(), 0, 0, $type = 'footer');
             $e->getTarget()->layout()->setVariable('headerMenus', $headerMenus);
             $e->getTarget()->layout()->setVariable('footerMenus', $footerMenus);            
-        }        
+        }     
         
         // Getting the view helper manager from the application service manager
         $viewHelperManager = $sm->get('viewHelperManager');
@@ -141,8 +143,7 @@ class Module
         // Head Title Setting
         $headTitleHelper = $viewHelperManager->get('headTitle');       
         $headTitleHelper->setSeparator(' - ');
-        
-        $website = \Web\Model\Websites::getDetail();        
+                       
         if (!empty($website['name'])) {
             $headTitleHelper->append($website['name']);
         }

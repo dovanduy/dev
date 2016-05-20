@@ -750,7 +750,6 @@ tfoot .total-money {
 }
 */
 .form-horizontal .form-control {
-    height: 36px;
     border-color: #d2d6de;
     border-radius: 0 !important;
     box-shadow: none;
@@ -1251,7 +1250,10 @@ img {
 #logo_img {
     height: 50px;
 }
-
+.body-mobile #logo_img {
+    height: 42px;
+	margin-top: 8px;
+}
 #detailForm #productSize {
 	padding: 4px;
 	margin-right: 15px;
@@ -1351,6 +1353,7 @@ img {
 .not-found {
 	margin: 30px auto;
 	width: 100%;
+	float: left;
 }
 #detailForm .product {
 	float: left;
@@ -1433,6 +1436,9 @@ img {
 #commitment_and_guide p  {
 	float: left
 	width: 100%;
+	font-size: 13px;
+	padding: 0px 0px;
+	margin-bottom: 5px;
 }
 #commitment_and_guide p span, .bank-account p span {
 	float: left;
@@ -1460,7 +1466,7 @@ img {
 }
 #commitment_and_guide .guide {
 	float: left;
-	margin-top: 15px;		
+	margin-top: 10px;		
 }
 #commitment_and_guide  .title{
 	float: left;
@@ -1820,20 +1826,22 @@ ul.step a:hover:after {
      background: #eee;
      font-weight: bold;
 }
-.total-amount {
-    font-weight: bold;
-    color: red;
+.total-amount {  
+    color: #D4232B;
+    font-weight: 700;
 }
 .account-owner {
     font-weight: bold;
 }
 .row-total-payment strong {
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
 }
 .row-total-payment span {
     font-size: 22px !important;
 }
-
+.body-mobile .row-total-payment span {
+    font-size: 16px !important;
+}
 .body-mobile .checkout-button {
     text-align: center;
     width: 100%;
@@ -1882,4 +1890,29 @@ ul.step a:hover:after {
 }
 .navbar-submenu .panel-group .panel + .panel {
     margin-top: 0px;
+}
+.amount {
+    color: #D4232B;
+    font-weight: 700;
+}
+#paymentForm {
+    margin: 0px 0px 5px 0px;
+}
+.cart.table .amount {
+    width: 16%;
+}
+.no-sub  a:after {
+    content: "" !important;
+}
+.app-category .nav-pills>li>a {    
+    font-size: 15px;
+	padding: 3px 0px;
+	font-weight: 700;
+}
+.form-group-voucher_code ul {
+	float: left;
+	width: auto;
+	clear: none;
+	margin-top: 6px;
+	margin-left: 5px;
 }

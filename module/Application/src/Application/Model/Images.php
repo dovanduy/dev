@@ -8,7 +8,7 @@ use Application\Lib\Cache;
 
 class Images {    
     
-    public static function getUrl($id, $src = 'places', $force = false) {
+    public static function getUrl($id, $src = 'products', $force = false) {
         $key = IMAGES_DETAIL . $src . '_' . $id;     
         if (!($data = Cache::get($key)) || $force == true) {
             $data = Api::call('url_images_detail', array(

@@ -114,5 +114,47 @@ class Products
         }        
         return $result;
     } 
+	
+	public static function getDetail($productId)
+    {       
+        $key = PRODUCT_DETAIL . $productId;
+        if (!($result = Cache::get($key))) {            
+            $result = Api::call(
+                'url_products_detail', 
+                array(                    
+                    'product_id' => $productId,
+                    'get_images' => 1,
+                    'get_product_reviews' => 1,
+                    'get_product_related' => 1,
+                    'replace_lazy_image' => 1,
+                )
+            );
+            if (!empty($result)) {    
+                Cache::set($key, $result); 
+            }
+        } 
+        return $result;
+    }
+    
+    public static function getList($param)
+    {       
+        if ($param['page'] == 1
+            && !empty($param['category_id'])
+            && empty($param['brand_id']) 
+            && empty($param['option_id']) 
+            && empty($param['price_from']) 
+            && empty($param['price_to'])) {       
+            $key = md5(PRODUCT_LIST . WebModule::getConfig('website_id') . '_' . $param['category_id']);
+            if (!($result = Cache::get($key))) {            
+                $result = Api::call('url_products_felists', $param);
+                if (!empty($result)) {               
+                    Cache::set($key, $result);                
+                }
+            }       
+        } else {
+            $result = Api::call('url_products_felists', $param);
+        }    
+        return $result;
+    }
     
 }

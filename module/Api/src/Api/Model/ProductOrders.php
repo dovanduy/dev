@@ -16,6 +16,7 @@ class ProductOrders extends AbstractModel {
         'user_id',
         'code',
         'total_money',
+        'discount',
         'tax',
         'shipping',
         'ip',
@@ -45,6 +46,7 @@ class ProductOrders extends AbstractModel {
         'updated',
         'active',        
         'address_id', 
+        'voucher_code', 
         'created',
         'updated',
     );
@@ -64,6 +66,7 @@ class ProductOrders extends AbstractModel {
                 'user_id',
                 'code',
                 'total_money',
+                'discount',
                 'tax',
                 'shipping',
                 'ip',
@@ -228,6 +231,7 @@ class ProductOrders extends AbstractModel {
                 'is_paid',
                 'is_cancel',
                 'total_money',
+                'discount',
                 'ip',
                 'user_name',
                 'user_email',
@@ -265,6 +269,7 @@ class ProductOrders extends AbstractModel {
         if (empty($param['payment']) || !in_array($param['payment'], array('COD', 'ATM'))) {
             $param['payment'] = 'COD';
         }
+        
         $_id = mongo_id();  // product_orders._id                
         $values = array(
             '_id' => $_id,
@@ -276,7 +281,7 @@ class ProductOrders extends AbstractModel {
             $values['is_cancel'] = $param['is_cancel'];
         }
         if (isset($param['total_money'])) {
-            $values['total_money'] = Util::toPrice($param['total_money']);
+            $values['total_money'] = db_float($param['total_money']);
         }
         if (isset($param['code'])) {
             $values['code'] = $param['code'];
@@ -386,14 +391,63 @@ class ProductOrders extends AbstractModel {
         if (isset($param['payment'])) {
             $values['payment'] = $param['payment'];
         }
+        if (isset($param['voucher_code'])) {
+            $values['voucher_code'] = $param['voucher_code'];
+        }
         if (isset($param['note'])) {
             $values['note'] = $param['note'];
+        }        
+        // check voucher valid
+        $voucher = new Vouchers();
+        if (!empty($param['voucher_code'])) {            
+            $voucherDetail = $voucher->getDetail(array(
+                'website_id' => $param['website_id'],
+                'user_id' => $param['user_id'],
+                'code' => $param['voucher_code'],
+                'active' => 1
+            ));
+            if (!empty($voucherDetail)) {
+                if (!empty($voucherDetail['used'])) {
+                    self::errorNotExist('voucher_code');
+                    return false;
+                }
+                if (!empty($voucherDetail['expired']) && $voucherDetail['expired'] <= time()) {
+                    self::errorNotExist('voucher_code');
+                    return false;
+                }                  
+            } else {
+                self::errorNotExist('voucher_code');
+                return false;
+            }
         }
-        if ($id = self::insert($values)) {     
-            if (!empty($param['products'])) {                
+        
+        if ($id = self::insert($values)) { 
+            if (!empty($param['products'])) { 
+                $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
+                $param['total_money'] = 0;
+                $param['discount'] = 0;
+                foreach ($products as $product) {
+                    $param['total_money'] += db_float($product['price'])*db_float($product['quantity']);                   
+                }
+                if (!empty($voucherDetail)) { 
+                    $voucher->updateInfo(array(
+                        '_id' => $voucherDetail['_id'],
+                        'used' => new Expression('UNIX_TIMESTAMP()')
+                    ));
+                    switch ($voucherDetail['type']) {
+                        case 0:  
+                            $param['discount'] = db_float($voucherDetail['amount']*$param['total_money']/100);
+                            break;
+                        case 1:
+                            $param['discount'] = db_float($voucherDetail['amount']);
+                            break;
+                    }
+                }                
                 self::saveDetail(array(
                     'order_id' => $id,
-                    'products' => $param['products']
+                    'products' => $param['products'],
+                    'total_money' => $param['total_money'],
+                    'discount' => $param['discount'],
                 ));
             }
             return $_id;
@@ -443,17 +497,20 @@ class ProductOrders extends AbstractModel {
             $set['is_done'] = $param['is_done'];                       
         }
         if (isset($param['total_money'])) {
-            $set['total_money'] = Util::toPrice($param['total_money']);
+            $set['total_money'] = db_float($param['total_money']);
+        }       
+        if (isset($param['discount'])) {
+            $set['discount'] = db_float($param['discount']);
         }       
         if (isset($param['code'])) {
             $set['code'] = $param['code'];
         }
         if (isset($param['user_id'])) {
             $set['user_id'] = $param['user_id'];
-        } 
+        }
         if (isset($param['user_name'])) {
             $set['user_name'] = $param['user_name'];
-        }  
+        } 
         if (isset($param['user_phone'])) {
             $set['user_phone'] = $param['user_phone'];
         }  
@@ -517,6 +574,7 @@ class ProductOrders extends AbstractModel {
                 'user_id',
                 'code',                
                 'total_money',
+                'discount',
                 'tax',
                 'shipping',
                 'ip',
@@ -626,7 +684,16 @@ class ProductOrders extends AbstractModel {
             }
             if (!empty($result)) {
                 $result['address'] = implode(', ', $address);
-            }           
+            }    
+            if (empty($result['discount'])) {
+                $result['discount'] = 0;
+            }
+            if (empty($result['tax'])) {
+                $result['tax'] = 0;
+            }
+            if (empty($result['shipping'])) {
+                $result['shipping'] = 0;
+            }
             $has = new OrderHasProducts();
             $result['products'] = $has->getAll(array(
                 'order_id' => $result['order_id'],
@@ -695,14 +762,16 @@ class ProductOrders extends AbstractModel {
         $has = new OrderHasProducts();
         if ($has->saveDetail($param)) {
             return self::updateTotalMoney(array(
-                'order_id' => $param['order_id']
+                'order_id' => $param['order_id'],
+                'total_money' => !empty($param['total_money']) ? $param['total_money'] : 0,
+                'discount' => !empty($param['discount']) ? $param['discount'] : 0,
             ));
         }
         return false;
     }
     
-    public function updateTotalMoney($param)
-    { 
+    public function getTotalMoney($param)
+    {
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from('product_order_has_products')  
@@ -715,8 +784,22 @@ class ProductOrders extends AbstractModel {
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE
         );
+        return !empty($result['total_money']) ? $result['total_money'] : 0;
+    }
+    
+    public function updateTotalMoney($param)
+    {  
+        if (empty($param['total_money'])) {
+            $param['total_money'] = $this->getTotalMoney($param);
+        }
+        if (empty($param['discount'])) {
+            $param['discount'] = 0;
+        }
         if (!self::update(array(
-            'set' => array('total_money' => !empty($result['total_money']) ? $result['total_money'] : 0),
+            'set' => array(
+                'total_money' => db_float($param['total_money']),
+                'discount' => db_float($param['discount']),
+            ),
             'where' => array(
                 'order_id' => $param['order_id'],
             ),
@@ -725,4 +808,5 @@ class ProductOrders extends AbstractModel {
         }  
         return true;
     }
+    
 }

@@ -10,28 +10,13 @@
 namespace Admin\Controller;
 
 use Application\Lib\Util;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\Auth\LoginForm;
 
 class PageController extends AppController
 {
     public function indexAction()
-    {       
-        $username = 'yougo';
-        $password = 'yougo';
-        //$username = 'localhost';
-        //$password = '';
-        $database = 'yougo';
-        $host = 'localhost';
-        
-        $connection = new \Mongo("mongodb://admin:admin@127.0.0.1/local");
-        
-        //$con = new \Mongo("mongodb://{$username}:{$password}@{$host}"); // Connect to Mongo Server
-        //$db = $con->selectDB($database); // Connect to Database
-        d($connection, 1);
-
-        //$a = Util::cryptPassword('123456'); p($a, 1);
-        //p(Util::verifyPassword('123456', $a['salt']));
+    {   
         return $this->getViewModel();
     }
     

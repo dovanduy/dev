@@ -11,7 +11,7 @@ namespace Admin\Controller;
 
 use Application\Lib\Cache;
 use Application\Lib\Log;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\Hotel\HotelSearchForm;
 use Admin\Form\Hotel\HotelListForm;
 use Admin\Form\Hotel\HotelForm;

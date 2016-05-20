@@ -1,7 +1,7 @@
 <?php
 namespace Admin\Model;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Lib\Cache;
 use Exception;
 class Scennics extends Model{    

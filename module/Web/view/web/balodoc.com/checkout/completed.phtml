@@ -112,28 +112,30 @@
                             <?php foreach ($data['products'] as $product): ?>
                             <tr>
                                 <td><?php echo $product['product_name']; ?></td>
-                                <td><?php echo $product['quantity']; ?></td>                        
-                                <td><?php echo money_format($product['price']); ?></td>                        
-                                <td><?php echo money_format($product['total_money']); ?></td>
+                                <td align="right"><?php echo $product['quantity']; ?></td>                        
+                                <td align="right"><?php echo app_money_format($product['price']); ?></td>                        
+                                <td align="right"><?php echo app_money_format($product['total_money']); ?></td>
                             </tr>
                             <?php endforeach ?> 
-                            <tr>
-                                <td>&nbsp</td>
-                                <td>&nbsp</td>
-                                <th><?php echo $this->translate('Tax money') ?></th>
-                                <td><?php echo !empty($data['tax']) ? money_format($data['tax']) : 0; ?></td>
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Total order money')?></td>
+                                <td align="right"><strong><?php echo app_money_format($data['total_money'])?></strong></td>
                             </tr>
-                            <tr>
-                                <td>&nbsp</td>
-                                <td>&nbsp</td>
-                                <th><?php echo $this->translate('Shipping money') ?></th>
-                                <td><?php echo !empty($data['shipping']) ? money_format($data['shipping']) : 0; ?></td>
+                            <tr>                                
+                                <td colspan="3" align="right"><?php echo $this->translate('Discount')?></th>
+                                <td align="right"><strong><?php echo app_money_format($data['discount'])?></strong></td>
                             </tr>
-                            <tr>
-                                <td>&nbsp</td>
-                                <td>&nbsp</td>
-                                <th><?php echo $this->translate('Payment total')?></th>
-                                <td><strong><?php echo money_format($data['total_money'])?></strong></td>
+                            <tr>                               
+                                <td colspan="3" align="right"><?php echo $this->translate('Tax money') ?></td>
+                                <td align="right"><?php echo !empty($data['tax']) ? app_money_format($data['tax']) : 0; ?></td>
+                            </tr>
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Shipping money') ?></td>
+                                <td align="right"><?php echo !empty($data['shipping']) ? app_money_format($data['shipping']) : 0; ?></td>
+                            </tr> 
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Total payment')?></td>
+                                <td align="right"><strong><?php echo app_money_format(db_float($data['total_money']) - db_float($data['discount']) + $data['tax'] + $data['shipping'])?></strong></td>
                             </tr>    
                         </tbody>
                     </table>                                        

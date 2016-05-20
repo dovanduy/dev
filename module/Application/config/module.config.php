@@ -135,7 +135,7 @@ return array(
     'upload' => array(
         'image' => array(
             'path' => './data/upload/img',
-            'url' => 'http://img.balodoc.com',
+            'url' => 'http://img.vuongquocbalo.com',
             'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
             'extension' => array('jpeg', 'jpg', 'gif', 'png'),
             'filename_prefix' => 'balo_',
@@ -222,7 +222,7 @@ return array(
                 'cacheDir' => getcwd() . '/data/cache',
                 'dirPermission' => 0755,
                 'filePermission' => 0666,
-                'ttl' => 60*60,
+                'ttl' => 24*60*60,
                 'namespace' => 'app'
             ),
         ),
@@ -233,7 +233,7 @@ return array(
     ),
     
     'email' => array(               
-        'from_email' => 'developer.php.vn@gmail.com',        
+        'from_email' => 'vuongquocbalo@gmail.com',        
         'from_name' => 'no-reply',        
         'smtp' => array(
             'host' => 'smtp.gmail.com',

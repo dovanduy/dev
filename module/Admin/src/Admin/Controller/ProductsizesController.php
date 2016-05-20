@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\ProductSizes;
 use Admin\Form\ProductSize\SearchForm;
 use Admin\Form\ProductSize\ListForm;

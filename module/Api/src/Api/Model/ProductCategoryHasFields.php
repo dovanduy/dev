@@ -93,6 +93,9 @@ class ProductCategoryHasFields extends AbstractModel {
         if (is_array($param['category_id'])) {
             $param['category_id'] = implode(',', $param['category_id']);
         }        
+        if (empty($param['category_id'])) {
+            return array();
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from('input_fields')  

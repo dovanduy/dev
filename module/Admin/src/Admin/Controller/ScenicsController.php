@@ -1,7 +1,7 @@
 <?php
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\Scenics\ScenicSearchForm;
 use Admin\Form\Scenics\ScenicListForm;
 use Admin\Form\Scenics\ScenicAddForm;

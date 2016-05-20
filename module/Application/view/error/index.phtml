@@ -1,68 +1,17 @@
-<h1><?php echo $this->translate('An error occurred') ?></h1>
-<h2><?php echo $this->message ?></h2>
-
-<?php if (isset($this->display_exceptions) && $this->display_exceptions): ?>
-
-<?php if(isset($this->exception) && $this->exception instanceof Exception): ?>
-<hr/>
-<h2><?php echo $this->translate('Additional information') ?>:</h2>
-<h3><?php echo get_class($this->exception); ?></h3>
-<dl>
-    <dt><?php echo $this->translate('File') ?>:</dt>
-    <dd>
-        <pre class="prettyprint linenums"><?php echo $this->exception->getFile() ?>:<?php echo $this->exception->getLine() ?></pre>
-    </dd>
-    <dt><?php echo $this->translate('Message') ?>:</dt>
-    <dd>
-        <pre class="prettyprint linenums"><?php echo $this->escapeHtml($this->exception->getMessage()) ?></pre>
-    </dd>
-    <dt><?php echo $this->translate('Stack trace') ?>:</dt>
-    <dd>
-        <pre class="prettyprint linenums"><?php echo $this->escapeHtml($this->exception->getTraceAsString()) ?></pre>
-    </dd>
-</dl>
-<?php
-    $e = $this->exception->getPrevious();
-    $icount = 0;
-    if ($e) :
-?>
-<hr/>
-<h2><?php echo $this->translate('Previous exceptions') ?>:</h2>
-<ul class="unstyled">
-    <?php while($e) : ?>
-    <li>
-        <h3><?php echo get_class($e); ?></h3>
-        <dl>
-            <dt><?php echo $this->translate('File') ?>:</dt>
-            <dd>
-                <pre class="prettyprint linenums"><?php echo $e->getFile() ?>:<?php echo $e->getLine() ?></pre>
-            </dd>
-            <dt><?php echo $this->translate('Message') ?>:</dt>
-            <dd>
-                <pre class="prettyprint linenums"><?php echo $this->escapeHtml($e->getMessage()) ?></pre>
-            </dd>
-            <dt><?php echo $this->translate('Stack trace') ?>:</dt>
-            <dd>
-                <pre class="prettyprint linenums"><?php echo $this->escapeHtml($e->getTraceAsString()) ?></pre>
-            </dd>
-        </dl>
-    </li>
-    <?php
-        $e = $e->getPrevious();
-        $icount += 1;
-        if ($icount >= 50) {
-            echo "<li>There may be more exceptions, but we have no enough memory to proccess it.</li>";
-            break;
-        }
-        endwhile;
-    ?>
-</ul>
-<?php endif; ?>
-
-<?php else: ?>
-
-<h3><?php echo $this->translate('No Exception available') ?></h3>
-
-<?php endif ?>
-
-<?php endif ?>
+<section class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="main col-md-6 col-md-offset-3 pv-40">
+                <h1 class="page-title"><span class="text-default">500</span></h1>
+                <h2><?php echo $this->translate('Ooops! Error') ?></h2>
+                <p><?php echo $this->translate('The requested URL was not found on this server. Make sure that the Web site address displayed in the address bar of your browser is spelled and formatted correctly') ?></p>
+                <form id="searchForm404" role="search" action="/search">
+                    <div class="form-group has-feedback">
+                        <input id="keyword" name="q" type="text" class="form-control" placeholder="<?php echo $this->translate('Enter product name or brand name')?>">
+                        <i class="fa fa-search form-control-feedback"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

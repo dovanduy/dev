@@ -70,12 +70,12 @@ class CartsController extends AppController
             foreach ($cartItems as &$item) {
                 $totalQuantity += $item['quantity'];
                 $totalMoney += $item['quantity'] * $item['price'];
-                $item['price'] = money_format($item['price']);
-                $item['total_money'] = money_format($item['total_money']);
+                $item['price'] = app_money_format($item['price']);
+                $item['total_money'] = app_money_format($item['total_money']);
             }
             $result['items'] = $cartItems;
             $result['totalQuantity'] = $totalQuantity;
-            $result['totalMoney'] = money_format($totalMoney);
+            $result['totalMoney'] = app_money_format($totalMoney);
             $result['status'] = 'OK';
             die(\Zend\Json\Encoder::encode($result));
         }
@@ -101,12 +101,12 @@ class CartsController extends AppController
                     foreach ($cartItems as &$item) {
                         $totalQuantity += $item['quantity'];
                         $totalMoney += $item['quantity'] * $item['price'];
-                        $item['price'] = money_format($item['price']);
-                        $item['total_money'] = money_format($item['total_money']);
+                        $item['price'] = app_money_format($item['price']);
+                        $item['total_money'] = app_money_format($item['total_money']);
                     }                    
                     $result['items'] = $cartItems;
                     $result['totalQuantity'] = $totalQuantity;
-                    $result['totalMoney'] = money_format($totalMoney);
+                    $result['totalMoney'] = app_money_format($totalMoney);
                     $result['status'] = 'OK';
                     die(\Zend\Json\Encoder::encode($result));
                 }

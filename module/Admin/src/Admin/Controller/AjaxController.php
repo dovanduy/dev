@@ -10,7 +10,7 @@
 namespace Admin\Controller;
 
 use Application\Lib\Util;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\LocaleCities;
 use Application\Model\LocaleStates;
 

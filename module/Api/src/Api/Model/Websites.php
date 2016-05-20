@@ -462,6 +462,41 @@ class Websites extends AbstractModel {
                 ),
                 'category_id'
             );
+            if (!empty($param['get_menus'])) {
+                $menuModel = new Menus;
+                $result['menus'] = $menuModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1,
+                ));
+            }
+            if (!empty($param['get_product_categories'])) {
+                $categoryModel = new ProductCategories;
+                $result['product_categories'] = $categoryModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1,
+                ));
+            }
+            if (!empty($param['get_banners'])) {
+                $bannerModel = new Banners;
+                $result['banners'] = $bannerModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1,
+                ));
+            }
+            if (!empty($param['get_brand_featureds'])) {
+                $brandModel = new Brands;
+                $result['brand_featureds'] = $brandModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1,
+                ));
+            }
+            if (!empty($param['get_blocks'])) {
+                $blockModel = new Blocks;
+                $result['blocks'] = $blockModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1,
+                ));
+            }
         }       
         return $result;
     }

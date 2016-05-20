@@ -43,8 +43,8 @@ class SliderHelper extends AbstractHtmlElement
 					max: {$max},
 					values: [{$value}],
 					slide: function( event, ui ) {
-						$('#{$firstInputId}').val($.number(ui.values[0]));
-						$('#{$lastInputId}').val($.number(ui.values[1]));						
+						$('#{$firstInputId}').val($.number(ui.values[0], 0, ',', '.') + ' VND');
+						$('#{$lastInputId}').val($.number(ui.values[1], 0, ',', '.') + ' VND');						
 					}
 				});				
 			});
@@ -54,8 +54,8 @@ class SliderHelper extends AbstractHtmlElement
             $expValue[0] = $min;
             $expValue[1] = $max;
         }
-		$firstValue = number_format(db_float($expValue[0]));
-		$lastValue = number_format(db_float($expValue[1]));
+		$firstValue = app_money_format(db_float($expValue[0]));
+		$lastValue = app_money_format(db_float($expValue[1]));
 		$html = "			
 			<div id=\"{$slideId}\"></div>
 			<p class='silde-input'>

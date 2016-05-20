@@ -9,13 +9,10 @@
 
 namespace Web\Controller;
 
-use Application\Model\Images;
-
 use Web\Lib\Api;
 use Web\Form\Product\ReviewForm;
 use Web\Model\ProductCategories;
 use Web\Model\Products;
-use Web\Model\Banners;
 use Web\Model\UrlIds;
 use Web\Module as WebModule;
 
@@ -57,8 +54,6 @@ class ProductsController extends AppController
         $param = $this->getParams(array(
             'page' => 1,
             'limit' => WebModule::getConfig('limit.products'),
-            'sort' => 'sort-asc',            
-            'active' => 1,            
             'category_id' => $categoryId,            
             'brand_id' => $brandId,            
             'option_id' => $optionId,            
@@ -161,13 +156,12 @@ class ProductsController extends AppController
                         'og:description' => $detailCategory['meta_description'],                    
                     ),
                 ));
-            }
+            }           
             
-            $result = Api::call('url_products_lists', $param);
+            $result = Products::getList($param);            
             return $this->getViewModel(array(
                     'params' => $this->params()->fromQuery(),                                             
-                    'optionId' => $optionId,                                             
-                    'banners' => Banners::getAll(),  
+                    'optionId' => $optionId,
                     'result' => $result,               
                     'subCategories' => isset($subCategories) ? $subCategories : array(),               
                     'detailCategory' => isset($detailCategory) ? $detailCategory : array(),               
@@ -182,27 +176,18 @@ class ProductsController extends AppController
         
             $id = $productId;    
 
-            $locale = \Application\Module::getConfig('general.default_locale');
-
             // invalid parameters
             if (empty($id)) {
                 return $this->notFoundAction();
             }
 
             // get detail             
-            $data = Api::call(
-                'url_products_detail', 
-                array(                    
-                    'product_id' => $id, 
-                    'locale' => $locale,
-                    'get_images' => 1,
-                    'get_product_reviews' => 1,
-                )
-            );
+            $data = Products::getDetail($id);
+            
             // not found data
             if (empty($data)) {
                 return $this->notFoundAction();
-            }  
+            }
             
             $categoryId = 0;
             if (!empty($data['category_id'])) {
@@ -256,25 +241,14 @@ class ProductsController extends AppController
                     'active' => true
                 ));
             }
-           
-            if (!empty($data['image_id'])) {
-                $data['url_image'] = Images::getUrl($data['image_id'], 'products', true);                
-            }
+            
             if (empty($data['meta_keyword'])) {
                 $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
             }
             if (empty($data['meta_description'])) {
                 $data['meta_description'] = 'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'];
             }
-            $dom = new \DOMDocument();            
-            @$dom->loadHTML(mb_convert_encoding($data['content'], 'HTML-ENTITIES', 'UTF-8'));
-            foreach ($dom->getElementsByTagName('img') as $img) {
-                $img->setAttribute('data-original', $img->getAttribute('src'));
-                $img->setAttribute('src', '');                
-                $img->setAttribute('class', 'lazy lazy-hidden');               
-                $img->setAttribute('alt', $data['name']);
-            }
-            $data['content'] = $dom->saveHTML();
+           
             $this->setHead(array(
                 'title' => $data['name'],
                 'meta_name' => array(
@@ -287,13 +261,10 @@ class ProductsController extends AppController
                     'og:title' => $data['name'],
                     'og:description' => $data['meta_description'],
                     'og:image' => !empty($data['url_image']) ? $data['url_image'] : '',
-                    'og:price:amount' => !empty($data['price']) ? money_format($data['price']) : '0',
+                    'og:price:amount' => !empty($data['price']) ? app_money_format($data['price']) : '0',
                     'og:price:currency' => 'VND',
                 ),                
-            ));
-            
-            //$reviewList = Api::call('url_products_reviews_all', array('product_id' => $data['product_id']));
-            $reviewList = $data['product_reviews'];
+            ));   
             
             $reviewForm = new ReviewForm();  
             $reviewForm ->setController($this)
@@ -304,11 +275,10 @@ class ProductsController extends AppController
             // send form
             if ($request->isPost()) {            
                 $post = (array) $request->getPost(); 
-                $post['product_id'] = $data['product_id']; 
-
+                $post['product_id'] = $data['product_id'];
                 if (isset($post['loadreviews'])) {
                     if ($request->isXmlHttpRequest()) {    
-                        foreach ($reviewList as $review) {
+                        foreach ($data['product_reviews'] as $review) {
                             $review['content'] = nl2br($review['content']);
                             $time = app_datetime_format($review['created']);
                             $rating = '';
@@ -319,12 +289,7 @@ class ProductsController extends AppController
                                     $rating .= "<i class=\"fa fa-star\"></i>";
                                 }
                             }
-                            echo "<div class=\"comment clearfix\">
-                                <!--
-                                <div class=\"comment-avatar\">
-                                    <img class=\"img-circle\" src=\"/web/images/avatar.jpg\" alt=\"avatar\">
-                                </div>
-                                -->
+                            echo "<div class=\"comment clearfix\">                               
                                 <header>
                                     <h3>{$review['name']}</h3>
                                     <div class=\"comment-meta\"> 
@@ -338,7 +303,7 @@ class ProductsController extends AppController
                                 </div>
                             </div>";
                         }
-                        exit;                    
+                        exit;               
                     }
                 }
 
@@ -355,12 +320,10 @@ class ProductsController extends AppController
                         die($this->getErrorMessageForAjax(array(), $error)); 
                     }
                 }
-            } 
+            }
             return $this->getViewModel(array(
                     'data' => $data,
-                    'reviewForm' => $reviewForm,
-                    'reviewList' => $reviewList,
-                    'relatedProducts' => Products::related($data['product_id'], $categoryId),
+                    'reviewForm' => $reviewForm
                 ), 'detail'
             );            
         }

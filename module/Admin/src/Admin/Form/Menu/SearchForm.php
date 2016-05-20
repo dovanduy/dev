@@ -33,7 +33,7 @@ class SearchForm extends AbstractForm
     * @return array Array to create elements for form
     */
     public function elements() {
-        $tab = $this->getRequest()->getQuery('tab', '');
+        $tab = $this->getRequest()->getQuery('tab', 'header');
         $menus = Menus::getForSelect($lastLevel, false, $tab);
         return array(  
             array(

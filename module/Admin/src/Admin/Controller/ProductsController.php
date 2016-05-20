@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\Images;
 use Application\Model\ProductCategories;
 use Application\Model\ProductSizes;
@@ -388,7 +388,7 @@ class ProductsController extends AppController
         } else {
             $locale = $tab;
         }
-        
+       
         // invalid parameters
         if (empty($id)) {
             return $this->notFoundAction();

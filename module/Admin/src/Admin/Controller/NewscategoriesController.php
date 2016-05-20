@@ -10,7 +10,7 @@
 namespace Admin\Controller;
 
 use Application\Lib\Cache;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\Images;
 use Application\Model\NewsCategories;
 use Admin\Form\NewsCategory\SearchForm;

@@ -101,7 +101,7 @@ class Users extends AbstractModel {
         if (isset($param['active'])) {
             $values['active'] = $param['active'];
         }        
-        if ($id = self::insert($values)) {             
+        if ($id = self::insert($values)) {              
             return $_id;
         }        
         return false;
@@ -638,7 +638,7 @@ class Users extends AbstractModel {
         return $self;
     }
     
-    public function register($param)
+    public function register($param, &$userId = 0)
     {
         $_id = self::add($param, $userId);
         if (!empty($_id) && !empty($userId)) {

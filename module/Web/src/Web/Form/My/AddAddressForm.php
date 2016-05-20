@@ -71,7 +71,7 @@ class AddAddressForm extends AbstractForm
             array(
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'state_code',
-                'allow_empty' => true,
+                //'allow_empty' => true,
                 'options' => array(                    
                     'label' => 'State/Province',
                     'value_options' => array('' => '--Select one--')
@@ -80,7 +80,7 @@ class AddAddressForm extends AbstractForm
                     'id' => 'state_code',
                     'class' => 'form-control', 
                     'onchange' => 'return localeCity(this.value);',
-                    'required' => false,
+                    'required' => true,
                 ),
             ),
             array(

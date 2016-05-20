@@ -122,7 +122,7 @@
                             <span class="attribute-value">                                
                                 <?php 
                                     if (!empty($data['price'])) {
-                                        echo money_format($data['price']); 
+                                        echo app_money_format($data['price']); 
                                     } else {
                                         echo $this->translate('Price contact');
                                     }                                    
@@ -132,7 +132,7 @@
                         <?php if (!empty($data['original_price'])): ?>
                         <p class="original-price">
                             <span class="attribute-name"><?php echo $this->translate('Original price') ?>:</span>
-                            <span class="attribute-value"><?php echo money_format($data['original_price']); ?></span>
+                            <span class="attribute-value"><?php echo app_money_format($data['original_price']); ?></span>
                         </p>
                         <?php endif ?>
                         <p class="p-buy-now">

@@ -6,12 +6,6 @@ use Application\Module;
 use Application\Lib\Auth;
 use Application\Lib\Log;
 use Web\Module as WebModule;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
-
-use Zend\Json\Json;
-use Zend\Json\Decoder;
 
 /**
  * Functions to call API
@@ -26,12 +20,6 @@ class Api {
     
     public static $errors = array();
        
-    /**
-     * Call API
-     *  
-     * @author thailh   
-     * @return mixed Return API result
-     */
     public static function call($url, $param = array()) {
         $config = Module::getConfig('api');
         $method = 'post';
@@ -49,52 +37,38 @@ class Api {
                 $param['login_id'] = $AppUI->id;               
                 $param['access_token'] = $AppUI->access_token; 
             }
-			$param['website_id'] = WebModule::getConfig('website_id');
-            Log::info('API: ' . $url, $param);           
-			$client = new Client([                
-                'base_uri' => $config['base_uri'],
-                'timeout'  => $config['timeout'],
-            ]);
-            $options['auth'] = array($config['client_id'], $config['client_secret']);
-            if ($method == 'get') {
-                $options['query'] = $param;
-                $response = $client->get($url, $options);  
-            } else {
-                $hasUpload = false;
-                if ($_FILES) {                
-                    foreach ($_FILES as $name => $file) {
-                        if (!empty($file['name'])) {
-                            $hasUpload = true;
-                        }
+			$param['website_id'] = WebModule::getConfig('website_id');                       
+            if ($_FILES) {                
+                foreach ($_FILES as $name => $file) {
+                    if (!empty($file['name'])) {
+                        $param[$name] = new \CurlFile($file['tmp_name'], $file['type'], $file['name']);
                     }
                 }
-                if ($hasUpload) {          
-                    $multipart = array();
-                    foreach ($_FILES as $fileField => $fileInfo) {
-                        if (!empty($fileInfo['name'])) {
-                            $multipart[] = array(
-                                'name' => $fileField,
-                                'contents' => @fopen($fileInfo['tmp_name'], 'r'),
-                                'filename' => $fileInfo['name']
-                            );
-                        }
-                    }
-                    if (!empty($multipart)) {                    
-                        $options['multipart'] = $multipart;
-                        $options['query'] = http_build_query($param, null, '&');
-                    }
-                } else {
-                    $options = array(
-                        'form_params' => $param,
-                    );
-                }
-                $response = $client->post($url, $options);                 
-            }           
-            if (isset($param['debug'])) {               
-                Log::info($response->getBody()->getContents()); 
+            }       
+            $headers = array("Content-Type:multipart/form-data");
+            $url = $config['base_uri'] . $url;
+            $ch = curl_init();
+            $options = array(
+                CURLOPT_URL => $url,
+                CURLOPT_HEADER => false,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_POSTFIELDS => $param,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SAFE_UPLOAD => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_TIMEOUT => $config['timeout'],
+            );
+            curl_setopt_array($ch, $options);
+            $response = curl_exec($ch);
+            Log::info($url);
+            if (isset($param['debug'])) { 
+                Log::info($response);
             }
-            if ($response->getStatusCode() == 200) {
-                $result = Decoder::decode($response->getBody()->getContents(), Json::TYPE_ARRAY);
+            $errno = curl_errno($ch);
+            if (empty($errno)) {
+                curl_close($ch);
+                $result = json_decode($response, true);
                 switch ($result['status']) {
                     case 'OK';
                         return $result['results']; 
@@ -107,10 +81,11 @@ class Api {
                         Log::error("ERROR", $result['results']);
                 }
             }
+            if (!empty($ch)) {
+                @curl_close($ch);
+            }
             throw new \Exception('System error');
-        } catch (ClientException $e) {
-            self::logEx($e);
-        } catch (ServerException $e) {
+        } catch (\Exception $e) {       
             self::logEx($e);          
         }
         return false;

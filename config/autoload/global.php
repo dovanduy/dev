@@ -23,7 +23,7 @@ return array(
     ),
     'db_oauth2' => array(
         'driver' => 'Pdo',
-        'dsn' => 'mysql:dbname=dev;host=localhost',
+        'dsn' => 'mysql:dbname=dev2;host=localhost',
         'username' => 'root',
         'password' => '',
         'driver_options' => array(

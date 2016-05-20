@@ -69,7 +69,7 @@ if (!empty($cartItems)) {
                                     <?php echo $item['name']?>
                                 </a> 
                             </td>
-                            <td class="price"><?php echo money_format($item['price'])?> </td>
+                            <td class="price"><?php echo app_money_format($item['price'])?> </td>
                             <td class="quantity">
                                 <div class="form-group">
                                     <input 
@@ -100,14 +100,14 @@ if (!empty($cartItems)) {
                             
                             <td class="amount">
                                 <span class="cart-item-total-money-<?php echo $item['product_id']?>">
-                                    <?php echo money_format($item['quantity'] * $item['price'])?> 
+                                    <?php echo app_money_format($item['quantity'] * $item['price'])?> 
                                 </span>
                             </td>
                         </tr>
                         <?php endforeach ?>
                         <tr>
-                            <td class="total-quantity" colspan="4"><?php echo $this->translate('Total Items')?>: <?php echo money_format($totalQuantity)?></span></td>
-                            <td class="total-amount"><span><?php echo money_format($totalMoney)?></span></td>
+                            <td class="total-quantity" colspan="4"><?php echo $this->translate('Total Items')?>: <?php echo app_money_format($totalQuantity)?></span></td>
+                            <td class="total-amount"><span><?php echo app_money_format($totalMoney)?></span></td>
                         </tr>
                     </tbody>
                 </table>

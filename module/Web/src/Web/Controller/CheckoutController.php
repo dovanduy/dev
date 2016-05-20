@@ -18,6 +18,8 @@ use Web\Lib\Api;
 use Web\Form\Checkout\RegisterForm;
 use Web\Form\Checkout\RegisterAddressForm;
 use Web\Form\Checkout\ReviewForm;
+use Web\Form\Checkout\PaymentForm;
+use Web\Module as WebModule;
 
 class CheckoutController extends AppController
 {    
@@ -227,6 +229,14 @@ class CheckoutController extends AppController
                 $post = (array) $request->getPost();     
                 $registerForm->setData($post);   
                 if ($registerForm->isValid()) {
+                    $registerVoucher = WebModule::getConfig('vouchers.register');
+                    if (!empty($registerVoucher)) {
+                        $post['generate_voucher'] = 1; 
+                        $post['voucher_amount'] = $registerVoucher['amount']; 
+                        $post['voucher_type'] = $registerVoucher['type']; 
+                        $post['voucher_expired'] = $registerVoucher['expired']; 
+                        $post['send_email'] = $registerVoucher['send_email']; 
+                    }
                     $id = Api::call('url_users_register', $post);
                     if (Api::error()) {
                         $this->addErrorMessage($this->getErrorMessage(array(), Api::error()));
@@ -244,11 +254,12 @@ class CheckoutController extends AppController
                                 'street' => $post['street'],
                                 'address_id' => $AppUI->address_id,
                                 'address_name' => $post['address_name'], 
+                                'payment' => 'COD',
                             ));
                             $this->addSuccessMessage('Account registed successfully');
                             return $this->redirect()->toRoute(
                                 'web/checkout',
-                                array('action' => 'review')
+                                array('action' => 'payment')
                             );
                         }                        
                     }
@@ -386,6 +397,9 @@ class CheckoutController extends AppController
             if (!empty($checkoutInfo['payment'])) {
                 $post['payment'] = $checkoutInfo['payment'];
             }
+            if (!empty($checkoutInfo['voucher_code'])) {
+                $post['voucher_code'] = $checkoutInfo['voucher_code'];
+            }
             $cartItems = Cart::get(true);
             $totalQuantity = 0;
             $totalMoney = 0;
@@ -413,6 +427,62 @@ class CheckoutController extends AppController
         exit;
     }
     
+    
+    /**
+     * Ajax order
+     *
+     * @return Zend\View\Model
+     */
+    public function applyvoucherAction()
+    {
+        $request = $this->getRequest();
+        $AppUI = $this->getLoginInfo();
+        $checkoutInfo = Session::get('checkout_step1');
+        if ($request->isXmlHttpRequest() && !empty($AppUI)) {       
+            $cartItems = Cart::get(false);
+            $totalQuantity = 0;
+            $totalMoney = 0;
+            if (!empty($cartItems)) {                         
+                foreach ($cartItems as $item) {
+                    $totalQuantity += db_int($item['quantity']);
+                    $totalMoney += db_int($item['quantity']) * db_float($item['price']);
+                }
+            }                
+            $post = (array) $request->getPost();  
+            $post['user_id'] = $AppUI->user_id;
+            $voucherDetail = Api::call('url_vouchers_check', $post);            
+            if (!empty($voucherDetail)) {
+                
+                switch ($voucherDetail['type']) {
+                    case 0:  
+                        $result['discount'] = db_float($voucherDetail['amount']*$totalMoney/100);
+                        break;
+                    case 1:
+                        $result['discount'] = db_float($voucherDetail['amount']);
+                        break;
+                }               
+                
+                $checkoutInfo['last_total_money'] = ($totalMoney - $result['discount']);
+                $checkoutInfo['discount'] = $result['discount'];
+                $checkoutInfo['voucher_code'] = $post['voucher_code'];                
+                Session::set('checkout_step1', $checkoutInfo); 
+                
+                $result['last_total_money'] = app_money_format($checkoutInfo['last_total_money']);
+                $result['discount'] = app_money_format($checkoutInfo['discount']);
+                $result['status'] = 'OK';
+                
+                die(json_encode($result));
+            } 
+          
+            $checkoutInfo['last_total_money'] = ($totalMoney);
+            $checkoutInfo['discount'] = 0;
+            $checkoutInfo['voucher_code'] = '';                
+            Session::set('checkout_step1', $checkoutInfo);
+            die($this->getErrorMessageForAjax()); 
+        }
+        exit;
+    }
+    
     /**
      * 
      *
@@ -421,22 +491,28 @@ class CheckoutController extends AppController
      * @return Zend\View\Model
      */
     public function paymentAction()
-    {
+    {        
         $request = $this->getRequest(); 
+        $paymentForm = new PaymentForm();
+        $paymentForm->setController($this)
+                ->setAttribute('id', 'paymentForm')
+                ->setAttribute('class', 'form-horizontal')
+                ->create();
+        
         if ($request->isPost()) {
             $post = (array) $request->getPost();
             if (!empty($post['payment'])) {
                 $checkoutInfo = Session::get('checkout_step1');
-                $checkoutInfo['payment'] = $post['payment'];
+                $checkoutInfo['payment'] = $post['payment'];              
                 Session::set('checkout_step1', $checkoutInfo);                       
                 return $this->redirect()->toRoute(
                     'web/checkout',
                     array('action' => 'review')
-                );   
+                );
             }
         }
         return $this->getViewModel(array(
-                             
+                'paymentForm' => $paymentForm              
             )
         );
     }

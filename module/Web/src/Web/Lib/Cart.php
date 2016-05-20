@@ -4,6 +4,7 @@ namespace Web\Lib;
 
 use Zend\Session\Container;
 use Application\Model\Images;
+use Web\Model\Products;
 
 /**
  * Cart
@@ -56,7 +57,7 @@ class Cart {
             $items = static::instance()->offsetGet(static::$sessionName); 
             if ($moneyFormat == true) {
                 foreach ($items as &$item) {
-                    $item['total_money'] = money_format($item['total_money']);
+                    $item['total_money'] = app_money_format($item['total_money']);
                 } 
                 unset($item);
             }
@@ -75,12 +76,7 @@ class Cart {
             $items[$keyId]['quantity'] = $quantity;
             $items[$keyId]['total_money'] = $quantity * db_float($items[$keyId]['price']);
         } else {
-            $data = Api::call(
-                'url_products_detail', 
-                array(
-                    '_id' => $id, 
-                )
-            );
+            $data = Products::getDetail($id);          
             if (empty($data)) {
                 return false;
             }
@@ -104,7 +100,7 @@ class Cart {
             }
             $data['url_image'] = '';
             if (!empty($data['image_id'])) {
-                $data['url_image'] = Images::getUrl($data['image_id'], 'products', true);
+                $data['url_image'] = Images::getUrl($data['image_id'], 'products');
             }
             $items[$keyId] = array(
                 '_id' => $data['_id'],

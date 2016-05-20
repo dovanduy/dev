@@ -9,9 +9,9 @@
 
 return array(
     'api' => array(
-        'base_uri' => 'http://api.ken.dev/',
-        'oauth2_base_uri' => 'http://oauth2.ken.dev/',
-        'timeout' => 30.0,
+        'base_uri' => 'http://api.vuongquocbalo.com/',
+        'oauth2_base_uri' => 'http://oauth2.vuongquocbalo.com/',
+        'timeout' => 60,
         'client_id' => 'testclient',
         'client_secret' => 'testpass',
         
@@ -162,6 +162,7 @@ return array(
         'url_productcolors_onoff' => 'productcolors/onoff',    
 		
         'url_products_lists' => array('products/lists', 'get'),
+        'url_products_felists' => array('products/felists', 'get'),
         'url_products_all' => array('products/all', 'get'),
         'url_products_add' => 'products/add',
         'url_products_update' => 'products/update',
@@ -262,5 +263,14 @@ return array(
 		'url_blocks_removeproduct' => 'blocks/removeproduct',
 		'url_blocks_updatesortproduct' => 'blocks/updatesortproduct',
 		'url_blocks_updatesort' => 'blocks/updatesort',		
+		
+		'url_vouchers_lists' => 'vouchers/lists',
+        'url_vouchers_all' => 'vouchers/all',
+        'url_vouchers_add' => 'vouchers/add',
+        'url_vouchers_update' => 'vouchers/update',
+        'url_vouchers_detail' => 'vouchers/detail',       
+        'url_vouchers_onoff' => 'vouchers/onoff',
+        'url_vouchers_check' => 'vouchers/check',
     ),
+	
 );

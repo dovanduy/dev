@@ -5,7 +5,7 @@ namespace Admin\Form\Hotel;
 use Admin\Module;
 use Application\Form\AbstractForm;
 use Application\Lib\Arr;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 
 /**
  * HotelForm

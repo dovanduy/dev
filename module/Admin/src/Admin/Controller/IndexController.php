@@ -10,7 +10,7 @@
 namespace Admin\Controller;
 
 use Zend\View\Model\ViewModel;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 
 class IndexController extends AppController
 {

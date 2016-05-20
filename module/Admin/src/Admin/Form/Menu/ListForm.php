@@ -81,6 +81,14 @@ class ListForm extends AbstractForm
                 ),                     
             ),
             array(
+                'name' => 'menu_id',
+                'title' => 'ID',
+                'sort' => true,
+                'attributes' => array(
+                    
+                ),
+            ),            
+            array(
                 'name' => 'name',
                 'title' => 'Name',
                 'sort' => true,

@@ -177,7 +177,7 @@
 								<i class="icon-tag pr-10"></i>
 								<?php 								
                                     if (!empty($data['price'])) {
-                                        echo money_format($data['price']); 
+                                        echo app_money_format($data['price']); 
                                     } else {
                                         echo $this->translate('Price contact');
                                     }                                    
@@ -307,8 +307,8 @@
                                             'id' => $product['_id']
                                         )
                                     );
-                                    $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
-                                    $product['price'] = money_format($product['price']);
+                                    $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
+                                    $product['price'] = app_money_format($product['price']);
                                     $product['name'] = truncate($product['name'], 60);
                                     echo "<div class=\"media margin-clear\">
                                         <div class=\"media-left\">

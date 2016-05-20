@@ -64,7 +64,7 @@ class ProductListForm extends AbstractForm
             <tr>
                 <td colspan="7" align="right">
                     <div class="total-money">' . $this->translate('Total') . ':' . 
-                    '<span>' . money_format($totalMoney) . '</span></div>
+                    '<span>' . app_money_format($totalMoney) . '</span></div>
                 </td>
             </tr>
         ';
@@ -156,7 +156,7 @@ class ProductListForm extends AbstractForm
                         $(\".td_price .price\").each(function() {
                             var pId = $(this).data(\"id\");
                             if (pId == id) {
-                                var money = money_format(db_float($(this).val()) * quantity);
+                                var money = app_money_format(db_float($(this).val()) * quantity);
                                 $(concat(\".total-money-\",id)).html(money);
                             }
                         });
@@ -197,7 +197,7 @@ class ProductListForm extends AbstractForm
                         $(\".td_quantity .number\").each(function() {
                             var qId = $(this).data(\"id\");
                             if (qId == id) {
-                                var money = money_format(db_float($(this).val()) * price);
+                                var money = app_money_format(db_float($(this).val()) * price);
                                 $(concat(\".total-money-\",id)).html(money);
                             }
                         });

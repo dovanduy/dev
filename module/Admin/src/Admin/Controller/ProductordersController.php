@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Lib\Cart;
 use Application\Model\Images;
 use Application\Model\LocaleStates;
@@ -323,7 +323,7 @@ class ProductordersController extends AppController
                 if (!empty($product['active'])) {
                     $totalMoney += $product['total_money'];                    
                 }
-                $product['total_money'] = money_format($product['total_money']); 
+                $product['total_money'] = app_money_format($product['total_money']); 
             }
         }
         $detailForm = new ProductListForm();
@@ -353,7 +353,7 @@ class ProductordersController extends AppController
                         $post
                     );
                     if (!empty($result['total_money'])) {
-                        $result['total_money'] = money_format($result['total_money']);
+                        $result['total_money'] = app_money_format($result['total_money']);
                     }
                     $result['status'] = 'OK';
                     die(\Zend\Json\Encoder::encode($result));
@@ -376,7 +376,7 @@ class ProductordersController extends AppController
                         $result = Api::call('url_productorders_addproduct', $post);
                         if (empty(Api::error())) {                            
                             if (!empty($result['total_money'])) {
-                                $result['total_money'] = money_format($result['total_money']);
+                                $result['total_money'] = app_money_format($result['total_money']);
                             }
                             $result['status'] = 'OK';
                             $result['message'] = 'Data saved successfully';
@@ -449,7 +449,7 @@ class ProductordersController extends AppController
                         }
                     }                    
                     $result['totalQuantity'] = $totalQuantity;
-                    $result['totalMoney'] = money_format($totalMoney); 
+                    $result['totalMoney'] = app_money_format($totalMoney); 
                     $result['status'] = 'OK';
                 } else {
                     $result['status'] = 'FAIL';
@@ -493,7 +493,7 @@ class ProductordersController extends AppController
                     }
                 }                    
                 $result['totalQuantity'] = $totalQuantity;
-                $result['totalMoney'] = money_format($totalMoney); 
+                $result['totalMoney'] = app_money_format($totalMoney); 
                 $result['status'] = 'OK';
             } else {
                 $result['status'] = 'FAIL';

@@ -33,6 +33,14 @@ class ProductsController extends AppController {
         );
     }
     
+    public function felistsAction() 
+    {
+        return \Api\Bus\Products\FeLists::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
     public function searchAction() 
     {
         return \Api\Bus\Products\Search::getInstance()->execute(

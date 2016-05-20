@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Model\Images;
 use Application\Model\Brands;
 use Admin\Form\Brand\SearchForm;

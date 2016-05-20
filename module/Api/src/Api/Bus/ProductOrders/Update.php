@@ -41,13 +41,13 @@ class Update extends AbstractBus {
                         $viewModel = new ViewModel(array('data' => $order));
                         if (!empty($param['is_paid'])) {
                             $viewModel->setTemplate('email/order_paid');
-                            $mail->setSubject(sprintf('%s xác nhận đơn hàng %s của quý khách đã thanh toán thành công', $order['website_url'], $order['code']));
+                            $mail->setSubject(sprintf('%s XAC NHAN DON HANG %s CUA QUI KHACH DA THANH TOAN THANH CONG', $order['website_url'], $order['code']));
                         } elseif (!empty($param['is_shipping'])) {
                             $viewModel->setTemplate('email/order_shipping');
-                            $mail->setSubject(sprintf('%s đang giao đơn hàng %s', $order['website_url'], $order['code']));
+                            $mail->setSubject(sprintf('%s DANG GIAO DON HANG %s', $order['website_url'], $order['code']));
                         } else {
                             $viewModel->setTemplate('email/order_done');
-                            $mail->setSubject(sprintf('%s đã giao hoàn tất đơn hàng %s', $order['website_url'], $order['code']));
+                            $mail->setSubject(sprintf('%s DA HOAN TAT DON HANG %s', $order['website_url'], $order['code']));
                         }
                         $mail->setTo($order['user_email']); 
                         $mail->setBody($viewModel);

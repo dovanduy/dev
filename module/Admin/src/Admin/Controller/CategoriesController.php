@@ -11,7 +11,7 @@ namespace Admin\Controller;
 
 use Application\Lib\Cache;
 use Application\Lib\Log;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Lib\Arr;
 use Admin\Form\Category\CategorySearchForm;
 use Admin\Form\Category\CategoryListForm;

@@ -56,7 +56,7 @@ class Cart {
             $items = static::instance()->offsetGet(static::$sessionName); 
             if ($moneyFormat == true) {
                 foreach ($items as &$item) {
-                    $item['total_money'] = money_format($item['total_money']);
+                    $item['total_money'] = app_money_format($item['total_money']);
                 } 
                 unset($item);
             }

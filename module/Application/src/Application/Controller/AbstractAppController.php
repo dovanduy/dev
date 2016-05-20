@@ -80,59 +80,6 @@ abstract class AbstractAppController extends AbstractActionController {
     
     public function addErrorMessage($message) {      
         $this->flashMessenger()->addErrorMessage($message);
-    }
-    
-    public function getErrorMessage($mapErrors = array(), $errors = array()) {  
-        $messages = array(); 
-        if (empty($errors)) {
-            $errors = Api::error();
-        }
-        if (!empty($errors)) {
-            foreach ($errors as $error) { 
-                if (!empty($mapErrors)) {
-                    foreach ($mapErrors as $mapError) {
-                        if ($error['field'] == $mapError['field'] && $error['code'] == $mapError['code']) {
-                            $messages[] = $mapError['message'];
-                        }
-                    }
-                } else {
-                    $messages[] = $error['message'];
-                }
-            } 
-        }
-        return !empty($messages) ? implode('<br/>', $messages) : '';
-    }
-    
-    public function getErrorMessageForAjax($validateErrors = array(), $mapErrors = array()) {  
-        $errorMessages = array(); 
-        if (!empty(Api::error())) {
-            foreach (Api::error() as $error) { 
-                if (empty($errorMessages[$error['field']])) {
-                    $errorMessages[$error['field']] = array();
-                }
-                if (!empty($mapErrors)) {
-                    foreach ($mapErrors as $mapError) {
-                        if ($error['field'] == $mapError['field'] && $error['code'] == $mapError['code']) {
-                            $errorMessages[$mapError['field']][] = $mapError['message'];
-                        }
-                    }
-                } else {
-                    $errorMessages[$error['field']][] = $error['message'];
-                }
-            } 
-        }
-        if (!empty($validateErrors)) {
-            $errorMessages = array_replace_recursive($validateErrors, $errorMessages);
-        }
-        $errors = array();
-        foreach ($errorMessages as $field => $messages) {
-            $errors[$field] = '<ul>';
-            foreach ($messages as $message) {
-                $errors[$field] .= "<li class='error'>{$message}</li>";
-            }
-            $errors[$field] .= '</ul>';
-        }
-        return json_encode($errors);
-    }
+    }  
     
 }

@@ -106,27 +106,27 @@
                             <tr>
                                 <td><?php echo $product['product_name']; ?></td>
                                 <td><?php echo $product['quantity']; ?></td>                        
-                                <td><?php echo money_format($product['price']); ?></td>                        
-                                <td><?php echo money_format($product['total_money']); ?></td>
+                                <td><?php echo app_money_format($product['price']); ?></td>                        
+                                <td><?php echo app_money_format($product['total_money']); ?></td>
                             </tr>
                             <?php endforeach ?> 
                             <tr>
                                 <td>&nbsp</td>
                                 <td>&nbsp</td>
                                 <th><?php echo $this->translate('Tax money') ?></th>
-                                <td><?php echo !empty($data['tax']) ? money_format($data['tax']) : 0; ?></td>
+                                <td><?php echo !empty($data['tax']) ? app_money_format($data['tax']) : 0; ?></td>
                             </tr>
                             <tr>
                                 <td>&nbsp</td>
                                 <td>&nbsp</td>
                                 <th><?php echo $this->translate('Shipping money') ?></th>
-                                <td><?php echo !empty($data['shipping']) ? money_format($data['shipping']) : 0; ?></td>
+                                <td><?php echo !empty($data['shipping']) ? app_money_format($data['shipping']) : 0; ?></td>
                             </tr>
                             <tr>
                                 <td>&nbsp</td>
                                 <td>&nbsp</td>
                                 <th><?php echo $this->translate('Payment total')?></th>
-                                <td><strong><?php echo money_format($data['total_money'])?></strong></td>
+                                <td><strong><?php echo app_money_format($data['total_money'])?></strong></td>
                             </tr>    
                         </tbody>
                     </table>                                        

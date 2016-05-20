@@ -105,7 +105,8 @@ class Menus extends AbstractModel {
                 'url',
                 'image_id',
                 'type',
-                'parent_id'
+                'parent_id',
+                'active',
             ))
             ->join(               
                 array(
@@ -121,20 +122,17 @@ class Menus extends AbstractModel {
                     'short',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
-            ->join(
-                'menu_images', 
-                static::$tableName . '.image_id = menu_images.image_id',
-                array('url_image'),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
+            )            
+            ->where(static::$tableName . '.website_id = '. $param['website_id'])
             ->where(static::$tableName . '.active = 1')     
-            ->order('sort');   
-        if (!empty($param['website_id'])) {            
-            $select->where(static::$tableName . '.website_id = '. $param['website_id']);  
+            ->order('type')
+            ->order('sort');
+        if (!empty($param['type'])) {        
+            $select->where(static::$tableName . '.type = '. self::quote($param['type']));  
         }
+        $selectString = $sql->getSqlStringForSqlObject($select);       
         return self::response(
-            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            static::selectQuery($selectString), 
             self::RETURN_TYPE_ALL
         );        
     }    

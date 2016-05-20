@@ -12,7 +12,7 @@ class UsersController extends AppController {
     public function addAction()
     {
         return \Api\Bus\Users\Add::getInstance()->execute(
-            $this->getServiceLocator()->get('Users'),
+            $this->getServiceLocator(),
             $this->getParams()
         );
     }
@@ -20,7 +20,7 @@ class UsersController extends AppController {
     public function registerAction()
     {
         return \Api\Bus\Users\Register::getInstance()->execute(
-            $this->getServiceLocator()->get('Users'),
+            $this->getServiceLocator(),
             $this->getParams()
         );
     }

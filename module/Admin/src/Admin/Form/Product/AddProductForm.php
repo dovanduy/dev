@@ -2,7 +2,7 @@
 
 namespace Admin\Form\Product;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Lib\Arr;
 use Application\Form\AbstractForm;
 

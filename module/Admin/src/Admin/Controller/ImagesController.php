@@ -10,7 +10,7 @@
 namespace Admin\Controller;
 
 use Application\Lib\Util;
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\Auth\LoginForm;
 
 class ImagesController extends AppController

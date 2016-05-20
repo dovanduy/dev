@@ -15,6 +15,7 @@ use Application\Lib\Cache;
 use Web\Lib\Api;
 use Web\Form\User\RegisterForm;
 use Web\Form\Auth\LoginForm;
+use Web\Module as WebModule;
 
 class PageController extends AppController
 {
@@ -41,19 +42,25 @@ class PageController extends AppController
             $post = (array) $request->getPost();         
             $form->setData($post);         
             if ($form->isValid()) {
+                $registerVoucher = WebModule::getConfig('vouchers.register');
+                if (!empty($registerVoucher)) {
+                    $post['generate_voucher'] = 1; 
+                    $post['voucher_amount'] = $registerVoucher['amount']; 
+                    $post['voucher_type'] = $registerVoucher['type']; 
+                    $post['voucher_expired'] = $registerVoucher['expired']; 
+                    $post['send_email'] = $registerVoucher['send_email']; 
+                }                
                 $id = Api::call('url_users_add', $post);
-                if (Api::error()) {
+                if (Api::error()) {                    
                     $this->addErrorMessage($this->getErrorMessage());
                 } else {
-                    $this->addSuccessMessage('Data saved successfully');
-                    return $this->redirect()->toRoute(
-                        'web/page', 
-                        array(
-                            'action' => 'signup'
-                        )                        
-                    );
+                    $auth = $this->getServiceLocator()->get('auth');
+                    if ($auth->authenticate($post['email'], $post['password'], 'web')) {                        
+                        $this->addSuccessMessage('Account registed successfully');
+                        return $this->redirect()->toRoute('web');
+                    } 
                 }
-            }            
+            }           
         }
         return $this->getViewModel(array(
                'form' => $form
@@ -185,6 +192,17 @@ class PageController extends AppController
         $mail->setBody($viewLayout);
         d($mail->send());        
         exit;
-    }   
+    }
+    
+    public function testapiAction()
+    { 
+        $detail = Api::call('url_admins_login', array(
+            'email' => 'root@gmail.com',
+            'password' => '123456',
+            'debug' => 1
+        ));
+        p($detail, 1);
+        exit;
+    }
     
 }

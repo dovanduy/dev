@@ -337,8 +337,7 @@ initJsAjaxSubmit = function (containerId) {
 						return false;
 					}
                     var result = JSON.parse(response);                                
-                    if (result.status !== undefined && result.status == 'OK') {   
-                        console.log('Data saved successfully');
+                    if (result.status !== undefined && result.status == 'OK') {
                         // remove prev error
                         $('#' + frm.attr('id') + ' .form-group').each(function() {
                             if ($(this).find('ul')) {
@@ -356,14 +355,14 @@ initJsAjaxSubmit = function (containerId) {
                         if ($('#modal-message').length > 0) {  
                             $('#modal-message').hide();
                         }						
-                        var error = JSON.parse(response);  						
+                        var error = JSON.parse(response);						
                         $('#' + frm.attr('id') + ' .form-group').each(function() {
                             if ($(this).find('ul')) {
                                 $(this).find('ul').remove();
                             }                            
                         });
                         // add new error
-                        $.each(error, function( index, value ) { 
+                        $.each(error, function( index, value ) {
                             var element = $(frm).find('.form-group-'+index);
                             if (element) {
 								console.log(value);
@@ -376,6 +375,11 @@ initJsAjaxSubmit = function (containerId) {
                                 element.append(value);
                             }
                         });
+                        
+                        if (btn.data('errorcallback')) {
+                            eval(btn.data('errorcallback'));
+                            return false;                            
+                        }
                     }                  
                 }
             });   
@@ -474,6 +478,17 @@ initJs = function () {
 		 $('#checkout_index #checkout-next').click(function(){
 			$('#checkout_index #registerForm').submit();
 			return false;			
+		});
+	}
+    
+    if ($('#checkout_payment #checkout-applyvoucher').length > 0) {
+		 $('#checkout_payment #checkout-applyvoucher').click(function(){
+			var code = $('#voucher_code').val();
+            if (code == '') {
+                alert('Vui lòng nhập mã giảm giá');
+                $('#voucher_code').focus();
+            }
+			return false;		
 		});
 	}
     

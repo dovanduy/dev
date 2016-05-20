@@ -10,21 +10,14 @@
 namespace Web\Controller;
 
 use Web\Model\Products;
-use Web\Model\ProductCategories;
-use Web\Model\Brands;
-use Web\Model\Banners;
 
 class IndexController extends AppController
 {
     public function indexAction()
     {        
-        $blocks = Products::homepage();   
-        $request = $this->getRequest();        
+        $blocks = Products::homepage();
         return $this->getViewModel(array(
-                'blocks' => $blocks, 
-                'featuredBrands' => Brands::getAll(1),  
-                'banners' => Banners::getAll(),                  
-                'categories' => ProductCategories::getSubCategories(array(), $lastLevel, 0, false),
+                'blocks' => $blocks
             )
         );
     }    

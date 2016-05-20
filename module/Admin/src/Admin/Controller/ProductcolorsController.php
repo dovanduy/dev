@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Admin\Form\ProductColor\SearchForm;
 use Admin\Form\ProductColor\ListForm;
 use Admin\Form\ProductColor\AddForm;

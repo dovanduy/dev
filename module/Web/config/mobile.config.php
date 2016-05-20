@@ -14,6 +14,10 @@ return array(
             'web/header' => __DIR__ . '/../view/partial/mobile/header.phtml',           
             'web/footer' => __DIR__ . '/../view/partial/mobile/footer.phtml'         
         ),        
-    ),   
+    ),
+
+	
+    
+    'display_page' => 5,
     
 );

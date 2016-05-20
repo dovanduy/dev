@@ -33,8 +33,8 @@ class Add extends AbstractBus {
                     $mail = $sm->get("Mail");        
                     $viewModel = new ViewModel(array('data' => $order));
                     $viewModel->setTemplate('email/order');
-                    $mail->setTo($order['user_email']);                     
-                    $mail->setSubject(sprintf('%s đã nhận đơn hàng %s', $order['website_url'], $order['code']));
+                    $mail->setTo($order['user_email']);                                         
+                    $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $order['website_url'], $order['code']));
                     $mail->setBody($viewModel);
                     $mail->send();
                 }

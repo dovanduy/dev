@@ -56,7 +56,7 @@ if (!empty($cartItems)) {
                                     <?php echo $item['custom_name']?>
                                 </a> 
                             </td>
-                            <td class="price"><?php echo money_format($item['price'])?> </td>
+                            <td class="price"><?php echo app_money_format($item['price'])?> </td>
                             <td class="quantity">
                                 <div class="form-group">
                                     <input 
@@ -84,7 +84,7 @@ if (!empty($cartItems)) {
                             
                             <td class="amount">
                                 <span class="cart-item-total-money-<?php echo $keyId?>">
-                                    <?php echo money_format($item['quantity'] * $item['price'])?> 
+                                    <?php echo app_money_format($item['quantity'] * $item['price'])?> 
                                 </span>
                             </td>
                             
@@ -95,8 +95,7 @@ if (!empty($cartItems)) {
                                         <?php echo "var keyId = '{$keyId}'" ?>;
                                         var li = btn.closest('li'); 
                                         li.remove();
-                                        $('.total-quantity span').html(result.totalQuantity);
-                                        $('.total-amount span').html(result.totalMoney);
+                                        $('.total-amount').html(result.totalMoney);
                                         if ($('#cartForm .form-table-row-'+keyId).length > 0) {
                                             $('#cartForm .form-table-row-'+keyId).remove();
                                         }
@@ -118,7 +117,7 @@ if (!empty($cartItems)) {
                             <td colspan="5" align="right">
                                 <div class="p-20">
                                     <strong><?php echo $this->translate('Total payment')?>:</strong> 
-                                    <span class="total-amount"><?php echo money_format($totalMoney)?></span>
+                                    <span class="total-amount"><?php echo app_money_format($totalMoney)?></span>
                                 </div>
                             </td>
                         </tr>

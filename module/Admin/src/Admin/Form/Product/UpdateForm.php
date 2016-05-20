@@ -97,7 +97,8 @@ class UpdateForm extends AbstractForm
                 'attributes' => array(
                     'id' => 'size_id',
                     'class' => 'form-control',
-                    'multiple' => true
+                    'multiple' => true,
+                    'required' => false
                 )
             ),
             array(
@@ -110,7 +111,8 @@ class UpdateForm extends AbstractForm
                 'attributes' => array(
                     'id' => 'color_id',
                     'class' => 'form-control',
-                    'multiple' => true
+                    'multiple' => true,
+                    'required' => false
                 )
             ),
             array(

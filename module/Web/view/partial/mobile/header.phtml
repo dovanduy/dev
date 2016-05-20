@@ -212,6 +212,7 @@ if (!empty($cartItems)) {
                             <div class="panel-group collapse-style-3">
                                 <?php foreach ($categories as $index => $category): ?>
                                 <div class="panel panel-default" <?php if ($index==0) echo "style='border-top:0px'"?>>
+                                    <?php if (!empty($category['sub'])) : ?> 
                                     <div class="panel-heading">
                                         <h4 itemprop="name" class="panel-title">
                                             <a itemprop="url" data-toggle="collapse" href="#collapse_category_<?php echo $index?>" aria-expanded="false" class="collapsed">
@@ -237,6 +238,15 @@ if (!empty($cartItems)) {
                                             </nav>
                                         </div>
                                     </div>
+                                    <?php else: ?>
+                                    <div class="no-sub panel-heading">
+                                        <h4 itemprop="name" class="panel-title">
+                                            <a itemprop="url" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                                <span itemprop="name"><?php echo $category['name']?></span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                                 <?php endforeach ?>
                             </div>

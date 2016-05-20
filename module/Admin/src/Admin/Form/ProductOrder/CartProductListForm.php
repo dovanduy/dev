@@ -52,7 +52,7 @@ class CartProductListForm extends AbstractForm
             <tr>
                 <td colspan="7" align="right">
                     <div class="total-money">' . $this->translate('Total') . ':' . 
-                    '<span>' . money_format($totalMoney) . '</span></div>
+                    '<span>' . app_money_format($totalMoney) . '</span></div>
                 </td>
             </tr>
         ';

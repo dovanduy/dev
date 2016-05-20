@@ -452,6 +452,236 @@ class Products extends AbstractModel {
         );
     }
     
+    public function getFeList($param)
+    {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $sql = new Sql(self::getDb());
+        $columns = array(                
+            'product_id', 
+            'code', 
+            'model', 
+            'brand_id', 
+            '_id', 
+            'price',
+            'original_price',
+        );
+        $select = $sql->select()
+            ->from(static::$tableName)                         
+            ->join(  
+                array(
+                    'product_has_sizes' => 
+                    $sql->select()
+                        ->columns(array(
+                            'product_id',
+                            'size_id' => new Expression('GROUP_CONCAT(product_has_sizes.size_id SEPARATOR  \',\')')
+                        ))
+                        ->from('product_has_sizes')                        
+                        ->group('product_id')
+                ),             
+                static::$tableName . '.product_id = product_has_sizes.product_id',
+                array(
+                    'size_id'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(
+                array(
+                    'brand_locales' => 
+                    $sql->select()
+                        ->from('brand_locales')                        
+                        ->where("locale = ". self::quote($param['locale']))
+                ),
+                static::$tableName . '.brand_id = brand_locales.brand_id',
+                array(
+                    'brand_name' => 'name'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(
+                'product_locales', 
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(
+                    'name', 
+                    'short',
+                    'meta_keyword',
+                    'meta_description',
+                )
+            )
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']))            
+            ->where(static::$tableName . '.active = 1')
+            ->where("product_locales.locale = ". self::quote($param['locale']));                       
+        if (!empty($param['brand_id'])) {            
+            $select->where(static::$tableName . '.brand_id = '. self::quote($param['brand_id']));  
+        }      
+        if (!empty($param['option_id'])) {   
+            if (is_array($param['option_id'])) {
+                $param['option_id'] = implode(',', $param['option_id']);
+            }
+            $select->join(
+                'product_has_fields', 
+                static::$tableName . '.product_id = product_has_fields.product_id',
+                array(
+                    'field_id'                   
+                )
+            );
+            $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
+            $select->where('product_has_fields.active = 1');
+        }        
+        $select->columns($columns);  
+        if (!empty($param['price_from'])) {
+            $param['price_from'] = db_float($param['price_from']);
+            $select->where(new Expression(static::$tableName . ".price >= {$param['price_from']}"));
+        }
+        if (!empty($param['price_to'])) {
+            $param['price_to'] = db_float($param['price_to']);
+            $select->where(new Expression(static::$tableName . ".price <= {$param['price_to']}"));
+        }
+        if (!empty($param['category_id'])) {
+            if (is_numeric($param['category_id'])) {
+                $categoryModel = new ProductCategories;
+                $categories = $categoryModel->getAll(array(
+                    'website_id' => $param['website_id'],
+                    'locale' => $param['locale'],
+                    'parent_id' => $param['category_id'],
+                ));
+                if (!empty($categories)) {
+                    $param['category_id'] = implode(',', Arr::field($categories, 'category_id'));
+                }
+            }
+            $select->join(
+                'product_has_categories', 
+                static::$tableName . '.product_id = product_has_categories.product_id',
+                array(
+                    'category_id'
+                )
+            )
+            ->where(new Expression(
+                "product_has_categories.category_id IN ({$param['category_id']})"
+            ));
+        }
+        if (!empty($param['limit'])) {
+            $select->limit($param['limit']);
+            if (!empty($param['page'])) {
+                $select->offset(static::getOffset($param['page'], $param['limit']));
+            }
+        }
+        if (!empty($param['sort'])) {
+            preg_match("/(product_id|name|price|sort|updated)-(asc|desc)+/", $param['sort'], $match);
+            if (count($match) == 3) {
+                switch ($match[1]) {
+                    case 'name':
+                        $select->order("product_locales.{$match[1]} " . $match[2]);
+                        break;
+                    case 'sort':  
+                        if (isset($sortTable)) {
+                            $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);                           
+                        }     
+                        break;
+                    default:
+                        $select->order(static::$tableName . '.' . $match[1] . ' ' . $match[2]);
+                        break;
+                }                
+            }            
+        } else {
+            $select->order(static::$tableName . '.updated DESC');
+        }
+        $select->group('product_id');        
+        $selectString = $sql->getSqlStringForSqlObject($select);        
+        return array(
+            'count' => static::count($selectString),
+            'limit' => $param['limit'],
+            'data' => static::toArray(static::selectQuery($selectString)), 
+        );
+    }
+    
+    public function getRelated($param) {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns(array(                
+                'product_id', 
+                '_id', 
+                'price',
+                'original_price',
+                'sort',
+                'image_id'
+            ))
+            ->join(               
+                array(
+                    'product_locales' => 
+                    $sql->select()
+                        ->from('product_locales')
+                        ->where("locale = ". self::quote($param['locale']))
+                ),                    
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(                   
+                    'name',                     
+                )
+            )
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.active = 1')
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
+            ->where(new Expression(
+                static::$tableName . ".product_id NOT IN ({$param['product_id']})"
+            ));        
+        if (!empty($param['brand_id'])) {            
+            $select->where(static::$tableName . '.brand_id = '. self::quote($param['brand_id']));           
+        }  
+        if (!empty($param['category_id'])) {
+            if (is_array($param['category_id'])) {
+                $param['category_id'] = implode(',', $param['category_id']);
+            }
+            $select->join(
+                'product_has_categories', 
+                static::$tableName . '.product_id = product_has_categories.product_id',
+                array(
+                    'category_id'
+                )    
+            )
+            ->where(new Expression(
+                "product_has_categories.category_id IN ({$param['category_id']})"
+            ));            
+        }   
+        if (!empty($param['option_id'])) {   
+            if (is_array($param['option_id'])) {
+                $param['option_id'] = implode(',', $param['option_id']);
+            }
+            $select->join(
+                'product_has_fields', 
+                static::$tableName . '.product_id = product_has_fields.product_id',
+                array(
+                    'field_id'                   
+                )
+            );
+            $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
+            $select->where('product_has_fields.active = 1');
+        }
+        $select->order(new Expression('RAND()'));  
+        if (!empty($param['limit'])) {
+            $select->limit($param['limit']);            
+        }
+        return self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );
+    }
+    
     public function getAll($param) {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
@@ -1025,6 +1255,8 @@ class Products extends AbstractModel {
             $values = $productHasFieldsModel->getAll(array(
                 'product_id' => $result['product_id']                
             ));
+            
+            $optionId = array();
             foreach ($result['attributes'] as &$attribute) {
                 foreach ($values as $value) {
                     if ($attribute['field_id'] == $value['field_id']) {
@@ -1032,6 +1264,9 @@ class Products extends AbstractModel {
                             $attribute['value'] = $value['value'];
                         } else {
                             $attribute['value'] = is_numeric($value['value_id']) ? $value['value_id'] : explode(',', $value['value_id']);
+                        }
+                        if (!empty($attribute['value'])) {
+                            $optionId[] = $attribute['value'];
                         }
                     }
                 }
@@ -1043,7 +1278,18 @@ class Products extends AbstractModel {
                 $result['images'] = $image->getAll(array(
                     'src_id' => $result['product_id'],
                     'src' => 'products'
-                ));
+                ));                
+                if (!empty($result['images'])) {
+                    foreach ($result['images'] as $image) {
+                        if ($image['image_id'] == $result['image_id']) {
+                            $result['url_image'] = $image['url_image'];
+                            break;
+                        }
+                    }
+                    if (empty($result['url_image'])) {
+                        $result['url_image'] = $result['images'][0]['url_image'];
+                    }
+                }
             }
             
             $urlIds = new UrlIds();
@@ -1069,6 +1315,29 @@ class Products extends AbstractModel {
                     'product_id' => $result['product_id'],
                     'website_id' => $result['website_id']
                 ));
+            }
+            
+            if (isset($param['get_product_related'])) {                              
+                $result['product_related'] = $this->getRelated(array(
+                    'product_id' => $result['product_id'],
+                    'website_id' => $result['website_id'],
+                    'brand_id' => $result['brand_id'],
+                    'category_id' => $result['category_id'],                    
+                    'option_id' => $optionId,
+                    'limit' => 10,
+                ));
+            }
+            
+            if (isset($param['replace_lazy_image'])) {  
+                $dom = new \DOMDocument();            
+                @$dom->loadHTML(mb_convert_encoding($result['content'], 'HTML-ENTITIES', 'UTF-8'));
+                foreach ($dom->getElementsByTagName('img') as $img) {
+                    $img->setAttribute('data-original', $img->getAttribute('src'));
+                    $img->setAttribute('src', '');                
+                    $img->setAttribute('class', 'lazy lazy-hidden');               
+                    $img->setAttribute('alt', $result['name']);
+                }
+                $result['content'] = $dom->saveHTML();
             }
         }
         return $result;

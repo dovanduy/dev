@@ -129,7 +129,7 @@
 								<?php 	
                                     
                                     if (!empty($data['price'])) {
-                                        echo money_format($data['price']); 
+                                        echo app_money_format($data['price']); 
                                     } else {
                                         echo $this->translate('Price contact');
                                     }                                    
@@ -137,7 +137,7 @@
                                 </span>
                                 <?php if (!empty($data['original_price'])):?>
                                 <span itemprop="price" class="original-price">
-                                    <?php echo money_format($data['original_price'])?>
+                                    <?php echo app_money_format($data['original_price'])?>
                                 </span>
                                 <?php endif?>
 							</div>
@@ -272,8 +272,8 @@
                                             'name' => name_2_url($product['name'])
                                         )
                                     );
-                                    $product['original_price'] = !empty($product['original_price']) ? money_format($product['original_price']) : '';
-                                    $product['price'] = money_format($product['price']);
+                                    $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
+                                    $product['price'] = app_money_format($product['price']);
                                     $product['name'] = truncate($product['name'], 60);
                                     echo "
                                     <div itemscope itemtype=\"http://schema.org/Product\" class=\"media margin-clear\">

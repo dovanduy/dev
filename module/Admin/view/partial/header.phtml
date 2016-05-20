@@ -71,9 +71,9 @@
                                         <p>
                                             <span class="cart-item-quantity-<?php echo $item['product_id']?>"><?php echo $item['quantity']?></span> 
                                             x 
-                                            <span class="cart-item-price-<?php echo $item['product_id']?>"><?php echo money_format($item['price'])?></span> 
+                                            <span class="cart-item-price-<?php echo $item['product_id']?>"><?php echo app_money_format($item['price'])?></span> 
                                             = 
-                                            <span class="cart-item-total-money-<?php echo $item['product_id']?>"><?php echo money_format($item['quantity'] * $item['price'])?></span>
+                                            <span class="cart-item-total-money-<?php echo $item['product_id']?>"><?php echo app_money_format($item['quantity'] * $item['price'])?></span>
                                         </p>
                                     </a>
                                 </li>
@@ -81,7 +81,7 @@
                             </div>  
                         </li>
                         <li class="footer total-money">
-                            <?php echo $this->translate('Total')?>: <span><?php echo money_format($totalMoney)?></span>
+                            <?php echo $this->translate('Total')?>: <span><?php echo app_money_format($totalMoney)?></span>
                         </li>
                         <li class="footer add-order">
                             <a href="<?php echo $this->url('admin/productorders', array('action' => 'add'))?>"><i class="fa fa-fw fa-arrow-right"></i><?php echo $this->translate('Add Order')?></a>

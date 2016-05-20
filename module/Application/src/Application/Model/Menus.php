@@ -22,6 +22,9 @@ class Menus
     
     public static function getAll($menuId = null, $forDropdownList = true, $type = 'header')
     {
+        if (empty($type)) {
+            $type = 'header';
+        }
         $param = array();
         $key = MENU_ALL;
         $auth = new Auth();        
@@ -46,7 +49,7 @@ class Menus
         }
         if ($type == 'header' || $type == 'footer') {
             $data = Arr::filter($data, 'type', $type);
-        }
+        } 
         if ($forDropdownList == true) {
            $data = Arr::keyValue(
                 $data, 

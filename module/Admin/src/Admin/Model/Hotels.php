@@ -2,7 +2,7 @@
 
 namespace Admin\Model;
 
-use Application\Lib\Api;
+use Admin\Lib\Api;
 use Application\Lib\Cache;
 
 class Hotels {

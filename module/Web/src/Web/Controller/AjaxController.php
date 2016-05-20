@@ -10,9 +10,9 @@
 namespace Web\Controller;
 
 use Application\Lib\Util;
-use Application\Lib\Api;
 use Application\Model\LocaleCities;
 use Application\Model\LocaleStates;
+use Web\Lib\Api;
 
 class AjaxController extends AppController
 {
@@ -146,6 +146,58 @@ class AjaxController extends AppController
         }
         $userList = Api::call('url_users_search', $param);      
         echo json_encode($userList);
+        exit;
+    }
+    
+    /**
+     * Ajax add a product to block
+     *
+     * @return Zend\View\Model
+     */
+    public function addproducttoblockAction()
+    { 
+        $request = $this->getRequest();    
+        $param = $this->getParams(); // p($param);
+        if ($request->isXmlHttpRequest() && !empty($param['product_id'])) {
+            $post = $request->getPost(); 
+            $post['product_id'] = $param['product_id'];
+            $post['block_id'] = $post['add_block_id'];
+            $result = Api::call('url_blocks_addproduct', $post);                 
+            if (empty(Api::error())) {                        
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }              
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    /**
+     * Ajax remove a product from block
+     *
+     * @return Zend\View\Model
+     */
+    public function removeproductfromblockAction()
+    { 
+        $request = $this->getRequest();    
+        $param = $this->getParams(); // p($param);
+        if ($request->isXmlHttpRequest() && !empty($param['product_id'])) {
+            $post = $request->getPost(); 
+            $post['product_id'] = $param['product_id'];
+            $post['block_id'] = $post['remove_block_id'];
+            $result = Api::call('url_blocks_removeproduct', $post);                 
+            if (empty(Api::error())) {                        
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }              
+            die(\Zend\Json\Encoder::encode($result));
+        }
         exit;
     }
     

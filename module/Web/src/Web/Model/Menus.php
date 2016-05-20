@@ -136,6 +136,9 @@ class Menus
     
     public static function getSubMenu2($menus = array(), &$lastLevel = array(), $parentId = 0, $level = 0, $type = 'header')
     {
+        if (empty($type)) {
+            $type = 'header';
+        }
         if (empty($menus)) {
             $menus = self::getAll(0, false, $type); 
         }
@@ -146,7 +149,7 @@ class Menus
                 if ($menu['menu_id'] == $parentId) {
                     $parent = $menu;
                 }
-                if ($menu['parent_id'] == $parentId) {      
+                if ($menu['parent_id'] == $parentId && $menu['type'] == $type) {      
                     $menu['level'] = $level;                    
                     $rows[] = $menu;           
                 }
@@ -154,7 +157,7 @@ class Menus
             if (!empty($rows)) {
                 $level++;
                 foreach ($rows as $i => $row) {                
-                    $rows[$i]['sub'] = self::getSubMenu2($menus, $lastLevel, $row['menu_id'], $level);
+                    $rows[$i]['sub'] = self::getSubMenu2($menus, $lastLevel, $row['menu_id'], $level, $type);
                     if (empty($rows[$i]['sub'])) {
                         $lastLevel[] = $row['menu_id'];
                     }

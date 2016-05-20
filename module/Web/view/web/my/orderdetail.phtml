@@ -45,19 +45,19 @@ if (empty($data['shipping'])) {
                 <?php echo $this->translate('Order date') ?>:
                 <span class="invoice-date order-date"><?php echo !empty($data['created']) ? datetime_format($data['created']) : '-'; ?></span><br>
                     
-                <div class="status-date" <?php if ($data['status'] == 'cancel') echo 'style="display:none"' ?>>            
-                                      
-                    <?php if (!empty($data['shipping_date'])): ?>
-                    <?php echo $this->translate('Shipping date') ?>:
-                    <span class="invoice-date shipping-date"><?php echo !empty($data['shipping_date']) ? datetime_format($data['shipping_date']) : '-'; ?></span><br>
-                    <?php endif ?>
-                    
-                    <?php if (!empty($data['payment_date'])): ?>
+                <?php if (!empty($data['payment_date'])): ?>
+                <div class="status-date"> 
                     <?php echo $this->translate('Payment date') ?>: 
                     <span class="invoice-date payment-date"><?php echo !empty($data['payment_date']) ? datetime_format($data['payment_date']) : '-'; ?></span><br>
-                    <?php endif ?>
-                    
                 </div>
+                <?php endif ?>
+                
+                <?php if (!empty($data['shipping_date'])): ?>
+                <div class="status-date"> 
+                    <?php echo $this->translate('Shipping date') ?>:
+                    <span class="invoice-date shipping-date"><?php echo !empty($data['shipping_date']) ? datetime_format($data['shipping_date']) : '-'; ?></span><br>                   
+                </div>
+                <?php endif ?>
                 
                 <div class="status-cancel-date" <?php if ($data['status'] != 'cancel') echo 'style="display:none"' ?>>            
                     <?php echo $this->translate('Cancel date') ?>:
@@ -85,16 +85,16 @@ if (empty($data['shipping'])) {
                         <th><?php echo $this->translate('Product name') ?></th>
                         <th><?php echo $this->translate('Quantity') ?></th>
                         <th><?php echo $this->translate('Price') ?></th>
-                        <th><?php echo $this->translate('Subtotal') ?></th>
+                        <th class="amount"><?php echo $this->translate('Subtotal') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($data['products'] as $product): ?>
                     <tr>
                         <td><?php echo $product['product_name']; ?></td>
-                        <td><?php echo $product['quantity']; ?></td>                        
-                        <td><?php echo money_format($product['price']); ?></td>                        
-                        <td><?php echo money_format($product['total_money']); ?></td>
+                        <td align="right"><?php echo $product['quantity']; ?></td>                        
+                        <td align="right"><?php echo app_money_format($product['price']); ?></td>                        
+                        <td align="right"><?php echo app_money_format($product['total_money']); ?></td>
                     </tr>
                     <?php endforeach ?>                    
                 </tbody>
@@ -121,22 +121,26 @@ if (empty($data['shipping'])) {
                 
                     <table class='table cart table-bordered'>
                         <tbody>
-                            <tr>
-                                <th style="width:50%"><?php echo $this->translate('Subtotal') ?>:</th>
-                                <td><?php echo money_format($data['total_money']); ?></td>
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Total')?></td>
+                                <td align="right"><strong><?php echo app_money_format($data['total_money'])?></strong></td>
                             </tr>
-                            <tr>
-                                <th><?php echo $this->translate('Tax money') ?></th>
-                                <td><?php echo money_format($data['tax']); ?></td>
+                            <tr>                                
+                                <td colspan="3" align="right"><?php echo $this->translate('Discount')?></th>
+                                <td align="right"><strong><?php echo app_money_format($data['discount'])?></strong></td>
                             </tr>
-                            <tr>
-                                <th><?php echo $this->translate('Shipping money') ?></th>
-                                <td><?php echo money_format($data['shipping']); ?></td>
+                            <tr>                               
+                                <td colspan="3" align="right"><?php echo $this->translate('Tax money') ?></td>
+                                <td align="right"><strong><?php echo app_money_format($data['tax'])?></strong></td>
                             </tr>
-                            <tr>
-                                <th><?php echo $this->translate('Payment total') ?></th>
-                                <td><strong><?php echo money_format($data['total_money'] + $data['tax'] + $data['shipping']); ?></strong></td>
-                            </tr>
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Shipping money') ?></td>
+                                <td align="right"><strong><?php echo app_money_format($data['shipping'])?></strong></td>
+                            </tr> 
+                            <tr>                              
+                                <td colspan="3" align="right"><?php echo $this->translate('Total payment')?></td>
+                                <td align="right"><strong><?php echo app_money_format(db_float($data['total_money']) - db_float($data['discount']) + db_float($data['tax']) + db_float($data['shipping']))?></strong></td>
+                            </tr> 
                         </tbody>
                     </table>
                 

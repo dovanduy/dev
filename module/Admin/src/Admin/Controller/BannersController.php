@@ -9,7 +9,7 @@
 
 namespace Admin\Controller;
 
-use Application\Lib\Api;
+
 use Application\Model\Images;
 use Application\Model\Banners;
 use Admin\Form\Banner\SearchForm;
@@ -18,6 +18,7 @@ use Admin\Form\Banner\AddForm;
 use Admin\Form\Banner\UpdateForm;
 use Admin\Form\Banner\UpdateLocaleForm;
 use Admin\Form\Banner\ImageForm;
+use Admin\Lib\Api;
 
 class BannersController extends AppController
 {    

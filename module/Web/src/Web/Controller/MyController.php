@@ -336,7 +336,7 @@ class MyController extends AppController
                 if (!empty($orderList)) {
                     foreach ($orderList['data'] as &$order) {
                         $order['created'] = datetime_format($order['created']);                        
-                        $order['total_money'] = money_format($order['total_money']);
+                        $order['total_money'] = app_money_format($order['total_money']);
                         switch ($order['status']) {
                             case 'done':
                                 $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status done\">" . $this->translate('Done') . "</span>" ;
