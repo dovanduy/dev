@@ -4,7 +4,7 @@ namespace Web\Form\User;
 
 use Admin\Module;
 use Application\Form\AbstractForm;
-use Application\Model\LocaleCountries;
+use Web\Model\LocaleCountries;
 
 /**
  * SearchForm

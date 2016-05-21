@@ -1,0 +1,29 @@
+##  Can be commented out if causes errors, see notes above.
+php_value session.gc.maxlifetime 8400
+php_flag magic_quotes_gpc Off
+
+Options -Indexes
+Options +FollowSymLinks
+
+# Set the default handler.
+DirectoryIndex index.php
+
+# Customized error messages.
+# ErrorDocument 404 /index.php
+
+# mod_rewrite in use
+
+RewriteEngine On
+
+#RewriteBase /
+RewriteCond %{HTTP_HOST} ^www.baclieuhotel.com
+RewriteRule ^.*$ http://baclieuhotel.com%{REQUEST_URI} [R=301,L]
+
+## ALL (RewriteCond) lines in this section are only required if you actually
+## have directories named 'content' or 'component' on your server
+## If you do not have directories with these names, comment them out.
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule !\.(js|ico|gif|jpg|png|css|html)$ index.php
+RewriteRule ^(.*) index.php

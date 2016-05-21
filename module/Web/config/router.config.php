@@ -195,6 +195,28 @@ return array(
                         ),
                     ),
                 ),
+                
+                'forgetpassword' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/quen-mat-khau',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'forgetpassword',
+                        ),
+                    ),
+                ),
+                
+                'newpassword' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/mat-khau-moi[/:token]',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'newpassword',
+                        ),
+                    ),
+                ),
 
             ),
 

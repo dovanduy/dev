@@ -14,6 +14,8 @@ use Application\Lib\Cache;
 
 use Web\Lib\Api;
 use Web\Form\User\RegisterForm;
+use Web\Form\User\ForgetPasswordForm;
+use Web\Form\User\NewPasswordForm;
 use Web\Form\Auth\LoginForm;
 use Web\Module as WebModule;
 
@@ -155,6 +157,66 @@ class PageController extends AppController
         exit;
     }
     
+    public function forgetpasswordAction()
+    {   
+        $form = new ForgetPasswordForm();
+        $form->setAttribute('class', 'form-horizontal')
+            ->setController($this)
+            ->create();
+        
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = (array) $request->getPost();
+            $form->setData($post);
+            if ($form->isValid()) {    
+                $post['new_password_url'] = $this->url()->fromRoute('web/newpassword');
+                $ok = Api::call('url_users_forgotpassword', $post);
+                if (Api::error()) {                    
+                    $this->addErrorMessage($this->getErrorMessage());
+                } else {                    
+                    $this->addSuccessMessage('Please check email to receive change password link');
+                    return $this->redirect()->toRoute('web');                     
+                }
+            }
+        }              
+        return $this->getViewModel(array(
+                'form' => $form,                
+            )
+        );
+    }
+    
+    public function newpasswordAction()
+    {   
+        $token = $this->params()->fromRoute('token', '');
+        if (empty($token)) {
+            $this->notFoundAction();
+        }
+        $form = new NewPasswordForm();
+        $form->setAttribute('class', 'form-horizontal')
+            ->setController($this)
+            ->create();
+        
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = (array) $request->getPost();
+            $form->setData($post);
+            if ($form->isValid()) {                
+                $post['token'] = $token;
+                $ok = Api::call('url_users_updatenewpassword', $post);
+                if (Api::error()) {                    
+                    $this->addErrorMessage($this->getErrorMessage());
+                } else {                    
+                    $this->addSuccessMessage('Data saved successfully');
+                    return $this->redirect()->toRoute('web');                     
+                }
+            }
+        }              
+        return $this->getViewModel(array(
+                'form' => $form,                
+            )
+        );
+    }
+    
      /**
      * Delete cache
      *
@@ -174,6 +236,23 @@ class PageController extends AppController
      */
     public function testmailAction()
     { 
+        $_id = 'c595110183798d10cf5ba3a4';
+        $_id = '4a42d6d4f63ab3bd954fbaea';
+        $order = Api::call('url_productorders_detail', array('_id' => $_id));              
+        if (!empty($order['user_email'])) {                  
+            $order['user_email'] = 'thailvn@gmail.com';
+            $mail = $this->getServiceLocator()->get("Mail");     
+            $viewModel = new \Zend\View\Model\ViewModel(array('data' => $order));
+            $viewModel->setTemplate('email/order');
+            $mail->setTo($order['user_email']);                                         
+            $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $order['website_url'], $order['code']));
+            $mail->setBody($viewModel);
+            $mail->send();
+            echo 'OK';
+            exit;
+        }
+        echo 'Fail';
+        /*
         $renderer = $this->getServiceLocator()->get('Zend\View\Renderer\RendererInterface');
         $mail = $this->getServiceLocator()->get("Mail");        
         $viewModel = new \Zend\View\Model\ViewModel(
@@ -190,7 +269,9 @@ class PageController extends AppController
         $mail->setTo('thailvn@gmail.com'); 
         $mail->setSubject('Test'); 
         $mail->setBody($viewLayout);
-        d($mail->send());        
+        d($mail->send());
+        * 
+        */        
         exit;
     }
     

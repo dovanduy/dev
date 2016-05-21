@@ -44,7 +44,7 @@ class Api {
                         $param[$name] = new \CurlFile($file['tmp_name'], $file['type'], $file['name']);
                     }
                 }
-            }       
+            }    
             $headers = array("Content-Type:multipart/form-data");
             $url = $config['base_uri'] . $url;
             $ch = curl_init();

@@ -12,8 +12,8 @@ namespace Web\Controller;
 use Application\Lib\Cart;
 use Application\Lib\Session;
 use Application\Lib\Arr;
-use Application\Model\LocaleStates;
-use Application\Model\LocaleCities;
+use Web\Model\LocaleStates;
+use Web\Model\LocaleCities;
 use Web\Lib\Api;
 use Web\Form\Checkout\RegisterForm;
 use Web\Form\Checkout\RegisterAddressForm;
@@ -75,6 +75,9 @@ class CheckoutController extends AppController
             }
             
             $checkoutInfo = Session::get('checkout_step1');
+            if (empty($checkoutInfo)) {
+                $checkoutInfo = array();
+            }
             if ($request->isPost()) {
                 $post = (array) $request->getPost();
                 $checkoutInfo = array_replace_recursive($checkoutInfo, $post); 
@@ -116,7 +119,7 @@ class CheckoutController extends AppController
 
             if ($request->isPost()) {
                 $post = (array) $request->getPost();
-                if (!empty($post['address_id'])) {
+                if (!empty($post['address_id'])) {                    
                     $foundAddress = false;
                     foreach ($user['addresses'] as $address) { 
                         if ($address['address_id'] == $post['address_id']) {                         
@@ -186,7 +189,7 @@ class CheckoutController extends AppController
                         'web/checkout',
                         array('action' => 'payment')
                     );                        
-                } else {
+                } else { 
                     $checkoutInfo['address_id'] = $post['address_id'];
                     Session::set('checkout_step1', $checkoutInfo);
                 }
@@ -382,12 +385,12 @@ class CheckoutController extends AppController
             if (!empty($checkoutInfo['city_code']) 
                 && !empty($checkoutInfo['state_code']) 
                 && !empty($checkoutInfo['country_code'])) {
-                $cities = \Application\Model\LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code']);                                                
+                $cities = \Web\Model\LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code']);                                                
                 $post['user_city_name'] = $cities[$checkoutInfo['city_code']];
             }
             if (!empty($checkoutInfo['state_code']) 
                 && !empty($checkoutInfo['country_code'])) {
-                $states = \Application\Model\LocaleStates::getAll($checkoutInfo['country_code']);                                                
+                $states = \Web\Model\LocaleStates::getAll($checkoutInfo['country_code']);                                                
                 $post['user_state_name'] = $states[$checkoutInfo['state_code']];
             }                                   
             if (!empty($checkoutInfo['country_code'])) {

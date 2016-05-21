@@ -394,7 +394,7 @@ class Websites extends AbstractModel {
     {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
-        }
+        }        
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  

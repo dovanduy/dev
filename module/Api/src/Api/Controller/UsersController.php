@@ -73,6 +73,14 @@ class UsersController extends AppController {
         );
     }
 
+    public function updatenewpasswordAction() 
+    {
+        return \Api\Bus\Users\UpdateNewPassword::getInstance()->execute(
+            $this->getServiceLocator()->get('Users'),
+            $this->getParams()
+        );
+    }
+    
     public function onoffAction()
     {
         return \Api\Bus\Users\OnOff::getInstance()->execute(
@@ -117,6 +125,14 @@ class UsersController extends AppController {
     {
         return \Api\Bus\Users\FbLogin::getInstance()->execute(
             $this->getServiceLocator()->get('Users'),
+            $this->getParams()
+        );
+    }
+    
+    public function forgotpasswordAction()
+    {
+        return \Api\Bus\Users\ForgotPassword::getInstance()->execute(
+            $this->getServiceLocator(),
             $this->getParams()
         );
     }

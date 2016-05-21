@@ -1,0 +1,24 @@
+<table style='width: 100%'>
+    <tbody>        
+        <tr>
+            <td>               
+				Kính chào Quý khách <?php echo $data['user_name']?><br/><br/>
+				Chân thành cảm ơn Quý khách đã trải nghiệm mua sắm tại <?php echo $data['website_url']?>.<br/>
+				Chúng tôi hy vọng Quý khách hài lòng với trải nghiệm mua sắm tại <?php echo $data['website_url']?>.<br/>
+				Chúng tôi xin gửi tặng bạn mã giảm giá, hy vọng bạn chọn được sản phẩm ưng ý.<br/>
+				Mã giảm giá của bạn là: <?php echo $data['code']?>.
+				Lưu ý: Mã giảm giá chỉ sử dụng 1 lần và đến hết ngày <?php echo datetime_format($data['expired'] - 24*60*60, 'd/m/Y')?><br/>			
+            </td>           
+        </tr>
+		<tr>
+            <td>            
+				<br/>
+				Đơn vị chủ quản: <?php echo !empty($data['website_company_name']) ? $data['website_company_name'] : $data['website_name']?><br/>
+				<?php echo $data['website_address']?><br/>
+				<?php echo $this->translate('Hotline')?>: <?php echo $data['website_phone']?><br/>
+				Email: <?php echo $data['website_email']?><br/> 
+				Website: <?php echo $data['website_url']?>	
+            </td>           
+        </tr>
+    </tbody>
+</table>

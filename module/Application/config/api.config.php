@@ -58,6 +58,8 @@ return array(
         'url_users_fblogin' => 'users/fblogin',
         'url_users_checklogin' => 'users/checklogin',
         'url_users_updatepassword' => 'users/updatepassword',
+        'url_users_updatenewpassword' => 'users/updatenewpassword',
+        'url_users_forgotpassword' => 'users/forgotpassword',
 
         'url_place_categories_lists' => 'placecategories/lists',
         'url_place_categories_all' => 'placecategories/all',

@@ -233,7 +233,7 @@ class ProductsController extends AppController
                     ));                    
                 }
             }        
-            $page = $this->getServiceLocator()->get('navigation')->findBy('id', $id);
+            $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);
             if (!empty($page)) { 
                 $page->addPage(array( 
                     'uri' => '',
@@ -241,7 +241,7 @@ class ProductsController extends AppController
                     'active' => true
                 ));
             }
-            
+           
             if (empty($data['meta_keyword'])) {
                 $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
             }

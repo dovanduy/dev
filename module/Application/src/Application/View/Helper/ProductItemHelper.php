@@ -40,15 +40,79 @@ class ProductItemHelper extends AbstractHtmlElement
                 'action' => 'additem',
                 'id' => $product['product_id']
             )
-        );     
+        ); 
+        
         $product['url_add_to_wishlist'] = '#';
         $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
         $product['price'] = app_money_format($product['price']);
         $product['name'] = truncate($product['name'], 60);
         $product['short'] = nl2br(truncate($product['short'], 80));
         $isMobile = Util::isMobile();
-        if (empty($product['size_id'])) {
-            $addToCartBtn = "
+        
+        $btn = "
+            <a  itemprop=\"url\" href=\"{$product['url']}\" 
+                class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated\"                                                           
+                \">{$view->translate('View Details')} <i class=\"fa fa-link\"></i>
+            </a>
+        ";
+        $AppUI = $view->viewModel()->getRoot()->getVariable('AppUI');
+        $website = $view->viewModel()->getRoot()->getVariable('website');
+        if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))) {
+            if (!empty($product['block_id'])) {
+                $removeUrl = $view->url(
+                    'web/ajax', 
+                    array(
+                        'action' => 'removeproductfromblock'
+                    ),
+                    array(
+                        'query' => array(
+                            'block_id' => $product['block_id'],
+                            'product_id' => $product['product_id'],
+                        )
+                    )
+                );
+                $btn = "
+                    <a  itemprop=\"url\" href=\"#\" 
+                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
+                        data-url=\"{$removeUrl}\"
+                        data-callback=\"
+                            var item = btn.closest('.masonry-grid-item'); 
+                            item.remove();
+                        \">{$view->translate('Remove')} <i class=\"fa fa-remove\"></i>
+                    </a>
+                ";
+            } else {
+                $addUrl = $view->url(
+                    'web/ajax', 
+                    array(
+                        'action' => 'addproducttoblock'
+                    ),
+                    array(
+                        'query' => array(
+                            'product_id' => $product['product_id']
+                        )
+                    )
+                );
+                $option = array("<option value=\"\">[Admin] {$view->translate('Added to block')}</option>");
+                foreach ($website['blocks'] as $block) {
+                    $option[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
+                }
+                $option = implode('', $option);
+                $btn = "
+                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
+                    <select style=\"width:120px;padding:4px 2px;float:right;\"
+                    name=\"add_block_id\" 
+                    class=\"ajax-change\"
+                    data-url=\"{$addUrl}\"
+                    data-callback=\"alert('Added');\" 
+                    >{$option}</select>
+                    </form>
+                ";
+            }
+        }
+        /*
+        elseif (empty($product['size_id'])) {
+            $btn = "
                 <a  itemprop=\"url\" href=\"#\" 
                     class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
                     data-url=\"{$product['url_add_to_cart']}\"
@@ -64,15 +128,8 @@ class ProductItemHelper extends AbstractHtmlElement
                     \">{$view->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
                 </a>
             ";
-        } else {
-            $addToCartBtn = "
-                <a  itemprop=\"url\" href=\"{$product['url']}\" 
-                    class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated\"                                                           
-                    \">{$view->translate('View Details')} <i class=\"fa fa-link\"></i>
-                </a>
-            ";
         }
-        
+        */
         $class = '';
         switch ($columns) {
             case 3:
@@ -109,7 +166,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         </h3>
                         <div class=\"elements-list clearfix\">
                             <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
-                            {$addToCartBtn}                                                               
+                            {$btn}                                                               
                         </div>
                     </div>
                 </div>

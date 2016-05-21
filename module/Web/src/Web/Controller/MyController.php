@@ -11,9 +11,10 @@ namespace Web\Controller;
 
 use Application\Lib\Arr;
 use Web\Lib\Api;
+use Application\Lib\Cache;
 use Application\Model\Images;
-use Application\Model\LocaleStates;
-use Application\Model\LocaleCities;
+use Web\Model\LocaleStates;
+use Web\Model\LocaleCities;
 use Web\Form\My\UpdateForm;
 use Web\Form\My\PasswordForm;
 use Web\Form\My\AddressListForm;
@@ -103,8 +104,8 @@ class MyController extends AppController
                 }
                 // create edit form
                 $form = new UpdateForm(); 
-                if (!empty($data['image_id'])) {
-                    $data['url_image'] = Images::getUrl($data['image_id'], 'users', true);
+                if (!empty($data['image_id'])) {                    
+                    $data['url_image'] = Images::getUrl($data['image_id'], 'users');
                 }
                 // set data for dropdown address_id
                 $addressList = array();
@@ -150,15 +151,11 @@ class MyController extends AppController
                     $form->setData($post);
                     if ($form->isValid()) {    
                         $post['_id'] = $id;
-                        Api::call('url_users_update', $post);                       
-                        if (empty(Api::error())) {
-                            $auth = $this->getServiceLocator()->get('auth');
-                            $user = Api::call(
-                                'url_users_getlogin', 
-                                array(
-                                    '_id' => $id, 
-                                )
-                            );
+                        $post['get_login'] = 1;
+                        $user = Api::call('url_users_update', $post); 
+                        if (empty(Api::error())) {                    
+                            Images::removeCache($data['image_id'], 'users');
+                            $auth = $this->getServiceLocator()->get('auth');                            
                             if (isset($user['password'])) {
                                 unset($user['password']);
                             }
@@ -170,7 +167,7 @@ class MyController extends AppController
                             $this->addSuccessMessage('Data saved successfully');
                             if (isset($post['saveAndBack']) && $backUrl) {
                                 return $this->redirect()->toUrl(base64_decode($backUrl));
-                            }                                                       
+                            }                                                      
                         }
                         return $this->redirect()->toUrl($request->getRequestUri());
                     }       

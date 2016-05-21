@@ -196,24 +196,6 @@ return array(
         'work' => 'Work address',
     ),
     
-    'cache2' => array(
-        'adapter' => array(
-            'name' => 'redis',
-            'options' => array(
-                'server' => array(
-                    'host' => '127.0.0.1',
-                    'port' => 6379,
-                ),
-                'ttl' => 60*60,
-                'namespace' => 'YOUGO',
-            )
-        ),      
-        'plugins' => array(
-            'exception_handler' => array('throw_exceptions' => false),
-            'serializer'
-        )
-    ),
-    
     'cache' => array(
         'adapter' => array(
             'name' => 'filesystem',
@@ -222,7 +204,7 @@ return array(
                 'cacheDir' => getcwd() . '/data/cache',
                 'dirPermission' => 0755,
                 'filePermission' => 0666,
-                'ttl' => 24*60*60,
+                'ttl' => 30*24*60*60,
                 'namespace' => 'app'
             ),
         ),
@@ -239,7 +221,7 @@ return array(
             'host' => 'smtp.gmail.com',
             'name' => 'gmail.com',
             'port' => 587,
-            'username' => 'thailvn@gmail.com',
+            'username' => 'vuongquocbalo@gmail.com',
             'password' => 'Mk462008',
             'timeout' => 2 * 60,
             'ssl' => 'tls',

@@ -7,58 +7,73 @@
             <!-- ================ -->
             <div class="main object-non-visible animated object-visible fadeInUpSmall" data-animation-effect="fadeInUpSmall" data-effect-delay="100">
                 <div class="form-block center-block p-30 light-gray-bg border-clear">
-                    <h2 class="title">Sign Up</h2>
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group has-feedback">
-                            <label for="inputName" class="col-sm-3 control-label">First Name <span class="text-danger small">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="inputName" placeholder="Fisrt Name" required="">
-                                <i class="fa fa-pencil form-control-feedback"></i>
-                            </div>
+                    <h2 class="title"><?php echo $this->translate('Sign Up')?></h2>
+                    <?php
+                        echo $this->flashMessenger()->renderCurrent('error', array('alert', 'alert-dismissible', 'alert-danger'));
+                        echo $this->flashMessenger()->renderCurrent('success', array('alert', 'alert-dismissible', 'alert-success'));
+                        $this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('success');
+                        $this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('error');
+                    ?>
+                    <?php 
+                        $form->prepare();
+                        echo $this->form()->openTag($form);
+                    ?>
+                    <div class="form-group has-feedback">
+                        <label for="inputUserName" class="col-sm-3 control-label">
+                            <?php echo $this->formLabel($form->get('email')); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <?php echo $this->formText($form->get('email')); ?> 
+                            <?php echo $this->formErrorMessage($form->get('email')); ?>
+                            <i class="fa fa-user form-control-feedback"></i>
                         </div>
-                        <div class="form-group has-feedback">
-                            <label for="inputLastName" class="col-sm-3 control-label">Last Name <span class="text-danger small">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" required="">
-                                <i class="fa fa-pencil form-control-feedback"></i>
-                            </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="inputPassword" class="col-sm-3 control-label">
+                            <?php echo $this->formLabel($form->get('password')); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <?php echo $this->formPassword($form->get('password')); ?>
+                            <?php echo $this->formErrorMessage($form->get('password')); ?>
+                            <i class="fa fa-lock form-control-feedback"></i>
                         </div>
-                        <div class="form-group has-feedback">
-                            <label for="inputUserName" class="col-sm-3 control-label">User Name <span class="text-danger small">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="inputUserName" placeholder="User Name" required="">
-                                <i class="fa fa-user form-control-feedback"></i>
-                            </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="inputName" class="col-sm-3 control-label">
+                            <?php echo $this->formLabel($form->get('name')); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <?php echo $this->formText($form->get('name')); ?>  
+                            <?php echo $this->formErrorMessage($form->get('name')); ?>
+                            <i class="fa fa-pencil form-control-feedback"></i>
                         </div>
-                        <div class="form-group has-feedback">
-                            <label for="inputEmail" class="col-sm-3 control-label">Email <span class="text-danger small">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="email" class="form-control" id="inputEmail" placeholder="Email" required="">
-                                <i class="fa fa-envelope form-control-feedback"></i>
-                            </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="inputName" class="col-sm-3 control-label">
+                            <?php echo $this->formLabel($form->get('mobile')); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <?php echo $this->formText($form->get('mobile')); ?> 
+                            <?php echo $this->formErrorMessage($form->get('mobile')); ?>
+                            <i class="fa fa-pencil form-control-feedback"></i>
                         </div>
-                        <div class="form-group has-feedback">
-                            <label for="inputPassword" class="col-sm-3 control-label">Password <span class="text-danger small">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="password" class="form-control" id="inputPassword" placeholder="Password" required="">
-                                <i class="fa fa-lock form-control-feedback"></i>
-                            </div>
+                    </div>                   
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-8">
+                            <button type="submit" class="btn btn-group btn-default btn-animated"><?php echo $this->translate('Sign Up')?><i class="fa fa-check"></i></button>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-3 col-sm-8">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" required=""> Accept our <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-signup.html#">privacy policy</a> and <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-signup.html#">customer agreement</a>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-3 col-sm-8">
-                                <button type="submit" class="btn btn-group btn-default btn-animated">Sign Up <i class="fa fa-check"></i></button>
-                            </div>
-                        </div>
-                    </form>
+                        <div class="col-sm-offset-3 col-sm-8 mt8m">
+                            <span class="text-center text-muted"><?php echo $this->translate('Or login with')?></span>
+                            <ul class="social-links colored circle clearfix mt5 ml0">
+                                <li class="facebook"><a id="fbLogin" target="_blank" href="http://www.facebook.com"><i class="fa fa-facebook"></i></a></li>                              
+                                <li class="googleplus"><a target="_blank" href="http://plus.google.com"><i class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div> 
+                    </div>                    
+                    <?php                       
+                        echo $this->form()->closeTag();
+                        unset($form);
+                    ?>                    
                 </div>
             </div>
             <!-- main end -->
@@ -66,3 +81,22 @@
     </div>
 </div>
 <!-- main-container end -->
+<?php
+echo $this->headScript()->prependFile(Web\Module::getConfig('st_host') . ('/js/fblogin.js'));
+echo $this->headScript()->prependFile('https://connect.facebook.net/en_US/all.js');
+$facebook_app_id = \Web\Module::getConfig('facebook_app_id');
+$this->headScript()->offsetSetScript(100, " 
+    $(function() {    
+        var facebook_app_id = '{$facebook_app_id}';
+        $(function () {
+            FB.init({
+                appId: facebook_app_id,
+                cookie: true,
+                status: true,
+                oauth: true,
+                xfbml: true
+            });
+        });           
+    });
+");
+?>	

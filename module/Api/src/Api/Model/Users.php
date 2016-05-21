@@ -6,6 +6,7 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Predicate\Expression;
 use Application\Lib\Util;
+use Application\Lib\Log;
 
 class Users extends AbstractModel {
 
@@ -210,7 +211,7 @@ class Users extends AbstractModel {
             $imageDetail = $image->getDetail(array(
                 'id' => $user['image_id'],
                 'src' => 'users'
-            ));
+            ));            
             $user['url_image'] = !empty($imageDetail['url_image']) ? $imageDetail['url_image'] : ''; 
         }
         $addressModel = new Addresses;
@@ -478,14 +479,21 @@ class Users extends AbstractModel {
     */
     public function updatePassword($param)
     {
+        $where = array();
+        if (isset($param['email'])) {
+            $where['email'] = $param['email'];
+        }
+        if (isset($param['_id'])) {
+            $where['_id'] = $param['_id'];
+        }
         $self = self::find(
             array(            
-                'where' => array('_id' => $param['_id']),
+                'where' => $where,
             ),
             self::RETURN_TYPE_ONE
-        );   
+        );
         if (empty($self)) {
-            self::errorNotExist('_id');
+            self::errorNotExist('email_or_id');
             return false;
         }  
         $crypt = Util::cryptPassword($param['password']);
@@ -496,13 +504,36 @@ class Users extends AbstractModel {
         if (self::update(
             array(
                 'set' => $set,
-                'where' => array(
-                    '_id' => $param['_id']
-                ),
+                'where' => $where,
             )
         )) {            
             return true;
         }
+        return false;
+    } 
+    
+    public function updateNewPassword($param)
+    {
+        $activationModel = new UserActivations();
+        $activation = $activationModel->getDetail(array(
+            'token' => $param['token'],
+            'active' => 1
+        ));
+        if (!empty($activation)) {
+            $ok = self::updatePassword(array(
+                'email' => $activation['email'],
+                'password' => $param['password'],
+            ));
+            if ($ok) {
+                $ok = $activationModel->update(array(
+                    'set' => array('active' => 0),
+                    'where' => array('id' => $activation['id']),
+                ));                
+            }
+            return $ok;
+        } else {
+            self::errorOther(self::ERROR_CODE_FIELD_NOT_EXIST, 'token');
+        }       
         return false;
     } 
     
@@ -556,6 +587,7 @@ class Users extends AbstractModel {
         if (isset($param['active'])) {
             $set['active'] = $param['active'];
         }           
+     
         $image = new Images();
         if ($_FILES) {            
             $uploadResult = Util::uploadImage();
@@ -594,7 +626,10 @@ class Users extends AbstractModel {
                     '_id' => $param['_id']
                 ),
             )
-        )) {            
+        )) {  
+            if (isset($param['get_login'])) {
+                return $this->getLogin($param);
+            }
             return true;
         }
         return false;
@@ -608,6 +643,12 @@ class Users extends AbstractModel {
         }
         if (!empty($param['user_id'])) {
             $where['user_id'] = $param['user_id'];           
+        }
+        if (!empty($param['email'])) {
+            $where['email'] = $param['email'];           
+        }
+        if (isset($param['active']) && $param['active'] !== '') {
+            $where['active'] = $param['active'];           
         }
         if (empty($where)) {
             self::errorParamInvalid('user_id');

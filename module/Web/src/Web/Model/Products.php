@@ -12,10 +12,8 @@ class Products
 {
     public static function removeCache()
     {
-        $websiteId = WebModule::getConfig('website_id');
-        Cache::remove(PRODUCT_LAST_ARRIVAL . $websiteId);
-        Cache::remove(PRODUCT_FEATURED . $websiteId);
-        Cache::remove(PRODUCT_TOP_SELLER . $websiteId);
+        $key = PRODUCT_HOMEPAGE . WebModule::getConfig('website_id');
+        Cache::remove($key);
     }
     
     public static function lastArrival()

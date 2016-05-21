@@ -5,15 +5,23 @@
  * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-system-configuration
  * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-application-configuration
  */
+$adminDomain = array(
+    'admin.vuongquocbalo.dev',
+    'admin.vuongquocbalo.com',
+);
+$modules = array(
+    'Application', 
+    'Api',  
+    'OAuth2',  
+);
+if (in_array(domain(), $adminDomain)) {
+    $modules[] = 'Admin';
+} else {
+    $modules[] = 'Web';
+}
 return array(
     // This should be an array of module namespaces used in the application.
-    'modules' => array(
-        'Application',        
-        'Admin',  
-        'Web',  
-        'Api',  
-        'OAuth2',  
-    ),
+    'modules' => $modules,
 
     // These are various options for the listeners attached to the ModuleManager
     'module_listener_options' => array(

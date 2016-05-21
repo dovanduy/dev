@@ -63,7 +63,7 @@ class Module
      */
     public function getConfig($name = '', $default = null)
     {
-        $config = include __DIR__ . '/config/module.config.php';  
+        $config = include __DIR__ . '/config/module.config.php';
         if (isset($_SERVER['SERVER_NAME']) && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php')) {
             $domainConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php';
             $config = array_replace_recursive($config, $domainConfig);
@@ -71,7 +71,7 @@ class Module
         if (Util::isMobile() && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php')) {
             $mobileConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mobile.config.php';
             $config = array_replace_recursive($config, $mobileConfig);
-        }       
+        }  
         if (!empty($name)) {
             return Arr::get($config, $name, $default);
         }

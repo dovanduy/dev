@@ -3,12 +3,12 @@
 namespace Web\Form\Checkout;
 
 use Application\Form\AbstractForm;
-use Application\Model\LocaleCountries;
+use Web\Model\LocaleCountries;
 
 /**
  * List Form
  *
- * @package    Admin\Form
+ * @package Web\Form
  * @created    2015-08-25
  * @version     1.0
  * @author      thailh

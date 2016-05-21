@@ -58,12 +58,17 @@ class Util {
                     return false; 
                 }
             }
-            $fileNames = $adapter->getFileName();
+            $fileNames = $adapter->getFileName(); 
             if (!is_array($fileNames)) {
                 $fileNames = array(key($files) => $fileNames);
             }
-            foreach ($fileNames as $fileField => $fileName) {                
-                $result[$fileField] = $config['url'] . date('/Y/m/d/') . end(explode('\\', $fileName));
+            foreach ($fileNames as $fileField => $fileName) { 
+                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                    $fileName = end(explode('\\', $fileName));
+                } else {
+                    $fileName = end(explode('/', $fileName));
+                }
+                $result[$fileField] = $config['url'] . date('/Y/m/d/') . $fileName;
             }
         } else {
             $result['error'] = $adapter->getMessages();

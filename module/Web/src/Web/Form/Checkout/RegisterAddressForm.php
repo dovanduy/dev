@@ -3,13 +3,13 @@
 namespace Web\Form\Checkout;
 
 use Application\Form\AbstractForm;
-use Application\Model\LocaleCountries;
 use Application\Lib\Auth;
+use Web\Model\LocaleCountries;
 
 /**
  * RegisterAddressForm
  *
- * @package    Admin\Form
+ * @package Web\Form
  * @created    2015-08-25
  * @version     1.0
  * @author      thailh

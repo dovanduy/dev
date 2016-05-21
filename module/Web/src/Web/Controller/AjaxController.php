@@ -10,8 +10,8 @@
 namespace Web\Controller;
 
 use Application\Lib\Util;
-use Application\Model\LocaleCities;
-use Application\Model\LocaleStates;
+use Web\Model\LocaleCities;
+use Web\Model\LocaleStates;
 use Web\Lib\Api;
 
 class AjaxController extends AppController
@@ -163,7 +163,8 @@ class AjaxController extends AppController
             $post['product_id'] = $param['product_id'];
             $post['block_id'] = $post['add_block_id'];
             $result = Api::call('url_blocks_addproduct', $post);                 
-            if (empty(Api::error())) {                        
+            if (empty(Api::error())) {   
+                \Web\Model\Products::removeCache();
                 $result = array(
                     'status' => 'OK',
                     'message' => 'Data saved successfully',
@@ -183,13 +184,18 @@ class AjaxController extends AppController
     public function removeproductfromblockAction()
     { 
         $request = $this->getRequest();    
-        $param = $this->getParams(); // p($param);
+        $param = $this->getParams();
         if ($request->isXmlHttpRequest() && !empty($param['product_id'])) {
             $post = $request->getPost(); 
-            $post['product_id'] = $param['product_id'];
-            $post['block_id'] = $post['remove_block_id'];
-            $result = Api::call('url_blocks_removeproduct', $post);                 
-            if (empty(Api::error())) {                        
+            if (!empty($post['remove_block_id'])) {
+                $param['block_id'] = $post['remove_block_id'];
+            }
+            if (empty($param['block_id'])) {
+                exit;
+            }
+            $result = Api::call('url_blocks_removeproduct', $param);                 
+            if (empty(Api::error())) {  
+                \Web\Model\Products::removeCache();
                 $result = array(
                     'status' => 'OK',
                     'message' => 'Data saved successfully',

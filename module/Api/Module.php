@@ -150,6 +150,9 @@ class Module {
                 'Vouchers' => function ($sm) {
                     return new Model\Vouchers($sm->get('db'), $sm);
                 },               
+                'UserActivations' => function ($sm) {
+                    return new Model\UserActivations($sm->get('db'), $sm);
+                },               
             ),
         );
     }

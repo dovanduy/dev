@@ -2,7 +2,7 @@
 
 namespace Application\Form;
 
-use Admin\Model\Model;
+use Application\Model\Model;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
 

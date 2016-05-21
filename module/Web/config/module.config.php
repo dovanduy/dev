@@ -172,6 +172,10 @@ return array(
     
     'limit' => array(
         'products' => 18
-    )
+    ),
+    
+    'admin_user_id' => array(1),
+    
+    'st_host' => 'http://vuongquocbalo.com/web'
     
 );

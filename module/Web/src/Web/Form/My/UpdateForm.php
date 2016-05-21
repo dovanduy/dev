@@ -57,7 +57,7 @@ class UpdateForm extends AbstractForm
                     'is_image' => true, // custom
                     'allow_empty' => true, // custom
                 ),
-                'validators' => \Admin\Module::getValidatorConfig('general.image')
+                'validators' => \Web\Module::getValidatorConfig('general.image')
             ),         
             array(            
                 'name' => 'email',
@@ -71,7 +71,7 @@ class UpdateForm extends AbstractForm
                 'options' => array(
                     'label' => 'Email',
                 ),
-                'validators' => \Admin\Module::getValidatorConfig('general.email')
+                'validators' => \Web\Module::getValidatorConfig('general.email')
             ),       
             array(
                 'name' => 'name',
@@ -84,7 +84,7 @@ class UpdateForm extends AbstractForm
                 'options' => array(
                     'label' => 'Full name',
                 ),
-                'validators' => \Admin\Module::getValidatorConfig('users.name')
+                'validators' => \Web\Module::getValidatorConfig('users.name')
             ), 
             array(
                 'name' => 'display_name',
@@ -98,7 +98,7 @@ class UpdateForm extends AbstractForm
                 'options' => array(
                     'label' => 'Display name',
                 ),
-                'validators' => \Admin\Module::getValidatorConfig('users.display_name')
+                'validators' => \Web\Module::getValidatorConfig('users.display_name')
             ),
             array(
                 'type' => 'Application\Form\Element\DateCalendar',
@@ -113,7 +113,7 @@ class UpdateForm extends AbstractForm
                     'class' => 'form-control',
                     'value' => ''
                 ),
-                'validators' => \Admin\Module::getValidatorConfig('general.date')
+                'validators' => \Web\Module::getValidatorConfig('general.date')
             ),
             array(
                 'type' => 'Zend\Form\Element\Select',
@@ -123,7 +123,7 @@ class UpdateForm extends AbstractForm
                     'label' => 'Gender',
                     'value_options' => 
                         array('' => '--Select one--')
-                        + \Admin\Module::getConfig('gender_value_options')
+                        + \Web\Module::getConfig('gender_value_options')
                 ),
                 'attributes' => array(
                     'id' => 'gender',

@@ -1200,6 +1200,12 @@ fieldset .form-control, fieldset .form-control:focus {
 	.navbar-nav>.user-menu .user-image {   
 		margin-top: -10px;
 	}
+	.body-mobile .masonry-grid-item {
+		height: auto;
+	}
+	.body-mobile .masonry-grid-item .image {
+		height: auto;
+	}
 }
 
 #searchForm #q {

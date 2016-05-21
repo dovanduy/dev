@@ -2,7 +2,7 @@
 
 namespace Api\Controller;
 
-class LocationStatesController extends AppController { 
+class LocationstatesController extends AppController { 
     
     public function __construct()
     {

@@ -184,10 +184,10 @@ class Images extends AbstractModel
             ->where(
                 array(
                     static::$tableName . '.src_id' => $param['src_id'],
-                    static::$tableName . '.active' => 1,
-                    static::$tableName . '.is_main' => 0
+                    static::$tableName . '.active' => 1
                 )
-            );     
+            )
+            ->order('is_main DESC');     
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL

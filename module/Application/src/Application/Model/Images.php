@@ -3,10 +3,15 @@
 namespace Application\Model;
 
 use Application\Lib\Api;
-use Application\Lib\Arr;
 use Application\Lib\Cache;
 
 class Images {    
+    
+    public static function removeCache($id, $src = 'products')
+    {
+        $key = IMAGES_DETAIL . $src . '_' . $id;         
+        Cache::remove($key);
+    }
     
     public static function getUrl($id, $src = 'products', $force = false) {
         $key = IMAGES_DETAIL . $src . '_' . $id;     
