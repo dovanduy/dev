@@ -449,6 +449,40 @@ class ProductOrders extends AbstractModel {
                     'total_money' => $param['total_money'],
                     'discount' => $param['discount'],
                 ));
+                
+                $orderList = $this->find(array(
+                    'where' => array(
+                        'user_id' => $param['user_id'],
+                        'active' => 1
+                    )
+                ));
+                if (count($orderList) == 1) {                    
+                    $userModel = new Users;
+                    $user = $userModel->getDetail(array(                        
+                        'user_id' => $values['user_id']
+                    ));
+                    if (!empty($user)) {                       
+                        $userUpdateInfo = array();
+                        if (empty($user['name']) && !empty($values['user_name'])) {
+                            $userUpdateInfo['name'] = $values['user_name'];
+                        }
+                        if (empty($user['phone']) && !empty($values['user_phone'])) {
+                            $userUpdateInfo['phone'] = $values['user_phone'];
+                        }
+                        if (empty($user['mobile']) && !empty($values['user_mobile'])) {
+                            $userUpdateInfo['mobile'] = $values['user_mobile'];
+                        }                    
+                        if (empty($user['address_id']) && !empty($values['user_address_id'])) {
+                            $userUpdateInfo['address_id'] = $values['user_address_id'];
+                        }                        
+                        if (!empty($userUpdateInfo)) {
+                            $userModel->update(array(
+                               'set' =>  $userUpdateInfo,
+                               'where' => array('user_id' => $user['user_id'])
+                            ));                        
+                        }
+                    }
+                }
             }
             return $_id;
         }  

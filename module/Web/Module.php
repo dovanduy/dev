@@ -19,6 +19,21 @@ use Zend\Mvc\MvcEvent;
 use Zend\Validator\AbstractValidator;
 use Web\Module as WebModule;
 
+class RenderEventListener
+{
+    public function __invoke(MvcEvent $event)
+    {   
+        $model = $event->getResult();
+        if (!$model instanceof ViewModel) {
+            return;
+        }        
+        $template = $model->getTemplate();
+        if (!in_array($template, ['error/index', 'error/404'])) { // ['error/index', 'error/404']
+            return;
+        }
+        $event->getViewModel()->setTemplate('web/layout/error');        
+    }
+}
 
 class Module 
 {    
@@ -36,8 +51,16 @@ class Module
         $e->getApplication()->getServiceManager()
                             ->get('ViewHelperManager')
                             ->get('translate')
-                            ->setTranslator($translator);
+                            ->setTranslator($translator); 
        
+        /*
+        $eventManager = $e->getApplication()->getEventManager();
+        $eventManager->attach(
+            [MvcEvent::EVENT_RENDER_ERROR, MvcEvent::EVENT_RENDER], 
+            new RenderEventListener()
+        );
+         * 
+         */
     }
    
      /**
@@ -129,13 +152,13 @@ class Module
         }
           
         $website = \Web\Model\Websites::getDetail(); 
-      
         if (!$request->isXmlHttpRequest()) { // not ajax request             
+            $website['last_categories'] = \Web\Model\ProductCategories::getLastCategories($website['product_categories']);
             $headerMenus = \Web\Model\Menus::getSubMenu2($website['menus'], $lastLevel = array(), 0, 0, $type = 'header');
-            $footerMenus = \Web\Model\Menus::getSubMenu2($website['menus'], $lastLevel = array(), 0, 0, $type = 'footer');
+            $footerMenus = \Web\Model\Menus::getSubMenu2($website['menus'], $lastLevel = array(), 0, 0, $type = 'footer');            
             $e->getTarget()->layout()->setVariable('headerMenus', $headerMenus);
-            $e->getTarget()->layout()->setVariable('footerMenus', $footerMenus);            
-        }     
+            $e->getTarget()->layout()->setVariable('footerMenus', $footerMenus);
+        }    
         
         // Getting the view helper manager from the application service manager
         $viewHelperManager = $sm->get('viewHelperManager');
@@ -143,7 +166,7 @@ class Module
         // Head Title Setting
         $headTitleHelper = $viewHelperManager->get('headTitle');       
         $headTitleHelper->setSeparator(' - ');
-                       
+                   
         if (!empty($website['name'])) {
             $headTitleHelper->append($website['name']);
         }

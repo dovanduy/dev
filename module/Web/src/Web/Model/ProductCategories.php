@@ -233,4 +233,23 @@ class ProductCategories
         return !empty($subCategories) ? true : false;  
     }
     
+    public static function getLastCategories($categories = array(), $forDropdownList = true)
+    {      
+        \Web\Model\ProductCategories::getSubCategories($categories, $lastLevel, 0, 0, false);
+        $data = array();
+        foreach ($categories as $category) {
+            if (in_array($category['category_id'], $lastLevel)) {
+               $data[] = $category;
+            }
+        }
+        if ($forDropdownList == true) {
+           $data = Arr::keyValue(
+                $data, 
+                'category_id', 
+                'name'
+            );
+        }
+        return $data;
+    }
+    
 }

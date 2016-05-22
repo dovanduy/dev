@@ -97,4 +97,20 @@ class ProductcategoriesController extends AppController {
         );
     }
     
+    public function addproductAction()
+    {
+        return \Api\Bus\ProductCategories\AddProduct::getInstance()->execute(
+            $this->getServiceLocator()->get('ProductHasCategories'),
+            $this->getParams()
+        );
+    }
+    
+    public function removeproductAction()
+    {
+        return \Api\Bus\ProductCategories\RemoveProduct::getInstance()->execute(
+            $this->getServiceLocator()->get('ProductHasCategories'),
+            $this->getParams()
+        );
+    }
+    
 }

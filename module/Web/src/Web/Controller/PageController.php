@@ -11,6 +11,7 @@ namespace Web\Controller;
 
 use Application\Lib\Util;
 use Application\Lib\Cache;
+use Application\Lib\Session;
 
 use Web\Lib\Api;
 use Web\Form\User\RegisterForm;
@@ -28,6 +29,9 @@ class PageController extends AppController
     
     public function signupAction()
     {
+        $this->setHead(array(
+            'title' => $this->translate('Sign Up')
+        ));
         $AppUI = $this->getLoginInfo();
         if (!empty($AppUI)) {
             return $this->redirect()->toRoute('web');
@@ -44,13 +48,15 @@ class PageController extends AppController
             $post = (array) $request->getPost();         
             $form->setData($post);         
             if ($form->isValid()) {
+                $successMessage = 'Account registed successfully';
                 $registerVoucher = WebModule::getConfig('vouchers.register');
                 if (!empty($registerVoucher)) {
                     $post['generate_voucher'] = 1; 
                     $post['voucher_amount'] = $registerVoucher['amount']; 
                     $post['voucher_type'] = $registerVoucher['type']; 
                     $post['voucher_expired'] = $registerVoucher['expired']; 
-                    $post['send_email'] = $registerVoucher['send_email']; 
+                    $post['send_email'] = $registerVoucher['send_email'];
+                    $successMessage = 'Account registed successfully, please check email to receive voucher code';
                 }                
                 $id = Api::call('url_users_add', $post);
                 if (Api::error()) {                    
@@ -58,12 +64,13 @@ class PageController extends AppController
                 } else {
                     $auth = $this->getServiceLocator()->get('auth');
                     if ($auth->authenticate($post['email'], $post['password'], 'web')) {                        
-                        $this->addSuccessMessage('Account registed successfully');
+                        $this->addSuccessMessage($successMessage);
                         return $this->redirect()->toRoute('web');
                     } 
                 }
             }           
         }
+        
         return $this->getViewModel(array(
                'form' => $form
             )
@@ -72,6 +79,9 @@ class PageController extends AppController
     
     public function loginAction()
     {
+        $this->setHead(array(
+            'title' => $this->translate('Login')
+        ));
         $backUrl = $this->params()->fromQuery('backurl', '/');
         
         $AppUI = $this->getLoginInfo();
@@ -111,11 +121,68 @@ class PageController extends AppController
                     $this->addErrorMessage('Invalid Email or password. Please try again');
                 }
             }
-        }              
+        }   
+       
         return $this->getViewModel(array(
                 'form' => $form,                
             )
         );
+    }
+    
+    public function gloginAction()
+    {        
+        $backUrl = $this->params()->fromQuery('backurl', '/');
+        $param = $this->getParams();      
+        $client = new \Google_Client();
+        $client->setClientId(WebModule::getConfig('google_app_id'));
+        $client->setClientSecret(WebModule::getConfig('google_app_secret'));
+        $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri'));
+        $client->addScope("https://www.googleapis.com/auth/userinfo.email");
+               
+        $accessToken = !empty(Session::get('google_access_token')) ? Session::get('google_access_token') : '';           
+        if (!empty($accessToken)) {
+            $client->setAccessToken($accessToken);
+            $service = new \Google_Service_Oauth2($client);
+            $post = (array) $service->userinfo->get();
+            $successMessage = 'Account registed successfully';
+            $registerVoucher = WebModule::getConfig('vouchers.register');
+            if (!empty($registerVoucher)) {
+                $successMessage = 'Account registed successfully, please check email to receive voucher code';
+                $post['generate_voucher'] = 1; 
+                $post['voucher_amount'] = $registerVoucher['amount']; 
+                $post['voucher_type'] = $registerVoucher['type']; 
+                $post['voucher_expired'] = $registerVoucher['expired']; 
+                $post['send_email'] = $registerVoucher['send_email'];                 
+            }          
+            $auth = $this->getServiceLocator()->get('auth');
+            if ($auth->authenticate(null, null, 'google', $post)) {
+                $AppUI = $this->getLoginInfo();
+                if ($AppUI->is_first_login == 1) {
+                    $this->addSuccessMessage($successMessage);
+                }
+                Session::remove('google_access_token');
+                return $this->redirect()->toUrl($backUrl);
+            } else {              
+                Session::remove('google_access_token');
+                $this->addErrorMessage('Invalid Email or password. Please try again');
+            }
+        } else {          
+            if (!empty($param['code'])) {
+                $client->authenticate($param['code']);
+                Session::set('google_access_token', $client->getAccessToken());                 
+                header('Location: ' . filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
+                exit;
+            } else {
+                try {
+                    $authUrl = $client->createAuthUrl();
+                    return $this->redirect()->toUrl($authUrl);
+                } catch (\Exception $e) {
+                    p($e->getMessage());
+                    exit;
+                }
+            }
+        }        
+        exit;        
     }
     
     public function logoutAction()
@@ -139,8 +206,22 @@ class PageController extends AppController
         $request = $this->getRequest();        
         if ($request->isPost()) {
             $post = (array) $request->getPost();
+            $successMessage = 'Account registed successfully';
+            $registerVoucher = WebModule::getConfig('vouchers.register');
+            if (!empty($registerVoucher)) {
+                $successMessage = 'Account registed successfully, please check email to receive voucher code';
+                $post['generate_voucher'] = 1; 
+                $post['voucher_amount'] = $registerVoucher['amount']; 
+                $post['voucher_type'] = $registerVoucher['type']; 
+                $post['voucher_expired'] = $registerVoucher['expired']; 
+                $post['send_email'] = $registerVoucher['send_email'];                 
+            }          
             $auth = $this->getServiceLocator()->get('auth');
             if ($auth->authenticate(null, null, 'facebook', $post)) { 
+                $AppUI = $this->getLoginInfo();
+                if ($AppUI->is_first_login == 1) {
+                    $this->addSuccessMessage($successMessage);
+                }
                 $result = array(
                     'error' => 0,
                     'message' => 'FbLogin success',
@@ -150,8 +231,8 @@ class PageController extends AppController
                 $result = array(
                     'error' => 1,
                     'message' => 'Invalid Email or password. Please try again',
-                );               
-            }           
+                );              
+            }          
             die(\Zend\Json\Encoder::encode($result));
         }      
         exit;
@@ -159,6 +240,9 @@ class PageController extends AppController
     
     public function forgetpasswordAction()
     {   
+        $this->setHead(array(
+            'title' => $this->translate('Forgot your password')
+        ));
         $form = new ForgetPasswordForm();
         $form->setAttribute('class', 'form-horizontal')
             ->setController($this)
@@ -187,6 +271,9 @@ class PageController extends AppController
     
     public function newpasswordAction()
     {   
+        $this->setHead(array(
+            'title' => $this->translate('New password')
+        ));
         $token = $this->params()->fromRoute('token', '');
         if (empty($token)) {
             $this->notFoundAction();
@@ -237,7 +324,7 @@ class PageController extends AppController
     public function testmailAction()
     { 
         $_id = 'c595110183798d10cf5ba3a4';
-        $_id = '4a42d6d4f63ab3bd954fbaea';
+        $_id = 'b8b760be3a4df925412209e7';
         $order = Api::call('url_productorders_detail', array('_id' => $_id));              
         if (!empty($order['user_email'])) {                  
             $order['user_email'] = 'thailvn@gmail.com';

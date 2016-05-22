@@ -48,7 +48,8 @@ return array(
         'not_found_template' => 'error/404',
         'exception_template' => 'error/index',
         'template_map' => array(
-            'web/layout' => __DIR__ . '/../view/layout/layout.phtml',           
+            'web/layout' => __DIR__ . '/../view/layout/layout.phtml', 
+            'web/layout/error' => __DIR__ . '/../view/layout/error.phtml',
             'web/ajax' => __DIR__ . '/../view/layout/ajax.phtml',
             'web/page' => __DIR__ . '/../view/layout/page.phtml',
             'web/header' => __DIR__ . '/../view/partial/header.phtml',           

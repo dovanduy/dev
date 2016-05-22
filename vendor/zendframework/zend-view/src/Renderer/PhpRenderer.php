@@ -12,6 +12,7 @@ namespace Zend\View\Renderer;
 use ArrayAccess;
 use Traversable;
 use Zend\Filter\FilterChain;
+use Zend\ServiceManager\ServiceManager;
 use Zend\View\Exception;
 use Zend\View\HelperPluginManager;
 use Zend\View\Helper\AbstractHelper;
@@ -333,7 +334,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
                     $helpers
                 ));
             }
-            $helpers = new $helpers();
+            $helpers = new $helpers(new ServiceManager());
         }
         if (!$helpers instanceof HelperPluginManager) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -355,7 +356,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     public function getHelperPluginManager()
     {
         if (null === $this->__helpers) {
-            $this->setHelperPluginManager(new HelperPluginManager());
+            $this->setHelperPluginManager(new HelperPluginManager(new ServiceManager()));
         }
         return $this->__helpers;
     }
@@ -515,7 +516,11 @@ class PhpRenderer implements Renderer, TreeRendererInterface
 
         $this->setVars(array_pop($this->__varsCache));
 
-        return $this->getFilterChain()->filter($this->__content); // filter output
+        if ($this->__filterChain instanceof FilterChain) {
+            return $this->__filterChain->filter($this->__content); // filter output
+        }
+
+        return $this->__content;
     }
 
     /**

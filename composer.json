@@ -13,6 +13,7 @@
         "guzzlehttp/guzzle": "~6.0",
         "doctrine/orm": "2.3.6",
         "hussfelt/zend-model-creator-2": "dev-master",
-        "zendframework/zendoauth": "2.0.*"
+        "zendframework/zendoauth": "2.0.*",
+		"google/apiclient": "1.0.*@beta"
     }
 }

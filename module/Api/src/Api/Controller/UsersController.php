@@ -124,7 +124,15 @@ class UsersController extends AppController {
     public function fbloginAction()
     {
         return \Api\Bus\Users\FbLogin::getInstance()->execute(
-            $this->getServiceLocator()->get('Users'),
+            $this->getServiceLocator(),
+            $this->getParams()
+        );
+    }
+    
+    public function gloginAction()
+    {
+        return \Api\Bus\Users\GLogin::getInstance()->execute(
+            $this->getServiceLocator(),
             $this->getParams()
         );
     }

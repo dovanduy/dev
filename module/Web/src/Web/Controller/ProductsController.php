@@ -158,7 +158,7 @@ class ProductsController extends AppController
                 ));
             }           
             
-            $result = Products::getList($param);            
+            $result = Products::getList($param);      
             return $this->getViewModel(array(
                     'params' => $this->params()->fromQuery(),                                             
                     'optionId' => $optionId,

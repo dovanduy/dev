@@ -81,8 +81,8 @@ class ProductItemHelper extends AbstractHtmlElement
                         \">{$view->translate('Remove')} <i class=\"fa fa-remove\"></i>
                     </a>
                 ";
-            } else {
-                $addUrl = $view->url(
+            } else {                
+                $addToBlockUrl = $view->url(
                     'web/ajax', 
                     array(
                         'action' => 'addproducttoblock'
@@ -93,20 +93,80 @@ class ProductItemHelper extends AbstractHtmlElement
                         )
                     )
                 );
-                $option = array("<option value=\"\">[Admin] {$view->translate('Added to block')}</option>");
-                foreach ($website['blocks'] as $block) {
-                    $option[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
+                
+                $addToCategoryUrl = $view->url(
+                    'web/ajax', 
+                    array(
+                        'action' => 'addproducttocategory'
+                    ),
+                    array(
+                        'query' => array(
+                            'product_id' => $product['product_id']
+                        )
+                    )
+                );
+                
+                if (is_array($product['category_id']) && !empty($product['category_id'])) {
+                    $categoryId = $product['category_id'][0];
+                } else {
+                    $categoryId = $product['category_id'];
                 }
-                $option = implode('', $option);
+                $removeFromCategoryUrl = $view->url(
+                    'web/ajax', 
+                    array(
+                        'action' => 'removeproductfromcategory'
+                    ),
+                    array(
+                        'query' => array(
+                            'category_id' => $categoryId,
+                            'product_id' => $product['product_id'],
+                        )
+                    )
+                );
+                
+                $blockOption = array("<option value=\"\">B</option>");
+                foreach ($website['blocks'] as $block) {
+                    $blockOption[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
+                }
+                $blockOption = implode('', $blockOption);
+                
+                $categoryOption = array("<option value=\"\">C</option>");
+                foreach ($website['last_categories'] as $categoryId => $name) {
+                    $categoryOption[] = "<option value=\"{$categoryId}\">{$name}</option>";
+                }
+                $categoryOption = implode('', $categoryOption);
+                
                 $btn = "
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:120px;padding:4px 2px;float:right;\"
+                    <a  itemprop=\"url\" href=\"#\" 
+                        style=\"width:35px;padding:4px 2px;float:right;margin-left:2px;\"
+                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                        data-url=\"{$removeFromCategoryUrl}\"
+                        data-callback=\"
+                            var item = btn.closest('.masonry-grid-item'); 
+                            item.remove();
+                        \"><i class=\"fa fa-remove\"></i>
+                    </a>
+                    </form>
+                    
+                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
+                    <select style=\"width:35px;padding:4px 2px;float:right;margin-left:2px;\"
                     name=\"add_block_id\" 
                     class=\"ajax-change\"
-                    data-url=\"{$addUrl}\"
+                    data-url=\"{$addToBlockUrl}\"
                     data-callback=\"alert('Added');\" 
-                    >{$option}</select>
+                    >{$blockOption}</select>
                     </form>
+                    
+                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
+                    <select style=\"width:35px;padding:4px 2px;float:right;\"
+                    name=\"category_id\" 
+                    class=\"ajax-change\"
+                    data-url=\"{$addToCategoryUrl}\"
+                    data-callback=\"alert('Added');\" 
+                    >{$categoryOption}</select>
+                    </form>
+                    
                 ";
             }
         }

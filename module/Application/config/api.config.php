@@ -56,6 +56,7 @@ return array(
         'url_users_all' => 'users/all',
         'url_users_search' => 'users/search',
         'url_users_fblogin' => 'users/fblogin',
+        'url_users_glogin' => 'users/glogin',
         'url_users_checklogin' => 'users/checklogin',
         'url_users_updatepassword' => 'users/updatepassword',
         'url_users_updatenewpassword' => 'users/updatenewpassword',
@@ -144,6 +145,8 @@ return array(
         'url_productcategories_addfield' => 'productcategories/addfield',
         'url_productcategories_allbrand' => 'productcategories/allbrand',
         'url_productcategories_filter' => 'productcategories/filter',
+        'url_productcategories_addproduct' => 'productcategories/addproduct',
+        'url_productcategories_removeproduct' => 'productcategories/removeproduct',
         
         'url_productsizes_lists' => 'productsizes/lists',
         'url_productsizes_all' => 'productsizes/all',

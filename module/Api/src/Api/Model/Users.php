@@ -542,9 +542,20 @@ class Users extends AbstractModel {
     */
     public function updateInfo($param)
     {
+        if (empty($param['_id']) && empty($param['user_id'])) {
+            self::errorParamInvalid('user_id_or_id');
+            return false;
+        }
+        $where = array();
+        if (!empty($param['_id'])) {
+            $where['_id'] = $param['_id'];
+        }
+        if (!empty($param['user_id'])) {
+            $where['user_id'] = $param['user_id'];
+        }
         $self = self::find(
             array(            
-                'where' => array('_id' => $param['_id'])
+                'where' => $where
             ),
             self::RETURN_TYPE_ONE
         );   
@@ -555,7 +566,7 @@ class Users extends AbstractModel {
         $set = array();  
         if (isset($param['name'])) {
             $set['name'] = $param['name'];
-        } 
+        }
         if (isset($param['display_name'])) {
             $set['display_name'] = $param['display_name'];
         }
@@ -623,7 +634,7 @@ class Users extends AbstractModel {
             array(
                 'set' => $set,
                 'where' => array(
-                    '_id' => $param['_id']
+                    'user_id' => $self['user_id']
                 ),
             )
         )) {  
@@ -720,7 +731,8 @@ class Users extends AbstractModel {
     * @param password
     * @return array()
     */  
-    public function fbLogin($param) {   
+    public function fbLogin($param) { 
+        $isFirstLogin = 0;
         $param['facebook_image'] = "http://graph.facebook.com/{$param['facebook_id']}/picture?type=large";
         $param['facebook_username'] = !empty($param['facebook_username']) ? $param['facebook_username'] : '';
         $sql = new Sql(self::getDb());
@@ -816,6 +828,7 @@ class Users extends AbstractModel {
                 'website_id' => $param['website_id'],
             ), $user['user_id']);
             if (!empty($user['user_id'])) {
+                $isFirstLogin = 1;
                 $param['image_id'] = $image->add(array(
                     'src' => 'users',
                     'src_id' => $user['user_id'],
@@ -841,14 +854,158 @@ class Users extends AbstractModel {
                     'facebook_gender' => $param['facebook_gender'],
                 ));
             }
-        }
+        }       
         if (!empty($user['_id'])) {            
             $websiteHasUserModel = new WebsiteHasUsers;
             $websiteHasUserModel->addUpdate(array(
                 'website_id' => $param['website_id'],
                 'user_id' => $user['user_id'],
             ));
-            return self::getLogin(array('_id' => $user['_id']));
+            $user = self::getLogin(array('_id' => $user['_id']));
+            $user['is_first_login'] = $isFirstLogin;
+            return $user;
+        }
+        return false;
+    }
+    
+    /*
+    * Google Login
+    * @param email
+    * @param password
+    * @return array()
+    */  
+    public function gLogin($param) { 
+        $isFirstLogin = 0;        
+        $param['google_username'] = !empty($param['google_username']) ? $param['google_username'] : '';
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)   
+            ->columns(array(                
+                'user_id', 
+                '_id', 
+                'email', 
+                'name',
+                'display_name',
+                'active',
+                'website_id',
+                'phone',        
+                'mobile',   
+            ))
+            ->join(
+                'user_googles', 
+                static::$tableName . '.user_id = user_googles.user_id',
+                array(
+                    'google_id',
+                    'google_name',
+                    'google_username',
+                    'google_email',
+                    'google_first_name',
+                    'google_last_name',
+                    'google_link',
+                    'google_image',
+                    'google_gender',
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.email = '. static::quote($param['google_email']))
+            ->limit(1)
+            ->offset(0);
+        $selectString = $sql->getSqlStringForSqlObject($select);
+        $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
+        $user = self::response($result, self::RETURN_TYPE_ONE);   
+        $userGoogleModel = new UserGoogles;    
+        $image = new Images;
+        if (!empty($user['user_id'])) {
+            if (empty($user['google_email'])) {
+                $userGoogleModel->insert(array(
+                    'user_id' => $user['user_id'],
+                    'google_id' => $param['google_id'],
+                    'google_email' => $param['google_email'],
+                    'google_name' => $param['google_name'],
+                    'google_username' => $param['google_username'],                    
+                    'google_first_name' => $param['google_first_name'],
+                    'google_last_name' => $param['google_last_name'],
+                    'google_link' => $param['google_link'],
+                    'google_image' => $param['google_image'],
+                    'google_gender' => $param['google_gender'],
+                ));
+            } else {                
+                $userGoogleModel->update(array(                        
+                    'set' => array(
+                        'google_id' => $param['google_id'],                            
+                        'google_email' => $param['google_email'],
+                        'google_name' => $param['google_name'],
+                        'google_username' => $param['google_username'],                    
+                        'google_first_name' => $param['google_first_name'],
+                        'google_last_name' => $param['google_last_name'],
+                        'google_link' => $param['google_link'],
+                        'google_image' => $param['google_image'],
+                        'google_gender' => $param['google_gender'],
+                    ),
+                    'where' => array('user_id' => $user['user_id'])
+                ));
+            }
+        } else {
+            if ($param['google_gender'] == 'male') {
+                $param['gender'] = 1;
+            } elseif ($param['google_gender'] == 'female') {
+                $param['gender'] = 2;
+            } else {
+                $param['gender'] = 0;
+            }
+            $param['name'] = array();
+            if (!empty($param['google_last_name'])) {
+                $param['name'][] = $param['google_last_name'];
+            }
+            if (!empty($param['google_first_name'])) {
+                $param['name'][] = $param['google_first_name'];
+            }
+            $param['name'] = !empty($param['name']) ? implode(' ', $param['name']) : '';
+            $user['_id'] = self::add(array(              
+                'email' => $param['google_email'],
+                'username' => $param['google_username'],
+                'display_name' => $param['google_name'],                                    
+                'name' => $param['name'], 
+                'gender' => $param['gender'],
+                'website_id' => $param['website_id'],
+            ), $user['user_id']);
+            if (!empty($user['user_id'])) {
+                $isFirstLogin = 1;
+                $param['image_id'] = $image->add(array(
+                    'src' => 'users',
+                    'src_id' => $user['user_id'],
+                    'url_image' => $param['google_image'],
+                    'is_main' => 1,
+                ));   
+                self::update(array(
+                    'set' => array(
+                        'image_id' => $param['image_id']
+                    ),
+                    'where' => array('user_id' => $user['user_id'])
+                ));
+                $userGoogleModel->insert(array(
+                    'user_id' => $user['user_id'],
+                    'google_id' => $param['google_id'],
+                    'google_email' => $param['google_email'],
+                    'google_name' => $param['google_name'],
+                    'google_username' => $param['google_username'],                    
+                    'google_first_name' => $param['google_first_name'],
+                    'google_last_name' => $param['google_last_name'],
+                    'google_link' => $param['google_link'],
+                    'google_image' => $param['google_image'],
+                    'google_gender' => $param['google_gender'],
+                ));
+            }
+        }       
+        if (!empty($user['_id'])) {            
+            $websiteHasUserModel = new WebsiteHasUsers;
+            $websiteHasUserModel->addUpdate(array(
+                'website_id' => $param['website_id'],
+                'user_id' => $user['user_id'],
+            ));
+            $user = self::getLogin(array('_id' => $user['_id']));
+            $user['is_first_login'] = $isFirstLogin;
+            return $user;
         }
         return false;
     }

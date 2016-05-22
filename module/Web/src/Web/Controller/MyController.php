@@ -93,6 +93,9 @@ class MyController extends AppController
         
         switch ($tab) {
             case '':
+                $this->setHead(array(
+                    'title' => $this->translate('Profile')
+                ));
                 $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_my_index');
                 if ($navigationPage) {
                     $navigationPage->setLabel('');
@@ -175,6 +178,9 @@ class MyController extends AppController
                 break;
                 
             case 'address':
+                $this->setHead(array(
+                    'title' => $this->translate('My address')
+                ));
                 $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_my_index');
                 if ($navigationPage) {
                     $navigationPage->setLabel('');
@@ -274,7 +280,9 @@ class MyController extends AppController
                 break;
             
             case 'password': 
-                
+                $this->setHead(array(
+                    'title' => $this->translate('Change password')
+                ));
                 $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_my_index');
                 if ($navigationPage) {
                     $navigationPage->setLabel('');
@@ -311,7 +319,9 @@ class MyController extends AppController
                 break;  
             
             case 'productorder': 
-                
+                $this->setHead(array(
+                    'title' => $this->translate('Order list')
+                ));
                 $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_my_index');
                 if ($navigationPage) {
                     $navigationPage->setLabel('');

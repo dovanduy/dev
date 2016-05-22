@@ -3,7 +3,6 @@
 namespace Web\Controller;
 
 use Zend\View\Model\ViewModel;
-
 use Application\Controller\AbstractAppController;
 use Application\Lib\Util;
 use Web\Lib\Api;
@@ -35,7 +34,7 @@ class AppController extends AbstractAppController {
                 'keywords' => $website['meta_keyword'],                
             ),
             'meta_property' => array(
-                'fb:admins' => WebModule::getConfig('facebook_admins'),
+                //'fb:admins' => WebModule::getConfig('facebook_admins'),
                 'fb:app_id' => WebModule::getConfig('facebook_app_id'),
                 'og:type' => 'product',
                 'og:title' => '',
@@ -179,9 +178,14 @@ class AppController extends AbstractAppController {
         $errors = array();
         foreach ($errorMessages as $field => $messages) {
             $errors[$field] = '<ul>';
-            foreach ($messages as $message) {
-                $message = $this->translate($message);
-                $errors[$field] .= "<li class='error'>{$message}</li>";
+            if (is_array($messages)) {
+                foreach ($messages as $message) {
+                    $message = $this->translate($message);
+                    $errors[$field] .= "<li class='error'>{$message}</li>";
+                }
+            } else {
+                $message = $this->translate($messages);
+                $errors[$field] .= "<li class='error'>{$messages}</li>";
             }
             $errors[$field] .= '</ul>';
         }

@@ -62,8 +62,7 @@ class RegisterForm extends AbstractForm
                     'label' => 'Email',
                 ),
                 'validators' => \Web\Module::getValidatorConfig('general.email')
-            ),  
-            
+            ),              
             array(            
                 'name' => 'password',
                 'attributes' => array(
@@ -77,13 +76,25 @@ class RegisterForm extends AbstractForm
                 ),
                 'validators' => \Web\Module::getValidatorConfig('general.password')
             ),
-            
+            array(            
+                'name' => 'password_confirmation',
+                'attributes' => array(
+                    'id' => 'password_confirmation',                    
+                    'type' => 'password',
+                    'required' => true,
+                    'class' => 'form-control'
+                ),
+                'options' => array(
+                    'label' => 'Password confirmation',
+                ),
+                'validators' => \Web\Module::getValidatorConfig('general.password_confirmation')
+            ),
             array(
                 'name' => 'mobile',
                 'attributes' => array(
                     'id' => 'mobile',
                     'type' => 'text',
-                    'required' => true,
+                    'required' => false,
                     'class' => 'form-control'
                 ),
                 'options' => array(

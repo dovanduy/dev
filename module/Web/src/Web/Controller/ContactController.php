@@ -29,7 +29,10 @@ class ContactController extends AppController
      * @return Zend\View\Model
      */
     public function indexAction()
-    {         
+    {   
+        $this->setHead(array(
+            'title' => $this->translate('Contact')
+        ));
         $contactForm = new Form();  
         $contactForm ->setController($this)
                     ->create('post');

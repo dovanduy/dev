@@ -185,6 +185,17 @@ return array(
                     ),
                 ),
 
+                'glogin' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/glogin',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'glogin',
+                        ),
+                    ),
+                ),
+                
                 'signup' => array(
                     'type'    => 'Segment',
                     'options' => array(

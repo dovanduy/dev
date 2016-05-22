@@ -69,8 +69,10 @@ class ProductHasCategories extends AbstractModel {
             $categoryValues[] = array(
                 'product_id' => $param['product_id'],
                 'category_id' => $categoryId,
+                'created' => new Expression('UNIX_TIMESTAMP()'),
+                'updated' => new Expression('UNIX_TIMESTAMP()'),
             );
-            if (!self::batchInsert($categoryValues)) {
+            if (!self::batchInsert($categoryValues, array('updated' => new Expression('UNIX_TIMESTAMP()')))) {
                 return false;
             }
         }           
@@ -327,5 +329,33 @@ class ProductHasCategories extends AbstractModel {
         return $result;
     } 
     
+    public function addProduct($param)
+    {        
+        $values = array(
+            'category_id' => $param['category_id'],
+            'product_id' => $param['product_id'],
+            'created' => new Expression('UNIX_TIMESTAMP()'),
+            'updated' => new Expression('UNIX_TIMESTAMP()'),
+        );        
+        if (!self::batchInsert($values, array('updated' => new Expression('UNIX_TIMESTAMP()')))) {
+            return false;
+        }
+        return true;     
+    }
+    
+    public function removeProduct($param)
+    {     
+        if (!self::delete(
+            array(
+                'where' => array(
+                    'product_id' => $param['product_id'],
+                    'category_id' => $param['category_id']
+                ),
+            )
+        )) {
+            return false;
+        }          
+        return true;              
+    }
     
 }

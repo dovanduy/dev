@@ -117,6 +117,13 @@ if (!empty($cartItems)) {
                                         </a>
                                         <ul itemscope itemtype="http://schema.org/ItemList" class="dropdown-menu">                                            
                                             <li itemprop="itemListElement" class="user-body">
+                                                <?php if (in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))): ?>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/page', array('action' => 'deletecache'))?>">                                                        
+                                                        <span itemprop="name"><?php echo $this->translate('Delete cache')?></span>
+                                                    </a>
+                                                </div>
+                                                <?php endif ?>
                                                 <div class="col-xs-12 text-left">
                                                     <a itemprop="url" href="<?php echo $this->url('web/my')?>">
                                                         <span itemprop="name"><?php echo $this->translate('Profile')?></span>
@@ -139,13 +146,13 @@ if (!empty($cartItems)) {
                                                     <a itemprop="url" href="<?php echo $this->url('web/page', array('action' => 'logout'))?>">
                                                         <span itemprop="name"><?php echo $this->translate('Sign out')?></span>
                                                     </a>
-                                                </div>
+                                                </div>                                                
                                             </li>                                            
                                         </ul>
                                     </li>
                                 </ul>
                             </div>
-                        <?php else: ?>                
+                        <?php else: ?> 
 							<div class="btn-group">
 								<a itemprop="url" href="<?php echo $this->url('web/signup')?>" class="btn btn-default btn-sm">
                                     <i class="fa fa-user pr-10"></i> 
@@ -307,7 +314,7 @@ if (!empty($cartItems)) {
                                                             </tr>
 														</tbody>
 													</table>
-													<div class="panel-body text-center" style="padding: 5px 5px;">	
+													<div class="panel-body text-right" style="padding: 5px 5px;">	
                                                         <a href="<?php echo $this->url('web/carts', array('action' => 'view'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('View cart')?></a>
                                                         <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('Checkout')?></a>
                                                     </div>

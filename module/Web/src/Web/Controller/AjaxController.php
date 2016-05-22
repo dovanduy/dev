@@ -207,4 +207,54 @@ class AjaxController extends AppController
         exit;
     }
     
+    /**
+     * Ajax add a product to category
+     *
+     * @return Zend\View\Model
+     */
+    public function addproducttocategoryAction()
+    { 
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() && !empty($param['product_id'])) {
+            $post = $request->getPost(); 
+            $post['product_id'] = $param['product_id'];           
+            $result = Api::call('url_productcategories_addproduct', $post);                 
+            if (empty(Api::error())) {                   
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }              
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+     /**
+     * Ajax remove a product from category
+     *
+     * @return Zend\View\Model
+     */
+    public function removeproductfromcategoryAction()
+    { 
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost() 
+            && !empty($param['product_id']) 
+            && !empty($param['category_id'])) {            
+            $result = Api::call('url_productcategories_removeproduct', $param);                 
+            if (empty(Api::error())) {                   
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }             
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
 }

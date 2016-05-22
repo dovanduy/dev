@@ -1,24 +1,23 @@
 <?php
 /**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
+ * @link      http://github.com/zendframework/zend-view for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\View\Helper;
 
 use Zend\Mvc\Controller\Plugin\FlashMessenger as PluginFlashMessenger;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\I18n\View\Helper\AbstractTranslatorHelper;
 
 /**
  * Helper to proxy the plugin flash messenger
+ *
+ * Duck-types against Zend\I18n\Translator\TranslatorAwareInterface.
  */
-class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorAwareInterface
+class FlashMessenger extends AbstractHelper
 {
+    use TranslatorAwareTrait;
+
     /**
      * Default attributes for the open format tag
      *
@@ -61,13 +60,6 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
      * @var PluginFlashMessenger
      */
     protected $pluginFlashMessenger;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Returns the flash messenger plugin controller
@@ -143,6 +135,10 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
         array $classes = [],
         $autoEscape = null
     ) {
+        if (empty($messages)) {
+            return '';
+        }
+
         // Prepare classes for opening tag
         if (empty($classes)) {
             if (isset($this->classMessages[$namespace])) {
@@ -158,9 +154,9 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
         }
 
         // Flatten message array
-        $escapeHtml      = $this->getEscapeHtmlHelper();
-        $messagesToPrint = [];
-        $translator = $this->getTranslator();
+        $escapeHtml           = $this->getEscapeHtmlHelper();
+        $messagesToPrint      = [];
+        $translator           = $this->getTranslator();
         $translatorTextDomain = $this->getTranslatorTextDomain();
         array_walk_recursive(
             $messages,
@@ -307,28 +303,6 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
         }
 
         return $this->pluginFlashMessenger;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @return AbstractHelper
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**

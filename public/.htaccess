@@ -1,4 +1,9 @@
 RewriteEngine On
+
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
 # The following rule tells Apache that if the requested filename
 # exists, simply serve it.
 RewriteCond %{REQUEST_FILENAME} -s [OR]
@@ -10,10 +15,8 @@ RewriteRule ^.*$ - [NC,L]
 # mass virtual hosting, the base path will be prepended to 
 # allow proper resolution of the index.php file; it will work
 # in non-aliased environments as well, providing a safe, one-size 
-# fits all solution.
+# fits all solution
 
-RewriteCond %{HTTP_HOST} ^www.vuongquocbalo.com
-RewriteRule ^.*$ http://vuongquocbalo.vn%{REQUEST_URI} [R=301,L]
 
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]

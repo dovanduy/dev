@@ -11,7 +11,7 @@ namespace Zend\InputFilter;
 
 use Traversable;
 use Zend\Filter\FilterChain;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Validator\ValidatorChain;
 use Zend\Validator\ValidatorInterface;
@@ -117,15 +117,7 @@ class Factory
     public function setInputFilterManager(InputFilterPluginManager $inputFilterManager)
     {
         $this->inputFilterManager = $inputFilterManager;
-        $serviceLocator = $this->inputFilterManager->getServiceLocator();
-        if ($serviceLocator && $serviceLocator instanceof ServiceLocatorInterface) {
-            if ($serviceLocator->has('ValidatorManager')) {
-                $this->getDefaultValidatorChain()->setPluginManager($serviceLocator->get('ValidatorManager'));
-            }
-            if ($serviceLocator->has('FilterManager')) {
-                $this->getDefaultFilterChain()->setPluginManager($serviceLocator->get('FilterManager'));
-            }
-        }
+        $inputFilterManager->populateFactoryPluginManagers($this);
         return $this;
     }
 
@@ -135,7 +127,7 @@ class Factory
     public function getInputFilterManager()
     {
         if (null === $this->inputFilterManager) {
-            $this->inputFilterManager = new InputFilterPluginManager;
+            $this->inputFilterManager = new InputFilterPluginManager(new ServiceManager());
         }
 
         return $this->inputFilterManager;
@@ -337,12 +329,28 @@ class Factory
             if (($value instanceof InputInterface)
                 || ($value instanceof InputFilterInterface)
             ) {
-                $input = $value;
-            } else {
-                $input = $this->createInput($value);
+                $inputFilter->add($value, $key);
+                continue;
             }
 
-            $inputFilter->add($input, $key);
+            // Patch to enable nested, integer indexed input_filter_specs.
+            // Check type and name are in spec, and that composed type is
+            // an input filter...
+            if ((isset($value['type']) && is_string($value['type']))
+                && (isset($value['name']) && is_string($value['name']))
+                && $this->getInputFilterManager()->get($value['type']) instanceof InputFilter
+            ) {
+                // If $key is an integer, reset it to the specified name.
+                if (is_integer($key)) {
+                    $key = $value['name'];
+                }
+
+                // Remove name from specification. InputFilter doesn't have a
+                // name property!
+                unset($value['name']);
+            }
+
+            $inputFilter->add($this->createInput($value), $key);
         }
 
         return $inputFilter;

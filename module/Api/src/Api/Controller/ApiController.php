@@ -9,7 +9,7 @@ use Zend\Http\PhpEnvironment\Request;
 class ApiController extends AppController {   
 
     public function indexAction() {        
-       
+       //throw new \Exception('System error');
     }
     
     public function onoffAction()

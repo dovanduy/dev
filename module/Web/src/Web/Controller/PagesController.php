@@ -30,6 +30,10 @@ class PagesController extends AppController
      */
     public function indexAction()
     {  
+        $this->setHead(array(
+            'title' => $pageDetail['title']
+        ));
+        
         $urlName = $this->params()->fromRoute('name', '');
         UrlIds::getDetail($urlName, $categoryId, $brandId, $productId, $optionId, $id);        
         if (empty($id)) {
@@ -47,7 +51,7 @@ class PagesController extends AppController
                 'label' => $pageDetail['title'],
                 'active' => true
             ));
-        }
+        }        
         return $this->getViewModel(array(
                 'pageDetail' => $pageDetail,
                 'pages' => Pages::getAll(),

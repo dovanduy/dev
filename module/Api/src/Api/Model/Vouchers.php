@@ -253,7 +253,11 @@ class Vouchers extends AbstractModel {
         return $result;
     }
     
-    function check($param) {                 
+    function check($param) {                
+        if (empty($param['voucher_code'])) {
+            self::errorParamInvalid('voucher_code');
+            return false;
+        }
         $voucherDetail = $this->getDetail(array(
             'website_id' => $param['website_id'],
             'user_id' => $param['user_id'],

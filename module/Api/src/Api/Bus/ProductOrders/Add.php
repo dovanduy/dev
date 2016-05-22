@@ -25,16 +25,16 @@ class Add extends AbstractBus {
             $model = $sm->get('ProductOrders');           
             $this->_response = $model->add($param); 
             if (empty($model->error()) && isset($param['send_email'])) { 
-                $order = $model->getDetail(array(
+                $data = $model->getDetail(array(
                     'website_id' => $param['website_id'],
                     '_id' => $this->_response,
                 ));          
-                if (!empty($order['user_email'])) {                  
+                if (!empty($data['user_email'])) {                  
                     $mail = $sm->get("Mail");        
-                    $viewModel = new ViewModel(array('data' => $order));
+                    $viewModel = new ViewModel(array('data' => $data));
                     $viewModel->setTemplate('email/order');
-                    $mail->setTo($order['user_email']);                                         
-                    $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $order['website_url'], $order['code']));
+                    $mail->setTo($data['user_email']);                                         
+                    $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $data['website_url'], $data['code']));
                     $mail->setBody($viewModel);
                     $mail->send();
                 }

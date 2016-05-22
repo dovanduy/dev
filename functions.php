@@ -46,6 +46,14 @@ if (!function_exists('voucher_code')) {
 
 }
 
+if (!function_exists('generate_token')) {
+
+    function generate_token() {
+        return strtoupper(substr(md5(mt_rand()/mt_getrandmax()) . md5(mt_rand()/ mt_getrandmax()), 1, 30));
+    }
+
+}
+
 if (!function_exists('str_no_vi')) {
     function str_no_vi($string, $length = 100, $strSymbol = '-', $isToLower = 1)
 	{
@@ -108,16 +116,15 @@ if (!function_exists('mk_dir')) {
 		}
 
 		// Attempting to create the directory may clutter up our display.
-		if (@ mkdir($target)) {
-			$stat = @ stat(dirname($target));
+		if (@mkdir($target)) {
+			$stat = @stat(dirname($target));
 			$dir_perms = $stat ['mode'] & 0007777; // Get the permission bits.
-			@ chmod($target, $dir_perms);
+			@chmod($target, $dir_perms);
 			return true;
 		} else {
 			if (is_dir(dirname($target)))
 				return false;
 		}
-
 		// If the above failed, attempt to create the parent node, then try again.
 		if (mk_dir(dirname($target)))
 			return mkdir($target);
@@ -133,6 +140,9 @@ function allowIp($ip = null) {
 	$allowIp = array(
 		'127.0.0.1',
 		'10.10.8.25',		
+		'115.78.209.220',
+		'112.213.89.30',
+        '1.52.32.16'
 	);
 	return in_array($ip, $allowIp) ? 1 : 0;
 }
@@ -144,7 +154,10 @@ function domain() {
     $domain = 'localhost';
     preg_match("/^([a-zA-Z0-9-.]+)(.com.vn|.vn|.com|.in|.co|.info|.name|.dev)$/", $_SERVER['SERVER_NAME'], $match);   
     if (!empty($match[0])) {
-        return $match[0];
+        $domain = $match[0];
+    }
+    if (strpos($domain, 'www.') !== false) {
+        $domain = str_replace('www.', '', $domain);
     }
     return $domain;
 }

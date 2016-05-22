@@ -43,6 +43,9 @@ class CartsController extends AppController
      */
     public function viewAction()
     { 
+        $this->setHead(array(
+            'title' => $this->translate('Cart')
+        ));
         $request = $this->getRequest(); 
         return $this->getViewModel(array(
                              

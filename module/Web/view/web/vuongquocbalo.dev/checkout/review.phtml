@@ -183,7 +183,8 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                 <?php echo $this->formTextArea($reviewForm->get('note'));?>
                                 <?php echo $this->formErrorMessage($reviewForm->get('note')); ?>
                             </td>
-                        </tr>                        
+                        </tr>
+                        <!--
                         <tr>
                             <td>&nbsp;</td>
                             <td class="information">                                
@@ -191,33 +192,15 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                 <span><?php echo $this->translate('I want to have this order')?></span>                                
                             </td>
                         </tr>
+                        -->
                     </tbody>
                 </table>
                 
-                <div class="text-right checkout-button">	
-                    
+                <div class="text-right checkout-button">
                     <a href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
-                    <a 
-                        href="<?php echo $this->url('web/checkout', array('action' => 'completed'))?>" 
-                        class="btn btn-group btn-default ajax-submit"
-                        onclick = "                             
-                            if ($('#confirmation').is(':checked') == false) {
-                                $('#confirmation').focus();
-                                alert('<?php echo $this->translate('Please choose order confirmation')?>');
-                                return false;
-                            }                            
-                        "
-                        data-callback = "                                
-                            return false;
-                        "
-                        data-url="                                                
-                        <?php echo $this->url(
-                            'web/checkout', 
-                            array(
-                                'action' => 'order'
-                            ))
-                        ?>"
-                    >
+                    <a  id="checkoutFinish" 
+                        class="btn btn-group btn-default"
+                        href="<?php echo $this->url('web/checkout', array('action' => 'comoleted'))?>">
                         <i class="icon-check"></i> <?php echo $this->translate('Complete your order')?>
                     </a>
                 </div>

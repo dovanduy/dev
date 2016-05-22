@@ -314,25 +314,23 @@ initJsAjaxSubmit = function (containerId) {
                 if (confirm(jQuery.trim(btn.data('confirmmessage'))) == false) {
                     return false;
                 }
-            }
+            }			
             if (btn.data('beforesubmit')) {
-                eval(btn.data('beforesubmit'));
-            }
+				eval(btn.data('beforesubmit'));
+            }			
             $.ajax({
                 cache: false,
                 async: false,
                 type: frm.attr('method'),
                 url: url,
                 data: frm.serialize(),
-                beforeSend: function() {
+                beforeSend: function() {								
                     if (btn.data('beforesend')) {
                         eval(btn.data('beforesend'));
                     }
                     return true;
                 },
-                success: function (response) {  //return false;  
-                    //console.log(response);
-					//console.log(response); return false;
+                success: function (response) {					
 					if (!response) {
 						return false;
 					}
@@ -476,25 +474,37 @@ initJs = function () {
 	
 	if ($('#checkout_index #registerForm').length > 0) {
 		 $('#checkout_index #checkout-next').click(function(){
+		    showLoading();
 			$('#checkout_index #registerForm').submit();
 			return false;			
 		});
 	}
     
+	/*
     if ($('#checkout_payment #checkout-applyvoucher').length > 0) {
-		 $('#checkout_payment #checkout-applyvoucher').click(function(){
+		 $('#checkout_payment #checkout-applyvoucher').click(function(){			
 			var code = $('#voucher_code').val();
             if (code == '') {
                 alert('Vui lòng nhập mã giảm giá');
                 $('#voucher_code').focus();
             }
-			return false;		
+			return false;
 		});
 	}
-    
+    */
+	
 	if ($('#checkout_payment #paymentForm').length > 0) {
 		 $('#checkout_payment #checkout-next').click(function(){
+			showLoading();
 			$('#checkout_payment #paymentForm').submit();
+			return false;			
+		});
+	}
+	
+	if ($('#checkout_review #reviewForm').length > 0) {
+		 $('#checkout_review #checkoutFinish').click(function(){
+			showLoading();
+			$('#checkout_review #reviewForm').submit();
 			return false;			
 		});
 	}
@@ -935,10 +945,25 @@ saveOrderDetail = function($this) {
     //sumTotalMoney();
 }
 
-sumTotalMoney  = function() {
+sumTotalMoney = function() {
     var total_money = 0;
     $('.td_total_money span').each(function() {
         total_money += db_float($(this).html());
     });
     $('#row-order-detail .total-money span').html(money_format(total_money));
+}
+
+showLoading = function(e) {
+	var div = document.createElement('div');
+	var img = document.createElement('img');
+	img.src = '/web/images/loading.gif';	
+	div.id = 'divLoading';
+	//div.style.cssText = 'position: fixed; top: 0; left: 0; z-index: 500000; width: 100%; height: 100%; text-align: center; background: #c64444; border: 1px solid #912c2c; outline: none !important;';
+	//div.style.cssText = 'top:0;left:0;width:100%;height:100%;text-align:center;z-index:500000;overflow:hidden;position:fixed;background:#0b0b0b;opacity:0.8;';
+	div.appendChild(img);
+	document.body.appendChild(div);
+	return true;
+}
+hideLoading = function(e) {
+	$('#divLoading').remove();
 }

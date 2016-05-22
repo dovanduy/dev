@@ -221,7 +221,6 @@ class FormSelect extends AbstractHelper
             }
 
             $this->validTagAttributes = $this->validOptionAttributes;
-            
             $optionStrings[] = sprintf(
                 $template,
                 $this->createAttributesString($attributes),

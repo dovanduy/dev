@@ -8,7 +8,8 @@ use Zend\Mvc\MvcEvent;
 class Module {
 
     public function onBootstrap(MvcEvent $e) {
-        
+        $translator = $e->getApplication()->getServiceManager()->get('translator');         
+        $translator->setLocale('vi_VN');        
     }
 
     public function getConfig($name = '', $default = null) {
@@ -152,6 +153,9 @@ class Module {
                 },               
                 'UserActivations' => function ($sm) {
                     return new Model\UserActivations($sm->get('db'), $sm);
+                },               
+                'EmailLogs' => function ($sm) {
+                    return new Model\EmailLogs($sm->get('db'), $sm);
                 },               
             ),
         );

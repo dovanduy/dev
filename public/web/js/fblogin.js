@@ -13,7 +13,7 @@ $(document).ready(function(){
         FB.login(function (response) {
             if (response.authResponse) {
                 var fields = 'fields=id,email,birthday,first_name,gender,last_name,link,locale,name,timezone,updated_time,verified';
-                FB.api('/me?' + fields, function (response) {				
+                FB.api('/me?' + fields, function (response) {						
                     var url = '/fblogin?backurl='+location.href;
                     $.ajax({
                         cache: false,

@@ -15,12 +15,9 @@ use Api\Bus\AbstractBus;
  */
 class Check extends AbstractBus {
     
-    protected $_required = array(       
-    );
-    
-    protected $_number_format = array(
-       
-    );
+    protected $_required = array(   
+        'voucher_code'
+    );    
     
     public function operateDB($model, $param) {
         try {

@@ -52,6 +52,8 @@ class UserActivations extends AbstractModel {
                     'id' => $id,
                 );
             }
+        } else {
+            self::errorNotExist('email');
         }
         return false;
     }

@@ -127,7 +127,7 @@
                 <?php if (!empty($block['products'])) : ?> 
                 <ul class="nav nav-tabs style-1" role="tablist">
                     <li class="active">
-                        <a href="#" role="tab" data-toggle="tab" onclick="return false;"><strong><?php echo $block['name'] ?></strong></a>
+                        <a href="#" onclick="<?php echo (!empty($block['url']) ? "location.href='{$block['url']}'" : 'return false')?>"><strong><?php echo $block['name'] ?></strong></a>
                     </li>                 
                 </ul>
                 <!-- Tab panes -->

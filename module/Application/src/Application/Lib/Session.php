@@ -53,8 +53,8 @@ class Session {
     {
         if (static::instance()->offsetExists(static::$sessionName)) {
             $items = static::instance()->offsetGet(static::$sessionName); 
-            if (!empty($id) && isset($items[$id])) {               
-                return $items[$id];               
+            if (!empty($id)) { 
+                return isset($items[$id]) ? $items[$id] : false;
             }
             return $items;
         }

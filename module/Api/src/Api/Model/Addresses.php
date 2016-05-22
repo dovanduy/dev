@@ -46,7 +46,22 @@ class Addresses extends AbstractModel {
         if (isset($param['street'])) {
             $values['street'] = $param['street'];
         }          
-        if ($id = self::insert($values)) {             
+        if ($id = self::insert($values)) {  
+            $addressList = $this->find(array(
+                'where' => array(
+                    'user_id' => $param['user_id'],
+                    'active' => 1
+                )
+            ));
+            if (count($addressList) == 1) {
+                $userModel = new Users;
+                $userModel->update(array(
+                    'set' => array('address_id' => $id),
+                    'where' => array(
+                        'user_id' => $param['user_id']                        
+                    )
+                ));
+            }
             return $_id;
         }        
         return false;

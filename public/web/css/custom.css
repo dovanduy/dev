@@ -1182,7 +1182,7 @@ fieldset .form-control, fieldset .form-control:focus {
     padding-right: 4px;
 }
 .body-mobile .btn {
-    padding: 8px 8px;
+    padding: 7px 7px;
 }
 .masonry-grid-item .image {
 	height: 280px;
@@ -1238,13 +1238,13 @@ fieldset .form-control, fieldset .form-control:focus {
     margin: -10px auto 4px auto !important;	
 }
 .googleplus {
-	display: none !important;
+	/*display: none !important;*/
 }
 .page-content p {
 	margin-bottom: 10px !important;
 }
 #products_index p {
-	margin-bottom: 8px !important;
+	margin-bottom: 7px !important;
 }
 img {
    display: initial;
@@ -1445,6 +1445,7 @@ img {
 	font-size: 13px;
 	padding: 0px 0px;
 	margin-bottom: 5px;
+	width: 100%;
 }
 #commitment_and_guide p span, .bank-account p span {
 	float: left;
@@ -1472,7 +1473,8 @@ img {
 }
 #commitment_and_guide .guide {
 	float: left;
-	margin-top: 10px;		
+	margin-top: 10px;
+	width: 100%;
 }
 #commitment_and_guide  .title{
 	float: left;
@@ -1920,5 +1922,22 @@ ul.step a:hover:after {
 	width: auto;
 	clear: none;
 	margin-top: 6px;
-	margin-left: 5px;
+	margin-left: 25%;
+	padding-left: 15px;
+}
+.body-mobile .form-group-voucher_code ul {
+	margin-left: 15px;
+}
+.navbar-custom-menu .col-xs-12 {
+	margin: 4px 0px;
+}
+#divLoading {
+	top:0;left:0;width:100%;height:100%;text-align:center;z-index:500000;overflow:hidden;position:fixed;background:#0b0b0b;opacity:0.8;
+	line-height: 700px;
+}
+#divLoading img {	
+    margin: auto;
+	
+	width: 200px;
+	vertical-align: middle;	
 }

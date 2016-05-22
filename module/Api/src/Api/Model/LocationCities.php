@@ -13,7 +13,8 @@ class LocationCities extends AbstractModel {
 		'code',
 		'sort',
 		'country_code',
-		'state_code'
+		'state_code',
+		'priority',
 	);
     
     protected static $tableName = 'location_cities';
@@ -33,7 +34,9 @@ class LocationCities extends AbstractModel {
             ->where(static::$tableName . '.active = 1')     
             ->where(static::$tableName . '.country_code = ' . self::quote($param['country_code']))     
             ->where(static::$tableName . '.state_code = ' . self::quote($param['state_code']))     
-            ->order('sort');     
+            ->order('state_code ASC')              
+            ->order('priority DESC')
+            ->order('name ASC');     
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL

@@ -97,66 +97,67 @@ if (empty($checkoutInfo['voucher_code'])) {
                 <fieldset>
                     <legend><strong><?php echo $this->translate('Checkout')?></strong></legend>                   
                     <div class="row mb-10">
-                        <div class="form-group">
-                            <div style="padding-top: 0px;" class="col-md-3 control-label">
-                                <div class="form-label">
-                                    <label><?php echo $this->translate('Total')?></label>
-                                </div>
-                            </div>                            
-                            <div class="col-md-9">
-                                <div class="form-input">
-                                    <span class="amount" id="total"><?php echo app_money_format($totalMoney)?></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group form-group-voucher_code">
-                            <div class="col-md-3 control-label">
-                                <div class="form-label">
-                                    <label for="name"><?php echo $this->translate('Input voucher code')?></label>
-                                </div>
-                            </div>                            
-                            <div class="">
-                                <div class="form-input">
-                                    <input maxlength="5" style="width: 100px; padding: 4px; text-align: center; float: left;" class="form-control" value="<?php echo $checkoutInfo['voucher_code']?>" id="voucher_code" name="voucher_code" type="text"/>
-                                    <a id="checkout-applyvoucher" 
-                                       style="float: left; margin: 0px 0px 0px 5px;" 
-                                       data-url="<?php echo $this->url('web/checkout', array('action' => 'applyvoucher'))?>" 
-                                       class="btn btn-group btn-default ajax-submit"
-                                       href="#"
-                                       data-errorcallback="	
-                                           $('#discount').html('0 VND');                                           
-                                           $('#last_total_money').html($('#total').html());                                           
-                                       "
-                                       data-callback="	
-                                           $('#discount').html(result.discount);
-                                           $('#last_total_money').html(result.last_total_money);
-                                       ">
-                                       <?php echo $this->translate('Apply')?>
-                                    </a>
+                        <div class="col-lg-10 col-lg-offset-1">
+                            <div class="form-group">
+                                <div style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Total')?></label>
+                                    </div>
+                                </div>                            
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span class="amount" id="total"><?php echo app_money_format($totalMoney)?></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div  style="padding-top: 0px;" class="col-md-3 control-label">
-                                <div class="form-label">
-                                    <label><?php echo $this->translate('Discount')?></label>
-                                </div>
-                            </div>                         
-                            <div class="col-md-9">
-                                <div class="form-input">
-                                    <span style="padding-top: 7px;"  class="amount" id="discount"><?php echo !empty($checkoutInfo['discount']) ? app_money_format($checkoutInfo['discount']) : '0 VND'?> </span>
+                            <div class="form-group form-group-voucher_code">
+                                <div class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label for="name"><?php echo $this->translate('Input voucher code')?></label>
+                                    </div>
+                                </div>                            
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <input maxlength="5" style="width: 100px; padding: 4px; text-align: center; float: left;" class="form-control" value="<?php echo $checkoutInfo['voucher_code']?>" id="voucher_code" name="voucher_code" type="text"/>
+                                        <a style="float: left; margin: 0px 0px 0px 5px;" 
+                                           data-url="<?php echo $this->url('web/checkout', array('action' => 'applyvoucher'))?>" 
+                                           class="btn btn-group btn-default ajax-submit"
+                                           href="#"
+                                           data-errorcallback="	
+                                               $('#discount').html('0 VND');                                           
+                                               $('#last_total_money').html($('#total').html());                                           
+                                           "
+                                           data-callback="	
+                                               $('#discount').html(result.discount);
+                                               $('#last_total_money').html(result.last_total_money);
+                                           ">
+                                           <?php echo $this->translate('Apply')?>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div  style="padding-top: 0px;" class="col-md-3 control-label">
-                                <div class="form-label">
-                                    <label><?php echo $this->translate('Total payment')?></label>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Discount')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount" id="discount"><?php echo !empty($checkoutInfo['discount']) ? app_money_format($checkoutInfo['discount']) : '0 VND'?> </span>
+                                    </div>
                                 </div>
-                            </div>                         
-                            <div class="col-md-9">
-                                <div class="form-input">
-                                    <span style="padding-top: 7px;"  class="amount" id="last_total_money"><?php echo app_money_format($totalMoney)?></span>
+                            </div>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Total payment')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount" id="last_total_money"><?php echo app_money_format($totalMoney)?></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

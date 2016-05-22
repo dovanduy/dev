@@ -5,19 +5,36 @@
  * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-system-configuration
  * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-application-configuration
  */
-$adminDomain = array(
-    'admin.vuongquocbalo.dev',
-    'admin.vuongquocbalo.com',
-);
-$modules = array(
-    'Application', 
-    'Api',  
-    'OAuth2',  
-);
-if (in_array(domain(), $adminDomain)) {
-    $modules[] = 'Admin';
-} else {
-    $modules[] = 'Web';
+$loadModule = [  
+    'vuongquocbalo.dev' => [              
+        'OAuth2',        
+        'Web',
+    ],
+    'vuongquocbalo.com' => [              
+        'OAuth2',        
+        'Web',
+    ],
+    'admin.vuongquocbalo.dev' => [        
+        'OAuth2',
+        'Admin',
+    ], 
+    'admin.vuongquocbalo.com' => [        
+        'OAuth2',
+        'Admin',
+    ], 
+    'oauth2.vuongquocbalo.dev' => [      
+        'OAuth2'
+    ],
+    'oauth2.vuongquocbalo.com' => [      
+        'OAuth2'
+    ]
+];
+$modules = [   
+    'Application',         
+    'Api',
+];
+if (isset($loadModule[domain()])) {
+    $modules = array_unique(array_merge($modules, $loadModule[domain()]));
 }
 return array(
     // This should be an array of module namespaces used in the application.

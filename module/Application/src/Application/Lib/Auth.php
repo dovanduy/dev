@@ -100,7 +100,7 @@ class Auth implements AuthenticationServiceInterface
                 'password' => $password,
             ));
         } elseif ($type == 'facebook') {
-            $user = \Web\Lib\Api::call('url_users_fblogin', array(                                       
+            $param = array(                                       
                 'facebook_id' => $socialParam['id'],                            
                 'facebook_email' => $socialParam['email'],
                 'facebook_name' => !empty($socialParam['name']) ? $socialParam['name'] : '',
@@ -109,7 +109,35 @@ class Auth implements AuthenticationServiceInterface
                 'facebook_last_name' => !empty($socialParam['last_name']) ? $socialParam['last_name'] : '',               
                 'facebook_link' => !empty($socialParam['link']) ? $socialParam['link'] : '',                            
                 'facebook_gender' => !empty($socialParam['gender']) ? $socialParam['gender'] : '',               
-            ));
+            );            
+            if (!empty($socialParam['generate_voucher'])) {               
+                $param['generate_voucher'] = $socialParam['generate_voucher']; 
+                $param['voucher_amount'] = $socialParam['voucher_amount']; 
+                $param['voucher_type'] = $socialParam['voucher_type']; 
+                $param['voucher_expired'] = $socialParam['voucher_expired']; 
+                $param['send_email'] = $socialParam['send_email'];                 
+            }
+            $user = \Web\Lib\Api::call('url_users_fblogin', $param);
+        } elseif ($type == 'google') {
+            $param = array(                                       
+                'google_id' => $socialParam['id'],                            
+                'google_email' => $socialParam['email'],
+                'google_name' => !empty($socialParam['name']) ? $socialParam['name'] : '',
+                'google_username' => !empty($socialParam['username']) ? $socialParam['username'] : '',               
+                'google_first_name' => !empty($socialParam['givenName']) ? $socialParam['givenName'] : '',               
+                'google_last_name' => !empty($socialParam['familyName']) ? $socialParam['familyName'] : '',               
+                'google_link' => !empty($socialParam['link']) ? $socialParam['link'] : '',                            
+                'google_gender' => !empty($socialParam['gender']) ? $socialParam['gender'] : '',               
+                'google_image' => !empty($socialParam['picture']) ? $socialParam['picture'] : '',               
+            );            
+            if (!empty($socialParam['generate_voucher'])) {               
+                $param['generate_voucher'] = $socialParam['generate_voucher']; 
+                $param['voucher_amount'] = $socialParam['voucher_amount']; 
+                $param['voucher_type'] = $socialParam['voucher_type']; 
+                $param['voucher_expired'] = $socialParam['voucher_expired']; 
+                $param['send_email'] = $socialParam['send_email'];                 
+            }
+            $user = \Web\Lib\Api::call('url_users_glogin', $param);
         } else {
             $user = \Web\Lib\Api::call('url_users_login', array(
                 'email' => $email,

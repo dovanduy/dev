@@ -39,6 +39,9 @@ class CheckoutController extends AppController
      */
     public function indexAction()
     {
+        $this->setHead(array(
+            'title' => $this->translate('Customer information')
+        ));
         $request = $this->getRequest();         
         $auth = $this->getServiceLocator()->get('auth');
         if ($auth->hasIdentity()) {
@@ -52,8 +55,7 @@ class CheckoutController extends AppController
             // not found data
             if (empty($user)) {
                 return $this->notFoundAction();
-            } 
-            
+            }          
             $registerAddressForm = new RegisterAddressForm();
             $addresses = array();
             if (!empty($user['addresses'])) {        
@@ -72,8 +74,7 @@ class CheckoutController extends AppController
                         'value_options' => array('' => $this->translate('Other delivery address')),                            
                     )
                 ));
-            }
-            
+            }            
             $checkoutInfo = Session::get('checkout_step1');
             if (empty($checkoutInfo)) {
                 $checkoutInfo = array();
@@ -83,13 +84,16 @@ class CheckoutController extends AppController
                 $checkoutInfo = array_replace_recursive($checkoutInfo, $post); 
             }
             if (empty($checkoutInfo['email'])) { 
-                $checkoutInfo['email'] = $AppUI->email;
+                $checkoutInfo['email'] = $user['email'];
             }
             if (empty($checkoutInfo['name'])) { 
-                $checkoutInfo['name'] = $AppUI->name;
+                $checkoutInfo['name'] = $user['name'];
             }
             if (empty($checkoutInfo['mobile'])) { 
-                $checkoutInfo['mobile'] = $AppUI->mobile;
+                $checkoutInfo['mobile'] = $user['mobile'];
+            }
+            if (empty($checkoutInfo['address_id'])) { 
+                $checkoutInfo['address_id'] = $user['address_id'];
             }
             if (empty($checkoutInfo['country_code'])) { 
                 $checkoutInfo['country_code'] = \Application\Module::getConfig('general.default_country_code');
@@ -110,7 +114,7 @@ class CheckoutController extends AppController
                         )
                     ));
                 }                    
-            } 
+            }
             $registerAddressForm->setController($this)
                 ->setAttribute('id', 'registerForm')
                 ->setAttribute('class', 'form-horizontal')
@@ -357,6 +361,9 @@ class CheckoutController extends AppController
             if (!$reviewForm->isValid() || !isset($post['confirmation'])) {
                 exit;
             }                 
+            $result['status'] = 'OK';
+            $result['message'] = 'Data saved successfully';                
+            die(json_encode($result));
             $post['user_id'] = $AppUI->user_id;            
             $post['user_name'] = !empty($checkoutInfo['name']) ? $checkoutInfo['name'] : $AppUI->name;
             $post['user_email'] = !empty($checkoutInfo['email']) ? $checkoutInfo['email'] : $AppUI->email;
@@ -451,11 +458,30 @@ class CheckoutController extends AppController
                     $totalMoney += db_int($item['quantity']) * db_float($item['price']);
                 }
             }                
-            $post = (array) $request->getPost();  
+            $post = (array) $request->getPost(); 
+            if (empty($post['voucher_code'])) {
+                $error = array(
+                    'voucher_code' => array(
+                        'Please input voucher code'
+                    ),                    
+                ); 
+                die($this->getErrorMessageForAjax($error)); 
+            }
             $post['user_id'] = $AppUI->user_id;
-            $voucherDetail = Api::call('url_vouchers_check', $post);            
-            if (!empty($voucherDetail)) {
-                
+            $voucherDetail = Api::call('url_vouchers_check', $post); 
+            $error = array(
+                array(
+                    'field' => 'voucher_code',
+                    'code' => 400,
+                    'message' => 'Please input voucher code'
+                ),
+                array(
+                    'field' => 'voucher_code',
+                    'code' => 1010,
+                    'message' => 'The voucher_code does not exist'
+                )
+            );           
+            if (empty(Api::error()) && !empty($voucherDetail)) {                
                 switch ($voucherDetail['type']) {
                     case 0:  
                         $result['discount'] = db_float($voucherDetail['amount']*$totalMoney/100);
@@ -463,8 +489,7 @@ class CheckoutController extends AppController
                     case 1:
                         $result['discount'] = db_float($voucherDetail['amount']);
                         break;
-                }               
-                
+                }
                 $checkoutInfo['last_total_money'] = ($totalMoney - $result['discount']);
                 $checkoutInfo['discount'] = $result['discount'];
                 $checkoutInfo['voucher_code'] = $post['voucher_code'];                
@@ -481,7 +506,7 @@ class CheckoutController extends AppController
             $checkoutInfo['discount'] = 0;
             $checkoutInfo['voucher_code'] = '';                
             Session::set('checkout_step1', $checkoutInfo);
-            die($this->getErrorMessageForAjax()); 
+            die($this->getErrorMessageForAjax(array(), $error)); 
         }
         exit;
     }
@@ -495,6 +520,9 @@ class CheckoutController extends AppController
      */
     public function paymentAction()
     {        
+        $this->setHead(array(
+            'title' => $this->translate('Checkout')
+        ));
         $request = $this->getRequest(); 
         $paymentForm = new PaymentForm();
         $paymentForm->setController($this)
@@ -527,13 +555,90 @@ class CheckoutController extends AppController
      */
     public function reviewAction()
     {     
+        $this->setHead(array(
+            'title' => $this->translate('Confirm')
+        ));
         $request = $this->getRequest(); 
         $reviewForm = new ReviewForm();
         $reviewForm->setController($this)
                 ->setAttribute('id', 'reviewForm')
                 ->setAttribute('class', 'form-horizontal')
                 ->create();
-        
+        $AppUI = $this->getLoginInfo();
+        $checkoutInfo = Session::get('checkout_step1');
+        if (!empty($AppUI) && $request->isPost()) {
+            $post = (array) $request->getPost();   
+            $reviewForm->setData($post);   
+            if ($reviewForm->isValid()) {
+                $post['user_id'] = $AppUI->user_id;            
+                $post['user_name'] = !empty($checkoutInfo['name']) ? $checkoutInfo['name'] : $AppUI->name;
+                $post['user_email'] = !empty($checkoutInfo['email']) ? $checkoutInfo['email'] : $AppUI->email;
+                $post['user_phone'] = !empty($checkoutInfo['phone']) ? $checkoutInfo['phone'] : $AppUI->phone;
+                $post['user_mobile'] = !empty($checkoutInfo['mobile']) ? $checkoutInfo['mobile'] : $AppUI->mobile;
+                if (!empty($checkoutInfo['address_id'])) {
+                    $post['user_address_id'] = $checkoutInfo['address_id'];
+                } else {
+                    $post['user_address_id'] = 0; 
+                }
+                if (!empty($checkoutInfo['address_name'])) {
+                    $post['user_address_name'] = $checkoutInfo['address_name'];
+                }
+                if (!empty($checkoutInfo['country_code'])) {
+                    $post['user_country_code'] = $checkoutInfo['country_code'];
+                }
+                if (!empty($checkoutInfo['state_code'])) {
+                    $post['user_state_code'] = $checkoutInfo['state_code'];
+                }
+                if (!empty($checkoutInfo['city_code'])) {
+                    $post['user_city_code'] = $checkoutInfo['city_code'];
+                }
+                if (!empty($checkoutInfo['street'])) {
+                    $post['user_street'] = $checkoutInfo['street'];
+                }            
+                if (!empty($checkoutInfo['city_code']) 
+                    && !empty($checkoutInfo['state_code']) 
+                    && !empty($checkoutInfo['country_code'])) {
+                    $cities = \Web\Model\LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code']);                                                
+                    $post['user_city_name'] = $cities[$checkoutInfo['city_code']];
+                }
+                if (!empty($checkoutInfo['state_code']) 
+                    && !empty($checkoutInfo['country_code'])) {
+                    $states = \Web\Model\LocaleStates::getAll($checkoutInfo['country_code']);                                                
+                    $post['user_state_name'] = $states[$checkoutInfo['state_code']];
+                }                                   
+                if (!empty($checkoutInfo['country_code'])) {
+                    $countries = \Application\Model\LocaleCountries::getAll();  
+                    $post['user_country_name'] = $countries[$checkoutInfo['country_code']];
+                }
+                if (!empty($checkoutInfo['payment'])) {
+                    $post['payment'] = $checkoutInfo['payment'];
+                }
+                if (!empty($checkoutInfo['voucher_code'])) {
+                    $post['voucher_code'] = $checkoutInfo['voucher_code'];
+                }
+                $cartItems = Cart::get(true);
+                $totalQuantity = 0;
+                $totalMoney = 0;
+                if (!empty($cartItems)) {                         
+                    foreach ($cartItems as $item) {
+                        $totalQuantity += $item['quantity'];
+                        $totalMoney += $item['quantity'] * $item['price'];
+                    }
+                }
+                $post['total_money'] = $totalMoney;
+                $post['products'] =  \Zend\Json\Encoder::encode($cartItems);  
+                $post['send_email'] = 1;
+                $_id = Api::call('url_productorders_add', $post);
+                if (empty(Api::error())) {                          
+                    Session::remove('checkout_step1');
+                    Session::set('checkout_order_id', $_id);
+                    Cart::reset();return $this->redirect()->toRoute(
+                        'web/checkout',
+                        array('action' => 'completed')
+                    );
+                }                
+            }                      
+        }
         return $this->getViewModel(array(
                 'reviewForm' => $reviewForm           
             )
@@ -547,6 +652,9 @@ class CheckoutController extends AppController
      */
     public function completedAction()
     { 
+        $this->setHead(array(
+            'title' => $this->translate('Thank you')
+        ));
         $request = $this->getRequest();       
         $_id = Session::get('checkout_order_id');
         empty($_id) or $order = Api::call('url_productorders_detail', array('_id' => $_id));

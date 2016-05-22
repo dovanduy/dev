@@ -107,7 +107,7 @@ return array(
         'not_found_template' => 'error/404',
         'exception_template' => 'error/index',
         'template_map' => array(
-            'application/layout' => __DIR__ . '/../view/layout/layout.phtml',
+            //'application/layout' => __DIR__ . '/../view/layout/layout.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
             'error/index' => __DIR__ . '/../view/error/index.phtml',
             'htmlForm' => __DIR__ . '/../view/partial/htmlForm.phtml',
@@ -221,8 +221,8 @@ return array(
             'host' => 'smtp.gmail.com',
             'name' => 'gmail.com',
             'port' => 587,
-            'username' => 'vuongquocbalo@gmail.com',
-            'password' => 'Mk462008',
+            'username' => 'mail.vuongquocbalo.com@gmail.com',
+            'password' => 'balo@2016',
             'timeout' => 2 * 60,
             'ssl' => 'tls',
         )
