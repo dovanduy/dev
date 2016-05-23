@@ -124,13 +124,13 @@ class ProductItemHelper extends AbstractHtmlElement
                     )
                 );
                 
-                $blockOption = array("<option value=\"\">B</option>");
+                $blockOption = array("<option value=\"\">+B</option>");
                 foreach ($website['blocks'] as $block) {
                     $blockOption[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
                 }
                 $blockOption = implode('', $blockOption);
                 
-                $categoryOption = array("<option value=\"\">C</option>");
+                $categoryOption = array("<option value=\"\">+C</option>");
                 foreach ($website['last_categories'] as $categoryId => $name) {
                     $categoryOption[] = "<option value=\"{$categoryId}\">{$name}</option>";
                 }
@@ -150,7 +150,7 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:38px;padding:4px 2px;float:right;margin-left:2px;\"
+                    <select style=\"width:43px;padding:4px 2px;float:right;margin-left:2px;\"
                     name=\"add_block_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToBlockUrl}\"
@@ -159,7 +159,7 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:38px;padding:4px 2px;float:right;\"
+                    <select style=\"width:43px;padding:4px 2px;float:right;\"
                     name=\"category_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToCategoryUrl}\"

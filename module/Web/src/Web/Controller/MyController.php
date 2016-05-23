@@ -11,10 +11,10 @@ namespace Web\Controller;
 
 use Application\Lib\Arr;
 use Web\Lib\Api;
-use Application\Lib\Cache;
 use Application\Model\Images;
 use Web\Model\LocaleStates;
 use Web\Model\LocaleCities;
+use Web\Model\Users;
 use Web\Form\My\UpdateForm;
 use Web\Form\My\PasswordForm;
 use Web\Form\My\AddressListForm;
@@ -50,14 +50,7 @@ class MyController extends AppController
         if (empty($id)) {
             return $this->notFoundAction();
         }
-        
-        // get news detail             
-        $data = Api::call(
-            'url_users_detail', 
-            array(
-                '_id' => $id, 
-            )
-        );
+        $data = Users::getDetail($AppUI->_id);        
         // not found data
         if (empty($data)) {
             return $this->notFoundAction();
@@ -156,7 +149,8 @@ class MyController extends AppController
                         $post['_id'] = $id;
                         $post['get_login'] = 1;
                         $user = Api::call('url_users_update', $post); 
-                        if (empty(Api::error())) {                    
+                        if (empty(Api::error())) {
+                            Users::removeCache($AppUI->_id);
                             Images::removeCache($data['image_id'], 'users');
                             $auth = $this->getServiceLocator()->get('auth');                            
                             if (isset($user['password'])) {
@@ -263,6 +257,7 @@ class MyController extends AppController
                                 Api::call('url_addresses_add', $post);
                             }
                             if (empty(Api::error())) { 
+                                Users::removeCache($AppUI->_id);
                                 $result['status'] = 'OK';
                                 $result['message'] = 'Data saved successfully';
                                 die(json_encode($result));

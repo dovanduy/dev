@@ -1941,3 +1941,26 @@ ul.step a:hover:after {
 	width: 200px;
 	vertical-align: middle;	
 }
+.nav-tabs  div {
+	margin-right: 0;
+    line-height: 1;
+    border: 1px solid transparent;
+    padding: 12px 15px 11px;
+    -webkit-border-radius: 15px 15px 0 0;
+    -moz-border-radius: 15px 15px 0 0;
+    border-radius: 15px 15px 0 0;
+    -webkit-transition: none;
+    -o-transition: none;
+    transition: none;
+    height: 40px;
+}
+.nav-tabs  .tab-title {
+	float: left;    
+    background-color: #333!important;
+	color: #fff;
+	font-weight: 700;
+}
+.nav-tabs  .tab-more {
+	float: right;	
+	 padding: 0px;	
+}

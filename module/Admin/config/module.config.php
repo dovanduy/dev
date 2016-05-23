@@ -32,7 +32,7 @@ return array(
             'Admin\Controller\Images' => 'Admin\Controller\ImagesController',
             'Admin\Controller\Auth' => 'Admin\Controller\AuthController',            
             'Admin\Controller\Page' => 'Admin\Controller\PageController',           
-            'Admin\Controller\InputFields' => 'Admin\Controller\InputFieldsController',
+            'Admin\Controller\Inputfields' => 'Admin\Controller\InputfieldsController',
             'Admin\Controller\Newscategories' => 'Admin\Controller\NewscategoriesController',
             'Admin\Controller\Productcategories' => 'Admin\Controller\ProductcategoriesController',
             'Admin\Controller\Productsizes' => 'Admin\Controller\ProductsizesController',

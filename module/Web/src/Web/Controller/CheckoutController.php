@@ -14,6 +14,7 @@ use Application\Lib\Session;
 use Application\Lib\Arr;
 use Web\Model\LocaleStates;
 use Web\Model\LocaleCities;
+use Web\Model\Users;
 use Web\Lib\Api;
 use Web\Form\Checkout\RegisterForm;
 use Web\Form\Checkout\RegisterAddressForm;
@@ -46,16 +47,11 @@ class CheckoutController extends AppController
         $auth = $this->getServiceLocator()->get('auth');
         if ($auth->hasIdentity()) {
             $AppUI = $auth->getIdentity();
-            $user = Api::call(
-                'url_users_detail', 
-                array(
-                    '_id' => $AppUI->_id, 
-                )
-            );
+            $user = Users::getDetail($AppUI->_id);
             // not found data
             if (empty($user)) {
                 return $this->notFoundAction();
-            }          
+            }       
             $registerAddressForm = new RegisterAddressForm();
             $addresses = array();
             if (!empty($user['addresses'])) {        
@@ -629,7 +625,8 @@ class CheckoutController extends AppController
                 $post['products'] =  \Zend\Json\Encoder::encode($cartItems);  
                 $post['send_email'] = 1;
                 $_id = Api::call('url_productorders_add', $post);
-                if (empty(Api::error())) {                          
+                if (empty(Api::error())) { 
+                    Users::removeCache($AppUI->_id);
                     Session::remove('checkout_step1');
                     Session::set('checkout_order_id', $_id);
                     Cart::reset();return $this->redirect()->toRoute(

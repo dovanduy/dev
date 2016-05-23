@@ -276,10 +276,10 @@ initJsModalDialog = function () {
                         if (value !== undefined) {
                             if (element.attr('id') == 'state_code' && $(btn).data('country_code')) {                               
                                 localeState($(btn).data('country_code'));
-                                setTimeout(function() { element.val(value); }, 1000);
+                                setTimeout(function() { element.val(value); }, 2000);
                             } else if (element.attr('id') == 'city_code' && $(btn).data('state_code')) {
                                 localeCity($(btn).data('state_code'));
-                                setTimeout(function() { element.val(value); }, 1000);
+                                setTimeout(function() { element.val(value); }, 2000);
                             } else {
                                 element.val(value);
                             }                           
