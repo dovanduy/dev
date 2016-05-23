@@ -4,6 +4,7 @@ namespace Api\Model;
 
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Predicate\Expression;
+use Application\Lib\Arr;
 
 class ProductHasCategories extends AbstractModel {
     
@@ -169,6 +170,11 @@ class ProductHasCategories extends AbstractModel {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
+        $categoryModel = new ProductCategories();
+        $categories = $categoryModel->getAll(array(
+            'website_id' => $param['website_id'],
+            'active' => 1
+        ));
         $sql = new Sql(self::getDb());
         $select = $sql->select()            
             ->from(static::$tableName)  
@@ -244,7 +250,7 @@ class ProductHasCategories extends AbstractModel {
             'category' => array(),
             'brand' => array(),
             'price' => array('min' => 0, 'max' => 0),            
-        );        
+        );      
         if (!empty($rows)) {
             $brandId = $categoryId = array();
             foreach ($rows as $row) {                                   
@@ -322,6 +328,19 @@ class ProductHasCategories extends AbstractModel {
                             'path_id' => $category['path_id']
                         );                        
                     }
+                }
+            }
+        } elseif (!empty($param['category_id'])) {
+            $categoryDetail = Arr::filter($categories, 'category_id', $param['category_id'], 0, false);
+            $categoryDetail = $categoryDetail[0]; 
+            foreach ($categories as $category) {
+                if ($categoryDetail['parent_id'] == $category['parent_id']) {            
+                    $result['category'][] = array(
+                        'category_id' => $category['category_id'],
+                        'category_name' => $category['name'],
+                        'category_parent_id' => $category['parent_id'],
+                        'path_id' => $category['path_id']
+                    );   
                 }
             }
         }

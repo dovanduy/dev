@@ -177,6 +177,7 @@ return array(
         'url_products_onoff' => 'products/onoff',
         'url_products_saveattribute' => 'products/saveattribute',
         'url_products_search' => 'products/search',
+        'url_products_setpriority' => 'products/setpriority',
         
         'url_products_reviews_add' => 'productreviews/add',
         'url_products_reviews_lists' => 'productreviews/lists',

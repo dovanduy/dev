@@ -145,10 +145,15 @@ class InputFields extends AbstractModel {
         }
         $_id = mongo_id();  // input_fields._id        
         $values = array(
-            '_id' => $_id,
-            'sort' => self::max(array('field' => 'sort')) + 1,
+            '_id' => $_id,            
             'type' => $param['type'],
             'website_id' => $param['website_id'],
+            'sort' => self::max(array(                   
+                'field' => 'sort',
+                'where' => array(
+                    'website_id' => $param['website_id']
+                )
+            )) + 1 
         );        
         if ($id = self::insert($values)) {
             $localeValues = array(

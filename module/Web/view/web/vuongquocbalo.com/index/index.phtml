@@ -124,12 +124,20 @@
             
             <?php foreach ($blocks as $block) : ?> 
 			<div class="col-md-12 mb-10">
-                <?php if (!empty($block['products'])) : ?> 
-                <ul class="nav nav-tabs style-1" role="tablist">
-                    <li class="active">
-                        <a href="#" onclick="<?php echo (!empty($block['url']) ? "location.href='{$block['url']}'" : 'return false')?>"><strong><?php echo $block['name'] ?></strong></a>
-                    </li>                 
-                </ul>
+                <?php if (!empty($block['products'])): ?> 
+                <div class="nav nav-tabs style-1" role="tablist">
+                    <div class="tab-title">
+                        <?php echo $block['name'] ?>
+                    </div>
+                    <?php if (!empty($block['url'])): ?>
+                    <div class="tab-more">
+                        <a itemprop="url" href="<?php echo $block['url']?>" class="pull-right margin-clear btn btn-sm btn-default-transparent btn-animated">
+                            <?php echo $this->translate('View more')?><i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                    </div>
+                    <?php endif ?>                   
+                </div>
+                
                 <!-- Tab panes -->
 				<div class="tab-content clear-style">
 					<div class="tab-pane active">

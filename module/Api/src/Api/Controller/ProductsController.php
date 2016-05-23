@@ -177,4 +177,12 @@ class ProductsController extends AppController {
         );
     }
     
+     public function setpriorityAction()
+    {
+        return \Api\Bus\Products\SetPriority::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
 }

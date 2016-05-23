@@ -38,6 +38,7 @@ class Products extends AbstractModel {
         'active',
         'image_id',
         'sort',
+        'priority',
         'featured',
         'latest_arrival',
         'top_seller',
@@ -126,6 +127,7 @@ class Products extends AbstractModel {
             ->where(static::$tableName . '.active = 1')
             ->where(new Expression("block_products.block_id IN ({$param['block_id']})"))
             ->where('block_products.active = 1')
+            ->order(static::$tableName . '.priority DESC')
             ->order('block_products.sort ASC')  
             ->order('block_products.sort ASC') 
             ->group('product_id');  
@@ -466,6 +468,7 @@ class Products extends AbstractModel {
             '_id', 
             'price',
             'original_price',
+            'priority',
         );
         $select = $sql->select()
             ->from(static::$tableName)                         
@@ -574,7 +577,7 @@ class Products extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(product_id|name|price|sort|updated)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(product_id|name|price|sort|updated|priority)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
@@ -591,6 +594,7 @@ class Products extends AbstractModel {
                 }                
             }            
         } else {
+            $select->order(static::$tableName . '.priority DESC');
             $select->order(static::$tableName . '.updated DESC');
         }
         $select->group('product_id');        
@@ -807,15 +811,14 @@ class Products extends AbstractModel {
         $_id = mongo_id();  // products._id        
         $values = array(
             '_id' => $_id,            
-            'sort' => 
-                self::max(
-                    array('table' => 'products'),
-                    array('field' => 'sort'),
-                    array('where' => array(
-                            'website_id' => $param['website_id']
-                        )
+            'priority' => 
+                self::max(array(
+                    'table' => 'products',
+                    'field' => 'priority',
+                    'where' => array(
+                        'website_id' => $param['website_id']
                     )
-                ) + 1,            
+                )) + 1,            
             'website_id' => $param['website_id'],
         );
         if (isset($param['sort'])) {
@@ -1643,6 +1646,47 @@ class Products extends AbstractModel {
             }         
         }
         return $result;        
+    }
+    
+    public function setPriority($param)
+    {   
+        $productDetail = self::find(
+            array(            
+                'where' => array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $param['product_id']
+                )
+            ),
+            self::RETURN_TYPE_ONE
+        );
+        if (empty($productDetail)) {
+            self::errorNotExist('product_id');
+            return false;
+        }
+        $maxPriority = self::max(
+            array(
+                'table' => 'products',
+                'field' => 'priority',
+                'where' => array(
+                    'website_id' => $param['website_id'],                    
+                )
+            )            
+        );
+        $set = array(                       
+            'priority' => $maxPriority + 1
+        );
+        if (self::update(
+            array(
+                'set' => $set,
+                'where' => array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $param['product_id']
+                )
+            )
+        )) {            
+            return true;
+        }
+        return false;
     }
     
 }

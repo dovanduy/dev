@@ -145,7 +145,12 @@ class NewsCategories extends AbstractModel {
         }        
         $values = array(
             '_id' => $_id,
-            'sort' => self::max(array('field' => 'sort')) + 1,
+            'sort' => self::max(array(                   
+                'field' => 'sort',
+                'where' => array(
+                    'website_id' => $param['website_id']
+                )
+            )) + 1 
         );          
         if (isset($param['image_id'])) {
             $values['image_id'] = $param['image_id'];

@@ -1964,3 +1964,10 @@ ul.step a:hover:after {
 	float: right;	
 	 padding: 0px;	
 }
+.nav-pills.nav-stacked>li>a {
+    padding: 3px 0;
+}
+#sidebar_products_index_form .title{
+    font-size: 20px;
+	margin-top: 0px;
+}

@@ -311,6 +311,9 @@ class PageController extends AppController
      */
     public function deletecacheAction()
     { 
+        if (!$this->isAdmin()) {
+            //exit;
+        }
         Cache::flush();
         $this->addSuccessMessage('Cached data delected successfully');
         return $this->redirect()->toRoute('web');

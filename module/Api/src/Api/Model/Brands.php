@@ -166,9 +166,13 @@ class Brands extends AbstractModel {
         }
         $values = array(
             '_id' => $_id,
-            'url_id' => empty($param['url_id']) ? $param['url_id'] : '',
-            'sort' => self::max(array('field' => 'sort')) + 1,
-            'is_locale' => \Application\Module::getConfig('general.default_is_locale')
+            'url_id' => empty($param['url_id']) ? $param['url_id'] : '',          
+            'sort' => self::max(array(                   
+                'field' => 'sort',
+                'where' => array(
+                    'website_id' => $param['website_id']
+                )
+            )) + 1 
         );          
         if (isset($param['image_id'])) {
             $values['image_id'] = $param['image_id'];

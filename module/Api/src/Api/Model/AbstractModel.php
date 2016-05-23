@@ -734,10 +734,11 @@ abstract class AbstractModel {
                 $select->where($where);
             }
         }
+        $sqlString = $sql->getSqlStringForSqlObject($select);        
         $result = self::response(
-            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            static::selectQuery($sqlString), 
             self::RETURN_TYPE_ONE
-        );
+        );       
         return !empty($result['max_value']) ? $result['max_value'] : $default;
     }
     

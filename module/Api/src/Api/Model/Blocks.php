@@ -116,9 +116,14 @@ class Blocks extends AbstractModel {
     {
         $_id = mongo_id();  // blocks._id        
         $values = array(
-            '_id' => $_id,           
-            'sort' => self::max(array('field' => 'sort')) + 1,
-            'website_id' => $param['website_id']
+            '_id' => $_id,
+            'website_id' => $param['website_id'],
+            'sort' => self::max(array(                   
+                'field' => 'sort',
+                'where' => array(
+                    'website_id' => $param['website_id']
+                )
+            )) + 1
         );  
         if (isset($param['url'])) {
             $values['url'] = $param['url'];

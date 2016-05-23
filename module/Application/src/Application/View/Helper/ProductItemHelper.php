@@ -123,7 +123,18 @@ class ProductItemHelper extends AbstractHtmlElement
                         )
                     )
                 );
-                
+                $setPriorityUrl = $view->url(
+                    'web/ajax', 
+                    array(
+                        'action' => 'setpriorityproduct'
+                    ),
+                    array(
+                        'query' => array(
+                            'category_id' => $categoryId,
+                            'product_id' => $product['product_id'],
+                        )
+                    )
+                );
                 $blockOption = array("<option value=\"\">+B</option>");
                 foreach ($website['blocks'] as $block) {
                     $blockOption[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
@@ -139,7 +150,7 @@ class ProductItemHelper extends AbstractHtmlElement
                 $btn = "
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
                     <a  itemprop=\"url\" href=\"#\" 
-                        style=\"width:25px;padding:4px 2px;float:right;margin-left:2px;\"
+                        style=\"width:22px;padding:4px 2px;float:right;margin-left:2px;\"
                         class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                         data-url=\"{$removeFromCategoryUrl}\"
                         data-callback=\"
@@ -150,7 +161,18 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:43px;padding:4px 2px;float:right;margin-left:2px;\"
+                    <a  itemprop=\"url\" href=\"#\" 
+                        style=\"width:22px;padding:4px 2px;float:right;margin-left:2px;\"
+                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                        data-url=\"{$setPriorityUrl}\"
+                        data-callback=\"   
+                            alert('Updated');
+                        \"><i class=\"fa fa-map-pin\"></i>
+                    </a>
+                    </form>
+                    
+                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
+                    <select style=\"width:41px;padding:4px 2px;float:right;margin-left:2px;\"
                     name=\"add_block_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToBlockUrl}\"
@@ -159,7 +181,7 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:43px;padding:4px 2px;float:right;\"
+                    <select style=\"width:41px;padding:4px 2px;float:right;\"
                     name=\"category_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToCategoryUrl}\"

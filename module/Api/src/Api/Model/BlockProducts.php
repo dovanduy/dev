@@ -40,9 +40,7 @@ class BlockProducts extends AbstractModel {
                 self::max(
                     array(
                         'table' => 'block_products',
-                        'field' => 'sort'
-                    ),
-                    array(
+                        'field' => 'sort',
                         'where' => array(
                             'website_id' => $product['website_id'],
                             'block_id' => $param['block_id'],
