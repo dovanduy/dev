@@ -15,8 +15,6 @@ return array(
             'web/footer' => __DIR__ . '/../view/partial/mobile/footer.phtml'         
         ),        
     ),
-
-	
     
     'display_page' => 5,
     

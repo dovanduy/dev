@@ -139,7 +139,7 @@ class ProductItemHelper extends AbstractHtmlElement
                 $btn = "
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
                     <a  itemprop=\"url\" href=\"#\" 
-                        style=\"width:35px;padding:4px 2px;float:right;margin-left:2px;\"
+                        style=\"width:25px;padding:4px 2px;float:right;margin-left:2px;\"
                         class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                         data-url=\"{$removeFromCategoryUrl}\"
                         data-callback=\"
@@ -150,7 +150,7 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:35px;padding:4px 2px;float:right;margin-left:2px;\"
+                    <select style=\"width:38px;padding:4px 2px;float:right;margin-left:2px;\"
                     name=\"add_block_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToBlockUrl}\"
@@ -159,7 +159,7 @@ class ProductItemHelper extends AbstractHtmlElement
                     </form>
                     
                     <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:35px;padding:4px 2px;float:right;\"
+                    <select style=\"width:38px;padding:4px 2px;float:right;\"
                     name=\"category_id\" 
                     class=\"ajax-change\"
                     data-url=\"{$addToCategoryUrl}\"

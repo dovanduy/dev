@@ -1,5 +1,5 @@
 <?php
-$isMobile = Application\Lib\Util::isMobile();
+$categories = \Web\Model\ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, false);
 $cartItems = Application\Lib\Cart::get();
 $totalQuantity = 0;
 $totalMoney = 0;
@@ -240,8 +240,9 @@ if (!empty($cartItems)) {
 								<!-- Collect the nav links, forms, and other content for toggling -->
 								<div class="collapse navbar-collapse" id="navbar-collapse-1">
 									<!-- main-menu -->
-									<ul itemscope itemtype="http://schema.org/ItemList" class="nav navbar-nav">
-                                        <?php foreach ($headerMenus as $menu) : ?>
+                                    <?php if (!empty($website['header_menus'])): ?>
+									<ul itemscope itemtype="http://schema.org/ItemList" class="nav navbar-nav">                                        
+                                        <?php foreach ($website['header_menus'] as $menu) : ?>
                                         <li <?php if (!empty($menu['sub'])) : ?>class="dropdown"<?php endif; ?>>                                            
                                             <a itemprop="url" href="<?php echo $menu['url']?>" class="dropdown-toggle" <?php if (!empty($menu['sub'])) : ?> data-toggle="dropdown"<?php endif; ?>>
                                                 <span itemprop="name"><?php echo $menu['name']?></span>
@@ -267,6 +268,7 @@ if (!empty($cartItems)) {
                                         </li>
                                         <?php endforeach ?>
 									</ul>
+                                    <?php endif ?>
 									<!-- main-menu end -->
 									
 									<!-- header dropdown buttons -->                                    

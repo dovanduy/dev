@@ -191,15 +191,14 @@ class ProductHasCategories extends AbstractModel {
                             )
                         )
                         ->where("locale = ". self::quote($param['locale']))
-                ),                    
+                ),                   
                 static::$tableName . '.category_id = product_category_locales.category_id',
                 array(
                     'category_parent_id' => 'parent_id',
                     'category_sort' => 'sort',
                     'category_name' => 'name',
                     'path_id' => 'path_id'
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
+                )
             )
             ->join(
                 'products', 

@@ -166,11 +166,11 @@
                                         data-callback="	
                                             if (isMobile == 0) {
                                                 loadCart(1);        
-                                            } else {                          
+                                            } else {     
+                                                alert('<?php echo $this->translate('Added to cart') ?>');
                                                 $('#mCart .cart-count').html(parseInt($('#mCart .cart-count').html())+1);
                                                 $('html, body').animate({scrollTop: 0}, 'slow');
-                                            }                                 
-                                            showMessage('<?php echo $this->translate('Added to cart') ?>')
+                                            }
                                         "
                                         class="margin-clear btn btn-default ajax-submit">
                                 </div>
@@ -345,7 +345,11 @@
                                         <div class=\"media-left\">
                                             <div class=\"overlay-container\">
                                                 <a itemprop=\"url\" href=\"{$product['url']}\" class=\"\">
-                                                    <img itemprop=\"image\" alt=\"{$product['name']}\" class=\"media-object\" src=\"{$product['url_image']}\">
+                                                    <img itemprop=\"image\" 
+                                                        alt=\"{$product['name']}\" 
+                                                        class=\"media-object\" 
+                                                        onerror=\"this.src='" . \Web\Module::getConfig('image_unavalable_url') . "'\"
+                                                        src=\"{$product['url_image']}\">
                                                 </a>
                                             </div>
                                         </div>

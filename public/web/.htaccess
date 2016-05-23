@@ -16,8 +16,7 @@ DirectoryIndex index.php
 RewriteEngine On
 
 #RewriteBase /
-RewriteCond %{HTTP_HOST} ^www.baclieuhotel.com
-RewriteRule ^.*$ http://baclieuhotel.com%{REQUEST_URI} [R=301,L]
+
 
 ## ALL (RewriteCond) lines in this section are only required if you actually
 ## have directories named 'content' or 'component' on your server

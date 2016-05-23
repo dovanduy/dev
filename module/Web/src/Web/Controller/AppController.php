@@ -23,7 +23,7 @@ class AppController extends AbstractAppController {
         $defaultData = array(
             'meta_name' => array(
                 'X-UA-Compatible' => 'IE=edge',
-                'viewport' => 'width=device-width, initial-scale=1.0',
+                //'viewport' => 'width=device-width, initial-scale=1.0',
                 'author' => WebModule::getConfig('head_meta.author'),
                 'owner' => WebModule::getConfig('head_meta.owner'),
                 'distribution' => WebModule::getConfig('head_meta.distribution'),

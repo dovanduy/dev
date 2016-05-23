@@ -1,14 +1,14 @@
 <footer id="footer" class="clearfix">
     <!-- .footer start -->
     <!-- ================ -->
-    <?php if (!empty($footerMenus)) : ?>    
+    <?php if (!empty($website['footer_menus'])): ?>    
     <div class="footer">       
         <div itemscope itemtype="http://schema.org/ItemList" class="row">
             <!-- accordion start -->
             <!-- ================ -->
             <div class="col-md-6">
                 <div class="panel-group collapse-style-1" id="accordion">
-                    <?php foreach ($footerMenus as $index => $menu) : ?>                                       
+                    <?php foreach ($website['footer_menus'] as $index => $menu) : ?>                                       
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 itemprop="name" class="panel-title">

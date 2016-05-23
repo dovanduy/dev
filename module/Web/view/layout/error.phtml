@@ -1,10 +1,9 @@
 <?php echo $this->doctype(); ?>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" 
+<html lang="en" class=" js touch csstransitions" xmlns="http://www.w3.org/1999/xhtml" 
 xmlns:og="http://opengraphprotocol.org/schema/" 
 xmlns:fb="http://www.facebook.com/2008/fbml">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<?php 
             echo $this->headTitle()
                 ->setSeparator(' - ')
@@ -55,37 +54,17 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<!-- page wrapper start -->
 		<!-- ================ -->
 		<div class="page-wrapper">
-			<?php      
-                echo $this->partial('web/header');
-            ?>
-			<?php 
-                if (!in_array($controller, array('index', 'page'))) {
-                    echo $this->navigation('web_navigation')                            
-                                ->breadcrumbs()      
-                                ->setLinkLast(true)  
-                                ->setMinDepth(0)
-                                ->setMaxDepth(10) 
-                                ->setPartial('web/breadcrumb');   
-                } 
-            ?>
-            <div class="container">
             <?php
-				echo $this->flashMessenger()->renderCurrent('error', array('alert', 'alert-dismissible', 'alert-danger'));
-				echo $this->flashMessenger()->renderCurrent('success', array('alert', 'alert-dismissible', 'alert-success'));
-				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('success');
-				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('error');
-            ?>
-            </div> 
-            <?php
+				echo $this->partial('web/header');
                 echo $this->content; 
-			?> 	
-			<?php echo $this->partial('web/footer'); ?>  
+				echo $this->partial('web/footer');
+			?>  
 		</div>
         
         <!-- Scripts -->
-        <?php echo $this->headScript()			
+        <?php echo $this->headScript()		
 			->prependFile($stHost . ('/js/style-switcher.js')) 
-			->prependFile($stHost . ('/js/main.js'))          
+			->prependFile($stHost . ('/js/main.js'))        
             ->prependFile($stHost . ('/plugins/lazyload/jquery.lazyload.min.js'))           
             ->prependFile($stHost . ('/plugins/lightbox/jquery.lightbox-0.5.js'))           
             ->prependFile($stHost . ('/plugins/notification/js/jquery_notification_v.1.js'))

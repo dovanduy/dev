@@ -30,7 +30,9 @@ class Websites
                 'get_blocks' => 1,
             );
             $param['website_id'] = $websiteId;            
-            $data = Api::call('url_websites_detail', $param);      
+            $data = Api::call('url_websites_detail', $param);   
+            $data['header_menus'] = \Web\Model\Menus::getSubMenu2($data['menus'], $lastLevel = array(), 0, 0, $type = 'header');
+            $data['footer_menus'] = \Web\Model\Menus::getSubMenu2($data['menus'], $lastLevel = array(), 0, 0, $type = 'footer');                    
             if (!empty($data)) {
                 Cache::set($key, $data);
             }

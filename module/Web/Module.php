@@ -21,17 +21,29 @@ use Web\Module as WebModule;
 
 class RenderEventListener
 {
-    public function __invoke(MvcEvent $event)
-    {   
-        $model = $event->getResult();
-        if (!$model instanceof ViewModel) {
-            return;
-        }        
-        $template = $model->getTemplate();
-        if (!in_array($template, ['error/index', 'error/404'])) { // ['error/index', 'error/404']
+    public function __invoke(MvcEvent $e)
+    {  
+        $model = $e->getResult();
+        if (!$e->isError() || !$model instanceof ViewModel) {
             return;
         }
-        $event->getViewModel()->setTemplate('web/layout/error');        
+        
+        $sm = $e->getApplication()->getServiceManager();                           
+        $e->getViewModel()->setVariables(array(
+            'AppUI' => $sm->get('auth')->getIdentity(),
+            'website' => \Web\Model\Websites::getDetail(),
+        ));
+        
+        $error = $e->getError();   
+        switch ($error) {
+            case 'error-router-no-match': // not found url format in router config
+                $e->getViewModel()->setTemplate('web/layout');  
+                break;
+            case 'error-exception': // 400 error  
+                $e->getViewModel()->setTemplate('web/layout/error');                
+                break;
+            default:               
+        }
     }
 }
 
@@ -51,16 +63,13 @@ class Module
         $e->getApplication()->getServiceManager()
                             ->get('ViewHelperManager')
                             ->get('translate')
-                            ->setTranslator($translator); 
-       
-        /*
+                            ->setTranslator($translator);        
+     
         $eventManager = $e->getApplication()->getEventManager();
         $eventManager->attach(
             [MvcEvent::EVENT_RENDER_ERROR, MvcEvent::EVENT_RENDER], 
             new RenderEventListener()
         );
-         * 
-         */
     }
    
      /**
