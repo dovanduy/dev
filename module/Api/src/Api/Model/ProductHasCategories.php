@@ -307,6 +307,7 @@ class ProductHasCategories extends AbstractModel {
                 $productCategoryHasFieldsModel = new ProductCategoryHasFields();
                 $result['fields'] = $productCategoryHasFieldsModel->getAll(array(
                     'category_id' => array_keys($categoryId),
+                    'type' => 'radio',
                     'locale' => $param['locale'],
                 ));
             }

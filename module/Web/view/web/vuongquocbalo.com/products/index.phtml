@@ -3,7 +3,7 @@
     $priceFrom = $request->getQuery('price_from', '');
     $priceTo = $request->getQuery('price_to', '');    
     $categoryId = !empty($detailCategory['category_id']) ? $detailCategory['category_id'] : 0;
-    $brandId = !empty($detailBrand['brand_id']) ? $detailBrand['brand_id'] : 0;    
+    $brandId = !empty($detailBrand['brand_id']) ? $detailBrand['brand_id'] : 0;
 ?>
 <div id="page-start"></div>
 <!-- section start -->
@@ -14,13 +14,13 @@
             <div class="col-md-3">
                 <form id="sidebar_products_index_form">                
                     <div class="sidebar">
-                        <?php if (!empty($subCategories)): ?>
+                        <?php if (!empty($filter['categories'])): ?>
                         <div class="block clearfix">
                             <h3 class="title"><?php echo $this->translate('Catalog') ?></h3>
                             <div class="separator-2"></div>
                             <nav class="app-category">
                                 <ul itemscope itemtype="http://schema.org/Product" class="nav nav-pills nav-stacked nav-show">
-                                    <?php foreach ($subCategories as $category) : ?>  
+                                    <?php foreach ($filter['categories'] as $category) : ?>  
                                     <?php if (!empty($category['sub'])) : ?>  
                                         <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
                                             <a itemprop="name" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
@@ -59,48 +59,15 @@
                                 </ul>
                             </nav>
                         </div>
-                        <?php endif ?>
+                        <?php endif ?>                 
 
-                        <?php if (empty($subCategories) && !empty($filter['category'])): ?>
-                        <div class="block clearfix">
-                            <h3 class="title"><?php echo $this->translate('Catalog') ?></h3>
-                            <div class="separator-2"></div>
-                            <nav>
-                                <ul itemscope itemtype="http://schema.org/Product" class="nav nav-pills nav-stacked">
-                                    <?php foreach ($filter['category'] as $category) : ?>  
-                                    <li <?php if ($categoryId==$category['category_id']) echo ' class="active"'?>>
-                                        <a itemprop="name" href="
-                                            <?php
-                                                $routeUrl = array(
-                                                    'name' => name_2_url($category['category_name'])                                                   
-                                                );
-                                                /*
-                                                if (!empty($detailBrand['name'])) {
-                                                    $routeUrl['name2'] = name_2_url($detailBrand['name']);
-                                                }
-                                                 * 
-                                                 */
-                                                echo $this->url(
-                                                    'web/products', 
-                                                    $routeUrl
-                                                )
-                                            ?>">
-                                            <?php echo $category['category_name'] ?>
-                                        </a>
-                                    </li>
-                                    <?php endforeach ?>                                
-                                </ul>
-                            </nav>
-                        </div>
-                        <?php endif ?>                  
-
-                        <?php if (!empty($filter['brand'])): ?>
+                        <?php if (!empty($filter['brands'])): ?>
                         <div class="block clearfix">
                             <h3 class="title"><?php echo $this->translate('Brand') ?></h3>
                             <div class="separator-2"></div>
                             <nav>
                                 <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
-                                    <?php foreach ($filter['brand'] as $brand) : ?> 
+                                    <?php foreach ($filter['brands'] as $brand) : ?> 
                                     <?php if (!empty($brand['brand_name'])): ?>
                                     <li<?php if ($brandId==$brand['brand_id']) echo ' class="active"'?>>
                                         <a href="<?php 
@@ -124,19 +91,18 @@
                         </div>
                         <?php endif ?>
                         
-                        <?php if (!empty($filter['fields'])): ?>
-                        <?php foreach ($filter['fields'] as $field) : ?> 
+                        <?php if (!empty($filter['attributes'])): ?>
+                        <?php foreach ($filter['attributes'] as $attribute) : ?> 
                         <div class="block clearfix">
-                            <h3 class="title"><?php echo $field['name'] ?></h3>
+                            <h3 class="title"><?php echo $attribute['name'] ?></h3>
                             <div class="separator-2"></div>
-                            <nav>
+                            <nav class="attributes">
                                 <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
-                                    <?php foreach ($field['options']['value_options'] as $optId => $optionName): ?> 
-                                    <?php if (!empty($optionName)): ?>
-                                    <li<?php if ($optionId==$optId) echo ' class="active"'?>>
+                                    <?php foreach ($attribute['value'] as $value): ?>                                    
+                                    <li<?php if ($optionId==$value) echo ' class="active"'?>>
                                         <a href="<?php 
                                             $routerParam = array(
-                                                'name2' => name_2_url($field['name'] . '-' . $optionName)
+                                                'name2' => ($attribute['type'] == 'text' ? name_2_url($value) : name_2_url($attribute['name'] . '-' . $value))
                                             );
                                             if (!empty($detailCategory['name'])) {
                                                 $routerParam['name'] = name_2_url($detailCategory['name']);
@@ -145,10 +111,9 @@
                                                 'web/products', 
                                                 $routerParam
                                             )?>">
-                                            <span itemprop="name"><?php echo $optionName ?></span>
+                                            <span itemprop="name"><?php echo $value ?></span>
                                         </a>
-                                    </li>
-                                    <?php endif ?>                                
+                                    </li>                                                           
                                     <?php endforeach ?>                                
                                 </ul>
                             </nav>

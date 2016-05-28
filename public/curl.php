@@ -1,9 +1,19 @@
 <?php
-$url = 'http://api.vuongquocbalo.com/admins/login';
+
+
 $headers = array("Content-Type:multipart/form-data");
+
+$url = 'http://api.vuongquocbalo.com/admins/login';
 $posts = array(
 	'email' => 'root@gmail.com',
 	'password' => '123456'
+);
+
+$url = 'http://chothoitrang.com/home/index/ajaxcathome';
+$posts = array(
+	'p' => isset($_GET['p']) ? $_GET['p'] : 1,
+	'id' => '166',
+	'sortlist' => 'product_new_desc',
 );
 $ch = curl_init();
 $options = array(

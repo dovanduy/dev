@@ -17,57 +17,10 @@
                             $count = !empty($result['count']) ? $result['count'] : 0;                       
                             if (!empty($products)) {
                                 foreach ($products as $product) {
-                                    $product['url'] = $this->url(
-                                        'web/products', 
-                                        array(
-                                            'name' => name_2_url($product['name'])
-                                        )
-                                    );
-                                    $product['url_add_to_cart'] = $this->url(
-                                        'web/carts', 
-                                        array(
-                                            'action' => 'additem',
-                                            'id' => $product['_id']
-                                        )
-                                    );     
-                                    $product['url_add_to_wishlist'] = '#';
-                                    $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
-                                    $product['price'] = app_money_format($product['price']);
-                                    $product['name'] = truncate($product['name'], 60);
-                                    $product['short'] = nl2br(truncate($product['short'], 80));
-                                    echo "
-                                        <div class=\"col-md-3 col-sm-6 masonry-grid-item\">
-                                            <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
-                                                <div class=\"overlay-container\">
-                                                    <div class=\"image\">
-                                                        <img alt=\"{$product['name']}\" src=\"{$product['url_image']}\" alt=\"\">
-                                                    </div>
-                                                    <a class=\"overlay-link popup-img-single\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
-                                                    <div class=\"overlay-to-top links\">
-                                                        <span class=\"small\">
-                                                            <!--<a href=\"{$product['url_add_to_wishlist']}#\" class=\"btn-sm-link\"><i class=\"fa fa-heart-o pr-10\"></i>{$this->translate('Add to Wishlist')}</a>-->
-                                                            <a itemprop=\"url\" href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>{$this->translate('View Details')}</a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class=\"body\">
-                                                    <h3><a itemprop=\"url\" href=\"{$product['url']}\"><span itemprop=\"name\">{$product['name']}</span></a></h3>                                                    
-                                                    <div class=\"elements-list clearfix\">
-                                                        <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
-                                                        <a  itemprop=\"url\" href=\"#\" 
-                                                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
-                                                            data-url=\"{$product['url_add_to_cart']}\"
-                                                            data-callback=\"
-                                                                loadCart(1);                                    
-                                                                showMessage('{$this->translate('Added to cart')}')
-                                                            \">{$this->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
-                                                        </a>                                                                
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ";                                                                                 
+                                    echo $this->productItemHelper($product, 4);                                                                                                                    
                                 }
+                            } else {
+                                echo "<center class=\"not-found\">{$this->translate('Product not found')}</center>";
                             }
                         ?>  
 						</div>

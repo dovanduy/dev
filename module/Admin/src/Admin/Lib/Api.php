@@ -52,7 +52,14 @@ class Api {
                     }
                 }
             }       
-            $headers = array("Content-Type:multipart/form-data");
+            $headers = array("Content-Type:multipart/form-data"); 
+            foreach ($param as $name => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $i => $v) {
+                        $param["{$name}[" . $i . "]"] = $v;
+                    }
+                }                
+            }
             $url = $config['base_uri'] . $url;
             $ch = curl_init();
             $options = array(

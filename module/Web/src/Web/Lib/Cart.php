@@ -76,11 +76,23 @@ class Cart {
             $items[$keyId]['quantity'] = $quantity;
             $items[$keyId]['total_money'] = $quantity * db_float($items[$keyId]['price']);
         } else {
-            $data = Products::getDetail($id);          
+            $data = Products::getDetail($id);     
             if (empty($data)) {
                 return false;
             }
+            
             $price = $data['price'];
+            if (!empty($sizeId) || !empty($colorId)) {
+                $priceByColorAndSize = Products::getPrice(array(
+                    'product_id' => $id,
+                    'color_id' => $colorId,
+                    'size_id' => $sizeId,
+                ));
+                if (!empty($priceByColorAndSize)) {
+                    $price = $priceByColorAndSize;
+                }
+            }
+            
             $name = $customName = $data['name'];
             
             if (!empty($colorId) && !empty($data['colors'])) {
@@ -92,8 +104,7 @@ class Cart {
             }
             if (!empty($sizeId) && !empty($data['sizes'])) {
                 foreach ($data['sizes'] as $size) {
-                    if ($size['size_id'] == $sizeId && !empty($size['price'])) {
-                        $price = $size['price'];
+                    if ($size['size_id'] == $sizeId && !empty($size['price'])) {                      
                         $customName = $customName . ' (' . $size['name'] .')';
                     }
                 }

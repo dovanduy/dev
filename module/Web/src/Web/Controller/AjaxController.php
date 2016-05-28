@@ -12,6 +12,7 @@ namespace Web\Controller;
 use Application\Lib\Util;
 use Web\Model\LocaleCities;
 use Web\Model\LocaleStates;
+use Web\Model\Products;
 use Web\Lib\Api;
 
 class AjaxController extends AppController
@@ -19,6 +20,19 @@ class AjaxController extends AppController
     public function indexAction()
     {   
         return $this->getViewModel();
+    }
+    
+    public function priceAction()
+    {
+        $param = $this->getParams();
+        $result = array();
+        if (!empty($param['product_id'])
+            && isset($param['color_id'])
+            && isset($param['size_id'])) {
+            $price = Products::getPrice($param);
+            echo app_money_format($price);
+        }        
+        exit;
     }
     
     public function localestateAction()

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ZendSkeletonApplication\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-28 10:08+0700\n"
-"PO-Revision-Date: 2016-05-23 17:06+0700\n"
+"PO-Revision-Date: 2016-05-26 08:27+0700\n"
 "Last-Translator: Do Nhu Vy <donhuvy@hotmail.com>\n"
 "Language-Team: ZF Contibutors <zf-devteam@zend.com>\n"
 "Language: vi_VN\n"
@@ -679,7 +679,7 @@ msgid "Photos"
 msgstr "Hình ảnh"
 
 msgid "Main photo"
-msgstr "Hình đại diện"
+msgstr "Hình mặc định"
 
 msgid "About Shop/company"
 msgstr "Giới thiệu shop/công ty"
@@ -1245,3 +1245,9 @@ msgstr "Xem thêm"
 
 msgid "Delete cache"
 msgstr "Xoá cache"
+
+msgid "Product information"
+msgstr "Thông tin sản phẩm"
+
+msgid "Color, Size and Price"
+msgstr "Màu sắc, kích thước và giá"

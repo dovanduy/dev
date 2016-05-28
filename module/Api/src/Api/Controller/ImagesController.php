@@ -16,10 +16,26 @@ class ImagesController extends AppController {
             $this->getParams()
         );
     }
+    
+    public function allhascolorAction() 
+    {   
+        return \Api\Bus\Images\AllHasColor::getInstance()->execute(
+            $this->getServiceLocator()->get('Images'),
+            $this->getParams()
+        );
+    }
 
     public function addAction()
     {
         return \Api\Bus\Images\Add::getInstance()->execute(
+            $this->getServiceLocator()->get('Images'),
+            $this->getParams()
+        );
+    }
+    
+    public function addhascolorAction()
+    {
+        return \Api\Bus\Images\AddHasColor::getInstance()->execute(
             $this->getServiceLocator()->get('Images'),
             $this->getParams()
         );

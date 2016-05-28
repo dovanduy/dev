@@ -14,8 +14,7 @@ class ProductSizes extends AbstractModel {
         '_id',
         'sort',      
         'locale',
-        'name',
-        'price',
+        'name',       
         'short',       
         'created',
         'updated',
@@ -83,8 +82,7 @@ class ProductSizes extends AbstractModel {
         $select = $sql->select()
             ->from(static::$tableName)  
             ->columns(array(                
-                'size_id', 
-                'price', 
+                'size_id',
                 '_id'
             ))
             ->join(               
@@ -111,24 +109,21 @@ class ProductSizes extends AbstractModel {
         );        
     }    
     
-    public function add($param)
+    public function add($param, &$id = 0)
     {
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['size_id'];
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // product_sizes._id              
         $values = array(
             '_id' => $_id,
-            'website_id' => $param['website_id'],  
-            'sort' => 
-                self::max(array(
-                    'table' => 'product_sizes',
-                    'field' => 'sort',
-                    'where' => array(
-                        'website_id' => $param['website_id']
-                    )
-                )) + 1                          
-        );        
-        if (isset($param['price'])) {
-            $values['price'] = Util::toPrice($param['price']);
-        }
+            'website_id' => $param['website_id']
+        );
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'size_id' => $id,
@@ -139,7 +134,7 @@ class ProductSizes extends AbstractModel {
             } 
             if (isset($param['short'])) {
                 $localeValues['short'] = $param['short'];
-            }
+            }            
             self::insert($localeValues, 'product_size_locales');
             if (empty(self::error())) {             
                 return $_id;                
@@ -163,9 +158,6 @@ class ProductSizes extends AbstractModel {
         $set = array();
         if (isset($param['sort'])) {
             $set['sort'] = $param['sort'];
-        }    
-        if (isset($param['price'])) {
-            $set['price'] = Util::toPrice($param['price']);
         }
         if (self::update(
             array(
@@ -230,8 +222,7 @@ class ProductSizes extends AbstractModel {
             ->from(static::$tableName)  
             ->columns(array(                
                 'size_id', 
-                '_id',               
-                'price',
+                '_id',
                 'sort',
             ))
             ->join(               
@@ -251,6 +242,9 @@ class ProductSizes extends AbstractModel {
             );
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
+        }
+        if (!empty($param['name'])) {            
+            $select->where('product_size_locales.name = '. self::quote($param['name']));  
         }
         if (!empty($param['size_id'])) {            
             $select->where(static::$tableName . '.size_id = '. self::quote($param['size_id']));  

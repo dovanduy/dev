@@ -4,12 +4,13 @@ namespace Api\Model;
 
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Predicate\Expression;
+use Application\Lib\Arr;
 
 class ProductHasSizes extends AbstractModel {
     
     protected static $properties = array(
         'product_id',        
-        'size_id',       
+        'size_id',  
         'created',
         'updated',
     );
@@ -27,12 +28,12 @@ class ProductHasSizes extends AbstractModel {
             ->from(static::$tableName)  
             ->columns(array(                
                 'size_id', 
-                'product_id'
+                'product_id'               
             ))
             ->join(
                 'product_sizes', 
                 static::$tableName . '.size_id = product_sizes.size_id',
-                array('price')
+                array()
             )
             ->join(               
                 array(
@@ -51,15 +52,16 @@ class ProductHasSizes extends AbstractModel {
         if (!empty($param['product_id'])) {            
             $select->where(static::$tableName . '.product_id = '. self::quote($param['product_id']));  
         }
-        return self::response(
+        $data = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
-        );        
+        ); 
+        return $data;       
     }  
     
     public function addUpdate($param)
     {        
-        if (!is_array($param['size_id'])) {
+        if (!empty($param['size_id']) && !is_array($param['size_id'])) {
             $param['size_id'] = array($param['size_id']);
         }        
         $sizes = self::find(
@@ -98,6 +100,40 @@ class ProductHasSizes extends AbstractModel {
             }
         }
         return true;        
-    }    
+    } 
+    
+    /* for batch */
+    public function import($param)
+    { 
+        if (empty($param['website_id'])
+            || empty($param['sizes']) 
+            || empty($param['product_id'])) {
+            return false;
+        }       
+        $sizeModel = new ProductSizes;
+        $values = array();               
+        
+        foreach ($param['sizes'] as $size) { 
+            $sizeModel->add(
+                array(
+                    'name' => $size['name'],                    
+                    'website_id' => $param['website_id']
+                ), 
+                $sizeId
+            );
+            if (!empty($sizeId)) {                
+                $values[] = array(
+                    'size_id' => $sizeId,
+                    'product_id' => $param['product_id'],                    
+                    'created' => new Expression('UNIX_TIMESTAMP()'),
+                    'updated' => new Expression('UNIX_TIMESTAMP()'),
+                );
+            }
+        }
+        if (!empty($values) && self::batchInsert($values)) {
+            return true;
+        }
+        return false;       
+    }
     
 }

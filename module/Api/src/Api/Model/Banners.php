@@ -20,7 +20,8 @@ class Banners extends AbstractModel {
         'created',
         'updated',
         'active',        
-        'image_id'
+        'image_id',
+        'website_id'
     );
     
     protected static $primaryKey = 'banner_id';
@@ -142,18 +143,15 @@ class Banners extends AbstractModel {
         }        
         $values = array(
             '_id' => $_id,
-            'sort' => self::max(array('field' => 'sort')) + 1,
-            'is_locale' => \Application\Module::getConfig('general.default_is_locale')
+            'sort' => self::max(array('field' => 'sort')) + 1,            
+            'website_id' => $param['website_id'],            
         );          
         if (isset($param['image_id'])) {
             $values['image_id'] = $param['image_id'];
         }
         if (isset($param['url'])) {
             $values['url'] = $param['url'];
-        }
-        if (isset($param['website_id'])) {
-            $values['website_id'] = $param['website_id'];
-        }
+        }       
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'banner_id' => $id,

@@ -61,6 +61,7 @@ class Cache {
      * @throws \Zend\Cache\Exception\ExceptionInterface
      */
     public static function get($key, & $success = null, & $casToken = null) {
+        $key = static::encodeKey($key);
         return static::instance()->getItem($key, $success, $casToken);
     }
 
@@ -71,7 +72,11 @@ class Cache {
      * @return array Associative array of keys and values
      * @throws \Zend\Cache\Exception\ExceptionInterface
      */
-    public static function gets(array $keys) {
+    public static function gets(array $keys) {        
+        foreach ($keys as &$key) {
+            $key = static::encodeKey($key);
+        }
+        unset($key);
         return static::instance()->getItems($keys);
     }
     
@@ -83,6 +88,7 @@ class Cache {
      * @throws \Zend\Cache\Exception\ExceptionInterface
      */
     public static function has($key) {
+        $key = static::encodeKey($key);
         return static::instance()->hasItem($key);
     }
     
@@ -95,6 +101,7 @@ class Cache {
      * @throws \Zend\Cache\Exception\ExceptionInterface
      */
     public static function set($key, $value) {
+        $key = static::encodeKey($key);
         return static::instance()->setItem($key, $value);
     }
     
@@ -106,6 +113,7 @@ class Cache {
      * @throws \Zend\Cache\Exception\ExceptionInterface
      */
     public static function remove($key) {
+        $key = static::encodeKey($key);
         return static::instance()->removeItem($key);        
     }
 
@@ -130,6 +138,7 @@ class Cache {
      */
     public static function setTags($key, array $tags)
     {
+        $key = static::encodeKey($key);
         return static::instance()->setTags($key, $tags);
     }
     
@@ -170,6 +179,11 @@ class Cache {
     public static function clearByPrefix($prefix)
     {
         return static::instance()->clearByPrefix($prefix);
+    }
+    
+    public static function encodeKey($key)
+    {
+        return md5($key);
     }
     
 }

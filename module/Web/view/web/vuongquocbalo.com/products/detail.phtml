@@ -1,5 +1,6 @@
 <?php
     $website = $this->viewModel()->getRoot()->getVariable('website');
+    $hasColorAndSize = ((!empty($data['sizes']) && !empty($data['colors'])) ? 1 : 0);
 ?>
 <section class="main-container">
 
@@ -17,7 +18,7 @@
 								<?php if (!empty($data['images'])): ?>
                                 <div class="owl-carousel content-slider-with-large-controls">
 									<?php foreach ($data['images'] as $image): ?>
-                                    <div class="overlay-container overlay-visible">
+                                    <div data-image="<?php echo $image['url_image']; ?>" class="overlay-container overlay-visible">
                                         <img src="<?php echo $image['url_image']; ?>" alt="<?php echo $data['name'] ?>">
                                         <a href="<?php echo $image['url_image']; ?>" class="popup-img overlay-link" title="<?php echo $data['name'] ?>"><i class="icon-plus-1"></i></a>
                                     </div>
@@ -29,6 +30,12 @@
                     </div>
                     <div itemscope itemtype="http://schema.org/Product" class="col-md-5">
                         <h2 itemprop="name"><?php echo $data['name'] ?></h2>                        
+                        <?php if (!empty($data['code'])): ?>
+                        <p class="code">
+                            <span class="attribute-name"><?php echo $this->translate('SKU') ?>:</span>
+                            <span itemprop="name" class="attribute-value"><?php echo $data['code']; ?></span>
+                        </p>
+                        <?php endif ?>
                         <?php
                             if (!empty($data['brand_id'])) {
                                 $data['brand_url'] = $this->url(
@@ -42,92 +49,34 @@
                                 echo "<span itemprop=\"name\" class=\"attribute-value\"><a itemprop=\"url\" href=\"{$data['brand_url']}\">{$data['brand']['name']}</a></span>";                                            
                                 echo "</p>";                                
                             }
-                        ?> 
-                        <?php if (!empty($data['code'])): ?>
-                        <p class="code">
-                            <span class="attribute-name"><?php echo $this->translate('SKU') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['code']; ?></span>
-                        </p>
-                        <?php endif ?>
-                        <?php if (!empty($data['model'])): ?>
-                        <p class="code">
-                            <span class="attribute-name"><?php echo $this->translate('Model') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['model']; ?></span>
-                        </p>
-                        <?php endif ?>                        
-                        <?php if (!empty($data['warranty'])): ?>
-                        <p class="warranty">
-                            <span class="attribute-name"><?php echo $this->translate('Warranty') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['warranty']; ?></span>
-                        </p>
-                        <?php endif ?>
-                        <?php if (!empty($data['weight'])): ?>
-                        <p class="warranty">
-                            <span class="attribute-name"><?php echo $this->translate('Weight (kg)') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['weight']; ?></span>
-                        </p>
-                        <?php endif ?>
-                        <?php if (!empty($data['size'])): ?>
-                        <p class="warranty">
-                            <span class="attribute-name"><?php echo $this->translate('Size (depth x width x height cm)') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['size']; ?></span>
-                        </p>
-                        <?php endif ?>
-                        <?php if (!empty($data['made_in'])): ?>
-                        <p class="made-in">
-                            <span class="attribute-name"><?php echo $this->translate('Made in') ?>:</span>
-                            <span itemprop="name" class="attribute-value"><?php echo $data['made_in']; ?></span>
-                        </p>
-                        <?php endif ?>
-                        <?php
-                            if (!empty($data['attributes'])) {
-                                foreach ($data['attributes'] as $attribute) {
-                                    if (!empty($attribute['options']['value_options']) 
-                                        && !empty($attribute['value'])) {
-                                        if (!is_array($attribute['value'])) {
-                                            $attribute['value'] = array($attribute['value']);
-                                        }
-                                        $selectedValue = array();
-                                        foreach ($attribute['options']['value_options'] as $valueId => $value) {
-                                            if (in_array($valueId, $attribute['value'])) {
-                                                $selectedValue[] = $value;
-                                            }
-                                        }
-                                        echo "<p class=\"attribute\">";
-                                        echo "<span class=\"attribute-name\">{$attribute['name']}:</span>";                                            
-                                        echo "<span itemprop=\"name\" class=\"attribute-value\">" . implode(', ', $selectedValue) . "</span>";                                            
-                                        echo "</p>";
-                                    }
-                                }
-                            }
-                        ?>   
+                        ?>                                              
                         
                         <p itemprop="description"><?php echo nl2br($data['short']) ?></p>
                         
-                        <form method="post" id="detailForm" novalidate="novalidate" role="form" class="clearfix">
-                            <?php if (!empty($data['sizes']) || !empty($data['colors'])) : ?>
+                        <form method="post" id="detailForm" novalidate="novalidate" role="form" class="clearfix">                           
+                            <?php if (!empty($data['sizes']) || !empty($data['colors'])): ?>                                                        
                             <div class="row grid-space-10">
-                                <?php if (!empty($data['colors'])) : ?>
-                                <div class="col-md-6">
+                                <?php if (!empty($data['colors'])): ?>
+                                <div class="<?php echo $hasColorAndSize ? 'col-md-6' : 'col-md-12'?>">
                                     <div class="form-group">
                                         <label><?php echo $this->translate('Color') ?></label>
                                         <select name="color_id" id="productColor" class="form-control">
                                         <?php foreach ($data['colors'] as $color): ?>
-                                            <option <?php if($color['color_id']==$data['color_id']) echo "selected" ?> value="<?php echo $color['color_id'] ?>"><?php echo $color['name'] ?></option>
+                                            <option data-product_id="<?php echo $data['product_id'] ?>" data-image="<?php echo $color['url_image'] ?>" <?php if (!empty($color['is_main'])) echo "selected" ?> value="<?php echo $color['color_id'] ?>"><?php echo $color['name'] ?></option>
                                         <?php endforeach ?>
                                         </select>                                       
                                     </div>
                                 </div>
                                 <?php endif ?>
-                                <?php if (!empty($data['sizes'])) : ?>
-                                <div class="col-md-6">
+                                <?php if (!empty($data['sizes'])): ?>
+                                <div class="<?php echo $hasColorAndSize ? 'col-md-6' : 'col-md-12'?>">
                                     <div class="form-group">
                                         <label><?php echo $this->translate('Size') ?></label>
                                         <select name="size_id" id="productSize" class="form-control">
                                         <?php foreach ($data['sizes'] as $size): ?>
-                                            <option data-price="<?php echo $size['price'] ?>" <?php if($size['price']==$data['price']) echo "selected" ?> value="<?php echo $size['size_id'] ?>"><?php echo $size['name'] ?></option>
+                                            <option data-product_id="<?php echo $data['product_id'] ?>" data-price="<?php echo $size['price'] ?>" <?php if ($size['size_id'] == $data['default_size_id']) echo "selected" ?> value="<?php echo $size['size_id'] ?>"><?php echo $size['name'] ?></option>
                                         <?php endforeach ?>  
-                                        </select>                                       
+                                        </select>
                                     </div>
                                 </div>
                                 <?php endif ?>
@@ -227,8 +176,7 @@
                             </select>                                       
                         </div>
                         </form>
-                        <?php endif ?>
-                        
+                        <?php endif ?>                        
                         <?php echo \Web\Module::getConfig('commitment_and_guide')?>
                     </div>
                 </div>
@@ -248,22 +196,53 @@
             <div class="col-md-8">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs style-4" role="tablist">
-                    <li class="active"><a href="#h2tab2" role="tab" data-toggle="tab"><i class="fa fa-files-o pr-5"></i><?php echo $this->translate('Detail Description') ?></a></li>
+                    <li class="active"><a href="#h2tab1" role="tab" data-toggle="tab"><i class="fa fa-files-o pr-5"></i><?php echo $this->translate('Detail Description')?></a></li>
+                    <?php if (!empty($data['attributes'])):?>
+                    <li><a href="#h2tab2" role="tab" data-toggle="tab"><i class="fa fa-info pr-5"></i><?php echo $this->translate('Product information')?></a></li>
+                    <?php endif ?>
                     <li><a href="#h2tab3" role="tab" data-toggle="tab"><i class="fa fa-star pr-5"></i><?php echo $this->translate('Reviews') ?></a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content padding-top-clear padding-bottom-clear">
-                    <div class="tab-pane fade in active" id="h2tab2">                                              
+                    <div class="tab-pane fade in active" id="h2tab1">                                              
                         <div itemprop="description">
                             <?php echo $data['content']; ?>
                         </div>
-                        <?php if (!empty($data['brand'])): ?> 
+                        
+                        <?php if (!empty($data['brand']) && 1==0): ?> 
                         <div itemscope itemtype=\"http://schema.org/Brand\">
                             <h4 class="space-top"><?php echo $this->translate('Brand information') ?></h4><hr>
                             <div itemprop="description"><?php echo nl2br($data['brand']['short']) ?></div>                        
                         </div>
                         <?php endif ?>
                     </div>
+                    <?php if (!empty($data['attributes'])): ?>
+                    <div class="tab-pane fade in" id="h2tab2">                                              
+                        <div itemprop="description">
+                            <table class="table table-hover">								
+								<tbody>
+                                    <?php if (!empty($data['code'])): ?>
+                                    <tr class="code">
+                                        <td class="attribute-name"><?php echo $this->translate('SKU') ?></td>
+                                        <td itemprop="name" class="attribute-value"><?php echo $data['code']; ?></td>
+                                    </tr>
+                                    <?php endif ?>  
+                                    <?php                                        
+                                        foreach ($data['attributes'] as $attribute) {
+                                            if (!empty($attribute['value'])) {
+                                                echo "<tr class=\"attribute\">";
+                                                echo "<td class=\"attribute-name\">{$attribute['name']}</td>";                                            
+                                                echo "<td itemprop=\"name\" class=\"attribute-value\">{$attribute['value']}</td>";                                            
+                                                echo "</tr>";
+                                            }
+                                        }
+                                    ?>									
+								</tbody>
+							</table>                            
+                        </div>                       
+                    </div>
+                    <?php endif ?>
+                    
                     <div class="tab-pane fade" id="h2tab3">
                         <!-- comments start -->
                         <div itemprop="review" itemscope itemtype="http://schema.org/Review" class="comments margin-clear space-top" id="review-list">
@@ -317,7 +296,7 @@
                     </div>
                 </div>
             </div>
-
+             
             <!-- sidebar start -->
             <!-- ================ -->
             <aside class="col-md-4 col-lg-3 col-lg-offset-1">

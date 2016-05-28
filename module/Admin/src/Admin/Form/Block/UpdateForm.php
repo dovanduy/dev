@@ -77,6 +77,19 @@ class UpdateForm extends AbstractForm
                         ),
                         'validators' => \Admin\Module::getValidatorConfig('blocks.name')
                     ),
+                    array(
+                        'name' => 'name_url',
+                        'attributes' => array(
+                            'id' => 'name_url',
+                            'type' => 'text',
+                            'required' => true,
+                            'class' => 'form-control'
+                        ),
+                        'options' => array(
+                            'label' => 'Url name',
+                        ),
+                        'validators' => \Admin\Module::getValidatorConfig('blocks.name')
+                    ),
                     array(            
                         'name' => 'url',
                         'type' => 'Zend\Form\Element\Url',

@@ -125,7 +125,7 @@ class ProductCategories
         if (!empty($rows)) {
             $level++;
             foreach ($rows as $i => $row) {                
-                $rows[$i]['sub'] = self::getSubCategories($categories, $lastLevel, $row['category_id'], $level);
+                $rows[$i]['sub'] = self::getSubCategories($categories, $lastLevel, $row['category_id'], $level, $hasPrefixName);
                 if (empty($rows[$i]['sub'])) {
                     $lastLevel[] = $row['category_id'];
                 }
@@ -144,10 +144,12 @@ class ProductCategories
          return null;  
     }
     
-    public static function findAll($categoryId)
+    public static function findAll($categories, $categoryId)
     {
         $result = array();
-        $categories = self::getAll(0, false); 
+        if (empty($categories)) {
+            $categories = self::getAll(0, false); 
+        }
         $find = self::find($categories, $categoryId); 
         if (!empty($find)) {
             $result[] = $find;

@@ -39,9 +39,8 @@ class Products extends AbstractModel {
         'image_id',
         'sort',
         'priority',
-        'featured',
-        'latest_arrival',
-        'top_seller',
+        'default_color_id',
+        'default_size_id',
     );
     
     protected static $primaryKey = 'product_id';
@@ -443,8 +442,9 @@ class Products extends AbstractModel {
                 }                
             }            
         } else {
+            $select->order(static::$tableName . '.priority DESC');
             $select->order(static::$tableName . '.updated DESC');
-        } 
+        }
         $select->group('product_id');        
         $selectString = $sql->getSqlStringForSqlObject($select);        
         return array(
@@ -455,7 +455,7 @@ class Products extends AbstractModel {
     }
     
     public function getFeList($param)
-    {
+    {  
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
@@ -471,7 +471,17 @@ class Products extends AbstractModel {
             'priority',
         );
         $select = $sql->select()
-            ->from(static::$tableName)                         
+            ->from(static::$tableName)   
+            ->join(
+                'product_locales', 
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(
+                    'name', 
+                    'short',
+                    'meta_keyword',
+                    'meta_description',
+                )
+            )
             ->join(  
                 array(
                     'product_has_sizes' => 
@@ -501,17 +511,7 @@ class Products extends AbstractModel {
                     'brand_name' => 'name'
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
-            ->join(
-                'product_locales', 
-                static::$tableName . '.product_id = product_locales.product_id',
-                array(
-                    'name', 
-                    'short',
-                    'meta_keyword',
-                    'meta_description',
-                )
-            )
+            )            
             ->join(
                 'product_images', 
                 static::$tableName . '.image_id = product_images.image_id',
@@ -537,7 +537,20 @@ class Products extends AbstractModel {
             );
             $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
             $select->where('product_has_fields.active = 1');
-        }        
+        } elseif (!empty($param['option_value'])) {   
+            if (is_array($param['option_value'])) {
+                $param['option_value'] = implode(',', $param['option_value']);
+            }
+            $select->join(
+                'product_has_fields', 
+                static::$tableName . '.product_id = product_has_fields.product_id',
+                array(
+                    'field_id'                   
+                )
+            );
+            $select->where(new Expression("LOCATE('[{$param['option_value']}]', product_has_fields.value_search) > 0"));
+            $select->where('product_has_fields.active = 1');
+        }
         $select->columns($columns);  
         if (!empty($param['price_from'])) {
             $param['price_from'] = db_float($param['price_from']);
@@ -599,7 +612,122 @@ class Products extends AbstractModel {
         }
         $select->group('product_id');        
         $selectString = $sql->getSqlStringForSqlObject($select);        
+        
+        if (!empty($param['category_id'])) {
+            $categoryHasField = new ProductCategoryHasFields;
+            $field = $categoryHasField->getAll(array(
+                'website_id' => $param['website_id'],
+                'category_id' => $param['category_id'],
+                'allow_filter' => 1,
+            ));
+            $field = Arr::keyValues($field, 'field_id');     
+        }      
+        
+        // get all brand_id, brand_name, product_id of a category
+        $select2 = $sql->select()
+            ->columns(array(                
+                'product_id',            
+                'brand_id', 
+            ))
+            ->from(static::$tableName) 
+            ->join(
+                array(
+                    'brand_locales' => 
+                    $sql->select()
+                        ->from('brand_locales')                        
+                        ->where("locale = ". self::quote($param['locale']))
+                ),
+                static::$tableName . '.brand_id = brand_locales.brand_id',
+                array(
+                    'brand_name' => 'name'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(
+                'product_has_categories', 
+                static::$tableName . '.product_id = product_has_categories.product_id',
+                array(
+                    'category_id'
+                )
+            )
+            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']))            
+            ->where(static::$tableName . '.active = 1')           
+            ->where(new Expression(
+                "product_has_categories.category_id IN ({$param['category_id']})"
+            ));
+                
+        $columnData = static::column(
+            $sql->getSqlStringForSqlObject($select2),
+            'brand_id,brand_name,product_id'
+        );
+        // end: get all brand_id, brand_name, product_id of a category
+        
+        $brands = array();
+        if (!empty($columnData['brand_id'])) {
+            for ($i = 0; $i < count($columnData['brand_id']); $i++) {
+                $brands[] = array(
+                    'brand_id' => $columnData['brand_id'][$i],
+                    'brand_name' => $columnData['brand_name'][$i]
+                );
+            }
+        }
+        if (!empty($columnData['product_id'])) {
+            $hasField = new ProductHasFields;
+            $fieldData = $hasField->getAll(array(
+                'website_id' => $param['website_id'],
+                'product_id' => $columnData['product_id']
+            ));
+            $attributes = array();
+            if (!empty($fieldData)) { 
+                foreach ($fieldData as $row) {
+                    if (!isset($field[$row['field_id']])) {
+                        continue;
+                    }
+                    if (!isset($attributes[$row['field_id']])) {
+                        $attributes[$row['field_id']] = array(
+                            'name' => $row['name'],
+                            'value' => array()
+                        );
+                    }
+                    if (!empty($row['value'])) {
+                        $arrayValue = explode(',', $row['value']);
+                        foreach ($arrayValue as $value) {
+                            $value = trim($value);
+                            if (!in_array($value, $attributes[$row['field_id']]['value'])) {
+                                $attributes[$row['field_id']]['value'][] = $value;
+                            }
+                        }      
+                    }      
+                    if (!empty($row['value_id'])) {
+                        $arrayValueId = explode(',', $row['value_id']);
+                        foreach ($arrayValueId as $valueId) {
+                            $value = !empty($field[$row['field_id']]['options']['value_options'][$valueId]) 
+                                    ? $field[$row['field_id']]['options']['value_options'][$valueId] : '';                       
+                            if (!empty($value) && !in_array($value, $attributes[$row['field_id']]['value'])) {
+                                $attributes[$row['field_id']]['value'][] = $value;
+                            }                     
+                        }
+                    } 
+                }
+                $attributeFilter = array();
+                foreach ($attributes as $fieldId => $attribute) {
+                    if (count($attribute['value']) > 1) {
+                        sort($attribute['value']);
+                        $attributeFilter[$fieldId] = array(
+                            'type' => $field[$fieldId]['type'],
+                            'name' => $attribute['name'],
+                            'value' => $attribute['value']
+                        );
+                    }
+                } 
+                $attributes = $attributeFilter;
+            }
+        }
         return array(
+            'filter' => array(
+                'brands' => $brands,
+                'attributes' => $attributes,
+            ),
             'count' => static::count($selectString),
             'limit' => $param['limit'],
             'data' => static::toArray(static::selectQuery($selectString)), 
@@ -699,7 +827,8 @@ class Products extends AbstractModel {
                 'price',
                 'original_price',
                 'sort',
-                'image_id'
+                'image_id',
+                'priority'
             ))
             ->join(               
                 array(
@@ -763,13 +892,13 @@ class Products extends AbstractModel {
             $select->where(static::$tableName . '._id IN ('. $param['_id'] . ')');  
         }
         if (!empty($param['sort'])) {
-            preg_match("/(name|price|sort)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(name|price|priority)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
                         $select->order("product_locales.{$match[1]} " . $match[2]);
                         break;
-                    case 'sort':  
+                    case 'priority':  
                         if (isset($sortTable)) {
                             $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);
                             break;
@@ -780,8 +909,9 @@ class Products extends AbstractModel {
                 }                
             }            
         } else {
-            $select->order(new Expression('RAND()')); 
-        } 
+            $select->order(static::$tableName . '.priority DESC'); 
+            $select->order(static::$tableName . '.updated DESC'); 
+        }
         if (!empty($param['limit'])) {
             $select->limit($param['limit']);            
         }
@@ -810,15 +940,7 @@ class Products extends AbstractModel {
         }
         $_id = mongo_id();  // products._id        
         $values = array(
-            '_id' => $_id,            
-            'priority' => 
-                self::max(array(
-                    'table' => 'products',
-                    'field' => 'priority',
-                    'where' => array(
-                        'website_id' => $param['website_id']
-                    )
-                )) + 1,            
+            '_id' => $_id,         
             'website_id' => $param['website_id'],
         );
         if (isset($param['sort'])) {
@@ -862,8 +984,7 @@ class Products extends AbstractModel {
         }  
         if (isset($param['provider_id'])) {
             $values['provider_id'] = $param['provider_id'];
-        }
-        
+        }        
         $imagesModel = new Images();        
         if ($_FILES) {
             $uploadResult = Util::uploadImage();
@@ -878,12 +999,26 @@ class Products extends AbstractModel {
                 'src' => 'products',
                 'src_id' => 0,
                 'url_image' => $mainImageUrl,
+                'url_image_source' => !empty($param['url_image']) ? $param['url_image'] : '',
                 'is_main' => 1,
-            )); 
+            ));
             if (isset($param['add_image_to_content'])) {
-                $param['content'] .= "<center><p><img style=\"width:80%\" src=\"{$mainImageUrl}\"/></p></center>";
+                $param['content'] .= "<center><p><img src=\"{$mainImageUrl}\"/></p></center>";
             }
         }
+        
+        // for batch
+        if (isset($param['brand_name'])) {
+            $brandModel = new Brands;
+            $brandModel->add(
+                array(
+                    'name' => $param['brand_name'],              
+                    'website_id' => $param['website_id'],
+                ),
+                $values['brand_id']    
+            );           
+        }
+            
         if ($id = self::insert($values)) { 
             
             if (!empty($values['image_id'])) {                
@@ -892,23 +1027,24 @@ class Products extends AbstractModel {
                     'src_id' => $id,
                     'id' => $values['image_id']
                 ));
-            } 
+            }
             if (isset($param['images'])) {
-                foreach ($param['images'] as $imageUrl) {
-                    if ($param['url_image'] != $imageUrl) {
-                        $imageUrl = Util::uploadImageFromUrl($imageUrl);
+                foreach ($param['images'] as $sourceImageUrl) {
+                    if ($param['url_image'] != $sourceImageUrl) {
+                        $imageUrl = Util::uploadImageFromUrl($sourceImageUrl);
                         $imagesModel->add(array(
                             'src' => 'products',
                             'src_id' => $id,
                             'url_image' => $imageUrl,
+                            'url_image_source' => $sourceImageUrl,
                             'is_main' => 0,
-                        )); 
+                        ));
                         if (isset($param['add_image_to_content'])) {
-                            $param['content'] .= "<center><p><img style=\"width:80%\" src=\"{$imageUrl}\"/></p></center>";
+                            $param['content'] .= "<center><p><img src=\"{$imageUrl}\"/></p></center>";
                         }
-                    }                    
+                    }                  
                 }
-            }  
+            } 
             
             $localeValues = array(
                 'product_id' => $id,
@@ -940,8 +1076,8 @@ class Products extends AbstractModel {
                 ));
             }
             
-            $productHascategoriesModel = new ProductHasCategories();
-            $productHascategoriesModel->addUpdate(
+            $hasCategoryModel = new ProductHasCategories();
+            $hasCategoryModel->addUpdate(
                 array(
                     'product_id' => $id,
                     'category_id' => $param['category_id']
@@ -949,8 +1085,8 @@ class Products extends AbstractModel {
             );
             
             if (isset($param['size_id'])) {
-                $productHasSizesModel = new ProductHasSizes();
-                $productHasSizesModel->addUpdate(
+                $hasSizeModel = new ProductHasSizes();
+                $hasSizeModel->addUpdate(
                     array(
                         'product_id' => $id,
                         'size_id' => $param['size_id']
@@ -959,14 +1095,67 @@ class Products extends AbstractModel {
             }   
             
             if (isset($param['color_id'])) {
-                $productHasColorsModel = new ProductHasColors();
-                $productHasColorsModel->addUpdate(
+                $hasColorModel = new ProductHasColors();
+                $hasColorModel->addUpdate(
                     array(
                         'product_id' => $id,
                         'color_id' => $param['color_id']
                     )
                 );
             }    
+            
+            if (isset($param['import_attributes'])) {        
+                /*
+                 * $param['import_attributes'] = array(
+                 *      array(
+                 *          name => ?,
+                 *          value => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasFieldModel = new ProductHasFields;
+                $hasFieldModel->import(array(
+                    'attributes' => $param['import_attributes'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));           
+            }
+            
+            if (isset($param['import_colors'])) {        
+                /*
+                 * $param['import_colors'] = array(
+                 *      array(
+                 *          name => ?,
+                 *          url_image => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasColorModel = new ProductHasColors;
+                $hasColorModel->import(array(
+                    'colors' => $param['import_colors'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));            
+            }
+            
+            if (isset($param['import_sizes'])) {        
+                /*
+                 * $param['import_sizes'] = array(
+                 *      array(
+                 *          name => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasSizeModel = new ProductHasSizes;
+                $hasSizeModel->import(array(
+                    'sizes' => $param['import_sizes'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));            
+            }
             
             return $_id;
         }        
@@ -1048,7 +1237,7 @@ class Products extends AbstractModel {
                     ));
                 }
             }
-        } else {            
+        } else {   
             if (!empty($self['image_id']) && empty($param['image_id'])) {
                 $image->remove(array(
                     'id' => $self['image_id'],
@@ -1082,8 +1271,9 @@ class Products extends AbstractModel {
                     'category_id' => $param['category_id']
                 )
             );
-            $productHasSizesModel = new ProductHasSizes();
-            $productHasSizesModel->addUpdate(
+            /*
+            $hasSizeModel = new ProductHasSizes();
+            $hasSizeModel->addUpdate(
                 array(
                     'product_id' => $self['product_id'],
                     'size_id' => $param['size_id']
@@ -1096,6 +1286,8 @@ class Products extends AbstractModel {
                     'color_id' => $param['color_id']
                 )
             );
+             * 
+             */
             return true;
         } 
         return false;
@@ -1179,10 +1371,11 @@ class Products extends AbstractModel {
                 'provider_id',
                 'warranty',
                 'weight',
-                'size',
                 'made_in',                
                 'active',
-                'image_id'
+                'image_id',
+                'default_color_id',
+                'default_size_id',
             ))
             ->join(               
                 array(
@@ -1219,8 +1412,8 @@ class Products extends AbstractModel {
                     'brand_id' => $result['brand_id']
                 ));
             }
-            $productHascategoriesModel = new ProductHasCategories();
-            $result['categories'] = $productHascategoriesModel->getAll(
+            $hasCategoryModel = new ProductHasCategories();
+            $result['categories'] = $hasCategoryModel->getAll(
                 array( 
                     'product_id' => $result['product_id']
                 )
@@ -1230,8 +1423,8 @@ class Products extends AbstractModel {
                 'category_id'
             );  
             
-            $productHasSizesModel = new ProductHasSizes();
-            $result['sizes'] = $productHasSizesModel->getAll(array(
+            $hasSizeModel = new ProductHasSizes();
+            $result['sizes'] = $hasSizeModel->getAll(array(
                 'product_id' => $result['product_id']
             ));
             $result['size_id'] = Arr::field(
@@ -1239,8 +1432,8 @@ class Products extends AbstractModel {
                 'size_id'
             ); 
             
-            $productHasColorsModel = new ProductHasColors();
-            $result['colors'] = $productHasColorsModel->getAll(array(
+            $hasColorModel = new ProductHasColors();
+            $result['colors'] = $hasColorModel->getAll(array(
                 'product_id' => $result['product_id']
             ));
             $result['color_id'] = Arr::field(
@@ -1248,28 +1441,28 @@ class Products extends AbstractModel {
                 'color_id'
             );
             
-            $productCategoryHasFields = new ProductCategoryHasFields();
-            $result['attributes'] = $productCategoryHasFields->getAll(array(
+            $categoryHasFieldModel = new ProductCategoryHasFields();
+            $result['attributes'] = $categoryHasFieldModel->getAll(array(
+                'website_id' => $result['website_id'],
                 'category_id' => $result['category_id'],
                 'locale' => $param['locale'],
             ));
             
-            $productHasFieldsModel = new ProductHasFields;
-            $values = $productHasFieldsModel->getAll(array(
+            $hasFieldModel = new ProductHasFields;
+            $values = $hasFieldModel->getAll(array(
                 'product_id' => $result['product_id']                
             ));
-            
+           
             $optionId = array();
             foreach ($result['attributes'] as &$attribute) {
                 foreach ($values as $value) {
                     if ($attribute['field_id'] == $value['field_id']) {
-                        if (!empty($value['value']) || empty($value['value_id'])) {
+                        if (!empty($value['value'])) {
                             $attribute['value'] = $value['value'];
-                        } else {
-                            $attribute['value'] = is_numeric($value['value_id']) ? $value['value_id'] : explode(',', $value['value_id']);
-                        }
-                        if (!empty($attribute['value'])) {
-                            $optionId[] = $attribute['value'];
+                        } elseif (!empty($value['value_id'])) {
+                            if (isset($attribute['options']['value_options'][$value['value_id']])) {
+                                $attribute['value'] = $attribute['options']['value_options'][$value['value_id']];
+                            }                           
                         }
                     }
                 }
@@ -1341,6 +1534,13 @@ class Products extends AbstractModel {
                     $img->setAttribute('alt', $result['name']);
                 }
                 $result['content'] = $dom->saveHTML();
+            }
+            
+            if (isset($param['get_prices'])) {
+                $result['prices'] = $this->getAllPrice(array(
+                    'product_id' => $result['product_id'],
+                    'website_id' => $result['website_id'],
+                ));
             }
         }
         return $result;
@@ -1621,8 +1821,7 @@ class Products extends AbstractModel {
             ->where(new Expression(
                 "(url_ids.url IS NULL OR url_ids.url = '')"
             ));
-        $selectString = $sql->getSqlStringForSqlObject($select);
-        \Application\Lib\Log::info($selectString);
+        $selectString = $sql->getSqlStringForSqlObject($select);       
         $data = self::response(
             static::selectQuery($selectString), 
             self::RETURN_TYPE_ALL
@@ -1689,4 +1888,315 @@ class Products extends AbstractModel {
         return false;
     }
     
+    public function setPriorityAfterImported($param)
+    {   
+        $productList = $this->getAll(array(
+            'website_id' => $param['website_id'],
+            'category_id' => $param['category_id'],
+        ));
+        if (!empty($productList)) {
+            foreach ($productList as $product) {
+                $ok = $this->setPriority(array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $product['product_id']
+                ));
+                if (!$ok) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public function getPrice($param)
+    {        
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from('product_prices')  
+            ->columns(array(                
+                'website_id', 
+                'product_id', 
+                'color_id', 
+                'size_id',
+                'price',
+            ));
+        if (!empty($param['website_id'])) {            
+            $select->where('website_id = '. self::quote($param['website_id']));  
+        }
+        if (!empty($param['product_id'])) {            
+            $select->where('product_id = '. self::quote($param['product_id']));  
+        }
+        if (!empty($param['color_id'])) {            
+            $select->where('color_id = '. self::quote($param['color_id']));  
+        }
+        if (!empty($param['size_id'])) {            
+            $select->where('size_id = '. self::quote($param['size_id']));  
+        }
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ONE
+        );
+        return $result;
+    }
+    
+    public function getAllPrice($param)
+    {        
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from('product_prices')  
+            ->columns(array(                
+                'website_id', 
+                'product_id', 
+                'color_id', 
+                'size_id',
+                'price',
+                'active',
+            ))
+            ->join(  
+                array(
+                    'product_color_locales' => 
+                    $sql->select()                       
+                        ->from('product_color_locales')                        
+                        ->where("locale = ". self::quote($param['locale']))
+                ),                       
+                'product_prices.color_id = product_color_locales.color_id',
+                array(
+                    'color_name' => 'name'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(  
+                array(
+                    'product_size_locales' => 
+                    $sql->select()                       
+                        ->from('product_size_locales')                        
+                        ->where("locale = ". self::quote($param['locale']))
+                ),             
+                'product_prices.size_id = product_size_locales.size_id',
+                array(
+                    'size_name' => 'name'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            );
+        if (!empty($param['website_id'])) {            
+            $select->where('product_prices.website_id = '. self::quote($param['website_id']));  
+        }
+        if (!empty($param['product_id'])) {            
+            $select->where('product_prices.product_id = '. self::quote($param['product_id']));  
+        }        
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );
+        if (!empty($result)) {
+            foreach ($result as &$item) {
+                $item['id'] = $item['product_id'] . '_' . $item['color_id'] . '_' . $item['size_id'];
+            }
+            unset($item);
+        }
+        return $result;
+    }
+    
+    public function addPrice($param)
+    { 
+        if (empty($param['website_id'])             
+            || empty($param['product_id'])) {
+            return false;
+        }
+        $productDetail = self::find(
+            array(            
+                'where' => array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $param['product_id']
+                )
+            ),
+            self::RETURN_TYPE_ONE
+        );
+        $priceModel = new ProductPrices;
+        $param['price'] = $productDetail['price'];
+        $values = array();    
+        if (!empty($param['color_id']) && !empty($param['size_id'])) {
+            foreach ($param['color_id'] as $colorId) { 
+                if (!empty($param['size_id'])) {
+                    foreach ($param['size_id'] as $sizeId) {
+                        $values[] = array(
+                            'website_id' => $param['website_id'],
+                            'product_id' => $param['product_id'],                            
+                            'color_id' => $colorId,
+                            'size_id' => $sizeId,
+                            'price' => $param['price'],
+                            'created' => new Expression('UNIX_TIMESTAMP()'),
+                            'updated' => new Expression('UNIX_TIMESTAMP()'),
+                        );
+                    }
+                }
+            }
+        } elseif (!empty($param['color_id'])) {
+            foreach ($param['color_id'] as $colorId) { 
+                $values[] = array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $param['product_id'],                    
+                    'color_id' => $colorId,
+                    'size_id' => 0,
+                    'price' => $param['price'],
+                    'created' => new Expression('UNIX_TIMESTAMP()'),
+                    'updated' => new Expression('UNIX_TIMESTAMP()'),
+                );
+            }
+        } elseif (!empty($param['size_id'])) {
+            foreach ($param['size_id'] as $sizeId) { 
+                $values[] = array(
+                    'website_id' => $param['website_id'],
+                    'product_id' => $param['product_id'],
+                    'color_id' => 0,
+                    'size_id' => $sizeId,
+                    'price' => $param['price'],
+                    'created' => new Expression('UNIX_TIMESTAMP()'),
+                    'updated' => new Expression('UNIX_TIMESTAMP()'),
+                );
+            }
+        } else {
+            $priceModel->delete(array(
+                'where' => new Expression(
+                    "product_id = {$param['product_id']}"
+                )
+            )); 
+        }
+       
+        $hasColorModel = new ProductHasColors;
+        $hasColorModel->addUpdate(array(
+            'website_id' => $param['website_id'],
+            'product_id' => $param['product_id'],
+            'color_id' => $param['color_id'],
+            'created' => new Expression('UNIX_TIMESTAMP()'),
+            'updated' => new Expression('UNIX_TIMESTAMP()'),
+        ));                  
+        if (!empty($param['color_id'])) {
+            $priceModel->delete(array(
+                'where' => new Expression(
+                    "product_id = {$param['product_id']} AND color_id NOT IN (" . implode(',', $param['color_id']) . ")"
+                )
+            ));       
+        } else {
+            $priceModel->delete(array(
+                'where' => new Expression(
+                    "product_id = {$param['product_id']} AND color_id > 0"
+                )
+            ));
+        }
+       
+        $hasSizeModel = new ProductHasSizes;
+        $hasSizeModel->addUpdate(array(
+            'website_id' => $param['website_id'],
+            'product_id' => $param['product_id'],
+            'size_id' => $param['size_id'],
+            'created' => new Expression('UNIX_TIMESTAMP()'),
+            'updated' => new Expression('UNIX_TIMESTAMP()'),
+        )); 
+        if (!empty($param['size_id'])) {
+            $priceModel->delete(array(
+                'where' => new Expression(
+                    "product_id = {$param['product_id']} AND size_id NOT IN (" . implode(',', $param['size_id']) . ")"
+                )
+            ));       
+        } else {
+            $priceModel->delete(array(
+                'where' => new Expression(
+                    "product_id = {$param['product_id']} AND size_id > 0"
+                )
+            ));
+        }
+        
+        if (!empty($values) && $priceModel->batchInsert($values)) {
+            $this->updateDefaultColorIdAndSizeId($productDetail['product_id'], $productDetail['price']);
+            return true;
+        } elseif (!empty($values)) {
+            $this->updateDefaultColorIdAndSizeId($productDetail['product_id'], $productDetail['price']);
+        }
+        return false;
+    }
+    
+    public function updateDefaultColorIdAndSizeId($productId, $price = 0)
+    {
+        if (empty($price)) {
+            $productDetail = self::find(
+                array(            
+                    'where' => array(                       
+                        'product_id' => $param['product_id']
+                    )
+                ),
+                self::RETURN_TYPE_ONE
+            );
+            $price = !empty($productDetail['price']) ? $productDetail['price'] : 0;
+        }
+        if (empty($price)) {
+            return false;
+        }
+        $priceModel = new ProductPrices;
+        $prices = $priceModel->find(array(
+            'where' => array(
+                'product_id' => $productId
+            )
+        ));
+        if (!empty($prices)) {
+            foreach ($prices as $value) {
+                if ($value['price'] == $price) {
+                    $this->update(array(
+                        'set' => array(
+                            'default_color_id' => $value['color_id'],
+                            'default_size_id' => $value['size_id'],
+                        ),
+                        'where' => array(
+                            'product_id' => $value['product_id'],
+                        )
+                    ));
+                    break;
+                }
+            }
+        } else {
+            $this->update(array(
+                'set' => array(
+                    'default_color_id' => 0,
+                    'default_size_id' => 0,
+                 ),
+                 'where' => array(
+                      'product_id' => $productId,   
+                 )
+            ));
+        }
+        return true;  
+    } 
+    
+    public function savePrice($param)
+    {
+        $priceModel = new ProductPrices;
+        return $priceModel->savePrice($param);   
+    }             
+    
+    /**
+     * ON/OFF price
+     *     
+     * @param array $param field, value and _id 
+     * @author thailh
+     * @return boolean True if success otherwise false
+     */
+    public static function updateOnOffPrice($param) {
+        $priceModel = new ProductPrices;
+        $id = $param['_id'];
+        list($productId, $colorId, $sizeId) = explode('_', $id);
+        if (!$priceModel->update(array(
+            'set' => array('active' => $param['value']),
+            'where' => array(
+                'product_id' => $productId,
+                'color_id' => $colorId,
+                'size_id' => $sizeId,
+            ),
+        ))) {
+            return false;
+        }  
+        return true;
+    }
 }

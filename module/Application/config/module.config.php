@@ -135,7 +135,7 @@ return array(
     'upload' => array(
         'image' => array(
             'path' => './data/upload/img',
-            'url' => 'http://img.vuongquocbalo.com',
+            'url' => 'http://img.vuongquocbalo.dev',
             'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
             'extension' => array('jpeg', 'jpg', 'gif', 'png'),
             'filename_prefix' => 'balo_',
@@ -189,6 +189,10 @@ return array(
     
     'menus' => array(
         'max_images' => 1
+    ),
+    
+    'products' => array(
+        'max_images' => 10
     ),
     
     'address_name' => array(

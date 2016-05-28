@@ -383,10 +383,8 @@ class ProductCategories extends AbstractModel {
                     'meta_description',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            );
-        if (!empty($param['website_id'])) {
-            $select->where(static::$tableName . ".website_id = ". self::quote($param['website_id'])); 
-        }
+            )
+            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']));         
         if (!empty($param['_id'])) {
             $select->where(static::$tableName . "._id = ". self::quote($param['_id'])); 
         }
@@ -400,6 +398,7 @@ class ProductCategories extends AbstractModel {
         if (!empty($row)) {
             $productCategoryHasFieldsModel = new ProductCategoryHasFields();
             $row['fields'] = $productCategoryHasFieldsModel->getAll(array(
+                'website_id' => $param['website_id'],
                 'category_id' => $row['category_id'],
                 'locale' => $param['locale'],
             ));

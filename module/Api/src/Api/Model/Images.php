@@ -15,6 +15,7 @@ class Images extends AbstractModel
 		'src_id',
 		'alt_name',
 		'url_image',
+		'url_image_source',
 		'is_main',
         'created',
         'updated',
@@ -86,15 +87,125 @@ class Images extends AbstractModel
             '_id' => $param['_id'],
             'src_id' => !empty($param['src_id']) ? $param['src_id'] : 0,
             'url_image' => $param['url_image'],
-        );              
+        );         
         if (isset($param['alt_name'])) {
             $values['alt_name'] = $param['alt_name']; 
         }          
         if (isset($param['is_main'])) {
             $values['is_main'] = $param['is_main']; 
         }
+        if (isset($param['url_image_source'])) {
+            $values['url_image_source'] = $param['url_image_source']; 
+        } 
         return self::insert($values);
     }   
+    
+    public static function multiAddHasColor($param)
+    {
+        if (empty($param['src']) || empty($param['src_id'])) {
+            return false;
+        }
+        static::$tableName = self::getTableName($param);
+        if (empty(static::$tableName)) {
+            self::errorParamInvalid('src');
+            return false;
+        }
+        $productModel = new Products;
+        $hasColorModel = new ProductHasColors;
+        $currentData = json_decode($param['current'], true);        
+        if ($_FILES) {            
+            $uploadResult = Util::uploadImage();
+        }
+        $values = array();
+        for ($i = 1; $i < \Application\Module::getConfig('products.max_images'); $i++) {
+            $imageId = !empty($currentData['image_id']['url_image' . $i]) ? $currentData['image_id']['url_image' . $i] : 0;
+            if (!empty($imageId)) { 
+                if (!empty($param['remove_url_image' . $i])) { // delete
+                    self::delete(array(                        
+                        'where' => array(
+                            'src_id' => $param['src_id'],
+                            'image_id' => $imageId
+                        )
+                    )); 
+                    $hasColorModel->delete(array(
+                        'where' => array(
+                            'product_id' => $param['src_id'],
+                            'image_id' => $imageId
+                        )
+                    ));
+                } else { // update                    
+                    $set = array(
+                        'is_main' => ($param['is_main'] == 'url_image' . $i) ? 1 : 0
+                    );
+                    if (!empty($uploadResult['url_image' . $i])) {
+                        $set['url_image'] = $uploadResult['url_image' . $i];
+                    }                   
+                    self::update(array(                        
+                        'set' => $set,
+                        'where' => array(
+                            'src_id' => $param['src_id'],
+                            'image_id' => $imageId
+                        )
+                    ));
+                    if ($set['is_main'] == 1) {
+                        $productModel->update(array(                            
+                            'set' => array('image_id' => $imageId),
+                            'where' => array(
+                                'product_id' => $param['src_id']
+                            )
+                        ));
+                    }
+                    if (!empty($param['color_url_image' . $i])) {
+                        $colorId = $param['color_url_image' . $i];
+                        $values[] = array(
+                            'image_id' => $imageId,
+                            'color_id' => $colorId,
+                            'product_id' => $param['src_id'],
+                            'created' => new Expression('UNIX_TIMESTAMP()'),
+                            'updated' => new Expression('UNIX_TIMESTAMP()'),
+                        );
+                    }
+                }
+            } elseif (!empty($uploadResult['url_image' . $i])) { // new image 
+                $isMain = ($param['is_main'] == 'url_image' . $i) ? 1 : 0;
+                $imageId = self::add(array(
+                    'src' => $param['src'],
+                    'src_id' => $param['src_id'],
+                    'url_image' => $uploadResult['url_image' . $i],
+                    'is_main' => $isMain
+                ));
+                if (!empty($imageId) && $isMain == 1) {
+                    $productModel->update(array(
+                        'set' => array('image_id' => $imageId),
+                        'where' => array(
+                            'product_id' => $param['src_id']
+                        )
+                    ));
+                }                  
+                if (!empty($imageId) && !empty($param['color_url_image' . $i])) {
+                    $colorId = $param['color_url_image' . $i];
+                    $values[] = array(
+                        'image_id' => $imageId,
+                        'color_id' => $colorId,
+                        'product_id' => $param['src_id'],
+                        'created' => new Expression('UNIX_TIMESTAMP()'),
+                        'updated' => new Expression('UNIX_TIMESTAMP()'),
+                    );
+                }  
+            }
+            
+            if (!empty($values)) {
+                self::batchInsert(
+                    $values, 
+                    array('updated' => new Expression('UNIX_TIMESTAMP()')), 
+                    false, 
+                    'product_has_colors'
+                );
+            }
+        }
+        return true;        
+    }    
+    
     
     public static function multiAdd($param)
     {
@@ -132,32 +243,41 @@ class Images extends AbstractModel
                     ));
                 }
             }
-        }
+        }        
         return true;        
     }    
     
     public static function getDetail($param)
     {
-        if (empty($param['id']) || empty($param['src'])) {
+        if ((empty($param['id']) && empty($param['url_image']) && empty($param['url_image_source'])) 
+            || empty($param['src'])) {
             return false;
-        } 
+        }
         static::$tableName = self::getTableName($param);
+        $columns = array(                
+            'image_id',
+             '_id',
+             'src_id',
+             'alt_name',
+             'url_image',
+             'is_main',
+        );
+        if (in_array(static::$tableName, ['product_images'])){
+            $columns[] = 'url_image_source';
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  
-            ->columns(array(                
-               'image_id',
-                '_id',
-                'src_id',
-                'alt_name',
-                'url_image',
-                'is_main',
-            ))            
-            ->where(
-                array(
-                    static::$tableName . '.image_id' => $param['id']
-                )
-            );     
+            ->columns($columns);  
+        if (!empty($param['id'])) {           
+            $select->where(static::$tableName . '.image_id = '. self::quote($param['id']));  
+        }
+        if (!empty($param['url_image'])) {            
+            $select->where(static::$tableName . '.url_image = '. self::quote($param['url_image']));  
+        }
+        if (!empty($param['url_image_source'])) {            
+            $select->where(static::$tableName . '.url_image_source = '. self::quote($param['url_image_source']));  
+        }
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE
@@ -170,17 +290,62 @@ class Images extends AbstractModel
             return false;
         }  
         static::$tableName = self::getTableName($param);
+        $columns = array(                
+            'image_id',
+             '_id',
+             'src_id',
+             'alt_name',
+             'url_image',
+             'is_main',
+        );
+        if (in_array(static::$tableName, ['product_images'])){
+            $columns[] = 'url_image_source';
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  
-            ->columns(array(                
-               'image_id',
-                '_id',
-                'src_id',
-                'alt_name',
-                'url_image',
-                'is_main',
-            ))            
+            ->columns($columns)            
+            ->where(
+                array(
+                    static::$tableName . '.src_id' => $param['src_id'],
+                    static::$tableName . '.active' => 1
+                )
+            )
+            ->order('is_main DESC');     
+        return self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );     
+    }
+    
+    public static function getAllHasColor($param)
+    {
+        if (empty($param['src_id']) || empty($param['src'])) {
+            return false;
+        }  
+        static::$tableName = self::getTableName($param);
+        $columns = array(                
+            'image_id',
+             '_id',
+             'src_id',
+             'alt_name',
+             'image_id',
+             'url_image',
+             'is_main',
+             'url_image_source',
+        );        
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns($columns)  
+            ->join(               
+                'product_has_colors',                   
+                static::$tableName . '.image_id = product_has_colors.image_id',
+                array(
+                    'color_id'
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT 
+            )
             ->where(
                 array(
                     static::$tableName . '.src_id' => $param['src_id'],
@@ -211,10 +376,7 @@ class Images extends AbstractModel
     } 
     
     public static function updateInfo($param)
-    {
-        if (empty($param['id']) || empty($param['src'])) {
-            return false;
-        }
+    {       
         if (empty($param['src']) 
             || empty($param['id'])) {
             self::errorParamInvalid('src/id');
@@ -225,12 +387,18 @@ class Images extends AbstractModel
         if (isset($param['url_image'])) {
             $set['url_image'] = $param['url_image']; 
         }
+        if (isset($param['url_image_source'])) {
+            $set['url_image_source'] = $param['url_image_source']; 
+        }
         if (isset($param['src_id'])) {
             $set['src_id'] = $param['src_id']; 
         }
         if (isset($param['alt_name'])) {
             $set['alt_name'] = $param['alt_name']; 
-        }
+        }       
+        if (isset($param['is_main'])) {
+            $set['is_main'] = $param['is_main']; 
+        }  
         if (empty(static::$tableName) || empty($set)) {
             self::errorParamInvalid('src/set');
             return false;
@@ -240,7 +408,7 @@ class Images extends AbstractModel
                 'set' => $set,
                 'where' => array(
                     'image_id' => $param['id']
-                ),
+                )
             )
         );
     }

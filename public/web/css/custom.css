@@ -1162,7 +1162,7 @@ fieldset .form-control, fieldset .form-control:focus {
 	overflow-y: hidden;
 }
 .masonry-grid-item {
-	height: 405px;
+	height: 425px;
 }
 /*
 #grid-4 .masonry-grid-item {
@@ -1185,17 +1185,17 @@ fieldset .form-control, fieldset .form-control:focus {
     padding: 7px 7px;
 }
 .masonry-grid-item .image {
-	height: 280px;
+	height: 300px;
 	width: 100%;
 	overflow-y: hidden;
 }
 
 @media (max-width:767px) {
 	.masonry-grid-item {
-		height: 440px;
+		height: 460px;
 	}
 	.masonry-grid-item .image {
-		height: 315px;		
+		height: 335px;		
 	}
 	.navbar-nav>.user-menu .user-image {   
 		margin-top: -10px;
@@ -1970,4 +1970,43 @@ ul.step a:hover:after {
 #sidebar_products_index_form .title{
     font-size: 20px;
 	margin-top: 0px;
+}
+#sidebar_products_index_form .block {  
+	margin-bottom: 20px;
+}
+#sidebar_products_index_form .block .attributes li {  
+	float: left;
+	width: 50%;
+}
+@media screen and (device-aspect-ratio: 40/71) {
+	.pagination>li:first-child>a, .pagination>li:last-child>a, ul.pager li>a, ul.pagination li>a {    
+		height: 31px;
+		width: 31px;   
+		line-height: 30px;
+	}
+}
+@media screen and (device-aspect-ratio: 375/667) {
+	.pagination>li:first-child>a, .pagination>li:last-child>a, ul.pager li>a, ul.pagination li>a {    
+		height: 36px;
+		width: 36px;   
+		line-height: 35px;
+	}
+}
+#detailForm  ul li {
+    float: left;
+}
+#detailForm   ul li  img {
+    width: 37px;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+#detailForm   ul li  img.active {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+.body-mobile .tab-more a {
+	border: 0px;
+}
+.body-mobile .nav-tabs .tab-more {   
+    padding-top: 3px;
 }

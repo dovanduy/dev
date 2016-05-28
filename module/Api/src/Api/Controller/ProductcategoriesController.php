@@ -113,4 +113,12 @@ class ProductcategoriesController extends AppController {
         );
     }
     
+    public function allowfilterfieldAction() 
+    {
+        return \Api\Bus\ProductCategories\AllowFilterField::getInstance()->execute(
+            $this->getServiceLocator()->get('ProductCategoryHasFields'),
+            $this->getParams()
+        );
+    }
+    
 }

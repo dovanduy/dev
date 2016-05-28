@@ -16,6 +16,7 @@ class Blocks extends AbstractModel {
         'url',
         'locale',
         'name',
+        'name_url',
         'short',       
         'created',
         'updated',
@@ -99,6 +100,7 @@ class Blocks extends AbstractModel {
                 array(
                     'locale', 
                     'name', 
+                    'name_url', 
                     'short',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
@@ -135,6 +137,9 @@ class Blocks extends AbstractModel {
             );
             if (isset($param['name'])) {
                 $localeValues['name'] = $param['name'];
+            } 
+            if (isset($param['name_url'])) {
+                $localeValues['name_url'] = $param['name_url'];
             } 
             if (isset($param['short'])) {
                 $localeValues['short'] = $param['short'];
@@ -201,6 +206,9 @@ class Blocks extends AbstractModel {
         if (isset($param['name'])) {
             $values['name'] = $param['name'];
         } 
+        if (isset($param['name_url'])) {
+            $values['name_url'] = $param['name_url'];
+        } 
         if (isset($param['short'])) {
             $values['short'] = $param['short'];
         }        
@@ -246,6 +254,7 @@ class Blocks extends AbstractModel {
                 array(
                     'locale', 
                     'name', 
+                    'name_url', 
                     'short',                    
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    

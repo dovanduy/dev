@@ -127,32 +127,61 @@ class Products
                     'replace_lazy_image' => 1,
                 )
             );
-            if (!empty($result)) {    
+            if (!empty($result)) { 
+                $images = $result['images'];
+                if (!empty($result['colors'])) {
+                    $imageUrl = Arr::keyValue($images, 'url_image', 'image_id');
+                    foreach ($result['colors'] as $color) {
+                        if (!empty($color['url_image']) && !isset($imageUrl[$color['url_image']])) {
+                            $images[] = array(
+                                'url_image' => $color['url_image']
+                            );
+                        }
+                    }
+                }
                 Cache::set($key, $result); 
             }
-        } 
+        }
         return $result;
     }
     
     public static function getList($param)
     {       
-        if ($param['page'] == 1
-            && !empty($param['category_id'])
+        if (!empty($param['category_id'])
             && empty($param['brand_id']) 
             && empty($param['option_id']) 
+            && empty($param['option_value']) 
             && empty($param['price_from']) 
             && empty($param['price_to'])) {       
-            $key = md5(PRODUCT_LIST . WebModule::getConfig('website_id') . '_' . $param['category_id']);
+            $key = PRODUCT_LIST . '_' . $param['category_id'] . '_' . $param['page'];
             if (!($result = Cache::get($key))) {            
                 $result = Api::call('url_products_felists', $param);
                 if (!empty($result)) {               
                     Cache::set($key, $result);                
                 }
-            }       
+            }      
         } else {
             $result = Api::call('url_products_felists', $param);
         }    
         return $result;
+    }
+    
+    public static function getPrice($param)
+    {
+        if (!empty($param['product_id'])
+            && isset($param['color_id']) 
+            && isset($param['size_id'])) { 
+            $key = PRODUCT_PRICE . '_' . $param['product_id'] . '_' . $param['color_id'] . '_' . $param['size_id'];
+            if (!($result = Cache::get($key))) {            
+                $result = Api::call('url_products_price', $param);
+                $result = !empty($result['price']) ? $result['price'] : '';
+                if (!empty($result)) {
+                    Cache::set($key, $result);                
+                }
+            }
+            return $result;
+        }    
+        return '';
     }
     
 }

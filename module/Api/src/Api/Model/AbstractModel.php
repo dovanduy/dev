@@ -7,6 +7,7 @@ use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Predicate\Expression;
 use Application\Lib\Log;
+use Application\Lib\Arr;
 
 /**
  * AbstractModel
@@ -307,6 +308,44 @@ abstract class AbstractModel {
         return (int) $result['total_rows'];
     }
 
+    public static function column($sql, $columnName) {
+        $sql = trim($sql);
+        if (stripos($sql, 'SELECT') !== 0) {
+            return false;
+        }
+
+        if (stripos($sql, 'LIMIT') !== false) {
+            // Remove LIMIT from the SQL
+            $sql = preg_replace('/\sLIMIT\s+[^a-z]+/i', ' ', $sql);
+        }
+
+        if (stripos($sql, 'OFFSET') !== false) {
+            // Remove OFFSET from the SQL
+            $sql = preg_replace('/\sOFFSET\s+\d+/i', '', $sql);
+        }
+
+        // Get the total rows from the last query executed
+        $data = static::getDb()->query("SELECT {$columnName} FROM ({$sql}) AS results")
+                ->execute(); 
+        $result = array();
+        if (!empty($data)) {
+            $columns = explode(',', $columnName);
+            foreach ($data as $row) {
+                foreach ($columns as $name) { 
+                    //$name = trim($name);
+                    if (!isset($result[$name])) {
+                        $result[$name] = array();
+                    }
+                    if (!empty($row[$name]) && !in_array($row[$name], $result[$name])) {
+                        $result[$name][] = $row[$name];
+                    }
+                } 
+            }           
+        }
+        // Return the total number of rows from the query
+        return $result;
+    }
+    
     /**
 	 * Quote a value for an SQL query.
 	 *
@@ -544,7 +583,7 @@ abstract class AbstractModel {
      * @author thailh
      * @return boolean True if success otherwise false
      */
-    public static function batchInsert($data, $updates = array(), $ignore = true) {
+    public static function batchInsert($data, $updates = array(), $ignore = true, $tableName = '') {
         if (empty($data)) {
             return false;
         }
@@ -554,6 +593,9 @@ abstract class AbstractModel {
         if (!empty($ignore)) {
             $ignore = 'IGNORE';
         }        
+        if (empty($tableName)) {
+            $tableName = static::$tableName;
+        }
         $inserts = $field = array();
         $data = static::quote($data); 
         foreach ($data as $i => $row) {
@@ -567,7 +609,7 @@ abstract class AbstractModel {
             $inserts[] = "(" . implode(',', $insert) . ")";
         }
         if (!empty($inserts)) {            
-            $sql = " INSERT {$ignore} INTO " . static::$tableName . "(" . implode(",", $field) . ")";
+            $sql = " INSERT {$ignore} INTO {$tableName} (" . implode(",", $field) . ")";
             $sql .= " VALUES " . implode(",", $inserts);
             if (!empty($updates)) {
                 $updates = static::quote($updates);
@@ -597,12 +639,13 @@ abstract class AbstractModel {
             $options['table'] = static::$tableName; 
         }
         $sql = new Sql(static::getDb());        
-        $where = array();
-        foreach (static::$properties as $property) {            
-            if (isset($options['where'][$property])) {               
-                $where[$property] = $options['where'][$property];
-            }
-        }
+//        $where = array();
+//        foreach (static::$properties as $property) {            
+//            if (isset($options['where'][$property])) {               
+//                $where[$property] = $options['where'][$property];
+//            }
+//        }
+        $where = $options['where'];
         if (empty($where)) {
             static::errorParamInvalid();
             return false;

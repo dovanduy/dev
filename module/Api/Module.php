@@ -157,6 +157,9 @@ class Module {
                 'EmailLogs' => function ($sm) {
                     return new Model\EmailLogs($sm->get('db'), $sm);
                 },               
+                'ProductPrices' => function ($sm) {
+                    return new Model\ProductPrices($sm->get('db'), $sm);
+                },               
             ),
         );
     }

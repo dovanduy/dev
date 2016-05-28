@@ -12,7 +12,6 @@ namespace Admin\Controller;
 use Admin\Lib\Api;
 use Application\Model\Images;
 use Application\Model\ProductCategories;
-use Application\Model\ProductSizes;
 use Admin\Form\Product\SearchForm;
 use Admin\Form\Product\ListForm;
 use Admin\Form\Product\AddForm;
@@ -24,6 +23,8 @@ use Admin\Form\Product\AddFromLinkForm;
 use Admin\Form\Product\ListSpecialForm;
 use Admin\Form\Product\SearchSpecialForm;
 use Admin\Form\Product\AddProductForm;
+use Admin\Form\Product\ListPriceForm;
+use Admin\Form\Product\AddPriceForm;
 
 class ProductsController extends AppController
 {    
@@ -399,6 +400,7 @@ class ProductsController extends AppController
             array(
                 '_id' => $id, 
                 'locale' => $locale,
+                'get_prices' => 1
             )
         );
         // not found data
@@ -441,35 +443,24 @@ class ProductsController extends AppController
                 
             case 'images':
                 // create image form                
-                $image = Images::getAll($data['product_id'], 'products');               
+                $image = Images::getAllHasColor($data['product_id'], 'products');                
                 $form = new ImageForm();
-                $form->setAttribute('enctype','multipart/form-data')
+                $form->setAttribute('enctype', 'multipart/form-data')
+                    ->setAttribute('product_id', $data['product_id'])
+                    ->setAttribute('main', $image['main'])
                     ->setController($this)
                     ->create()
                     ->bindData($image['url_image']);
-                
+               
                 // save images form
                 if ($request->isPost()) {
-                    $post = (array) $request->getPost(); 
+                    $post = (array) $request->getPost();
                     $form->setData($post);     
-                    if ($form->isValid()) {                             
-                        $remove = array();
-                        $update = array();
-                        for ($i = 1; $i < \Admin\Module::getConfig('products.max_images'); $i++) {
-                            if (isset($post['remove']['url_image' . $i]) 
-                                && isset($image['image_id']['url_image' . $i])) {
-                                $remove[] = $image['image_id']['url_image' . $i];
-                            }
-                            if (!empty($image['url_image']['url_image' . $i]) 
-                                && !empty($_FILES['url_image' . $i]['name'])) {
-                                $update['url_image' . $i] = $image['image_id']['url_image' . $i];
-                            }
-                        }
+                    if ($form->isValid()) {                                                     
                         $post['src'] = 'products';
                         $post['src_id'] = $data['product_id'];
-                        $post['remove'] = $remove;
-                        $post['update'] = $update;
-                        Api::call('url_images_add', $post);
+                        $post['current'] = json_encode($image);
+                        Api::call('url_images_addhascolor', $post);
                         if (empty(Api::error())) {
                             $this->addSuccessMessage('Data saved successfully');
                             if (isset($post['saveAndBack']) && $backUrl) {
@@ -486,6 +477,7 @@ class ProductsController extends AppController
                 $attributes = !empty($data['attributes']) ? $data['attributes'] : array();
                 $form = new AttributeForm();
                 $form->setController($this)
+                     ->setAttribute('id', 'attributeForm')
                      ->setDataset($attributes)
                      ->create();
                 $bind = array();
@@ -508,6 +500,51 @@ class ProductsController extends AppController
                 }            
                 break;
                 
+            case 'prices':
+                
+                $addPriceForm = new AddPriceForm();
+                $addPriceForm
+                    ->setController($this)                   
+                    ->create()
+                    ->bindData(array(
+                        'color_id' => $data['color_id'],
+                        'size_id' => $data['size_id'],
+                    ));
+            
+                $form = new ListPriceForm();
+                $form->setController($this)
+                    ->setDataset($data['prices'])
+                    ->create();
+               
+                // save locale form
+                if ($request->isPost()) {
+                    $post = (array) $request->getPost(); 
+                    if (isset($post['_id']) && isset($post['value'])) {       
+                        if ($request->isXmlHttpRequest()) {
+                            Api::call(
+                                'url_products_onoffprice', 
+                                $post
+                            );
+                            echo 'OK';
+                            exit;
+                        }
+                    }
+                    
+                    $form->setData($post);
+                    if ($form->isValid()) { 
+                        $post['product_id'] = $data['product_id'];   
+                        Api::call('url_products_addprice', $post); 
+                        if (empty(Api::error())) {                            
+                            $this->addSuccessMessage('Data saved successfully');
+                            if (isset($post['saveAndBack']) && $backUrl) {
+                                return $this->redirect()->toUrl(base64_decode($backUrl));
+                            }
+                            return $this->redirect()->toUrl($request->getRequestUri());
+                        }
+                    }                    
+                }
+                break;
+            
             default:     
                 
                 // create add/edit locale form
@@ -542,6 +579,7 @@ class ProductsController extends AppController
         }
         
         return $this->getViewModel(array(
+                'addPriceForm' => isset($addPriceForm) ? $addPriceForm : null,
                 'form' => $form,
             )
         );       
@@ -652,6 +690,35 @@ class ProductsController extends AppController
                 $result['error'] = $this->getErrorMessage();
             }
             die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    /**
+     * Ajax save price
+     *
+     * @return Zend\View\Model
+     */
+    public function savepriceAction()
+    { 
+        $request = $this->getRequest();
+        $param = $this->getParams();       
+        $productId = $this->params()->fromQuery('product_id', 0);
+        if (!empty($productId) && $request->isPost() && $request->isXmlHttpRequest()) {
+            $post = (array) $request->getPost();
+            if (!empty($post['price'])) {
+                Api::call('url_products_saveprice', array(
+                    'product_id' => $productId,
+                    'price' => \Zend\Json\Encoder::encode($post['price'])
+                ));
+                if (empty(Api::error())) {                    
+                    $result['status'] = 'OK';
+                } else {
+                    $result['status'] = 'FAIL';
+                    $result['error'] = $this->getErrorMessage();
+                }
+                die(\Zend\Json\Encoder::encode($result));
+            }
         }
         exit;
     }

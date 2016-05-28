@@ -13,7 +13,7 @@ if (!function_exists('d')) {
 if (!function_exists('p')) {
 
     function p($obj, $exit = false) {
-        print_r($obj);
+        echo '<pre>' . print_r($obj, true) . '</pre>';
         if ($exit)
             exit;
     }
@@ -134,12 +134,14 @@ if (!function_exists('mk_dir')) {
 }
 
 function allowIp($ip = null) {	
-	if (empty($ip)) {
+    return 1;
+	if (isset($_SERVER["REMOTE_ADDR"]) && empty($ip)) {
 		$ip = $_SERVER["REMOTE_ADDR"];
 	}
 	$allowIp = array(
 		'127.0.0.1',
-		'10.10.8.25',		
+		'10.10.8.25',	
+		'42.112.89.165',
 		'115.78.209.220',
 		'112.213.89.30',
         '1.52.32.16'
@@ -274,11 +276,11 @@ function app_datetime_format($time = null, $onlyDate = false) {
 }
 	
 function db_int($value) {        
-    return str_replace(array(',', '.','VND',' '), '', $value); 
+    return (int) str_replace(array(',', '.','VND',' '), '', $value); 
 }
 
 function db_float($value) {        
-    return str_replace(array(',', '.','VND',' '), '', $value); 
+    return (float) str_replace(array(',', '.','VND','đ',' '), '', trim($value)); 
 }
 
 /**

@@ -26,7 +26,7 @@ class Websites
                 'get_menus' => 1,
                 'get_product_categories' => 1,
                 'get_banners' => 1,
-                'get_brand_featureds' => 1,
+                'get_brands' => 1,
                 'get_blocks' => 1,
             );
             $param['website_id'] = $websiteId;            

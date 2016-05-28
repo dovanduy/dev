@@ -15,13 +15,12 @@ class ProductColors extends AbstractModel {
         '_id',
         'sort',      
         'locale',
-        'name',
-        'price',
+        'name',       
         'short',       
         'created',
         'updated',
         'active',
-        'website_id',
+        'website_id'
     );
     
     protected static $primaryKey = 'color_id';
@@ -46,7 +45,7 @@ class ProductColors extends AbstractModel {
         }
         if (!empty($param['name'])) {
             $select->where(new Expression("product_color_locales.name LIKE '%{$param['name']}%'"));
-        }        
+        }      
         if (!empty($param['limit'])) {
             $select->limit($param['limit']);
             if (!empty($param['page'])) {
@@ -85,8 +84,7 @@ class ProductColors extends AbstractModel {
             ->from(static::$tableName)  
             ->columns(array(                
                 'color_id', 
-                'code', 
-                'price', 
+                'code',                 
                 '_id'
             ))
             ->join(               
@@ -107,14 +105,46 @@ class ProductColors extends AbstractModel {
             ->where(static::$tableName . '.website_id = ' . $param['website_id']) 
             ->where(static::$tableName . '.active = 1')     
             ->order('sort');     
-        return self::response(
+        if (!empty($param['product_id'])) {
+            $select->join(               
+                array(
+                    'product_has_colors' => 
+                    $sql->select()
+                        ->from('product_has_colors')
+                        ->where("product_id = ". self::quote($param['product_id']))
+                ),                    
+                static::$tableName . '.color_id = product_has_colors.color_id',
+                array(
+                    'image_id'                   
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->join(             
+                'product_images',                   
+                'product_has_colors.image_id = product_images.image_id',
+                array(                   
+                    'url_image',
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            );
+        }
+        $data = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
-        );        
+        );
+        return $data;
     }    
     
-    public function add($param)
+    public function add($param, &$id = 0)
     {
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['color_id'];
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // product_colors._id              
         $values = array(
             '_id' => $_id,
@@ -127,13 +157,10 @@ class ProductColors extends AbstractModel {
                         'website_id' => $param['website_id']
                     )
                 )) + 1                          
-        );        
-        if (isset($param['price'])) {
-            $values['price'] = Util::toPrice($param['price']);
-        }
+        ); 
         if (isset($param['code'])) {
             $values['code'] = $param['code'];
-        }
+        }             
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'color_id' => $id,
@@ -171,9 +198,6 @@ class ProductColors extends AbstractModel {
         }    
         if (isset($param['sort'])) {
             $set['sort'] = $param['sort'];
-        }    
-        if (isset($param['price'])) {
-            $set['price'] = Util::toPrice($param['price']);
         }
         if (self::update(
             array(
@@ -239,9 +263,8 @@ class ProductColors extends AbstractModel {
             ->columns(array(                
                 'color_id', 
                 'code', 
-                '_id',               
-                'price',
-                'sort',
+                '_id', 
+                'sort'
             ))
             ->join(               
                 array(
@@ -261,6 +284,9 @@ class ProductColors extends AbstractModel {
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
         }
+        if (!empty($param['name'])) {            
+            $select->where('product_color_locales.name = '. self::quote($param['name']));  
+        }
         if (!empty($param['color_id'])) {            
             $select->where(static::$tableName . '.color_id = '. self::quote($param['color_id']));  
         }
@@ -276,4 +302,5 @@ class ProductColors extends AbstractModel {
         parent::$properties = self::$properties;
         return parent::updateSort($param);
     }
+    
 }

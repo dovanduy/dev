@@ -58,7 +58,13 @@ class Api {
                         $param[$name] = new \CurlFile($file['tmp_name'], $file['type'], $file['name']);
                     }
                 }
-            }      
+            }   
+            foreach ($param as $key => $value) {
+                if (is_array($value)) {
+                    //$param[$key] = implode(',', $value);
+                }
+            }
+            //$param = http_build_query($param);
             $headers = array("Content-Type:multipart/form-data");
             $url = $config['base_uri'] . $url;
             $ch = curl_init();

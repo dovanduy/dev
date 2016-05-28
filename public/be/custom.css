@@ -252,9 +252,8 @@
     width: 50px;
 }
 .images .form-group {
-    margin-bottom: 15px;
-    width: 33%;
-    height: 160px;
+    margin-bottom: 10px;
+    width: 100%;   
     float: left;
 }
 .images .button-group {    
@@ -701,4 +700,8 @@ tfoot .total-money {
     margin: 8px 8px 8px 38px !important;
     overflow: hidden;
     background-color: #666;
+}
+
+#attributeForm .form-group fieldset label {
+    width: 30%;
 }

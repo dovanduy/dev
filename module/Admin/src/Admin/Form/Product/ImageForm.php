@@ -3,6 +3,7 @@
 namespace Admin\Form\Product;
 
 use Application\Form\AbstractForm;
+use Application\Model\ProductColors;
 
 /**
  * Category Image Form
@@ -31,21 +32,26 @@ class ImageForm extends AbstractForm
     * @return array Array to create elements for form
     */
     public function elements() {  
+        
+        $productId = $this->getAttribute('product_id');
+        $main = $this->getAttribute('main');
+        $colors = ProductColors::getAll(false, $productId);
         $elements = array();
         for ($i = 1; $i < \Application\Module::getConfig('products.max_images'); $i++) {
             $name = 'url_image' . $i;
             $elements[] = array(
-                'name' => $name,                
+                'name' => $name, 
+                'type' => 'Application\Form\Element\Image',
                 'attributes' => array(
-                    'id' => $name,    
-                    'type' => 'file',   
+                    'id' => $name, 
                     'required' => false,
                     'no_filters' => true,
                 ),
                 'options' => array(
-                    'label' => 'Image ' . $i,
-                    'is_image' => true, // custom
+                    'label' => 'Image ' . $i,                   
                     'allow_empty' => true, // custom
+                    'colors' => $colors, // custom
+                    'is_main' => ($name == $main ? 1 : 0), // custom
                 ),
                 'validators' => \Admin\Module::getValidatorConfig('general.image')
             );

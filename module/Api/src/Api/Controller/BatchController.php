@@ -4,6 +4,7 @@ namespace Api\Controller;
 use Application\Lib\Log;
 use Application\Lib\Util;
 use Application\Lib\Arr;
+use Application\Lib\Cache;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Console\Request as ConsoleRequest;
 use Api\Model\Products;
@@ -20,7 +21,7 @@ class BatchController extends AppController {
     public function importAction()
     {
         $request = $this->getRequest();
- 
+
         // Make sure that we are running in a console and the user has not tricked our
         // application into running this action from a public web server.
         if (!$request instanceof ConsoleRequest){
@@ -31,8 +32,8 @@ class BatchController extends AppController {
         $website = $request->getParam('website', false);
         $category = $request->getParam('category', 0);
         $verbose = $request->getParam('verbose');
-        
-        
+     
+      
         echo $this->$website($category);
         
         /*
@@ -504,13 +505,13 @@ class BatchController extends AppController {
                 $html = str_get_html($content);                 
                 foreach($html->find('h1[class=heading-title]') as $element) {                
                     if (!empty($element->innertext)) {
-                        $product['name'] = trim(strip_tags($element->innertext));
+                        $product['name'] = $this->planText($element->innertext);
                         break;
                     }
                 }
                 foreach($html->find('span[class=p-model]') as $element) {                    
                     if (!empty($element->innertext)) {                       
-                        $code = trim(strip_tags($element->innertext));
+                        $code = $this->planText($element->innertext);
                         if ($code != 'Mã hàng:') {
                             $product['code'] = $code;
                             break;
@@ -519,7 +520,7 @@ class BatchController extends AppController {
                 }
                 foreach($html->find('span[class=product-price]') as $element) {                
                     if (!empty($element->innertext)) {
-                        $product['price'] = str_replace(array('VND','.',','), '', trim(strip_tags($element->innertext)));
+                        $product['price'] = str_replace(array('VND','.',','), '', $this->planText($element->innertext));
                         break;
                     }
                 }                
@@ -527,7 +528,7 @@ class BatchController extends AppController {
                 $product['content'] = $item['content'];
                 foreach($html->find('img[id=image]') as $element) {                
                     if (!empty($element->src)) {
-                        $imageUrl = 'http:' . trim(strip_tags($element->src));
+                        $imageUrl = 'http:' . $this->planText($element->src);
                         if (empty($product['images'])) {
                             $product['url_image'] = $imageUrl;
                         }
@@ -573,6 +574,248 @@ class BatchController extends AppController {
             }    
             $count++;
         }
+    }
+    
+     public function planText($text) {  
+         return trim(strip_tags($text));
+     }
+         
+    // php index.php import products --verbose ctt 8
+    // php index.php import products --verbose ctt 17
+    // php index.php import products --verbose ctt 18
+    // php index.php import products --verbose ctt 19
+    public function ctt($category = 0) {  
+     
+        include_once getcwd() . '/include/simple_html_dom.php';        
+        $productList = array(
+            // Túi Xách Nữ
+            array(   
+                'disable' => 0,
+                'category_id' => 8,                         
+                'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=166&sortlist=product_new_desc',                               
+                'detail_url' => array(),
+                'size_id' => array(),
+                'max_images' => 10
+            ),
+            // Ba Lô Nữ
+            array(   
+                'disable' => 0,
+                'category_id' => 17,                         
+                'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=167&sortlist=product_new_desc',                               
+                'detail_url' => array(),
+                'size_id' => array(),
+                'max_images' => 10
+            ),   
+            // Túi Xách Nam
+            array(   
+                'disable' => 0,
+                'category_id' => 19,                         
+                'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=164&sortlist=product_new_desc',                               
+                'detail_url' => array(),
+                'size_id' => array(),
+                'max_images' => 10
+            ),
+            // Ba Lô Nam
+            array(   
+                'disable' => 0,
+                'category_id' => 18,                         
+                'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=165&sortlist=product_new_desc',                               
+                'detail_url' => array(),
+                'size_id' => array(),
+                'max_images' => 10
+            ), 
+        );
+        $importList = array();
+        foreach ($productList as $item) {    
+            if ($item['disable'] === 0 && $item['category_id'] == $category) {
+                $importList[] = $item;
+            }
+        }
+        
+        if (empty($importList)) {
+            echo 'List is empty!';
+            exit;
+        }
+        
+//        $productModel = $this->getServiceLocator()->get('Products');
+//        $productModel->setPriorityAfterImported(array(
+//            'website_id' => $this->_website_id,
+//            'category_id' => $category,            
+//        ));        
+//        exit;
+        
+        // get detail url list
+        foreach ($importList as &$item) {
+            $page = 1;
+            $stop = false;
+            do {
+                $content = app_file_get_contents($item['url'] . '&p=' . $page);
+                if ($content == false) {
+                    echo $item['url'] . ' Failed';
+                    continue;
+                }
+                $html = str_get_html($content);
+                foreach($html->find('a[class=product-image]') as $element) { 
+                    if (!empty($element->href)) {
+                        $detailUrl = trim($element->href); 
+                        if (!in_array($detailUrl, $item['detail_url'])) {                         
+                            $item['detail_url'][] = $detailUrl;
+                        } else {
+                            $stop = true;
+                        }
+                    }                    
+                }                
+                $page++;               
+            } while ($stop == false);
+        } 
+        unset($item);         
+        // end get detail url list
+        
+        $products = array();        
+        foreach ($importList as $item) {           
+            // get product detail                     
+            foreach ($item['detail_url'] as $url) {
+                $product = array(
+                    'category_id' => $item['category_id']
+                );                
+                $content = app_file_get_contents($url);
+                if ($content == false) {
+                    echo $url . ' Failed' . PHP_EOL;
+                    continue;
+                }
+                $content = strip_tags_content($content, '<script><style>', true);
+                $html = str_get_html($content);                 
+                foreach($html->find('div[class=product-name]') as $element) {                
+                    if (!empty($element->innertext)) {
+                        $product['name'] = $this->planText($element->innertext);
+                        break;
+                    }
+                }               
+                foreach($html->find('div[class=std]') as $element) {                
+                    if (!empty($element->innertext)) {
+                        $product['short'] = $this->planText($element->innertext);
+                        break;
+                    }
+                }               
+                foreach($html->find('div[class=overview]') as $element) {                
+                    if (!empty($element->innertext)) {
+                        $product['content'] = $element->innertext;
+                        break;
+                    }
+                }
+                foreach($html->find('span[class=price]') as $element) {                
+                    if (!empty($element->innertext)) {
+                        $product['price'] = db_float($element->innertext);
+                        break;
+                    }
+                }
+                $product['images'] = array();                 
+                foreach($html->find('img[class=img-thumb]') as $element) {  
+                    if (count($product['images']) >= $item['max_images']) {
+                        break;
+                    }
+                    if (!empty($element->src)) {                        
+                        $imageUrl = str_replace('360x420', '700x817', $this->planText($element->src));
+                        if (empty($product['url_image'])) {
+                            $product['url_image'] = $imageUrl;
+                        }
+                        if (!in_array($imageUrl, $product['images'])) {
+                            $product['images'][] = $imageUrl;
+                        }
+                    }
+                }  
+                $product['import_colors'] = array();
+                foreach($html->find('div[class=attributeconf-text attributeconf-color]') as $element) {                
+                    if (!empty($element->innertext)) {                        
+                        $subHtml = str_get_html($element->innertext);                 
+                        foreach($subHtml->find('img') as $element1) {                
+                            if (!empty($element1->src)) {
+                                $imageUrl = str_replace('360x420', '700x817', $this->planText($element1->src));
+                                $product['import_colors'][] = array(
+                                    'name' => $this->planText($element1->title),                                    
+                                    'url_image' => $this->planText($imageUrl)
+                                );                              
+                            }
+                        }
+                        break;
+                    }
+                } 
+                
+                $product['import_sizes'] = array();
+                foreach($html->find('label[class=option-size]') as $element) {                
+                    if (!empty($element->innertext)) {                        
+                        $product['import_sizes'][] = array(
+                            'name' => $this->planText($element->innertext),
+                            'short' => $this->planText($element->innertext)
+                        );
+                    }
+                }
+               
+                $product['import_attributes'] = array(); 
+                foreach($html->find('div[class=product-attribute]') as $element) {
+                    if (!empty($element->innertext)) {
+                        $subHtml = str_get_html($element->innertext);                 
+                        foreach($subHtml->find('div[class=attribute-title]') as $element1) {                
+                            if (!empty($element1->innertext)) {
+                                $attrName = $this->planText($element1->innertext);
+                                break;
+                            }
+                        }
+                        foreach($subHtml->find('div[class=attribute-text]') as $element1) {                
+                            if (!empty($element1->innertext)) {
+                                $attrValue = $this->planText($element1->innertext);
+                                break;
+                            }
+                        }                       
+                        if (!empty($attrName) && !empty($attrValue)) {
+                            switch ($attrName) {
+                                case 'Mã SP':
+                                    $product['code'] = $attrValue;
+                                    break;
+                                case 'Thương hiệu':
+                                    $product['brand_name'] = $attrValue;
+                                    break;                                   
+                                case 'Tình trạng':                              
+                                    break;                                
+                                /*
+                                case 'Màu Sắc':                                                               
+                                case 'Chất liệu':                             
+                                case 'Kiểu dáng':                            
+                                case 'Mục đích SD':                              
+                                case 'Mùa phù hợp':  
+                                 * 
+                                 */                        
+                                default:                                    
+                                    $product['import_attributes'][] = array(
+                                        'name' => $attrName,
+                                        'value' => $attrValue,
+                                    );
+                                    break;
+                            }
+                        }                       
+                    }
+                }               
+                $products[] = $product;               
+            } 
+            // end get product detail
+        }
+        $count = 1;
+        $productModel = $this->getServiceLocator()->get('Products');      
+        foreach ($products as $product) { 
+            $product['website_id'] = $this->_website_id;
+            $product['add_image_to_content'] = 1;
+            $_id = $productModel->add($product);
+            if ($_id) {  
+                echo '[' . $count . '] ' . $product['code'] . ' Done' . PHP_EOL;
+            } else {
+                echo $product['name'] . ' Failed' . PHP_EOL;
+            }
+            $count++;
+        }
+        $productModel->setPriorityAfterImported(array(
+            'website_id' => $this->_website_id,
+            'category_id' => $category,            
+        ));
     }
 
 }

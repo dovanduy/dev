@@ -89,6 +89,14 @@ class ProductsController extends AppController {
         );
     }
     
+    public function onoffpriceAction()
+    {
+        return \Api\Bus\Products\OnOffPrice::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
     public function saveattributeAction()
     {
         return \Api\Bus\Products\SaveAttribute::getInstance()->execute(
@@ -177,9 +185,33 @@ class ProductsController extends AppController {
         );
     }
     
-     public function setpriorityAction()
+    public function setpriorityAction()
     {
         return \Api\Bus\Products\SetPriority::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+
+    public function priceAction()
+    {
+        return \Api\Bus\Products\Price::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function addpriceAction()
+    {
+        return \Api\Bus\Products\AddPrice::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function savepriceAction()
+    {
+        return \Api\Bus\Products\SavePrice::getInstance()->execute(
             $this->getServiceLocator()->get('Products'),
             $this->getParams()
         );

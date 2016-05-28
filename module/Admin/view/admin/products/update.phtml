@@ -17,6 +17,7 @@
                 <?php endif ?>
                 <li class="<?php if ($tab=='images') echo "active" ?>"><a href="<?php echo $url . '?tab=images&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Photos') ?></a></li>
                 <li class="<?php if ($tab=='attributes') echo "active" ?>"><a href="<?php echo $url . '?tab=attributes&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Attribute List') ?></a></li>
+                <li class="<?php if ($tab=='prices') echo "active" ?>"><a href="<?php echo $url . '?tab=prices&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Color, Size and Price') ?></a></li>
             </ul>
             <div class="tab-content no-padding">
                 <div class="box-body">
@@ -26,11 +27,14 @@
                         echo $this->htmlForm($form);            
                         echo '</div>';
                     } elseif ($tab == 'attributes') {
-                        echo $this->htmlForm($form);            
+                        echo $this->htmlForm($form);     
+                     } elseif ($tab == 'prices') {
+                        echo $this->htmlForm($addPriceForm); 
+                        echo $this->htmlListForm($form);
                     } else {
-                        echo $this->htmlForm($form);            
+                        echo $this->htmlForm($form);       
                     }
-                ?>         
+                ?>
                 </div>
             </div>
         </div>

@@ -52,27 +52,6 @@ class UpdateForm extends AbstractForm
                     'type' => 'hidden',
                 ),
             ),
-            /*
-            array(
-                'type' => 'Application\Form\Element\Select2',
-                'name' => 'type',
-                'options' => array(
-                    'label' => 'Product type (Latest arrival/Featured/Top seller)',
-                    'value_options' => array(
-                        'latestarrival' => 'Latest arrival',
-                        'featured' => 'Featured',
-                        'topseller' => 'Top seller',
-                    )
-                ),
-                'attributes' => array(
-                    'id' => 'type',
-                    'class' => 'form-control',
-                    'multiple' => true,
-                    'allow_options' => array('latestarrival', 'featured', 'topseller'),
-                )
-            ),
-            * 
-            */
             array(
                 'type' => 'Application\Form\Element\Select2',
                 'name' => 'category_id',
@@ -87,6 +66,8 @@ class UpdateForm extends AbstractForm
                     'allow_options' => $lastLevel,
                 )
             ),
+            /*                       
+            
             array(
                 'type' => 'Application\Form\Element\Select2',
                 'name' => 'size_id',
@@ -115,6 +96,8 @@ class UpdateForm extends AbstractForm
                     'required' => false
                 )
             ),
+            * 
+            */
             array(
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'brand_id',
@@ -213,6 +196,7 @@ class UpdateForm extends AbstractForm
                     'value' => ''
                 )
             ),
+            /*
             array(            
                 'name' => 'warranty',
                 'allow_empty' => true,
@@ -252,6 +236,8 @@ class UpdateForm extends AbstractForm
                     'label' => 'Size (depth x width x height cm)',
                 )
             ),
+             * 
+             */
             array(     
                 'type' => 'Zend\Form\Element\Url',
                 'name' => 'url_video',

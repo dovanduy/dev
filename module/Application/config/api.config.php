@@ -29,8 +29,10 @@ return array(
         'url_oauth2_token' => 'oauth2/token',        
         
         'url_images_add' => 'images/add',
+        'url_images_addhascolor' => 'images/addhascolor',
         'url_images_detail' => array('images/detail', 'get'),
         'url_images_all' => array('images/all', 'get'),
+        'url_images_allhascolor' => array('images/allhascolor', 'get'),
         
 		'url_services_lists' => 'services/lists',
         'url_services_add' => 'services/add',
@@ -175,9 +177,13 @@ return array(
         'url_products_addupdatelocale' => 'products/addupdatelocale',
         'url_products_updatesort' => 'products/updatesort',
         'url_products_onoff' => 'products/onoff',
+        'url_products_onoffprice' => 'products/onoffprice',
         'url_products_saveattribute' => 'products/saveattribute',
         'url_products_search' => 'products/search',
         'url_products_setpriority' => 'products/setpriority',
+        'url_products_price' => 'products/price',
+        'url_products_addprice' => 'products/addprice',
+        'url_products_saveprice' => 'products/saveprice',
         
         'url_products_reviews_add' => 'productreviews/add',
         'url_products_reviews_lists' => 'productreviews/lists',

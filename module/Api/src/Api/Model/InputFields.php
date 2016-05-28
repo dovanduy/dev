@@ -19,6 +19,7 @@ class InputFields extends AbstractModel {
         'created',
         'updated',
         'active',
+        'allow_filter',
         'website_id',
     );
     

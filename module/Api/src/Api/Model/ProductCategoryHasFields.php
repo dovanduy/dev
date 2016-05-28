@@ -11,6 +11,9 @@ class ProductCategoryHasFields extends AbstractModel {
     protected static $properties = array(
         'field_id',        
         'category_id',
+        'allow_filter',
+        'created',
+        'updated',
     );
     
     protected static $primaryKey = array('field_id', 'category_id');
@@ -129,13 +132,21 @@ class ProductCategoryHasFields extends AbstractModel {
                 ), 
                 'input_fields.field_id = product_category_has_fields.field_id',
                 array(
+                    'allow_filter',
                     'active' => new Expression("IF(product_category_has_fields.field_id IS NULL, 0, 1)")
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
+            ->where('input_fields.website_id = ' . self::quote($param['website_id']))
             ->where('input_fields.active = 1')     
             ->order('input_fields.active DESC')
             ->order('input_fields.sort');
+        if (!empty($param['type'])) {
+            $select->where("input_fields.type = ". self::quote($param['type']));   
+        }
+        if (isset($param['allow_filter']) && $param['allow_filter'] !== '') {
+            $select->where("product_category_has_fields.allow_filter = ". self::quote($param['allow_filter']));   
+        }
         $rows = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
@@ -157,6 +168,19 @@ class ProductCategoryHasFields extends AbstractModel {
             unset($row);
         }
         return $rows;
-    } 
+    }
+    
+    public function updateAllowFilter($param) {       
+        if (!self::update(array(
+            'set' => array('allow_filter' => $param['value']),
+            'where' => array(
+                'category_id' => $param['category_id'],
+                'field_id' => $param['field_id']
+            ),
+        ))) {
+            return false;
+        }
+        return true;
+    }
     
 }

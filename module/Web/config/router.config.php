@@ -35,10 +35,10 @@ return array(
                     'type'    => 'Segment',
                     'options' => array(
                         'route' => '[/:name][/:name2][/:name3]',
-                        'constraints' => array(
+                        'constraints' => array(/*
                             'name'  => '[a-zA-Z0-9][a-zA-Z0-9_-]*',
                             'name2' => '[a-zA-Z0-9][a-zA-Z0-9_-]*',
-                            'name3' => '[a-zA-Z0-9][a-zA-Z0-9_-]*',
+                            'name3' => '[a-zA-Z0-9][a-zA-Z0-9_-]*',*/
                         ),
                         'defaults' => array(
                             'module' => 'web',

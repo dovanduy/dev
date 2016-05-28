@@ -81,6 +81,7 @@ return array(
             'htmlListForm' => 'Application\View\Helper\HtmlListForm',
             'formRow' => 'Application\Form\View\Helper\FormRow', 
             'formFile' => 'Application\Form\View\Helper\FormFile', 
+            'formImage' => 'Application\Form\View\Helper\FormImage', 
             'formLabel' => 'Application\Form\View\Helper\FormLabel', 
             'formMultiCheckbox2' => 'Application\Form\View\Helper\FormMultiCheckbox2', 
             'formElement' => 'Application\Form\View\Helper\FormElement', 

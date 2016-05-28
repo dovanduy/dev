@@ -462,12 +462,31 @@ initJs = function () {
         });
 	}
     
-	if ($('#detailForm #productSize').length > 0) {
-		 $('#detailForm #productSize').change(function(){
-			var price = $(this).find(':selected').data('price');
-			if (price != '') {
-				$('#detailForm #productPrice').html(money_format(price));			
+	if ($('#detailForm #productColor').length > 0) {
+		 $('#detailForm #productColor').change(function(){			
+			var image = $(this).find(':selected').data('image');
+			var i = 0;
+			if (image != '') {				
+				 $(".overlay-visible").each(function() {					 
+					 if ($(this).data('image') == image) {
+						var carousel = $(".owl-carousel");  
+						carousel.owlCarousel({
+						  slideSpeed : 500,
+						  navigation: false
+						});
+						carousel.trigger('owl.jumpTo', i);
+					 } 
+					 i++;	
+                });						
 			}
+			loadPrice();
+			return false;			
+		});
+	}
+	
+	if ($('#detailForm #productSize').length > 0) {
+		 $('#detailForm #productSize').change(function() {	
+			loadPrice();
 			return false;			
 		});
 	}
@@ -789,6 +808,36 @@ localeAddress = function(userId) {
         },
         success: function (response) {
             $('#address_id').html(response);
+        }
+    });
+    return false;
+};
+
+loadPrice = function(productId, colorId, sizeId) {
+	productId = 0;
+	colorId = 0;
+	sizeId = 0;
+	if ($('#productColor').length > 0) {
+		var productId = $('#productColor').find(':selected').data('product_id');
+		var colorId = $('#productColor').find(':selected').val();
+	}
+	if ($('#productSize').length > 0) {
+		var productId = $('#productSize').find(':selected').data('product_id');
+		var sizeId = $('#productSize').find(':selected').val();
+	}
+	var image = $(this).find(':selected').data('image');
+    $.ajax({
+        url: '/ajax/price',
+        type: "POST",
+        data: {
+            product_id: productId,
+            color_id: colorId,
+            size_id: sizeId
+        },
+        success: function (price) {
+			if (price) {
+				$('#detailForm #productPrice').html(price);
+			}
         }
     });
     return false;

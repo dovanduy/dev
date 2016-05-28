@@ -140,14 +140,25 @@ class Brands extends AbstractModel {
             ->where(static::$tableName . '.website_id = '. $param['website_id'])
             ->where(static::$tableName . '.active = 1')     
             ->order('sort');
+        if (isset($param['featured']) && $param['featured'] !== '') {            
+            $select->where(static::$tableName . '.featured = '. $param['featured']);  
+        }
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
         );        
     }    
     
-    public function add($param)
-    {
+    public function add($param, &$id = 0)
+    {              
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['brand_id'];
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // brands._id
         if ($_FILES) {
             $uploadResult = Util::uploadImage();
@@ -166,14 +177,8 @@ class Brands extends AbstractModel {
         }
         $values = array(
             '_id' => $_id,
-            'url_id' => empty($param['url_id']) ? $param['url_id'] : '',          
-            'sort' => self::max(array(                   
-                'field' => 'sort',
-                'where' => array(
-                    'website_id' => $param['website_id']
-                )
-            )) + 1 
-        );          
+            'url_id' => empty($param['url_id']) ? $param['url_id'] : '' 
+        );         
         if (isset($param['image_id'])) {
             $values['image_id'] = $param['image_id'];
         }
@@ -411,6 +416,9 @@ class Brands extends AbstractModel {
         }
         if (!empty($param['url_id'])) {            
             $select->where(static::$tableName . '.url_id = '. self::quote($param['url_id']));  
+        }
+        if (!empty($param['name'])) {            
+            $select->where('brand_locales.name = '. self::quote($param['name']));  
         }
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 

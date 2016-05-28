@@ -488,6 +488,14 @@ class Websites extends AbstractModel {
                 $result['brand_featureds'] = $brandModel->getAll(array(
                     'website_id' => $result['website_id'],
                     'active' => 1,
+                    'featured' => 1,
+                ));
+            }
+            if (!empty($param['get_brands'])) {
+                $brandModel = new Brands;
+                $result['brands'] = $brandModel->getAll(array(
+                    'website_id' => $result['website_id'],
+                    'active' => 1
                 ));
             }
             if (!empty($param['get_blocks'])) {
