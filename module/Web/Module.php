@@ -10,13 +10,18 @@
 namespace Web;
 
 use Zend\View\Model\ViewModel;
+use Zend\Mvc\ModuleRouteListener;
+use Zend\Mvc\MvcEvent;
+use Zend\Validator\AbstractValidator;
+use Zend\Session\SessionManager;
+use Zend\Session\Container;
+use Zend\Session\Config\SessionConfig;
+
 use Application\Lib\Log;
 use Application\Lib\Auth;
 use Application\Lib\Arr;
 use Application\Lib\Util;
-use Zend\Mvc\ModuleRouteListener;
-use Zend\Mvc\MvcEvent;
-use Zend\Validator\AbstractValidator;
+
 use Web\Module as WebModule;
 
 class RenderEventListener
@@ -55,7 +60,7 @@ class Module
      * @return void
      */
     public function onBootstrap(MvcEvent $e)
-    {
+    {        
         $translator = $e->getApplication()->getServiceManager()->get('translator');         
         $translator->setLocale('vi_VN');
         AbstractValidator::setDefaultTranslator($translator);
@@ -63,15 +68,27 @@ class Module
         $e->getApplication()->getServiceManager()
                             ->get('ViewHelperManager')
                             ->get('translate')
-                            ->setTranslator($translator);        
-     
+                            ->setTranslator($translator);
+        
+        $sessionConfig = new SessionConfig();
+        $sessionConfig->setOptions(array(
+            'remember_me_seconds' => 2419200,
+            'use_cookies' => true,
+            'cookie_httponly' => true,
+            'name' => 'web',
+        ));
+        
+        $sessionManager = new SessionManager($sessionConfig);
+        $sessionManager->start();
+        Container::setDefaultManager($sessionManager);
+    
         $eventManager = $e->getApplication()->getEventManager();
         $eventManager->attach(
             [MvcEvent::EVENT_RENDER_ERROR, MvcEvent::EVENT_RENDER], 
             new RenderEventListener()
         );
     }
-   
+    
      /**
      * Init module
      * @param  Zend\ModuleManager\ModuleManager $mm ModuleManager
@@ -152,7 +169,7 @@ class Module
         
         $AppUI = $sm->get('auth')->getIdentity();        
         $request = $e->getTarget()->getRequest();       
-        if (empty($AppUI)) {
+        if (empty($AppUI) && 1==0) {
             $headCookie = $request->getHeaders()->get('Cookie'); 
             $remember = isset($headCookie->remember) ? unserialize($headCookie->remember) : array();
             if (!empty($remember) && $sm->get('auth')->authenticate($remember['email'], $remember['password'], 'web')) { 

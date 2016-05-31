@@ -75,7 +75,7 @@ return array(
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                 
-                <p class="text-center"><a href="/signup"><img src="/web/images/signup.png"/></a></p> 
+                <!--<p class="text-center"><a href="/signup"><img src="/web/images/signup.png"/></a></p> -->
             </div>              
         </div>
     ',
@@ -110,7 +110,7 @@ return array(
             <p>✓ Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
         </div>
     ',
-    
+    /*
     'vouchers' => array(
         'register' => array(
             'amount' => 10,
@@ -119,8 +119,8 @@ return array(
             'send_email' => 1,
         )
     ),
-    
-    'chat' => '<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
+    */
+    //'chat' => '<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
     'ga' => ""
     
 );

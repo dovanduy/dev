@@ -1,3 +1,5 @@
+#php_value session.name "web" 
+ 
 RewriteEngine On
 
 RewriteBase /

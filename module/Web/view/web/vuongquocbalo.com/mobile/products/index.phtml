@@ -14,7 +14,7 @@
             <div class="col-md-9">
                 <form id="sidebar_products_index_form">                
                     <div class="sidebar">
-                        <?php if (!empty($subCategories)): ?>
+                        <?php if (!empty($filter['categories'])): ?>
                         <div class="panel-group collapse-style-3">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -25,20 +25,20 @@
                                     </h4>
                                 </div>
                                 <div id="collapse_filter_category" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">                                                                                    
-                                    <nav class="app-category">
-                                        <ul itemscope itemtype="http://schema.org/Product" class="nav nav-show">
-                                            <?php foreach ($subCategories as $category) : ?>  
-                                            <?php if (!empty($category['sub'])) : ?>  
+                                    <nav class="app-category attributes">
+                                        <ul itemscope itemtype="http://schema.org/Product" class="nav">
+                                            <?php foreach ($filter['categories'] as $category):?>  
+                                            <?php if (!empty($category['sub'])):?>  
                                                 <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
                                                     <a itemprop="name" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
                                                         <?php echo $category['name'] ?>
                                                     </a>
                                                     <ul class="dropdown-menu">
-                                                        <?php foreach ($category['sub'] as $subCategory1) : ?> 
-                                                        <?php if (!empty($subCategory1['sub'])) : ?>  
+                                                        <?php foreach ($category['sub'] as $subCategory1):?> 
+                                                        <?php if (!empty($subCategory1['sub'])):?>  
                                                         <li class="divider"></li>
                                                         <li class="dropdown-header"><?php echo $subCategory1['name'] ?></li>
-                                                        <?php foreach ($subCategory1['sub'] as $subCategory2) : ?>
+                                                        <?php foreach ($subCategory1['sub'] as $subCategory2):?>
                                                         <li class="sub-category2">
                                                             <a itemprop="name" href="<?php echo $this->url('web/products', array('name' => name_2_url($subCategory2['name'])))?>">
                                                                 <?php echo $subCategory2['name'] ?>
@@ -68,45 +68,9 @@
                                 </div>
                             </div>
                         </div>
-                        <?php endif ?>
+                        <?php endif ?>            
 
-                        <?php if (empty($subCategories) && !empty($filter['category'])): ?>
-                        <div class="panel-group collapse-style-3">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 itemprop="name" class="panel-title">
-                                        <a itemprop="url" data-toggle="collapse" href="#collapse_filter_category" aria-expanded="false" class="collapsed">
-                                            <span itemprop="name"><?php echo $this->translate('Catalog') ?></span>
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapse_filter_category" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">                                                                                    
-                                    <nav>
-                                        <ul itemscope itemtype="http://schema.org/Product" class="nav">
-                                            <?php foreach ($filter['category'] as $category) : ?>  
-                                            <li <?php if ($categoryId==$category['category_id']) echo ' class="active"'?>>
-                                                <a itemprop="name" href="
-                                                    <?php
-                                                        $routeUrl = array(
-                                                            'name' => name_2_url($category['category_name'])                                                   
-                                                        );                                                
-                                                        echo $this->url(
-                                                            'web/products', 
-                                                            $routeUrl
-                                                        )
-                                                    ?>">
-                                                    <?php echo $category['category_name'] ?>
-                                                </a>
-                                            </li>
-                                            <?php endforeach ?>                                
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endif ?>                
-
-                        <?php if (!empty($filter['brand'])): ?>
+                        <?php if (!empty($filter['brands'])): ?>
                         <div class="panel-group collapse-style-3">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -117,11 +81,11 @@
                                     </h4>
                                 </div>
                                 <div id="collapse_filter_brand" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">                                                                                    
-                                    <nav>
-                                        <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
-                                            <?php foreach ($filter['brand'] as $brand) : ?> 
+                                    <nav class="attributes">
+                                        <ul itemscope itemtype="http://schema.org/Brand" class="nav">
+                                            <?php foreach ($filter['brands'] as $brand):?> 
                                             <?php if (!empty($brand['brand_name'])): ?>
-                                            <li<?php if ($brandId==$brand['brand_id']) echo ' class="active"'?>>
+                                            <li<?php if ($detailBrand['brand_id']==$brand['brand_id']) echo ' class="active"'?>>
                                                 <a href="<?php 
                                                     $routerParam = array(
                                                         'name2' => name_2_url($brand['brand_name'])
@@ -145,38 +109,39 @@
                         </div>
                         <?php endif ?>
                         
-                        <?php if (!empty($filter['fields'])): ?>
-                        <?php foreach ($filter['fields'] as $field) : ?> 
+                        <?php if (!empty($filter['attributes'])): ?>
+                        <?php foreach ($filter['attributes'] as $attribute):?> 
                         <div class="panel-group collapse-style-3">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 itemprop="name" class="panel-title">
-                                        <a itemprop="url" data-toggle="collapse" href="#collapse_filter_attr_<?php echo $field['field_id'] ?>" aria-expanded="false" class="collapsed">
-                                            <span itemprop="name"><?php echo $field['name'] ?></span>
+                                        <a itemprop="url" data-toggle="collapse" href="#collapse_filter_attr_<?php echo md5($attribute['name']) ?>" aria-expanded="false" class="collapsed">
+                                            <span itemprop="name"><?php echo $attribute['name'] ?></span>
                                         </a>
                                     </h4>
                                 </div>
-                                <div id="collapse_filter_attr_<?php echo $field['field_id'] ?>" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">                                                            
-                                    <nav>
+                                <div id="collapse_filter_attr_<?php echo md5($attribute['name']) ?>" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">                                                            
+                                    <nav class="attributes">
                                         <ul itemscope itemtype="http://schema.org/Brand" class="nav ">
-                                            <?php foreach ($field['options']['value_options'] as $optId => $optionName): ?> 
-                                            <?php if (!empty($optionName)): ?>
-                                            <li<?php if ($optionId==$optId) echo ' class="active"'?>>
+                                            <?php foreach ($attribute['value'] as $value): ?>                                            
+                                            <li<?php if ($optionId==$value || $optionValue == name_2_url($attribute['name'] . '-' . $value)) echo ' class="active"'?>>
                                                 <a href="<?php 
                                                     $routerParam = array(
-                                                        'name2' => name_2_url($field['name'] . '-' . $optionName)
+                                                        'name3' => name_2_url($attribute['name'] . '-' . $value)
                                                     );
                                                     if (!empty($detailCategory['name'])) {
                                                         $routerParam['name'] = name_2_url($detailCategory['name']);
+                                                    }
+                                                    if (!empty($detailBrand['brand_name'])) {
+                                                        $routerParam['name2'] = name_2_url($detailBrand['brand_name']);
                                                     }
                                                     echo $this->url(
                                                         'web/products', 
                                                         $routerParam
                                                     )?>">
-                                                    <span itemprop="name"><?php echo $optionName ?></span>
+                                                    <span itemprop="name"><?php echo $value ?></span>
                                                 </a>
-                                            </li>
-                                            <?php endif ?>                                
+                                            </li>                            
                                             <?php endforeach ?>                                
                                         </ul>
                                     </nav>

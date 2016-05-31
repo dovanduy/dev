@@ -10,6 +10,8 @@
 namespace Web\Controller;
 
 use Web\Lib\Api;
+use Web\Model\Products;
+use Web\Module as WebModule;
 
 class SearchController extends AppController
 {    
@@ -31,10 +33,10 @@ class SearchController extends AppController
     {
         $param = $this->getParams(array(            
             'page' => 1,
-            'limit' => 20, 
+            'limit' => 20,
             'keyword' => $this->params()->fromRoute('q', '')
-        ));        
-        $result = Api::call('url_products_search', $param);         
+        ));
+        $result = Products::search($param);         
         $id = 'web_index_index';
         $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);
         if (!empty($page)) {

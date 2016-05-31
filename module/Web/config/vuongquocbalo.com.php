@@ -75,7 +75,7 @@ return array(
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                 
-                <p class="text-center"><a href="/signup"><img src="/web/images/signup.png"/></a></p> 
+                <!--<p class="text-center"><a href="/signup"><img src="/web/images/signup.png"/></a></p> -->
             </div>              
         </div>
     ',
@@ -95,7 +95,7 @@ return array(
                 <div class="title">Hướng Dẫn Mua Hàng</div>
                 <p>✓ Đặt hàng trực tiếp tại website, xem <a target="_blank" href="http://vuongquocbalo.com/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></p>
                 <p>✓ Đặt hàng trực tiếp qua chat trên website</p>
-                <p><i class="fa fa-mobile"></i> <strong style="color:#D4232B">098 65 60 943 - 098 65 60 997</strong></p>
+                <p><i class="fa fa-mobile"></i> <strong style="color:#D4232B">098 65 60 997 - 098 65 60 943</strong></p>
                 <p><i class="fa fa-envelope"></i> <a itemprop="email" href="mailto:vuongquocbalo@gmail.com">vuongquocbalo@gmail.com</a></p>           
                 <p><i class="fa fa-skype"></i> <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>                                           
             </div>
@@ -106,11 +106,11 @@ return array(
         <div class="payment-account">
             <p>✓ Thông tin ngân hàng chuyển khoản:</p>
             <p>✓ Sau khi đặt hàng thành công, vui lòng chuyển số tiền phải thanh toán vào tài khoản ngân hàng của chúng tôi, ngay sau khi nhận được tiền, chúng tôi sẽ xác nhận với bạn bằng email và điện thoại</p>
-            <p>✓ Hotline: <strong style="color:#D4232B">098 65 60 943  - 098 65 60 997</strong></p>
+            <p>✓ Hotline: <strong style="color:#D4232B">098 65 60 997 - 098 65 60 943</strong></p>
             <p>✓ Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
         </div>
     ',
-    
+    /*
     'vouchers' => array(
         'register' => array(
             'amount' => 10,
@@ -119,7 +119,7 @@ return array(
             'send_email' => 1,
         )
     ),
-    
+    */
     'chat' => '<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
     'ga' => "<script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

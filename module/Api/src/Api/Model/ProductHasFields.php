@@ -118,8 +118,11 @@ class ProductHasFields extends AbstractModel {
                 ), $fieldId
             );
             if (!empty($fieldId)) {
-                $arrayValue = array_map('name_2_url', explode(',', $attribute['value']));
-                $searchValue = '[' . implode('],[', $arrayValue) . ']';     
+                $arrayValue = explode(',', $attribute['value']);
+                foreach ($arrayValue as $k => $v) {
+                    $arrayValue[$k] = name_2_url($attribute['name'] . '-' . $v);
+                }               
+                $searchValue = '[' . implode('],[', $arrayValue) . ']';                  
                 $values[] = array(
                     'field_id' => $fieldId,
                     'product_id' => $param['product_id'],
@@ -209,7 +212,11 @@ class ProductHasFields extends AbstractModel {
         ));
         foreach ($data as $row) {
             if (!empty($row['value'])) {
-                $arrayValue = array_map('name_2_url', explode(',', $row['value']));
+                $arrayValue = explode(',', $row['value']);
+                foreach ($arrayValue as $k => $v) {
+                    $arrayValue[$k] = name_2_url($row['name'] . '-' . $v);
+                }
+                //$arrayValue = array_map('name_2_url', explode(',', $row['value']));
                 $searchValue = '[' . implode('],[', $arrayValue) . ']';
                 $this->update(array(
                     'set' => array(

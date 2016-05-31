@@ -7,6 +7,7 @@ use Application\Lib\Arr;
 use Application\Lib\Cache;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Console\Request as ConsoleRequest;
+use Zend\Db\Sql\Predicate\Expression;
 use Api\Model\Products;
 use Api\Model\InputOptions;
 
@@ -816,6 +817,113 @@ class BatchController extends AppController {
             'website_id' => $this->_website_id,
             'category_id' => $category,            
         ));
+    }
+    
+     // php index.php import products --verbose saleoff 8
+     // php index.php import products --verbose saleoff 17
+     // php index.php import products --verbose saleoff 18
+     // php index.php import products --verbose saleoff 19
+     // php index.php import products --verbose saleoff 4
+     // php index.php import products --verbose saleoff 3
+    public function saleoff($category = 0)
+    { 
+        $param['website_id'] = $this->_website_id;
+        $param['category_id'] = $category;
+        $param['sort'] = 'created-asc';
+        $productModel = $this->getServiceLocator()->get('Products');
+        $discount = [
+            3 => 15000,
+            7 => 20000,
+            4 => 10000,
+            8 => 5,
+            17 => 5,
+            18 => 5,
+            19 => 5,
+        ];
+        $productList = $productModel->getAll($param);
+        if (!empty($productList)) {
+            foreach ($productList as $product) {                
+                if (!empty($product['category_id']) 
+                    && is_numeric($product['category_id'])
+                    && !empty($discount[$product['category_id']])) {                   
+                    if ($discount[$product['category_id']] > 100) {
+                        $product['discount_percent'] = ceil(($discount[$product['category_id']]/$product['original_price'])*100);                        
+                    } else {                        
+                        $product['discount_percent'] = $discount[$product['category_id']];
+                    }
+                    $product['price'] = $product['original_price'] - (($product['original_price']*$product['discount_percent'])/100);
+                    $ok = $productModel->update([
+                        'table' => 'products',               
+                        'set' => [
+                            'price' => round($product['price'], -3), 
+                            'discount_percent' => $product['discount_percent']
+                        ],
+                        'where' => [
+                            'product_id' => $product['product_id'],
+                            'website_id' => $param['website_id']
+                        ]
+                    ]);
+                    if ($ok) {
+                        $productModel->updateDefaultColorIdAndSizeId($product['product_id'], $product['original_price']);
+                    }
+                    echo ($ok ? "{$product['code']} OK" : "{$product['code']} FAIL") . PHP_EOL;
+                }
+            }
+        }
+        die('Done');
+    }
+    
+     // php index.php import products --verbose updatecode 3
+     // php index.php import products --verbose updatecode 4
+     // php index.php import products --verbose updatecode 7
+     // php index.php import products --verbose updatecode 8
+    public function updatecode($category = 0)
+    { 
+        $param['website_id'] = $this->_website_id;
+        $param['category_id'] = $category;
+        $param['sort'] = 'created-asc';
+        $productModel = $this->getServiceLocator()->get('Products');        
+        $productList = $productModel->getAll($param);
+        if (!empty($productList)) {
+            foreach ($productList as $product) {
+                if (empty($product['code'])) {
+                    continue;
+                }
+                $product['code'] = strtoupper(ltrim($product['code'], 'V'));
+                $codeSrc = strtoupper($product['code']);               
+                $newCode = 'V' . $codeSrc;                
+                $newName = preg_replace('/V+/', 'V', str_replace($codeSrc, $newCode, $product['name']));
+                $ok = $productModel->update([
+                    'table' => 'products',               
+                    'set' => [                
+                        'code_src' => $codeSrc,
+                        'code' => $newCode,                        
+                        'priority' => 0,  
+                        'original_price' => $product['price'], 
+                        'updated' => new Expression('UNIX_TIMESTAMP()')
+                    ],
+                    'where' => [
+                        'product_id' => $product['product_id'],
+                        'website_id' => $param['website_id']
+                    ]
+                ]);
+                if ($ok) {
+                    $update = array(
+                         '_id' => $product['_id'],
+                        'name' => $newName,                      
+                        'website_id' => $param['website_id'],
+                    );
+                    if (!empty($product['category_id']) && $product['category_id'] == 4) {
+                        $product['content'] = str_replace("<p>- Size lớn có kích thước 42x37 (cm)</p>
+                    <p>- Size nhỏ có kích thước 32x37 (cm)</p>", "<p>- Kích thước 32x37 (cm)</p>", $product['content']);
+                        $update['content'] = $product['content'];
+                    }                     
+                    $ok = $productModel->addUpdateLocale($update);
+                }
+                echo ($ok ? "{$codeSrc} -> {$newCode} OK" : "{$codeSrc} FAIL") . PHP_EOL;
+            }
+        }
+        die('Done');
     }
 
 }

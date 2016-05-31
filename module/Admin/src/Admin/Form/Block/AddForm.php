@@ -64,7 +64,7 @@ class AddForm extends AbstractForm
                 'attributes' => array(
                     'id' => 'name_url',
                     'type' => 'text',
-                    'required' => true,
+                    'required' => false,
                     'class' => 'form-control'
                 ),
                 'options' => array(

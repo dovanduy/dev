@@ -146,23 +146,40 @@ class Products
     }
     
     public static function getList($param)
-    {       
-        if (!empty($param['category_id'])
-            && empty($param['brand_id']) 
-            && empty($param['option_id']) 
-            && empty($param['option_value']) 
-            && empty($param['price_from']) 
-            && empty($param['price_to'])) {       
-            $key = PRODUCT_LIST . '_' . $param['category_id'] . '_' . $param['page'];
-            if (!($result = Cache::get($key))) {            
-                $result = Api::call('url_products_felists', $param);
-                if (!empty($result)) {               
-                    Cache::set($key, $result);                
-                }
-            }      
-        } else {
+    { 
+        $key = implode('_', array(
+            PRODUCT_LIST,
+            !empty($param['category_id']) ? $param['category_id'] : '',
+            !empty($param['brand_id']) ? $param['brand_id'] : '',
+            !empty($param['option_id']) ? $param['option_id'] : '',
+            !empty($param['option_value']) ? $param['option_value'] : '',
+            !empty($param['price_from']) ? $param['price_from'] : '',
+            !empty($param['price_to']) ? $param['price_to'] : '',
+            !empty($param['page']) ? $param['page'] : '1',
+        ));
+        if (!($result = Cache::get($key))) {            
             $result = Api::call('url_products_felists', $param);
-        }    
+            if (!empty($result)) {               
+                Cache::set($key, $result);                
+            }
+        } 
+        return $result;
+    }
+    
+    public static function search($param)
+    { 
+        $key = implode('_', array(
+            PRODUCT_LIST,
+            'search',
+            !empty($param['keyword']) ? $param['keyword'] : '',
+            !empty($param['page']) ? $param['page'] : '1',
+        ));
+        if (!($result = Cache::get($key))) {            
+            $result = Api::call('url_products_search', $param);
+            if (!empty($result)) {               
+                Cache::set($key, $result);                
+            }
+        } 
         return $result;
     }
     
@@ -174,8 +191,7 @@ class Products
             $key = PRODUCT_PRICE . '_' . $param['product_id'] . '_' . $param['color_id'] . '_' . $param['size_id'];
             if (!($result = Cache::get($key))) {            
                 $result = Api::call('url_products_price', $param);
-                $result = !empty($result['price']) ? $result['price'] : '';
-                if (!empty($result)) {
+                if ($result != false) {
                     Cache::set($key, $result);                
                 }
             }

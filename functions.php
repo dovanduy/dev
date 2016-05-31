@@ -11,7 +11,7 @@ if (!function_exists('d')) {
 }
 
 if (!function_exists('p')) {
-
+   
     function p($obj, $exit = false) {
         echo '<pre>' . print_r($obj, true) . '</pre>';
         if ($exit)

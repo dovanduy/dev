@@ -11,7 +11,7 @@
             <!-- ================ -->
             <div class="main col-md-12">
 
-                <div class="row">
+                <div class="row detail-images">
                     <div class="col-md-4">                        
                         <div class="tab-content clear-style">
                             <div class="tab-pane active" id="pill-1">
@@ -24,8 +24,18 @@
                                     </div>
 									<?php endforeach ?>                                
                                 </div>
-								<?php endif ?>
-                            </div>                            
+								<?php endif ?>   
+                                <?php
+                                    $discount = '';
+                                    if (!empty($data['discount_percent'])) {
+                                        $discount = "<div class=\"discount-text\">-{$data['discount_percent']}%</div>";                        
+                                    } elseif (!empty($data['discount_amount'])) {            
+                                        $amount = app_money_format($data['discount_amount']);
+                                        $discount = "<div class=\"discount-text\">-{$amount}%</div>";            
+                                    }
+                                    echo $discount;
+                                ?>
+                            </div>
                         </div>                      
                     </div>
                     <div itemscope itemtype="http://schema.org/Product" class="col-md-5">
@@ -95,8 +105,8 @@
                                         }                                    
                                     ?>
                                     </span>
-                                    <?php if (!empty($data['original_price'])):?>
-                                    <span itemprop="price" class="original-price">
+                                    <?php if ($data['price'] < $data['original_price']):?>
+                                    <span id="originalPrice" itemprop="price" class="original-price">
                                         <?php echo app_money_format($data['original_price'])?>
                                     </span>
                                     <?php endif?>
@@ -127,57 +137,58 @@
 						</form>
 					</div>
                     <div class="col-md-3">                            
-                        <?php if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))): ?>    
-                        <form method="post">
-                        <div class="form-group">                               
-                            <select                                 
-                                name="add_block_id"                                  
-                                data-url="<?php 
-                                echo $this->url(
-                                    'web/ajax', 
-                                    array(
-                                        'action' => 'addproducttoblock'
-                                    ),
-                                    array(
-                                        'query' => array('product_id' => $data['product_id'])
-                                    )
-                                )?>"
-                                data-callback="                                          
-                                   alert('Added');
-                                "                                 
-                                class="form-control ajax-change">
-                            <option value="">[Admin] <?php echo $this->translate('Added to block') ?></option>
-                            <?php foreach ($website['blocks'] as $block): ?>
-                                <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
-                            <?php endforeach ?>  
-                            </select>                                       
-                        </div>  
-                        <div class="form-group">                               
-                            <select                                 
-                                name="remove_block_id"                                  
-                                data-url="<?php 
-                                echo $this->url(
-                                    'web/ajax', 
-                                    array(
-                                        'action' => 'removeproductfromblock'
-                                    ),
-                                    array(
-                                        'query' => array('product_id' => $data['product_id'])
-                                    )
-                                )?>"
-                                data-callback="                                          
-                                   alert('Removed');
-                                "                                 
-                                class="form-control ajax-change">
-                            <option value="">[Admin] <?php echo $this->translate('Remove from block') ?></option>
-                            <?php foreach ($website['blocks'] as $block): ?>
-                                <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
-                            <?php endforeach ?>  
-                            </select>                                       
-                        </div>
-                        </form>
-                        <?php endif ?>                        
+                        <?php if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))): ?>                          
+                            <form method="post">
+                            <div class="form-group">                               
+                                <select                                 
+                                    name="add_block_id"                                  
+                                    data-url="<?php 
+                                    echo $this->url(
+                                        'web/ajax', 
+                                        array(
+                                            'action' => 'addproducttoblock'
+                                        ),
+                                        array(
+                                            'query' => array('product_id' => $data['product_id'])
+                                        )
+                                    )?>"
+                                    data-callback="                                          
+                                       alert('Added');
+                                    "                                 
+                                    class="form-control ajax-change">
+                                <option value="">[Admin] <?php echo $this->translate('Added to block') ?></option>
+                                <?php foreach ($website['blocks'] as $block): ?>
+                                    <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
+                                <?php endforeach ?>  
+                                </select>                                       
+                            </div>  
+                            <div class="form-group">                               
+                                <select                                 
+                                    name="remove_block_id"                                  
+                                    data-url="<?php 
+                                    echo $this->url(
+                                        'web/ajax', 
+                                        array(
+                                            'action' => 'removeproductfromblock'
+                                        ),
+                                        array(
+                                            'query' => array('product_id' => $data['product_id'])
+                                        )
+                                    )?>"
+                                    data-callback="                                          
+                                       alert('Removed');
+                                    "                                 
+                                    class="form-control ajax-change">
+                                <option value="">[Admin] <?php echo $this->translate('Remove from block') ?></option>
+                                <?php foreach ($website['blocks'] as $block): ?>
+                                    <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
+                                <?php endforeach ?>  
+                                </select>                                       
+                            </div>
+                            </form>
+                        <?php endif ?>                
                         <?php echo \Web\Module::getConfig('commitment_and_guide')?>
+                         
                     </div>
                 </div>
             </div>

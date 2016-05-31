@@ -10,8 +10,10 @@
 namespace Web\Controller;
 
 use Application\Lib\Arr;
+use Application\Lib\Util;
 use Web\Lib\Api;
 use Web\Form\Product\ReviewForm;
+use Web\Form\Product\AdminActionForm;
 use Web\Model\ProductCategories;
 use Web\Model\Websites;
 use Web\Model\Products;
@@ -68,26 +70,16 @@ class ProductsController extends AppController
             'option_id' => $optionId,            
             'option_value' => $optionValue,            
         ));
-        
+      
         $website = Websites::getDetail(); 
         if (!empty($param['category_id']) 
             || !empty($param['brand_id']) 
             || !empty($param['option_id'])) { 
             
             $result = Products::getList($param); 
-            $filter = array('categories' => ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, 0, false)) + $result['filter']; 
             
-            if (!empty($param['brand_id']) && !empty($filter['brands'])) {
-                foreach ($filter['brands'] as $brand) {
-                    if ($brand['brand_id'] == $param['brand_id']) {
-                        $detailBrand = $brand;
-                        break;
-                    }
-                }
-            }                
-                     
-            if (!empty($param['category_id'])) {
-                $categories = ProductCategories::findAll($website['product_categories'], $categoryId);
+            if (!empty($param['category_id'])) {            
+                $categories = ProductCategories::findAll($website['product_categories'], $param['category_id']);                            
                 $id = 'web_products_index';
                 foreach ($categories as $i => $category) { 
                     if ($category['category_id'] == $param['category_id']) {
@@ -96,8 +88,8 @@ class ProductsController extends AppController
                             $openCategoryId = $category['category_id']; 
                         } else {
                             $openCategoryId = $category['parent_id']; 
-                        }                       
-                    }
+                        }                        
+                    }                    
                     $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);                    
                     if (!empty($page)) {
                         if ($id == 'web_products_index') {
@@ -137,9 +129,23 @@ class ProductsController extends AppController
                     ),
                 ));            
             }
+            if (Util::isMobile()) {
+                $filter = array('categories' => ProductCategories::getSubCategories($website['product_categories'], $lastLevel, $openCategoryId, 0, false)) + $result['filter']; 
+            } else {
+                $filter = array('categories' => ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, 0, false)) + $result['filter']; 
+            }
+            if (!empty($param['brand_id']) && !empty($filter['brands'])) {
+                foreach ($filter['brands'] as $brand) {
+                    if ($brand['brand_id'] == $param['brand_id']) {
+                        $detailBrand = $brand;
+                        break;
+                    }
+                }
+            }   
             return $this->getViewModel(array(
                     'params' => $this->params()->fromQuery(),                                             
                     'optionId' => $optionId,
+                    'optionValue' => $optionValue,
                     'result' => $result,  
                     'detailCategory' => isset($detailCategory) ? $detailCategory : array(),               
                     'detailBrand' => isset($detailBrand) ? $detailBrand : array(),               
@@ -249,6 +255,13 @@ class ProductsController extends AppController
                         ->setAttribute('role', 'form')
                         ->create('post');
 
+            $actionForm = new AdminActionForm();  
+            $actionForm ->setController($this)
+                        ->setAttribute('product_id', $data['product_id'])
+                        ->setAttribute('id', 'action-form')
+                        ->setAttribute('role', 'form')
+                        ->create('post');
+            
             // send form
             if ($request->isPost()) {            
                 $post = (array) $request->getPost(); 
@@ -300,7 +313,8 @@ class ProductsController extends AppController
             }
             return $this->getViewModel(array(
                     'data' => $data,
-                    'reviewForm' => $reviewForm
+                    'reviewForm' => $reviewForm,
+                    'actionForm' => isset($actionForm) ? $actionForm : null
                 ), 'detail'
             );            
         }

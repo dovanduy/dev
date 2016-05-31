@@ -23,10 +23,10 @@
                                     <?php foreach ($filter['categories'] as $category) : ?>  
                                     <?php if (!empty($category['sub'])) : ?>  
                                         <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
-                                            <a itemprop="name" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <a style="border:0px;" itemprop="name" data-toggle="dropdown" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
                                                 <?php echo $category['name'] ?>
                                             </a>
-                                            <ul class="dropdown-menu">
+                                            <ul class="dropdown-menu" id="subCategory_<?php echo $category['category_id'];?>">
                                                 <?php foreach ($category['sub'] as $subCategory1) : ?> 
                                                 <?php if (!empty($subCategory1['sub'])) : ?>  
                                                 <li class="divider"></li>
@@ -102,10 +102,13 @@
                                     <li<?php if ($optionId==$value) echo ' class="active"'?>>
                                         <a href="<?php 
                                             $routerParam = array(
-                                                'name2' => ($attribute['type'] == 'text' ? name_2_url($value) : name_2_url($attribute['name'] . '-' . $value))
+                                                'name3' => name_2_url($attribute['name'] . '-' . $value)
                                             );
                                             if (!empty($detailCategory['name'])) {
                                                 $routerParam['name'] = name_2_url($detailCategory['name']);
+                                            }
+                                            if (!empty($detailBrand['brand_name'])) {
+                                                $routerParam['name2'] = name_2_url($detailBrand['brand_name']);
                                             }
                                             echo $this->url(
                                                 'web/products', 

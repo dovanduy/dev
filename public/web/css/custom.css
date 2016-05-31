@@ -832,13 +832,23 @@ tfoot .total-money {
     text-decoration: line-through;
     text-transform: uppercase;
 	font-size: 80%;
-	color: #4c4849;
+	color: #4c4849;    
+}
+#detailForm .original-price {
+    float: left;
+    margin-left: 32px;
+    clear: both;
+}
+#detailForm .icon-tag {      
+    float: left;
+    margin-top: 4px;
 }
 #detailForm .price {   
     font-size: 22px;
+    float: left;
 }
 #detailForm  .original-price {    
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .ui-slider .ui-slider-handle {
@@ -1161,17 +1171,7 @@ fieldset .form-control, fieldset .form-control:focus {
 	height: 45px;    
 	overflow-y: hidden;
 }
-.masonry-grid-item {
-	height: 425px;
-}
 /*
-#grid-4 .masonry-grid-item {
-	height: 432px;
-}
-.body-mobile #grid-4 .masonry-grid-item {
-	height: 438px;   
-}
-*/
 .body-mobile .masonry-grid-item {	
     width: 100%;
 }
@@ -1184,28 +1184,106 @@ fieldset .form-control, fieldset .form-control:focus {
 .body-mobile .btn {
     padding: 7px 7px;
 }
-.masonry-grid-item .image {
-	height: 300px;
-	width: 100%;
-	overflow-y: hidden;
+*/
+.body-pc .masonry-grid-item {
+    height: 435px;
+}
+.body-pc .masonry-grid-item .image {
+    height: 300px;
+    width: 100%;
+    overflow-y: hidden;
+    position: relative;    
+}
+.body-pc .masonry-grid-item .image img {
+    max-height: 95%;  
+    max-width: 95%; 
+    width: auto;
+    height: auto;
+    position: absolute;  
+    top: 0;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+    margin: auto;
+}   
+   
+.body-mobile .masonry-grid-item {
+    height: 435px;
+    width: 100%;
+}
+.body-mobile .masonry-grid-item .image {
+    height: 300px;
+    width: 100%;
+    overflow-y: hidden;
+    position: relative;
+}
+.body-mobile .masonry-grid-item .image img {
+    max-height: 95%;  
+    max-width: 95%; 
+    width: auto;
+    height: auto;
+    position: absolute;  
+    top: 0;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+    margin: auto;
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait) { 
+    /* iPhone 6 Portrait */ 
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape) { 
+    /* iPhone 6 landscape */
+}
+
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation : portrait) { 
+    /* iPhone 6+ Portrait */
+    .body-mobile .masonry-grid-item {
+        height: 520px;
+        width: 100%;
+    }
+    .body-mobile .masonry-grid-item .image {
+        height: 385px;
+    }
+}
+
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation : landscape) { 
+    /* iPhone 6+ landscape */
+}
+
+@media only screen and (max-device-width: 640px), only screen and (max-device-width: 667px), only screen and (max-width: 480px){ 
+    /* iPhone 6 and iPhone 6+ portrait and landscape */
+}
+
+@media only screen and (max-device-width: 640px), only screen and (max-device-width: 667px), only screen and (max-width: 480px) and (orientation : portrait){ 
+    /* iPhone 6 and iPhone 6+ portrait */
+}
+
+@media only screen and (max-device-width: 640px), only screen and (max-device-width: 667px), only screen and (max-width: 480px) and (orientation : landscape){ 
+    /* iPhone 6 and iPhone 6+ landscape */
 }
 
 @media (max-width:767px) {
+    /*
 	.masonry-grid-item {
-		height: 460px;
-	}
+        height: auto;
+        float: left;
+	}   
+    .masonry-grid-item .listing-item {
+        margin-bottom: 10px !important;
+    }
 	.masonry-grid-item .image {
-		height: 335px;		
-	}
+        position: relative;
+		height: 360px !important;	
+        overflow-y: hidden;
+	}    
+    */
 	.navbar-nav>.user-menu .user-image {   
 		margin-top: -10px;
 	}
-	.body-mobile .masonry-grid-item {
-		height: auto;
-	}
-	.body-mobile .masonry-grid-item .image {
-		height: auto;
-	}
+	
 }
 
 #searchForm #q {
@@ -1280,8 +1358,8 @@ img {
 
 .custom_navbar_toggle {
     float: left;
-    margin-left: 15px;
-	margin-top: 15px;
+    margin-left: 10px;
+	margin-top: 10px;
     margin-right: 0;
     border: 0;
     background-color: white;
@@ -1974,9 +2052,16 @@ ul.step a:hover:after {
 #sidebar_products_index_form .block {  
 	margin-bottom: 20px;
 }
-#sidebar_products_index_form .block .attributes li {  
+#sidebar_products_index_form .attributes li {  
 	float: left;
 	width: 50%;
+}
+#sidebar_products_index_form .attributes li a {  
+	color: #333;
+    padding: 5px 10px;
+}
+#sidebar_products_index_form .attributes li.active a {  
+	color: #D4232B;
 }
 @media screen and (device-aspect-ratio: 40/71) {
 	.pagination>li:first-child>a, .pagination>li:last-child>a, ul.pager li>a, ul.pagination li>a {    
@@ -2009,4 +2094,39 @@ ul.step a:hover:after {
 }
 .body-mobile .nav-tabs .tab-more {   
     padding-top: 3px;
+}
+.discount-text {
+    background-color: #e5101d;
+    font-size: 13px;
+    color: #fff !important;
+    text-align: center;
+    font-weight: 300;
+    position: absolute;
+    width: 52px;
+    height: 22px;
+    line-height: 20px;
+    border-radius: 2px;
+    border: 1px solid #e5101d;
+    right: 5px;
+    top: 5px;
+}
+.detail-images .discount-text { 
+    right: 20px;
+}
+.price-block {
+    display: block;
+    float: left;
+}
+.price-block .price {
+    float: left;
+    clear: both;
+    font-size: 16px;
+}
+.price-block .original-price { 
+    float: left;
+    clear: both;
+    text-decoration: line-through;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: 14px;
 }

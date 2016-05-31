@@ -14,6 +14,7 @@ class Products extends AbstractModel {
         '_id',
         'brand_id',
         'code',
+        'code_src',
         'model',
         'price',
         'original_price',
@@ -41,6 +42,8 @@ class Products extends AbstractModel {
         'priority',
         'default_color_id',
         'default_size_id',
+        'discount_amount',
+        'discount_percent',
     );
     
     protected static $primaryKey = 'product_id';
@@ -71,42 +74,18 @@ class Products extends AbstractModel {
             '_id', 
             'price',
             'original_price',
+            'discount_percent',
+            'discount_amount',
         );
         $select = $sql->select()
             ->from(static::$tableName) 
             ->join(
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')                        
-                        ->where("locale = ". self::quote($param['locale']))
-                ),
+                'product_locales',
                 static::$tableName . '.product_id = product_locales.product_id',
                 array(
-                    'name', 
-                    'short',
-                    'meta_keyword',
-                    'meta_description',                    
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT 
-            )
-            ->join(  
-                array(
-                    'product_has_sizes' => 
-                    $sql->select()
-                        ->columns(array(
-                            'product_id',
-                            'size_id' => new Expression('GROUP_CONCAT(product_has_sizes.size_id SEPARATOR  \',\')')
-                        ))
-                        ->from('product_has_sizes')                        
-                        ->group('product_id')
-                ),             
-                static::$tableName . '.product_id = product_has_sizes.product_id',
-                array(
-                    'size_id'
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
+                    'name',                                   
+                )
+            )           
             ->join(
                 'product_images', 
                 static::$tableName . '.image_id = product_images.image_id',
@@ -124,6 +103,7 @@ class Products extends AbstractModel {
             )           
             ->where(static::$tableName . ".website_id = ". $param['website_id'])
             ->where(static::$tableName . '.active = 1')
+            ->where("product_locales.locale = ". self::quote($param['locale']))
             ->where(new Expression("block_products.block_id IN ({$param['block_id']})"))
             ->where('block_products.active = 1')
             ->order(static::$tableName . '.priority DESC')
@@ -133,7 +113,7 @@ class Products extends AbstractModel {
         $productList = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
-        ); 
+        );
         if (!empty($productList)) {
             foreach ($blockList as &$block) {
                 $block['products'] = Arr::filter($productList, 'block_id', $block['block_id']);  
@@ -148,6 +128,10 @@ class Products extends AbstractModel {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
+        if (empty($param['keyword'])) {
+            return array();
+        }
+        $param['keyword'] = strtolower($param['keyword']);
         $sql = new Sql(self::getDb());
         $columns = array(                
             'product_id', 
@@ -157,29 +141,26 @@ class Products extends AbstractModel {
             '_id', 
             'price',
             'original_price',
+			'discount_percent',
+            'discount_amount',
+            'priority'
         );
         $select = $sql->select()
             ->from(static::$tableName) 
-            ->columns($columns)
+            ->columns($columns) 
             ->join(
-                'product_has_categories', 
-                static::$tableName . '.product_id = product_has_categories.product_id',
-                array('category_id'),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
+               'product_locales',
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(
+                    'name',                                  
+                )
             )
-            ->join(               
-                array(
-                    'product_category_locales' => 
-                    $sql->select()
-                        ->from('product_category_locales')                        
-                        ->where("locale = ". self::quote($param['locale']))
-                ),                    
-                'product_category_locales.category_id = product_has_categories.category_id',
-                array(
-                    'category_name' => new Expression('GROUP_CONCAT(product_category_locales.name SEPARATOR  \', \')')
-                ),
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )           
+            )   
             ->join(
                 array(
                     'brand_locales' => 
@@ -193,30 +174,9 @@ class Products extends AbstractModel {
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
-            ->join(
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')                        
-                        ->where("locale = ". self::quote($param['locale']))
-                ),
-                static::$tableName . '.product_id = product_locales.product_id',
-                array(
-                    'name', 
-                    'short',
-                    'meta_keyword',
-                    'meta_description',                    
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT 
-            )
-            ->join(
-                'product_images', 
-                static::$tableName . '.image_id = product_images.image_id',
-                array('url_image'),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
-            )            
-            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
-            ->where(static::$tableName . '.active = 1');
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))            
+            ->where(static::$tableName . '.active = 1')
+            ->where('product_locales.locale = '. self::quote($param['locale']));
         if (!empty($param['keyword'])) {
             $param['keyword'] = strtolower($param['keyword']);
             $select->where(new Expression("(
@@ -236,19 +196,15 @@ class Products extends AbstractModel {
                 switch ($match[1]) {
                     case 'name':
                         $select->order("product_locales.{$match[1]} " . $match[2]);
-                        break;
-                    case 'sort':  
-                        if (isset($sortTable)) {
-                            $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);
-                            break;
-                        }                        
-                    case 'price':
+                        break;     
+                    default:
                         $select->order(static::$tableName . '.' . $match[1] . ' ' . $match[2]);
                         break;
                 }                
             }            
         } else {
-            $select->order('product_locales.name ASC');
+            $select->order(static::$tableName . '.priority DESC');
+            $select->order(static::$tableName . '.updated DESC');
         }
         $select->group('product_id');
         $selectString = $sql->getSqlStringForSqlObject($select);
@@ -455,7 +411,7 @@ class Products extends AbstractModel {
     }
     
     public function getFeList($param)
-    {  
+    {    
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
@@ -463,11 +419,14 @@ class Products extends AbstractModel {
         $columns = array(                
             'product_id', 
             'code', 
+            'code_src', 
             'model', 
             'brand_id', 
             '_id', 
             'price',
             'original_price',
+            'discount_percent',
+            'discount_amount',
             'priority',
         );
         $select = $sql->select()
@@ -642,20 +601,23 @@ class Products extends AbstractModel {
                     'brand_name' => 'name'
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
-            ->join(
-                'product_has_categories', 
-                static::$tableName . '.product_id = product_has_categories.product_id',
-                array(
-                    'category_id'
+            );
+        
+        if (!empty($param['category_id'])) {
+            $select2->join(
+                    'product_has_categories', 
+                    static::$tableName . '.product_id = product_has_categories.product_id',
+                    array(
+                        'category_id'
+                    )
                 )
-            )
-            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']))            
-            ->where(static::$tableName . '.active = 1')           
-            ->where(new Expression(
-                "product_has_categories.category_id IN ({$param['category_id']})"
-            ));
-                
+                ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']))            
+                ->where(static::$tableName . '.active = 1')           
+                ->where(new Expression(
+                    "product_has_categories.category_id IN ({$param['category_id']})"
+                ));
+        }
+        
         $columnData = static::column(
             $sql->getSqlStringForSqlObject($select2),
             'brand_id,brand_name,product_id'
@@ -681,7 +643,7 @@ class Products extends AbstractModel {
             if (!empty($fieldData)) { 
                 foreach ($fieldData as $row) {
                     if (!isset($field[$row['field_id']])) {
-                        continue;
+                        //continue;
                     }
                     if (!isset($attributes[$row['field_id']])) {
                         $attributes[$row['field_id']] = array(
@@ -746,19 +708,15 @@ class Products extends AbstractModel {
                 '_id', 
                 'price',
                 'original_price',
-                'sort',
+                'discount_percent',
+                'discount_amount',                
                 'image_id'
             ))
-            ->join(               
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')
-                        ->where("locale = ". self::quote($param['locale']))
-                ),                    
+            ->join(
+               'product_locales',
                 static::$tableName . '.product_id = product_locales.product_id',
-                array(                   
-                    'name',                     
+                array(
+                    'name',                                  
                 )
             )
             ->join(
@@ -769,9 +727,11 @@ class Products extends AbstractModel {
             )
             ->where(static::$tableName . '.active = 1')
             ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
+            ->where("product_locales.locale = ". self::quote($param['locale']))
             ->where(new Expression(
                 static::$tableName . ".product_id NOT IN ({$param['product_id']})"
-            ));        
+            ));
+                    
         if (!empty($param['brand_id'])) {            
             $select->where(static::$tableName . '.brand_id = '. self::quote($param['brand_id']));           
         }  
@@ -824,28 +784,21 @@ class Products extends AbstractModel {
             ->columns(array(                
                 'product_id', 
                 '_id', 
+                'code', 
+                'code_src', 
                 'price',
                 'original_price',
                 'sort',
                 'image_id',
-                'priority'
+                'priority',
+                'website_id',
             ))
             ->join(               
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')
-                        ->where("locale = ". self::quote($param['locale']))
-                ),                    
+                'product_locales',                    
                 static::$tableName . '.product_id = product_locales.product_id',
-                array(
-                    'locale', 
-                    'name', 
-                    'short',
-                    'meta_keyword',
-                    'meta_description',
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
+                array(                   
+                    'name',                     
+                )
             )
             ->join(
                 'product_images', 
@@ -854,7 +807,8 @@ class Products extends AbstractModel {
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
             ->where(static::$tableName . '.active = 1')
-            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));     
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
+            ->where("product_locales.locale = ". self::quote($param['locale']));     
         if (!empty($param['category_id'])) {
             if (is_numeric($param['category_id'])) {
                 $categoryModel = new ProductCategories;
@@ -892,18 +846,13 @@ class Products extends AbstractModel {
             $select->where(static::$tableName . '._id IN ('. $param['_id'] . ')');  
         }
         if (!empty($param['sort'])) {
-            preg_match("/(name|price|priority)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(name|price|created|priority)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
                         $select->order("product_locales.{$match[1]} " . $match[2]);
-                        break;
-                    case 'priority':  
-                        if (isset($sortTable)) {
-                            $select->order($sortTable . '.' . $match[1] . ' ' . $match[2]);
-                            break;
-                        }                        
-                    case 'price':
+                        break;                                      
+                    default:
                         $select->order(static::$tableName . '.' . $match[1] . ' ' . $match[2]);
                         break;
                 }                
@@ -954,6 +903,9 @@ class Products extends AbstractModel {
         }  
         if (isset($param['code'])) {
             $values['code'] = $param['code'];
+        }  
+        if (isset($param['code_src'])) {
+            $values['code_src'] = $param['code_src'];
         }  
         if (isset($param['model'])) {
             $values['model'] = $param['model'];
@@ -1164,14 +1116,22 @@ class Products extends AbstractModel {
 
     public function updateInfo($param)
     {
+        $where = array();
+        if (!empty($param['_id'])) {
+            $where['_id'] = $param['_id'];
+        }
+        if (!empty($param['product_id'])) {
+            $where['product_id'] = $param['product_id'];
+        }
         $self = self::find(
             array(            
-                'where' => array('_id' => $param['_id'])
+                'table' => 'products',
+                'where' => $where
             ),
             self::RETURN_TYPE_ONE
         );   
         if (empty($self)) {
-            self::errorNotExist('_id');
+            self::errorNotExist('product_id_or_id');
             return false;
         }        
         $set = array();
@@ -1186,6 +1146,9 @@ class Products extends AbstractModel {
         }        
         if (isset($param['code'])) {
             $set['code'] = $param['code'];
+        }  
+        if (isset($param['code_src'])) {
+            $set['code_src'] = $param['code_src'];
         }  
         if (isset($param['model'])) {
             $set['model'] = $param['model'];
@@ -1250,15 +1213,17 @@ class Products extends AbstractModel {
         }
         if (self::update(
             array(
+                'table' => 'products',
                 'set' => $set,
                 'where' => array(
-                    '_id' => $param['_id']
+                    'product_id' => $self['product_id']
                 ),
             )
         )) {
             $locales = \Application\Module::getConfig('general.locales');
             if (count($locales) == 1) {
                 $param['locale'] = array_keys($locales)[0];
+                $param['_id'] = $self['_id'];
                 self::addUpdateLocale($param);
             }
             if (empty($param['category_id'])) {
@@ -1295,6 +1260,9 @@ class Products extends AbstractModel {
 
     public function addUpdateLocale($param)
     {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
         $detail = self::getDetail(array(
             '_id' => $param['_id'],
             'locale' => $param['locale'], 
@@ -1303,9 +1271,8 @@ class Products extends AbstractModel {
         if (empty($detail)) {
             self::errorNotExist('_id');
             return false;
-        }
-        
-        static::$tableName = 'product_locales';
+        }        
+       
         $values = array();
         if (isset($param['name'])) {
             $values['name'] = $param['name'];
@@ -1329,6 +1296,7 @@ class Products extends AbstractModel {
         }
         $ok = self::update(
             array(
+                'table' => 'product_locales',
                 'set' => $values,
                 'where' => array(
                     'product_id' => $detail['product_id'],
@@ -1354,7 +1322,7 @@ class Products extends AbstractModel {
         }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
-            ->from(static::$tableName)  
+            ->from('products')  
             ->columns(array(                
                 'product_id', 
                 '_id', 
@@ -1376,14 +1344,11 @@ class Products extends AbstractModel {
                 'image_id',
                 'default_color_id',
                 'default_size_id',
+                'discount_percent',
+                'discount_amount',
             ))
             ->join(               
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')
-                        ->where("locale = ". self::quote($param['locale']))
-                ),                    
+                'product_locales',                    
                 static::$tableName . '.product_id = product_locales.product_id',
                 array(
                     'locale', 
@@ -1392,9 +1357,9 @@ class Products extends AbstractModel {
                     'content',
                     'meta_keyword',
                     'meta_description',
-                ),
-                \Zend\Db\Sql\Select::JOIN_LEFT    
-            );                      
+                )  
+            )
+            ->where("product_locales.locale = ". self::quote($param['locale']));                      
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
         }
@@ -1412,6 +1377,7 @@ class Products extends AbstractModel {
                     'brand_id' => $result['brand_id']
                 ));
             }
+            
             $hasCategoryModel = new ProductHasCategories();
             $result['categories'] = $hasCategoryModel->getAll(
                 array( 
@@ -1421,7 +1387,7 @@ class Products extends AbstractModel {
             $result['category_id'] = Arr::field(
                 $result['categories'],
                 'category_id'
-            );  
+            ); 
             
             $hasSizeModel = new ProductHasSizes();
             $result['sizes'] = $hasSizeModel->getAll(array(
@@ -1576,12 +1542,7 @@ class Products extends AbstractModel {
                 'image_id'
             ))
             ->join(               
-                array(
-                    'product_locales' => 
-                    $sql->select()
-                        ->from('product_locales')
-                        ->where("locale = ". self::quote($param['locale']))
-                ),                    
+                'product_locales',                    
                 static::$tableName . '.product_id = product_locales.product_id',
                 array(
                     'locale', 
@@ -1591,7 +1552,8 @@ class Products extends AbstractModel {
                     'meta_keyword',
                     'meta_description',
                 )   
-            );                      
+            )
+            ->where("product_locales.locale = ". self::quote($param['locale']));                      
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
         }
@@ -1936,6 +1898,24 @@ class Products extends AbstractModel {
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE
         );
+        if (!empty($result)) {
+            $product = self::find(
+                array(            
+                    'where' => array(
+                        'website_id' => $param['website_id'],
+                        'product_id' => $param['product_id']
+                    )
+                ),
+                self::RETURN_TYPE_ONE
+            );
+            $result['original_price'] = $result['price'];
+            if (!empty($product['discount_percent'])) { 
+                $result['price'] = $result['original_price'] - ($result['original_price'] * $product['discount_percent'] / 100);
+            } elseif (!empty($product['discount_amount'])) {
+                $result['price'] = $result['original_price'] + $product['discount_amount'];
+            }
+            $result['price'] = round($result['price'], -3);
+        }
         return $result;
     }
     
@@ -2123,14 +2103,15 @@ class Products extends AbstractModel {
     {
         if (empty($price)) {
             $productDetail = self::find(
-                array(            
+                array(     
+                    'table' => 'products',
                     'where' => array(                       
-                        'product_id' => $param['product_id']
+                        'product_id' => $productId
                     )
                 ),
                 self::RETURN_TYPE_ONE
             );
-            $price = !empty($productDetail['price']) ? $productDetail['price'] : 0;
+            $price = !empty($productDetail['original_price']) ? $productDetail['original_price'] : 0;
         }
         if (empty($price)) {
             return false;
@@ -2199,4 +2180,11 @@ class Products extends AbstractModel {
         }  
         return true;
     }
+    
+    public static function updateCode($param) {
+        
+       
+        
+    }
+    
 }

@@ -834,10 +834,12 @@ loadPrice = function(productId, colorId, sizeId) {
             color_id: colorId,
             size_id: sizeId
         },
-        success: function (price) {
-			if (price) {
-				$('#detailForm #productPrice').html(price);
-			}
+        success: function (response) {
+            if (response) {
+                var result = JSON.parse(response);   			
+                $('#detailForm #productPrice').html(result.price);			
+                $('#detailForm #originalPrice').html(result.original_price);			
+            }
         }
     });
     return false;

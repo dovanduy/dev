@@ -178,6 +178,13 @@ return array(
     'admin_user_id' => array(1),
     
     'st_host' => 'http://vuongquocbalo.com/web',
-    'image_unavalable_url' => 'http://img.vuongquocbalo.com/unavailable.png'
+    'image_unavalable_url' => 'http://img.vuongquocbalo.com/unavailable.png',
+    
+    'session' => array(
+        'remember_me_seconds' => 2419200,
+        'use_cookies' => true,
+        'cookie_httponly' => true,
+        'name' => 'web',
+    ),
     
 );

@@ -42,13 +42,8 @@ class ProductItemHelper extends AbstractHtmlElement
             )
         ); 
         
-        $product['url_add_to_wishlist'] = '#';
-        $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
-        $product['price'] = app_money_format($product['price']);
+        $product['url_add_to_wishlist'] = '#';           
         $product['name'] = truncate($product['name'], 60);
-        $product['short'] = nl2br(truncate($product['short'], 80));
-        $isMobile = Util::isMobile();
-        
         $btn = "
             <a  itemprop=\"url\" href=\"{$product['url']}\" 
                 class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated\"                                                           
@@ -220,10 +215,24 @@ class ProductItemHelper extends AbstractHtmlElement
             case 4:   
                 $class = 'col-md-3 col-sm-6 masonry-grid-item';            
                 break;
-        }       
+        }
+        $discount = '';   //p($product, 1);   
+        if (!empty($product['discount_percent'])) {
+            $discount = "<div class=\"discount-text\">-{$product['discount_percent']}%</div>";                        
+        } elseif (!empty($product['discount_amount'])) {            
+            $amount = app_money_format($product['discount_amount']);
+            $discount = "<div class=\"discount-text\">-{$amount}%</div>";            
+        }
+        if ($product['price'] < $product['original_price']) {
+            $product['price'] = app_money_format($product['price']);        
+            $product['original_price'] = app_money_format($product['original_price']);
+        } else {
+            $product['price'] = app_money_format($product['price']);   
+            $product['original_price'] = '';
+        }
         $html = "
             <div class=\"{$class}\">
-                <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
+                <div itemscope itemtype=\"http://schema.org/Product\" class=\"mb-20 listing-item white-bg bordered\">
                     <div class=\"overlay-container\">
                         <div class=\"image\">
                             <img itemprop=\"image\" 
@@ -239,6 +248,7 @@ class ProductItemHelper extends AbstractHtmlElement
                                 <a itemprop=\"url\" href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>{$view->translate('View Details')}</a>
                             </span>
                         </div>
+                        {$discount}
                     </div>
                     <div class=\"body\">
                         <h3>
@@ -247,7 +257,10 @@ class ProductItemHelper extends AbstractHtmlElement
                             </a>
                         </h3>
                         <div class=\"elements-list clearfix\">
-                            <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
+                            <div class=\"price-block\">
+                                <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
+                                <span itemprop=\"price\" class=\"original-price\">{$product['original_price']} </span>                                
+                            </div>
                             {$btn}                                                               
                         </div>
                     </div>

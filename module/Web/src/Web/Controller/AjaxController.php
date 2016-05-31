@@ -29,8 +29,13 @@ class AjaxController extends AppController
         if (!empty($param['product_id'])
             && isset($param['color_id'])
             && isset($param['size_id'])) {
-            $price = Products::getPrice($param);
-            echo app_money_format($price);
+            $result = Products::getPrice($param);
+            if (!empty($result)) {
+                die(\Zend\Json\Encoder::encode(array(
+                    'price' => app_money_format($result['price'], -3),
+                    'original_price' => app_money_format($result['original_price']),
+                )));
+            }
         }        
         exit;
     }

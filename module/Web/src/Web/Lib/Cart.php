@@ -89,7 +89,7 @@ class Cart {
                     'size_id' => $sizeId,
                 ));
                 if (!empty($priceByColorAndSize)) {
-                    $price = $priceByColorAndSize;
+                    $price = $priceByColorAndSize['price'];
                 }
             }
             
@@ -104,8 +104,8 @@ class Cart {
             }
             if (!empty($sizeId) && !empty($data['sizes'])) {
                 foreach ($data['sizes'] as $size) {
-                    if ($size['size_id'] == $sizeId && !empty($size['price'])) {                      
-                        $customName = $customName . ' (' . $size['name'] .')';
+                    if ($size['size_id'] == $sizeId) {                      
+                        $customName = $customName . ' - ' . $size['name'];
                     }
                 }
             }
