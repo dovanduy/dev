@@ -1,8 +1,7 @@
 /**
  * Functions for login page
  */
-
-$(document).ready(function(){
+window.onload = function(){
     // Login by Facebook
     $('#fbLogin').on('click', function(){
         // fix for chrome on iOS
@@ -12,9 +11,10 @@ $(document).ready(function(){
         }
         FB.login(function (response) {
             if (response.authResponse) {
-                var fields = 'fields=id,email,birthday,first_name,gender,last_name,link,locale,name,timezone,updated_time,verified';
+                var accessToken = response.authResponse.accessToken;
+                var fields = 'fields=id,email,birthday,first_name,gender,last_name,link,locale,name,timezone,updated_time,verified';            
                 FB.api('/me?' + fields, function (response) {						
-                    var url = '/fblogin?backurl='+location.href;
+                    var url = '/fblogin?backurl='+location.href+'&accessToken='+accessToken;
                     $.ajax({
                         cache: false,
                         async: true,
@@ -37,4 +37,4 @@ $(document).ready(function(){
         }, {scope: 'email,user_likes,user_birthday'});
         return false;
     });
-});
+};

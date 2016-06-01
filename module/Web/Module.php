@@ -169,14 +169,14 @@ class Module
         
         $AppUI = $sm->get('auth')->getIdentity();        
         $request = $e->getTarget()->getRequest();       
-        if (empty($AppUI) && 1==0) {
+        if (empty($AppUI)) {
             $headCookie = $request->getHeaders()->get('Cookie'); 
             $remember = isset($headCookie->remember) ? unserialize($headCookie->remember) : array();
             if (!empty($remember) && $sm->get('auth')->authenticate($remember['email'], $remember['password'], 'web')) { 
                 $AppUI = $sm->get('auth')->getIdentity();                
             }
-        }
-          
+        } 
+
         $website = \Web\Model\Websites::getDetail(); 
         if (!$request->isXmlHttpRequest()) { // not ajax request             
             $website['last_categories'] = \Web\Model\ProductCategories::getLastCategories($website['product_categories']);

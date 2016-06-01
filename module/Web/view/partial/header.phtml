@@ -123,6 +123,11 @@ if (!empty($cartItems)) {
                                                         <span itemprop="name"><?php echo $this->translate('Delete cache')?></span>
                                                     </a>
                                                 </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo parse_url($this->requestHelper()->getRequestUri())['path'] . '?force=1'?>">                                                        
+                                                        <span itemprop="name"><?php echo $this->translate('Delete cache this page')?></span>
+                                                    </a>
+                                                </div>
                                                 <?php endif ?>
                                                 <div class="col-xs-12 text-left">
                                                     <a itemprop="url" href="<?php echo $this->url('web/my')?>">

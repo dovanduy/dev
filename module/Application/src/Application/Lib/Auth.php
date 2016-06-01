@@ -118,6 +118,9 @@ class Auth implements AuthenticationServiceInterface
                 $param['send_email'] = $socialParam['send_email'];                 
             }
             $user = \Web\Lib\Api::call('url_users_fblogin', $param);
+            if (!empty($socialParam['accessToken'])) {
+                $user['fb_access_token'] = $socialParam['accessToken'];
+            }
         } elseif ($type == 'google') {
             $param = array(                                       
                 'google_id' => $socialParam['id'],                            

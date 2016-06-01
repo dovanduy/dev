@@ -174,6 +174,17 @@ return array(
                     ),
                 ),
 
+                'login2' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/login2',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'login2',
+                        ),
+                    ),
+                ),
+                
                 'fblogin' => array(
                     'type'    => 'Segment',
                     'options' => array(

@@ -40,7 +40,7 @@ class ProductHasFields extends AbstractModel {
                 )
             )
         ); 
-        $values = array();                     
+        $values = array();                    
         foreach ($param['field'] as $fieldId => $value) {   
             if (isset($field[$fieldId]) 
                 && in_array($field[$fieldId], array('select', 'checkbox', 'radio'))) {
@@ -49,6 +49,7 @@ class ProductHasFields extends AbstractModel {
                     'product_id' => $param['product_id'],
                     'value_id' => '[' . (is_array($value) ? implode('],[', $value) : $value) . ']',
                     'value' => '',  
+                    'value_search' => '',
                     'created' => new Expression('UNIX_TIMESTAMP()'),
                     'updated' => new Expression('UNIX_TIMESTAMP()'),
                 );

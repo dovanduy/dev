@@ -407,7 +407,7 @@ class ProductsController extends AppController
         if (empty($data)) {
             return $this->notFoundAction();
         }
-        $data['type'] = array('featured');
+        
         switch ($tab) {
             case '':
                 // create edit form
@@ -482,6 +482,16 @@ class ProductsController extends AppController
                      ->create();
                 $bind = array();
                 foreach ($attributes as $attribute) {
+                    switch ($attribute['type']) {
+                        case 'select':                            
+                            break;
+                        case 'checkbox':
+                            $attribute['value'] = explode(',', $attribute['value_id']);
+                            break;
+                        case 'radio':  
+                            $attribute['value'] = $attribute['value_id'];
+                            break;
+                    }
                     $bind["field[{$attribute['field_id']}]"] = (!empty($attribute['value']) ? $attribute['value'] : '');
                 }
                 $form->bindData($bind);

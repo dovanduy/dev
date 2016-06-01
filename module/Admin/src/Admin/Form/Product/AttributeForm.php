@@ -52,7 +52,8 @@ class AttributeForm extends AbstractForm
                     $options = $row['options'];
                     $class = '';
                     break;
-                case 'radio':
+                case 'radio':                    
+                    $row['options']['value_options']['0'] = 'None';
                     $type = 'Zend\Form\Element\Radio'; 
                     $options = $row['options'];
                     $class = '';
@@ -64,7 +65,7 @@ class AttributeForm extends AbstractForm
                 'options' => $options,
                 'attributes' => array(
                     'id' => "field_{$fieldId}",
-                    'class' => $class,
+                    'class' => $class                
                 )
             );
         }

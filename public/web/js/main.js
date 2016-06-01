@@ -314,13 +314,16 @@ initJsAjaxSubmit = function (containerId) {
                 if (confirm(jQuery.trim(btn.data('confirmmessage'))) == false) {
                     return false;
                 }
-            }			
+            }	
+            if (btn.data('showloading') == '1') {          
+                showLoading();
+            }
             if (btn.data('beforesubmit')) {
 				eval(btn.data('beforesubmit'));
             }			
             $.ajax({
                 cache: false,
-                async: false,
+                async: true,
                 type: frm.attr('method'),
                 url: url,
                 data: frm.serialize(),
@@ -330,7 +333,10 @@ initJsAjaxSubmit = function (containerId) {
                     }
                     return true;
                 },
-                success: function (response) {					
+                success: function (response) {
+                    if (btn.data('showloading') == '1') {              
+                        hideLoading();
+                    }
 					if (!response) {
 						return false;
 					}

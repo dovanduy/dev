@@ -175,7 +175,7 @@ return array(
         'products' => 18
     ),
     
-    'admin_user_id' => array(1),
+    'admin_user_id' => array(1, 86),
     
     'st_host' => 'http://vuongquocbalo.com/web',
     'image_unavalable_url' => 'http://img.vuongquocbalo.com/unavailable.png',

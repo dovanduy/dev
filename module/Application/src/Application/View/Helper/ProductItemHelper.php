@@ -53,6 +53,33 @@ class ProductItemHelper extends AbstractHtmlElement
         $AppUI = $view->viewModel()->getRoot()->getVariable('AppUI');
         $website = $view->viewModel()->getRoot()->getVariable('website');
         if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))) {
+            $setPriorityUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'setpriorityproduct'
+                ),
+                array(
+                    'query' => array(
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+
+            $fbShareUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'fbshare'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+                
             if (!empty($product['block_id'])) {
                 $removeUrl = $view->url(
                     'web/ajax', 
@@ -66,15 +93,43 @@ class ProductItemHelper extends AbstractHtmlElement
                         )
                     )
                 );
-                $btn = "
-                    <a  itemprop=\"url\" href=\"#\" 
-                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
-                        data-url=\"{$removeUrl}\"
-                        data-callback=\"
-                            var item = btn.closest('.masonry-grid-item'); 
-                            item.remove();
-                        \">{$view->translate('Remove')} <i class=\"fa fa-remove\"></i>
-                    </a>
+                $adminBtn = "
+                    <div class=\"admin-action\">
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$fbShareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    alert(result.message);
+                                \"><i class=\"fa fa-facebook\"></i>
+                            </a>
+                        </form>
+
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$setPriorityUrl}\"
+                                data-callback=\"   
+                                    alert('Updated');
+                                \"><i class=\"fa fa-map-pin\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$removeUrl}\"
+                                data-callback=\"
+                                    var item = btn.closest('.masonry-grid-item'); 
+                                    item.remove();
+                                \"><i class=\"fa fa-remove\"></i>
+                            </a>
+                        </form>
+                    </div>
                 ";
             } else {                
                 $addToBlockUrl = $view->url(
@@ -118,18 +173,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         )
                     )
                 );
-                $setPriorityUrl = $view->url(
-                    'web/ajax', 
-                    array(
-                        'action' => 'setpriorityproduct'
-                    ),
-                    array(
-                        'query' => array(
-                            'category_id' => $categoryId,
-                            'product_id' => $product['product_id'],
-                        )
-                    )
-                );
+                
                 $blockOption = array("<option value=\"\">+B</option>");
                 foreach ($website['blocks'] as $block) {
                     $blockOption[] = "<option value=\"{$block['block_id']}\">{$block['name']}</option>";
@@ -142,48 +186,62 @@ class ProductItemHelper extends AbstractHtmlElement
                 }
                 $categoryOption = implode('', $categoryOption);
                 
-                $btn = "
-                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <a  itemprop=\"url\" href=\"#\" 
-                        style=\"width:22px;padding:4px 2px;float:right;margin-left:2px;\"
-                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
-                        data-url=\"{$removeFromCategoryUrl}\"
-                        data-callback=\"
-                            var item = btn.closest('.masonry-grid-item'); 
-                            item.remove();
-                        \"><i class=\"fa fa-remove\"></i>
-                    </a>
-                    </form>
-                    
-                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <a  itemprop=\"url\" href=\"#\" 
-                        style=\"width:22px;padding:4px 2px;float:right;margin-left:2px;\"
-                        class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
-                        data-url=\"{$setPriorityUrl}\"
-                        data-callback=\"   
-                            alert('Updated');
-                        \"><i class=\"fa fa-map-pin\"></i>
-                    </a>
-                    </form>
-                    
-                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:41px;padding:4px 2px;float:right;margin-left:2px;\"
-                    name=\"add_block_id\" 
-                    class=\"ajax-change\"
-                    data-url=\"{$addToBlockUrl}\"
-                    data-callback=\"alert('Added');\" 
-                    >{$blockOption}</select>
-                    </form>
-                    
-                    <form method=\"post\" style=\"margin:-26px 0px 0px 0px\">
-                    <select style=\"width:41px;padding:4px 2px;float:right;\"
-                    name=\"category_id\" 
-                    class=\"ajax-change\"
-                    data-url=\"{$addToCategoryUrl}\"
-                    data-callback=\"alert('Added');\" 
-                    >{$categoryOption}</select>
-                    </form>
-                    
+                $adminBtn = "
+                    <div class=\"admin-action\">
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$fbShareUrl}\"    
+                                data-showloading=\"1\"
+                                data-callback=\"                                        
+                                    alert(result.message);
+                                \"><i class=\"fa fa-facebook\"></i>
+                            </a>
+                        </form>
+
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$setPriorityUrl}\"
+                                data-callback=\"   
+                                    alert('Updated');
+                                \"><i class=\"fa fa-map-pin\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                        <a  itemprop=\"url\" href=\"#\" 
+                            style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                            data-url=\"{$removeFromCategoryUrl}\"
+                            data-callback=\"
+                                var item = btn.closest('.masonry-grid-item'); 
+                                item.remove();
+                            \"><i class=\"fa fa-remove\"></i>
+                        </a>
+                        </form>
+
+                        <form method=\"post\">
+                        <select style=\"width:44px;padding:4px 2px;float:right;margin-left:2px;\"
+                        name=\"add_block_id\" 
+                        class=\"ajax-change\"
+                        data-url=\"{$addToBlockUrl}\"
+                        data-callback=\"alert('Added');\" 
+                        >{$blockOption}</select>
+                        </form>
+
+                        <form method=\"post\">
+                        <select style=\"width:44px;padding:4px 2px;float:right;\"
+                        name=\"category_id\" 
+                        class=\"ajax-change\"
+                        data-url=\"{$addToCategoryUrl}\"
+                        data-callback=\"alert('Added');\" 
+                        >{$categoryOption}</select>
+                        </form>                    
+                    </div>                    
                 ";
             }
         }
@@ -261,9 +319,10 @@ class ProductItemHelper extends AbstractHtmlElement
                                 <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
                                 <span itemprop=\"price\" class=\"original-price\">{$product['original_price']} </span>                                
                             </div>
-                            {$btn}                                                               
+                            {$btn}                                                          
                         </div>
                     </div>
+                    {$adminBtn}
                 </div>
             </div>
         ";

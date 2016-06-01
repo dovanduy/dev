@@ -69,13 +69,14 @@ class ProductsController extends AppController
             'brand_id' => $brandId,            
             'option_id' => $optionId,            
             'option_value' => $optionValue,            
+            'force' => 0,            
         ));
       
         $website = Websites::getDetail(); 
         if (!empty($param['category_id']) 
             || !empty($param['brand_id']) 
             || !empty($param['option_id'])) { 
-            
+                        
             $result = Products::getList($param); 
             
             if (!empty($param['category_id'])) {            
@@ -166,7 +167,7 @@ class ProductsController extends AppController
 
             // get detail             
             $data = Products::getDetail($id);
-           
+          
             // not found data
             if (empty($data)) {
                 return $this->notFoundAction();

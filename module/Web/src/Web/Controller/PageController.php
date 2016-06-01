@@ -129,6 +129,58 @@ class PageController extends AppController
         );
     }
     
+    public function login2Action()
+    {
+        $this->setHead(array(
+            'title' => $this->translate('Login')
+        ));
+        $backUrl = $this->params()->fromQuery('backurl', '/');
+        
+        $AppUI = $this->getLoginInfo();
+        if (!empty($AppUI)) {
+            return $this->redirect()->toRoute('web');
+        } 
+        
+        $form = new LoginForm();
+        $form->setAttribute('class', 'form-horizontal')
+            ->setController($this)
+            ->create();
+        
+        // process login
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $post = (array) $request->getPost();
+            $form->setData($post);
+            if ($form->isValid()) {    
+                $auth = $this->getServiceLocator()->get('auth');
+                if ($auth->authenticate($post['email'], $post['password'], 'web')) {                    
+                    if (isset($post['remember']) && $post['remember'] == 1) {    
+                        $remember = serialize(array(
+                            'email' => $post['email'],
+                            'password' => $post['password'],
+                        ));
+                        $cookie = new \Zend\Http\Header\SetCookie('remember', $remember, time() + 365 * 60 * 60 * 24, '/');
+                        $this->getResponse()->getHeaders()->addHeader($cookie);
+                    } else {
+                        $headCookie = $request->getHeaders()->get('Cookie');  
+                        if ($headCookie->offsetExists('remember')) {
+                            $cookie = new \Zend\Http\Header\SetCookie('remember', '', time() - 365 * 60 * 60 * 24, '/');                
+                            $this->getResponse()->getHeaders()->addHeader($cookie);
+                        }
+                    }
+                    return $this->redirect()->toUrl($backUrl);
+                } else {
+                    $this->addErrorMessage('Invalid Email or password. Please try again');
+                }
+            }
+        }   
+       
+        return $this->getViewModel(array(
+                'form' => $form,                
+            )
+        );
+    }
+    
     public function gloginAction()
     {        
         $backUrl = $this->params()->fromQuery('backurl', '/');
@@ -203,9 +255,11 @@ class PageController extends AppController
     public function fbloginAction()
     {
         $backUrl = $this->params()->fromQuery('backurl', '/');
+        $accessToken = $this->params()->fromQuery('accessToken', '');
         $request = $this->getRequest();        
         if ($request->isPost()) {
             $post = (array) $request->getPost();
+            $post['accessToken'] = $accessToken;
             $successMessage = 'Account registed successfully';
             $registerVoucher = WebModule::getConfig('vouchers.register');
             if (!empty($registerVoucher)) {

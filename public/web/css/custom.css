@@ -2130,3 +2130,26 @@ ul.step a:hover:after {
     font-size: 12px;
     height: 14px;
 }
+
+.admin-action {
+   
+    font-size: 13px;
+    color: #333 !important;
+    text-align: center;
+    font-weight: 300;
+    position: absolute;
+    width: 80%;
+    height: 30px;
+    line-height: 20px;
+    border-radius: 2px;
+    border: 0px;
+    left: 10px;
+    top: 5px;    
+    z-index: 100000;
+}
+.admin-action form {
+    float: left;
+    margin-top: 0px !important;
+    margin-right: 2px;
+}
+    

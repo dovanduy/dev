@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d32a82f96b9ff27204542c00ebe4c395",
-    "content-hash": "9af34ce9715ae05f44c2f4aa6a135f8f",
+    "hash": "c73b0cf3a3ca34ea10fbd74899931f7c",
+    "content-hash": "bb8e279091ad3e1e2ba974e263516e6c",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -617,6 +617,63 @@
                 "orm"
             ],
             "time": "2014-06-03 19:53:45"
+        },
+        {
+            "name": "facebook/php-sdk-v4",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/facebook-php-sdk-v4.git",
+                "reference": "c57935ae1230f30bfbf097d88adcff8b8b9b2246"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/c57935ae1230f30bfbf097d88adcff8b8b9b2246",
+                "reference": "c57935ae1230f30bfbf097d88adcff8b8b9b2246",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/facebook-php-sdk-v4/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/facebook-php-sdk-v4",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2016-05-26 14:13:12"
         },
         {
             "name": "google/apiclient",
@@ -5309,7 +5366,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "hussfelt/zend-model-creator-2": 20,
-        "google/apiclient": 10
+        "google/apiclient": 10,
+        "facebook/php-sdk-v4": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

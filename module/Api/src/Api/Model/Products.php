@@ -1418,18 +1418,43 @@ class Products extends AbstractModel {
             $values = $hasFieldModel->getAll(array(
                 'product_id' => $result['product_id']                
             ));
-           
+         
             $optionId = array();
             foreach ($result['attributes'] as &$attribute) {
                 foreach ($values as $value) {
-                    if ($attribute['field_id'] == $value['field_id']) {
+                    if ($attribute['field_id'] == $value['field_id']) { 
+                        switch ($attribute['type']) {
+                            case 'select':                        
+                            case 'radio':  
+                                if (isset($attribute['options']['value_options'][$value['value_id']])) {
+                                    $attribute['value'] = $attribute['options']['value_options'][$value['value_id']];
+                                }
+                                break;
+                            case 'checkbox':
+                                $valueId = explode(',', $value['value_id']);
+                                $valueText = array();
+                                foreach ($valueId as $optId) {
+                                    if (isset($attribute['options']['value_options'][$optId])) {
+                                        $valueText[] = $attribute['options']['value_options'][$optId];
+                                    }
+                                }
+                                $attribute['value'] = implode(', ', $valueText);
+                                break;
+                            default:
+                                $attribute['value'] = $value['value'];
+                        }
+                        $attribute['value_id'] = $value['value_id'];
+                        /*
                         if (!empty($value['value'])) {
                             $attribute['value'] = $value['value'];
                         } elseif (!empty($value['value_id'])) {
                             if (isset($attribute['options']['value_options'][$value['value_id']])) {
                                 $attribute['value'] = $attribute['options']['value_options'][$value['value_id']];
                             }                           
-                        }
+                            $attribute['value_id'] = $value['value_id'];
+                        }  
+                        * 
+                        */                      
                     }
                 }
             }

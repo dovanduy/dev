@@ -157,7 +157,7 @@ class Products
             !empty($param['price_to']) ? $param['price_to'] : '',
             !empty($param['page']) ? $param['page'] : '1',
         ));
-        if (!($result = Cache::get($key))) {            
+        if (!($result = Cache::get($key)) || $param['force'] == 1) {            
             $result = Api::call('url_products_felists', $param);
             if (!empty($result)) {               
                 Cache::set($key, $result);                

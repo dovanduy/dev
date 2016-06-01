@@ -55,11 +55,18 @@ class Api {
             $headers = array("Content-Type:multipart/form-data"); 
             foreach ($param as $name => $value) {
                 if (is_array($value)) {
-                    foreach ($value as $i => $v) {
-                        $param["{$name}[" . $i . "]"] = $v;
+                    foreach ($value as $k => $v) {
+                        if (is_scalar($v)) {
+                            $param["{$name}[{$k}]"] = $v;
+                        } elseif (is_array($v)) {
+                            foreach ($v as $k2 => $v2) {
+                                $param["{$name}[{$k}][{$k2}]"] = $v2;
+                            }
+                        }
                     }
                 }                
             }
+            
             $url = $config['base_uri'] . $url;
             $ch = curl_init();
             $options = array(

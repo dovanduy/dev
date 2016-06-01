@@ -14,6 +14,7 @@ use Web\Model\LocaleCities;
 use Web\Model\LocaleStates;
 use Web\Model\Products;
 use Web\Lib\Api;
+use Web\Module as WebModule;
 
 class AjaxController extends AppController
 {
@@ -296,6 +297,9 @@ class AjaxController extends AppController
      */
     public function setpriorityproductAction()
     {   
+        if (!$this->isAdmin()) {
+            exit;
+        }
         $request = $this->getRequest();    
         $param = $this->getParams();
         if ($request->isXmlHttpRequest() 
@@ -313,4 +317,62 @@ class AjaxController extends AppController
         }
         exit;
     }
+    
+    /**
+     * Ajax share to facecbook
+     *
+     * @return Zend\View\Model
+     */
+    public function fbshareAction()
+    {   
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $AppUI = $this->getLoginInfo();
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost()
+            && !empty($param['url'])
+            && !empty($AppUI->fb_access_token)) {
+            $fb = new \Facebook\Facebook([
+                'app_id' => WebModule::getConfig('facebook_app_id'),
+                'app_secret' => WebModule::getConfig('facebook_app_secret'),
+                //'default_graph_version' => 'v2.6',
+                //'default_access_token' => '{access-token}', // optional
+            ]);
+            $param['url'] = str_replace('.dev', '.com', $param['url']);
+            $linkData = [
+                'link' => $param['url']
+            ];
+            try {
+                // Returns a `Facebook\FacebookResponse` object
+                $response = $fb->post('/me/feed', $linkData, $AppUI->fb_access_token);
+                $graphNode = $response->getGraphNode();
+                $result = array(
+                    'status' => 'OK',
+                    'message' => "Posted with ID {$graphNode['id']}",
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            } catch (Facebook\Exceptions\FacebookResponseException $e) {
+                $result = array(
+                    'status' => 'Fail',
+                    'message' => $e->getMessage(),
+                );
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                $result = array(
+                    'status' => 'Fail',
+                    'message' => $e->getMessage(),
+                );
+            } catch (\Exception $e) {
+                $result = array(
+                    'status' => 'Fail',
+                    'message' => $e->getMessage(),
+                );
+            }      
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
 }
