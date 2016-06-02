@@ -73,13 +73,25 @@ class ProductItemHelper extends AbstractHtmlElement
                 ),
                 array(
                     'query' => array(
-                        'url' => $product['url'],
-                        'category_id' => $categoryId,
+                        'url' => $product['url'],                       
                         'product_id' => $product['product_id'],
                     )
                 )
             );
-                
+              
+            $shareUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'share'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],                       
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             if (!empty($product['block_id'])) {
                 $removeUrl = $view->url(
                     'web/ajax', 
@@ -102,7 +114,7 @@ class ProductItemHelper extends AbstractHtmlElement
                                 data-url=\"{$fbShareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
-                                    alert(result.message);
+                                    showMessage(result.message);
                                 \"><i class=\"fa fa-facebook\"></i>
                             </a>
                         </form>
@@ -111,9 +123,21 @@ class ProductItemHelper extends AbstractHtmlElement
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
                                 class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$shareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-share\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$setPriorityUrl}\"
                                 data-callback=\"   
-                                    alert('Updated');
+                                    showMessage('Updated');
                                 \"><i class=\"fa fa-map-pin\"></i>
                             </a>
                         </form>
@@ -196,7 +220,7 @@ class ProductItemHelper extends AbstractHtmlElement
                                 data-url=\"{$fbShareUrl}\"    
                                 data-showloading=\"1\"
                                 data-callback=\"                                        
-                                    alert(result.message);
+                                    showMessage(result.message);
                                 \"><i class=\"fa fa-facebook\"></i>
                             </a>
                         </form>
@@ -205,9 +229,21 @@ class ProductItemHelper extends AbstractHtmlElement
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
                                 class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$shareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-share\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$setPriorityUrl}\"
                                 data-callback=\"   
-                                    alert('Updated');
+                                    showMessage('Updated');
                                 \"><i class=\"fa fa-map-pin\"></i>
                             </a>
                         </form>
@@ -229,7 +265,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         name=\"add_block_id\" 
                         class=\"ajax-change\"
                         data-url=\"{$addToBlockUrl}\"
-                        data-callback=\"alert('Added');\" 
+                        data-callback=\"showMessage('Added');\" 
                         >{$blockOption}</select>
                         </form>
 
@@ -238,7 +274,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         name=\"category_id\" 
                         class=\"ajax-change\"
                         data-url=\"{$addToCategoryUrl}\"
-                        data-callback=\"alert('Added');\" 
+                        data-callback=\"showMessage('Added');\" 
                         >{$categoryOption}</select>
                         </form>                    
                     </div>                    

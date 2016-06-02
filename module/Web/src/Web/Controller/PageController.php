@@ -430,4 +430,14 @@ class PageController extends AppController
         exit;
     }
     
+    public function fbAction()
+    {
+        $AppUI = $this->getLoginInfo();
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if (!empty($AppUI->fb_access_token)) {
+           p($AppUI->fb_access_token);
+        }
+        exit;
+    }
 }

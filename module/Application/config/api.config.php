@@ -283,6 +283,8 @@ return array(
         'url_vouchers_detail' => 'vouchers/detail',       
         'url_vouchers_onoff' => 'vouchers/onoff',
         'url_vouchers_check' => 'vouchers/check',
+        
+        'url_shareurls_add' => 'shareurls/add',
     ),
 	
 );

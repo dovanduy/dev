@@ -145,4 +145,12 @@ class UsersController extends AppController {
         );
     }
     
+    public function fbadminAction()
+    {
+        return \Api\Bus\Users\FbAdmin::getInstance()->execute(
+            $this->getServiceLocator()->get('Users'),
+            $this->getParams()
+        );
+    }
+    
 }

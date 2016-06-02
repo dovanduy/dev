@@ -20,11 +20,33 @@ class UserFacebooks extends AbstractModel {
         'facebook_link',
         'facebook_image',
         'facebook_gender', 
+        'access_token', 
         'created',
         'updated',           
     );
     
     protected static $tableName = 'user_facebooks';
 
+    /*
+    * @desction get List users
+    */
+    public function getAdmin($param = array())
+    {
+        $param['user_id'] = implode(',', \Application\Module::getConfig('admin_user_id'));
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from('user_facebooks')
+            ->where(new Expression("user_id IN ({$param['user_id']})"))
+            ->where(new Expression("IFNULL(access_token, '') <> ''"))
+            ->order('updated DESC');        
+        $selectString = $sql->getSqlStringForSqlObject($select);
+        $users = static::toArray(static::selectQuery($selectString));
+        $shareUrlModel = new ShareUrls;
+        return array(
+            $users,
+            $shareUrlModel->getForShare()
+        );
+    }    
+    
     
 }

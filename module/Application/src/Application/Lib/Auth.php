@@ -109,6 +109,7 @@ class Auth implements AuthenticationServiceInterface
                 'facebook_last_name' => !empty($socialParam['last_name']) ? $socialParam['last_name'] : '',               
                 'facebook_link' => !empty($socialParam['link']) ? $socialParam['link'] : '',                            
                 'facebook_gender' => !empty($socialParam['gender']) ? $socialParam['gender'] : '',               
+                'access_token' => !empty($socialParam['accessToken']) ? $socialParam['accessToken'] : '',               
             );            
             if (!empty($socialParam['generate_voucher'])) {               
                 $param['generate_voucher'] = $socialParam['generate_voucher']; 
@@ -118,8 +119,8 @@ class Auth implements AuthenticationServiceInterface
                 $param['send_email'] = $socialParam['send_email'];                 
             }
             $user = \Web\Lib\Api::call('url_users_fblogin', $param);
-            if (!empty($socialParam['accessToken'])) {
-                $user['fb_access_token'] = $socialParam['accessToken'];
+            if (!empty($param['access_token'])) {
+                $user['fb_access_token'] = $param['access_token'];
             }
         } elseif ($type == 'google') {
             $param = array(                                       

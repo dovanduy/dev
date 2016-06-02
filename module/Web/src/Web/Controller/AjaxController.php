@@ -356,17 +356,17 @@ class AjaxController extends AppController
                 die(\Zend\Json\Encoder::encode($result));
             } catch (Facebook\Exceptions\FacebookResponseException $e) {
                 $result = array(
-                    'status' => 'Fail',
+                    'status' => 'OK',
                     'message' => $e->getMessage(),
                 );
             } catch (Facebook\Exceptions\FacebookSDKException $e) {
                 $result = array(
-                    'status' => 'Fail',
+                    'status' => 'OK',
                     'message' => $e->getMessage(),
                 );
             } catch (\Exception $e) {
                 $result = array(
-                    'status' => 'Fail',
+                    'status' => 'OK',
                     'message' => $e->getMessage(),
                 );
             }      
@@ -375,4 +375,33 @@ class AjaxController extends AppController
         exit;
     }
     
+    /**
+     * Ajax share to facecbook
+     *
+     * @return Zend\View\Model
+     */
+    public function shareAction()
+    {   
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $AppUI = $this->getLoginInfo();
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost()
+            && !empty($param['url'])) {
+            $param['url'] = str_replace('.dev', '.com', $param['url']);
+            $result = Api::call('url_shareurls_add', $param);                 
+            if (empty(Api::error())) {                   
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }        
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
 }

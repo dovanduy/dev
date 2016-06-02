@@ -229,10 +229,18 @@ class ProductsController extends AppController
             if (empty($data['meta_keyword'])) {
                 $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
             }
-            if (empty($data['meta_description'])) {
-                $data['meta_description'] = 'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'];
+             if (empty($data['code'])) {
+                $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code'];
             }
-           
+            if (empty($data['meta_description'])) {
+                $data['meta_description'] = implode(PHP_EOL, array(
+                    'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'],
+                    'Giá: ' . app_money_format($data['price']),
+                    'Điện thoại: ' . $website['phone'],
+                    $data['short'],                    
+                ));                
+            }          
+            $data['meta_description'] = preg_replace('!\s+!', ' ', $data['meta_description']);
             $this->setHead(array(
                 'title' => $data['name'],
                 'meta_name' => array(

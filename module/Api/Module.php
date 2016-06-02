@@ -160,6 +160,12 @@ class Module {
                 'ProductPrices' => function ($sm) {
                     return new Model\ProductPrices($sm->get('db'), $sm);
                 },               
+                'UserFacebooks' => function ($sm) {
+                    return new Model\UserFacebooks($sm->get('db'), $sm);
+                },               
+                'ShareUrls' => function ($sm) {
+                    return new Model\ShareUrls($sm->get('db'), $sm);
+                },               
             ),
         );
     }

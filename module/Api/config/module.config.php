@@ -106,6 +106,7 @@ return array(
             'Api\Controller\Productsizes' => 'Api\Controller\ProductsizesController',
             'Api\Controller\Productcolors' => 'Api\Controller\ProductcolorsController',
             'Api\Controller\Vouchers' => 'Api\Controller\VouchersController',
+            'Api\Controller\Shareurls' => 'Api\Controller\ShareurlsController',
         ),
     ),
     'view_manager' => array(

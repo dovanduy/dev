@@ -925,5 +925,44 @@ class BatchController extends AppController {
         }
         die('Done');
     }
+    
+    // php index.php import products --verbose fb 0
+    public function fb($category = 0)
+    {
+        $fbUserModel = $this->getServiceLocator()->get('UserFacebooks');  
+        $users = $fbUserModel->getForBatch();  p($users, 1);       
+        $fb = new \Facebook\Facebook([
+            'app_id' => \Application\Module::getConfig('facebook_app_id'),
+            'app_secret' => \Application\Module::getConfig('facebook_app_secret'),
+            //'default_graph_version' => 'v2.6',
+            //'default_access_token' => '{access-token}', // optional
+        ]);
+        foreach ($users as $user) {
+            foreach (\Application\Module::getConfig('facebook_share_url') as $url) {
+                try {
+                    $response = $fb->post(
+                        '/me/feed', 
+                        ['link' => $url],
+                        $user['access_token']
+                    );
+                    $graphNode = $response->getGraphNode();
+                    echo $url . ' OK' . PHP_EOL;
+                    echo 'ID: ' . $graphNode['id'] . PHP_EOL;
+                } catch (Facebook\Exceptions\FacebookResponseException $e) {
+                    echo $url . ' FAIL' . PHP_EOL;
+                    echo $e->getMessage() . PHP_EOL;                
+                } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                    echo $url . ' FAIL' . PHP_EOL;
+                    echo $e->getMessage() . PHP_EOL;    
+                } catch (\Exception $e) {
+                    echo $url . ' FAIL' . PHP_EOL;
+                    echo $e->getMessage() . PHP_EOL;    
+                }  
+                sleep(10);
+            }
+        }
+        echo 'Done';
+        exit;
+    }
 
 }

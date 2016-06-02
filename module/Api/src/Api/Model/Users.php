@@ -735,6 +735,9 @@ class Users extends AbstractModel {
         $isFirstLogin = 0;
         $param['facebook_image'] = "http://graph.facebook.com/{$param['facebook_id']}/picture?type=large";
         $param['facebook_username'] = !empty($param['facebook_username']) ? $param['facebook_username'] : '';
+        if (empty($param['access_token'])) {
+            $param['access_token'] = '';
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)   
@@ -762,6 +765,7 @@ class Users extends AbstractModel {
                     'facebook_link',
                     'facebook_image',
                     'facebook_gender',
+                    'access_token',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
@@ -786,6 +790,7 @@ class Users extends AbstractModel {
                     'facebook_link' => $param['facebook_link'],
                     'facebook_image' => $param['facebook_image'],
                     'facebook_gender' => $param['facebook_gender'],
+                    'access_token' => $param['access_token'],
                 ));
             } else {                
                 $userFacebookModel->update(array(                        
@@ -799,6 +804,7 @@ class Users extends AbstractModel {
                         'facebook_link' => $param['facebook_link'],
                         'facebook_image' => $param['facebook_image'],
                         'facebook_gender' => $param['facebook_gender'],
+                        'access_token' => $param['access_token'],
                     ),
                     'where' => array('user_id' => $user['user_id'])
                 ));
@@ -852,6 +858,7 @@ class Users extends AbstractModel {
                     'facebook_link' => $param['facebook_link'],
                     'facebook_image' => $param['facebook_image'],
                     'facebook_gender' => $param['facebook_gender'],
+                    'access_token' => $param['access_token'],
                 ));
             }
         }       
@@ -1008,6 +1015,15 @@ class Users extends AbstractModel {
             return $user;
         }
         return false;
+    }
+    
+     /*
+    * @desction get List users
+    */
+    public function getFbAdmin($param)
+    {
+        $fbModel = new UserFacebooks;
+        return $fbModel->getAdmin();
     }
     
 }

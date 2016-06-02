@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /config/
+Disallow: /data/
+Disallow: /cgi-bin/
+Disallow: /include/
+Disallow: /module/
+Disallow: /data/
+Disallow: /vendor/
