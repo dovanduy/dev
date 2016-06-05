@@ -229,20 +229,37 @@ class ProductsController extends AppController
             if (empty($data['meta_keyword'])) {
                 $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
             }
-             if (empty($data['code'])) {
+            if (empty($data['code'])) {
                 $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code'];
             }
             if (empty($data['meta_description'])) {
                 $data['meta_description'] = implode(PHP_EOL, array(
-                    'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'],
-                    'Giá: ' . app_money_format($data['price']),
-                    'Điện thoại: ' . $website['phone'],
+                    'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'],                                        
                     $data['short'],                    
-                ));                
-            }          
+                ));              
+            }       
+            $data['meta_title'] = array(
+                $data['name'],
+                '' . app_money_format($data['price']),
+                'ĐT: ' . $website['phone']                  
+            );
+            /*
+            if (!empty($data['colors'])) {
+                $data['meta_title'][] = 'Màu: ' . implode(', ', Arr::field($data['colors'], 'name'));
+            }
+            * 
+            */
+            $data['meta_title'] = implode(' - ', $data['meta_title']);
+            $data['meta_title'] = preg_replace('!\s+!', ' ', $data['meta_title']);
             $data['meta_description'] = preg_replace('!\s+!', ' ', $data['meta_description']);
+            
+            $data['meta_image'] = !empty($data['url_image']) ? $data['url_image'] : '';
+            if (!empty($data['image_facebook'])) {
+                $data['meta_image'] = $data['image_facebook'];
+            }
+            $data['og_description'] = $data['short'];            
             $this->setHead(array(
-                'title' => $data['name'],
+                'title' => $data['meta_title'],
                 'meta_name' => array(
                     'description' => $data['meta_description'],
                     'keywords' => $data['meta_keyword'],
@@ -250,26 +267,28 @@ class ProductsController extends AppController
                     'classification' => !empty($data['categories'][0]['name']) ? $data['categories'][0]['name'] : '',
                 ),
                 'meta_property' => array(
-                    'og:title' => $data['name'],
-                    'og:description' => $data['meta_description'],
-                    'og:image' => !empty($data['url_image']) ? $data['url_image'] : '',
-                    'og:price:amount' => !empty($data['price']) ? app_money_format($data['price']) : '0',
+                    'og:title' => $data['meta_title'],
+                    'og:description' => $data['og_description'],
+                    'og:image' => $data['meta_image'],
+                    'og:image:width' => '200',
+                    'og:image:height' => '200',
+                    'product:price:amount' => !empty($data['price']) ? number_format($data['price'], 0, ',', '.') : '0',
                     'og:price:currency' => 'VND',
-                ),                
-            ));   
-            
+                ),               
+            ));           
+                      
             $reviewForm = new ReviewForm();  
             $reviewForm ->setController($this)
                         ->setAttribute('id', 'comment-form')
                         ->setAttribute('role', 'form')
                         ->create('post');
 
-            $actionForm = new AdminActionForm();  
-            $actionForm ->setController($this)
-                        ->setAttribute('product_id', $data['product_id'])
-                        ->setAttribute('id', 'action-form')
-                        ->setAttribute('role', 'form')
-                        ->create('post');
+//            $actionForm = new AdminActionForm();  
+//            $actionForm ->setController($this)
+//                        ->setAttribute('product_id', $data['product_id'])
+//                        ->setAttribute('id', 'action-form')
+//                        ->setAttribute('role', 'form')
+//                        ->create('post');
             
             // send form
             if ($request->isPost()) {            

@@ -177,6 +177,7 @@ return array(
         'import_site_value_options' => array(
             'lazada.vn' => 'lazada.vn',
             'bibomart.com.vn' => 'bibomart.com.vn',
+            'chothoitrang.com' => 'chothoitrang.com',
         )
     ),
     

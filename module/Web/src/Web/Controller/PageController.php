@@ -258,8 +258,16 @@ class PageController extends AppController
         $accessToken = $this->params()->fromQuery('accessToken', '');
         $request = $this->getRequest();        
         if ($request->isPost()) {
-            $post = (array) $request->getPost();
+            $post = (array) $request->getPost();  
             $post['accessToken'] = $accessToken;
+            $extendUrl = "https://graph.facebook.com/oauth/access_token?client_id=" . WebModule::getConfig('facebook_app_id') . "&client_secret=" . WebModule::getConfig('facebook_app_secret') . "&grant_type=fb_exchange_token&fb_exchange_token={$accessToken}";
+            $response = file_get_contents($extendUrl);
+            if ($response != false) {
+                parse_str($response, $output);
+                if (!empty($output['access_token'])) {
+                    $post['accessToken'] = $output['access_token'];
+                }
+            }
             $successMessage = 'Account registed successfully';
             $registerVoucher = WebModule::getConfig('vouchers.register');
             if (!empty($registerVoucher)) {

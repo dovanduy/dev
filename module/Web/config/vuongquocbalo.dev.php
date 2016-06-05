@@ -28,11 +28,14 @@ return array(
     'facebook_admins' => '261013080913491',
     'facebook_app_id' => '261013080913491',
     'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
+    'facebook_tag_ids' => array(),
     
     'google_app_id' => '1035781535742-6a2584sfhodr6hbgq6227aektflm27rf.apps.googleusercontent.com',
     'google_app_secret' => '60KJBrtGo7dlJcBsypcYJPGS',
     'google_app_redirect_uri' => 'http://vuongquocbalo.dev/glogin',
-        
+    
+    'admin_user_id' => array(1, 86, 102),
+    
     'site_name' => 'vuongquocbalo',   
     'head_meta' => array(
         'owner' => 'vuongquocbalo',

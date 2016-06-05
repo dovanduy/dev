@@ -160,7 +160,7 @@ class ProductcategoriesController extends AppController
         if (empty($id)) {
             return $this->notFoundAction();
         }
-        
+       
         // get place detail             
         $data = Api::call(
             'url_productcategories_detail', 
@@ -202,7 +202,7 @@ class ProductcategoriesController extends AppController
                     if ($form->isValid()) {
                         if (!empty($post['remove']['url_image'])) {
                             $post['image_id'] = 0;
-                        }                         
+                        }                     
                         Api::call('url_productcategories_update', $post);  
                         if (empty(Api::error())) {
                             ProductCategories::removeCache();

@@ -13,6 +13,7 @@ class ShareUrls extends AbstractModel {
         'id',
         'url',
         'website_id',
+        'shared',
         'created',
         'updated',           
     );
@@ -25,16 +26,31 @@ class ShareUrls extends AbstractModel {
     public function getForShare($param = array())
     {   
         if (empty($param['limit'])) {
-            $param['limit'] = 2;
+            $param['limit'] = 9;
         }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from('share_urls')
-            ->order('shared ASC');        
+            ->order('shared ASC')
+            ->order('updated DESC')
+            ->limit($param['limit']);        
         $selectString = $sql->getSqlStringForSqlObject($select);
-        $data = static::toArray(static::selectQuery($selectString));
+        $data = static::toArray(static::selectQuery($selectString));       
+        if (!empty($data)) {
+            $id = Arr::field($data, 'id');       
+            \Application\Lib\Log::info(implode(',', array_values($id)));
+            self::update(array(
+                'table' => 'share_urls',
+                'set' => array(
+                    'shared' => new Expression('IFNULL(shared,0) + 1')
+                ),
+                'where' => array(
+                    new Expression('id IN (' . implode(',', array_values($id)) . ')')
+                )
+            ));          
+        }
         return $data;
-    }    
+    }  
     
     public function add($param = array())
     {
@@ -45,6 +61,7 @@ class ShareUrls extends AbstractModel {
         $values = array(
             'website_id' => $param['website_id'],
             'url' => $param['url'],
+            'shared' => 0,
             'created' => new Expression('UNIX_TIMESTAMP()'),
             'updated' => new Expression('UNIX_TIMESTAMP()'),
         );

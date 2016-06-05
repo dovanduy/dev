@@ -334,20 +334,30 @@ class AjaxController extends AppController
         if ($request->isXmlHttpRequest() 
             && $request->isPost()
             && !empty($param['url'])
+            && !empty($AppUI->facebook_id)
             && !empty($AppUI->fb_access_token)) {
             $fb = new \Facebook\Facebook([
                 'app_id' => WebModule::getConfig('facebook_app_id'),
                 'app_secret' => WebModule::getConfig('facebook_app_secret'),
                 //'default_graph_version' => 'v2.6',
                 //'default_access_token' => '{access-token}', // optional
-            ]);
-            $param['url'] = str_replace('.dev', '.com', $param['url']);
-            $linkData = [
-                'link' => $param['url']
-            ];
+            ]);            
+            $param['url'] = str_replace('.dev', '.com', $param['url']);                   
             try {
                 // Returns a `Facebook\FacebookResponse` object
-                $response = $fb->post('/me/feed', $linkData, $AppUI->fb_access_token);
+                $tags = array();
+                $tagIds = WebModule::getConfig('facebook_tag_ids');                
+                foreach ($tagIds as $friendId) {
+                    if ($AppUI->facebook_id != $friendId) {
+                        $tags[] = $friendId;
+                    }
+                }
+                $data = [
+                    'link' => Util::googleShortUrl($param['url'] . '?utm_source=facebook&utm_medium=cpc&utm_campaign=product'),
+                    'tags' => implode(',', $tags),
+                    'scrape' => true
+                ];       
+                $response = $fb->post('/me/feed', $data, $AppUI->fb_access_token);
                 $graphNode = $response->getGraphNode();
                 $result = array(
                     'status' => 'OK',
@@ -392,6 +402,7 @@ class AjaxController extends AppController
             && $request->isPost()
             && !empty($param['url'])) {
             $param['url'] = str_replace('.dev', '.com', $param['url']);
+            $param['url'] = Util::googleShortUrl($param['url'] . '?utm_source=facebook&utm_medium=cpc&utm_campaign=product');           
             $result = Api::call('url_shareurls_add', $param);                 
             if (empty(Api::error())) {                   
                 $result = array(
@@ -399,7 +410,7 @@ class AjaxController extends AppController
                     'message' => 'Data saved successfully',
                 );
                 die(\Zend\Json\Encoder::encode($result));
-            }        
+            }       
             die(\Zend\Json\Encoder::encode($result));
         }
         exit;

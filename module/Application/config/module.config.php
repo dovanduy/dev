@@ -239,12 +239,13 @@ return array(
     // dev
     'facebook_app_id' => '261013080913491',
     'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
-    
-    'facebook_share_url' => array(
-        'http://vuongquocbalo.com/tui-xach-nu-theu-chi-khoa-xoay-vzid39965',
-        //'http://vuongquocbalo.com/ba-lo-vpop-son-tung-mtp-vblvp35',
-        //'http://vuongquocbalo.com/ba-lo-vpop-khoi-my-kelvin-khanh-vblvp32',
-    ),    
+     
     'admin_user_id' => array(1, 4, 11, 13, 86),
+    
+    'google_urlshortener' => array(
+        'url' => 'https://www.googleapis.com/urlshortener/v1/url',
+        'key' => 'AIzaSyDORv1kNObIyAhI9khTjsiX230_dL7xUI4',
+        'timeout' => 30,
+    ),
     
 );

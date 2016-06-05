@@ -14,7 +14,7 @@ use Web\Model\Products;
 class IndexController extends AppController
 {
     public function indexAction()
-    {   
+    {
         $this->setHead(array(
             'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng'
         ));

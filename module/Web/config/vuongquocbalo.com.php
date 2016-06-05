@@ -95,7 +95,7 @@ return array(
                 <div class="title">Hướng Dẫn Mua Hàng</div>
                 <p>✓ Đặt hàng trực tiếp tại website, xem <a target="_blank" href="http://vuongquocbalo.com/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></p>
                 <p>✓ Đặt hàng trực tiếp qua chat trên website</p>
-                <p><i class="fa fa-mobile"></i> <strong style="color:#D4232B">098 65 60 997 - 098 65 60 943</strong></p>
+                <p><i class="fa fa-mobile"></i> <strong style="color:#D4232B">097 443 60 40 - 098 65 60 997</strong></p>
                 <p><i class="fa fa-envelope"></i> <a itemprop="email" href="mailto:vuongquocbalo@gmail.com">vuongquocbalo@gmail.com</a></p>           
                 <p><i class="fa fa-skype"></i> <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>                                           
             </div>
@@ -106,7 +106,7 @@ return array(
         <div class="payment-account">
             <p>✓ Thông tin ngân hàng chuyển khoản:</p>
             <p>✓ Sau khi đặt hàng thành công, vui lòng chuyển số tiền phải thanh toán vào tài khoản ngân hàng của chúng tôi, ngay sau khi nhận được tiền, chúng tôi sẽ xác nhận với bạn bằng email và điện thoại</p>
-            <p>✓ Hotline: <strong style="color:#D4232B">098 65 60 997 - 098 65 60 943</strong></p>
+            <p>✓ Hotline: <strong style="color:#D4232B">097 443 60 40 - 098 65 60 997</strong></p>
             <p>✓ Chat skype: <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>           
         </div>
     ',

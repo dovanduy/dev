@@ -555,10 +555,10 @@ abstract class AbstractModel {
                 $where[$property] = $options['where'][$property];
             }
         }
-        if (empty($set) || empty($where)) {
+        if (empty($set) || empty($options['where'])) {
             static::errorParamInvalid();
             return false;
-        }        
+        }       
         if (in_array('updated', static::$properties)) {
             $set['updated'] = new Expression('UNIX_TIMESTAMP()'); 
         }

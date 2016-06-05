@@ -130,6 +130,21 @@ class AddForm extends AbstractForm
                 ),
                 'validators' => \Admin\Module::getValidatorConfig('general.image')
             ),
+            array(
+                'name' => 'image_facebook',
+                'attributes' => array(
+                    'id' => 'image_facebook',
+                    'type' => 'file',
+                    'required' => false,
+                    'no_filters' => true,
+                ),
+                'options' => array(
+                    'label' => 'Facebook photo',
+                    'is_image' => true, // custom
+                    'allow_empty' => true, // custom
+                ),
+                'validators' => \Admin\Module::getValidatorConfig('general.image')
+            ),
             array(            
                 'name' => 'price',
                 'attributes' => array(

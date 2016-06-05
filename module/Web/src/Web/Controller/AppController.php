@@ -71,17 +71,26 @@ class AppController extends AbstractAppController {
                     $renderer->headMeta()->setName($key, trim($value));
                 }
             }      
-        }      
+        }   
         if (!empty($data['meta_property'])) {
             foreach ($data['meta_property'] as $key => $value) {
                 if (!empty($value)) {
                     if (is_array($value)) {
-                        $value = implode(' - ', $value);
+                        foreach ($value as $propertyValue) {
+                            $renderer->headMeta()->appendProperty($key, $propertyValue);
+                        }                        
+                    } else {
+                        $renderer->headMeta()->setProperty($key, trim($value));
                     }
-                    $renderer->headMeta()->setProperty($key, trim($value));
                 }
             }      
         }
+        if (!empty($data['link'])) {
+            foreach ($data['link'] as $value) {                
+                $renderer->headLink()->prependStylesheet($value, 'screen', '', array('rel' => 'image_src'));
+            }      
+        }
+        return $renderer->headMeta();       
     }   
     
     public function getViewModel($variables = array(), $templateName = '') {        

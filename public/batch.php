@@ -1,14 +1,14 @@
 <?php
-$env = 'development';
+$env = 'production'; // development, production
 $config = [
     'development' => [
-        'timeout' => 5*60,
+        'timeout' => 2*60,
         'base_uri' => 'http://api.vuongquocbalo.dev',    
         'facebook_app_id' => '261013080913491',
         'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
     ],
     'production' => [
-        'timeout' => 5*60,
+        'timeout' => 2*60,
         'base_uri' => 'http://api.vuongquocbalo.com',    
         'facebook_app_id' => '1679604478968266',
         'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
@@ -73,32 +73,50 @@ if (empty($users) || empty($urls)) {
     echo 'Empty';
     exit;
 }
+$tagIds = [
+    '10206637393356602', // Thai Lai
+    '129881887426347', // Balo Đẹp
+    '835521976592060', // Ngoc Nguyen My
+    '1723524741251993', // Duc Tin
+   // '490650357797276', // Nguyễn Huỳnh Liên
+];
 foreach ($users as $user) {
+    if (!in_array($user['facebook_id'], ['10206637393356602', '129881887426347'])) {
+        continue;
+    }
+    $tags = array();
+    foreach ($tagIds as $friendId) {
+        if ($user['facebook_id'] != $friendId) {
+            $tags[] = $friendId;
+        }
+    }
     foreach ($urls as $url) {
+		$url = $url['url'];
+        $shareData = [
+            'link' => $url,
+            'tags' => implode(',', $tags),
+        ];
+        echo PHP_EOL . $url . ' shared at ' . date('Y/m/d H:i') . PHP_EOL;
         try {
             $response = $fb->post(
                 '/me/feed', 
-                ['link' => $url['url']],
+                $shareData,
                 $user['access_token']
             );
             $graphNode = $response->getGraphNode();            
-            echo $url . ' OK' . PHP_EOL;
-            echo 'ID: ' . $graphNode['id'] . PHP_EOL;
+            echo 'OK ID: ' . $graphNode['id'];
         } catch (Facebook\Exceptions\FacebookResponseException $e) {
-            $result[$url] = $e->getMessage(); 
-            echo $url . ' FAIL' . PHP_EOL;
-            echo $e->getMessage() . PHP_EOL;                
+            echo 'FAIL: ' . $e->getMessage(); 
+            break;
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            $result[$url] = $e->getMessage(); 
-            echo $url . ' FAIL' . PHP_EOL;
-            echo $e->getMessage() . PHP_EOL;    
+            echo 'FAIL: ' . $e->getMessage();
+            exit;
         } catch (\Exception $e) {
-            $result[$url] = $e->getMessage(); 
-            echo $url . ' FAIL' . PHP_EOL;
-            echo $e->getMessage() . PHP_EOL;    
+            echo 'FAIL: ' . $e->getMessage();
         }       
-        sleep(7);
+        sleep(6*60);
     }
+    break;
 }
-echo 'Done';
+echo PHP_EOL . 'Done';
 exit;

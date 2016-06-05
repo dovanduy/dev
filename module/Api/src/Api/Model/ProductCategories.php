@@ -226,9 +226,15 @@ class ProductCategories extends AbstractModel {
 
     public function updateInfo($param)
     {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
         $self = self::find(
             array(            
-                'where' => array('_id' => $param['_id'])
+                'where' => array(
+                    'website_id' => $param['website_id'],
+                    '_id' => $param['_id']
+                )
             ),
             self::RETURN_TYPE_ONE
         );   
@@ -283,7 +289,8 @@ class ProductCategories extends AbstractModel {
             array(
                 'set' => $set,
                 'where' => array(
-                    '_id' => $param['_id']
+                    '_id' => $param['_id'],
+                    'website_id' => $param['website_id'],
                 ),
             )
         )) {
@@ -300,6 +307,7 @@ class ProductCategories extends AbstractModel {
     public function addUpdateLocale($param)
     {
         $detail = self::getDetail(array(
+            'website_id' => $param['website_id'],
             '_id' => $param['_id'],
             'locale' => $param['locale'],
         ));
@@ -390,7 +398,7 @@ class ProductCategories extends AbstractModel {
         }
         if (!empty($param['name'])) {
             $select->where("product_category_locales.name = ". self::quote($param['name'])); 
-        }
+        }       
         $row = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE

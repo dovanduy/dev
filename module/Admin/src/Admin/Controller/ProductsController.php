@@ -247,6 +247,120 @@ class ProductsController extends AppController
                     $content = strip_tags_content($content, '<script><style>', true);
                     $html = str_get_html($content);                 
                     switch ($post['site']) {
+                        case 'chothoitrang.com':
+                            $html = str_get_html($content);                 
+                            foreach($html->find('div[class=product-name]') as $element) {                
+                                if (!empty($element->innertext)) {
+                                    $product['name'] = $this->planText($element->innertext);
+                                    break;
+                                }
+                            }              
+                            foreach($html->find('div[class=std]') as $element) {                
+                                if (!empty($element->innertext)) {
+                                    $product['short'] = $this->planText($element->innertext);
+                                    break;
+                                }
+                            }               
+                            foreach($html->find('div[class=overview]') as $element) {                
+                                if (!empty($element->innertext)) {
+                                    $product['content'] = $element->innertext;
+                                    break;
+                                }
+                            }
+                            foreach($html->find('span[class=price]') as $element) {                
+                                if (!empty($element->innertext)) {
+                                    $product['price'] = db_float($element->innertext);
+                                    break;
+                                }
+                            }
+                            $product['images'] = array();                 
+                            foreach($html->find('img[class=img-thumb]') as $element) {  
+                                if (count($product['images']) >= $item['max_images']) {
+                                    break;
+                                }
+                                if (!empty($element->src)) {                        
+                                    $imageUrl = str_replace('360x420', '700x817', $this->planText($element->src));
+                                    if (empty($product['url_image'])) {
+                                        $product['url_image'] = $imageUrl;
+                                    }
+                                    if (!in_array($imageUrl, $product['images'])) {
+                                        $product['images'][] = $imageUrl;
+                                    }
+                                }
+                            }  
+                            $product['import_colors'] = array();
+                            foreach($html->find('div[class=attributeconf-text attributeconf-color]') as $element) {                
+                                if (!empty($element->innertext)) {                        
+                                    $subHtml = str_get_html($element->innertext);                 
+                                    foreach($subHtml->find('img') as $element1) {                
+                                        if (!empty($element1->src)) {
+                                            $imageUrl = str_replace('360x420', '700x817', $this->planText($element1->src));
+                                            $product['import_colors'][] = array(
+                                                'name' => $this->planText($element1->title),                                    
+                                                'url_image' => $this->planText($imageUrl)
+                                            );                              
+                                        }
+                                    }
+                                    break;
+                                }
+                            } 
+
+                            $product['import_sizes'] = array();
+                            foreach($html->find('label[class=option-size]') as $element) {                
+                                if (!empty($element->innertext)) {                        
+                                    $product['import_sizes'][] = array(
+                                        'name' => $this->planText($element->innertext),
+                                        'short' => $this->planText($element->innertext)
+                                    );
+                                }
+                            }
+
+                            $product['import_attributes'] = array(); 
+                            foreach($html->find('div[class=product-attribute]') as $element) {
+                                if (!empty($element->innertext)) {
+                                    $subHtml = str_get_html($element->innertext);                 
+                                    foreach($subHtml->find('div[class=attribute-title]') as $element1) {                
+                                        if (!empty($element1->innertext)) {
+                                            $attrName = $this->planText($element1->innertext);
+                                            break;
+                                        }
+                                    }
+                                    foreach($subHtml->find('div[class=attribute-text]') as $element1) {                
+                                        if (!empty($element1->innertext)) {
+                                            $attrValue = $this->planText($element1->innertext);
+                                            break;
+                                        }
+                                    }                       
+                                    if (!empty($attrName) && !empty($attrValue)) {
+                                        switch ($attrName) {
+                                            case 'Mã SP':
+                                                $product['code'] = $attrValue;
+                                                break;
+                                            case 'Thương hiệu':
+                                                $product['brand_name'] = $attrValue;
+                                                break;                                   
+                                            case 'Tình trạng':                              
+                                                break;                                
+                                            /*
+                                            case 'Màu Sắc':                                                               
+                                            case 'Chất liệu':                             
+                                            case 'Kiểu dáng':                            
+                                            case 'Mục đích SD':                              
+                                            case 'Mùa phù hợp':  
+                                             * 
+                                             */                        
+                                            default:                                    
+                                                $product['import_attributes'][] = array(
+                                                    'name' => $attrName,
+                                                    'value' => $attrValue,
+                                                );
+                                                break;
+                                        }
+                                    }                       
+                                }
+                            } 
+                            $post = array_merge($post, $product);
+                            break;
                         case 'lazada.vn':                          
                             foreach($html->find('h1[id=prod_title]') as $element) {
                                 if (!empty($element->innertext)) {
@@ -342,9 +456,7 @@ class ProductsController extends AppController
                                     $post['original_price'] = str_replace('đ', '', trim(strip_tags($element->innertext)));
                                     break;
                                 }
-                            }
-                            //p($post, 1);
-                            
+                            }                                                
                     }
                 }
                 $id = Api::call('url_products_add', $post);
@@ -407,7 +519,6 @@ class ProductsController extends AppController
         if (empty($data)) {
             return $this->notFoundAction();
         }
-        
         switch ($tab) {
             case '':
                 // create edit form
@@ -428,6 +539,9 @@ class ProductsController extends AppController
                     if ($form->isValid()) {
                         if (!empty($post['remove']['url_image'])) {
                             $post['image_id'] = 0;
+                        }
+                        if (!empty($post['remove']['image_facebook'])) {
+                            $post['image_facebook'] = '';
                         }
                         Api::call('url_products_update', $post);  
                         if (empty(Api::error())) {
@@ -733,4 +847,7 @@ class ProductsController extends AppController
         exit;
     }
     
+    public function planText($text) {  
+        return trim(strip_tags($text));
+    }
 }

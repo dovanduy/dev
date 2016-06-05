@@ -16,7 +16,7 @@ use Api\Bus\AbstractBus;
 class Update extends AbstractBus {
 
     protected $_required = array(
-        '_id',
+        
     );
     
     protected $_url_format = array(

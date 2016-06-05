@@ -159,5 +159,33 @@ class Util {
     public static function toPrice($value) {              
         return str_replace(array(',', '.'), '', $value); 
     }   
+    
+    public static function googleShortUrl($longUrl = '') {
+        $config = \Application\Module::getConfig('google_urlshortener');
+        $url = $config['url'] . '?key=' . $config['key'];            
+        $param['longUrl'] = $longUrl;
+        $ch = curl_init();     
+        $options = array(   
+            CURLOPT_URL => $url,
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,              
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SAFE_UPLOAD => false,
+            CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($param),
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_VERBOSE => false,
+            CURLOPT_TIMEOUT => $config['timeout'],
+        );
+        curl_setopt_array($ch, $options); 
+        $jsonResponse = curl_exec($ch);
+        $response = json_decode($jsonResponse, true);
+        curl_close($ch);            
+        if (isset($response['id'])) {            
+            return $response['id'];
+        }
+        return $longUrl;
+    }
            
 }

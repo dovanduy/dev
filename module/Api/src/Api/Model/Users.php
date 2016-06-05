@@ -870,6 +870,7 @@ class Users extends AbstractModel {
             ));
             $user = self::getLogin(array('_id' => $user['_id']));
             $user['is_first_login'] = $isFirstLogin;
+            $user['facebook_id'] = $param['facebook_id'];
             return $user;
         }
         return false;

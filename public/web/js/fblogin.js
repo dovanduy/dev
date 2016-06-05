@@ -11,6 +11,7 @@ window.onload = function(){
         }
         FB.login(function (response) {
             if (response.authResponse) {
+                showLoading();
                 var accessToken = response.authResponse.accessToken;
                 var fields = 'fields=id,email,birthday,first_name,gender,last_name,link,locale,name,timezone,updated_time,verified';            
                 FB.api('/me?' + fields, function (response) {						
@@ -34,7 +35,7 @@ window.onload = function(){
             } else {
                 // User cancelled
             }
-        }, {scope: 'email,user_likes,user_birthday'});
+        }, {scope: 'email,user_likes'});
         return false;
     });
 };

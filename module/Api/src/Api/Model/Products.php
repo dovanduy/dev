@@ -38,6 +38,7 @@ class Products extends AbstractModel {
         'updated',
         'active',
         'image_id',
+        'image_facebook',
         'sort',
         'priority',
         'default_color_id',
@@ -942,7 +943,10 @@ class Products extends AbstractModel {
             $uploadResult = Util::uploadImage();
             if (!empty($uploadResult['url_image'])) {
                 $mainImageUrl = $uploadResult['url_image'];                
-            }          
+            }         
+            if (!empty($uploadResult['image_facebook'])) {                    
+                $param['image_facebook'] = $uploadResult['image_facebook'];
+            }
         } elseif (!empty($param['url_image'])) {   
             $mainImageUrl = Util::uploadImageFromUrl($param['url_image']);            
         }
@@ -958,7 +962,9 @@ class Products extends AbstractModel {
                 $param['content'] .= "<center><p><img src=\"{$mainImageUrl}\"/></p></center>";
             }
         }
-        
+        if (isset($param['image_facebook'])) {
+            $values['image_facebook'] = $param['image_facebook'];
+        } 
         // for batch
         if (isset($param['brand_name'])) {
             $brandModel = new Brands;
@@ -1200,6 +1206,9 @@ class Products extends AbstractModel {
                     ));
                 }
             }
+            if (!empty($uploadResult['image_facebook'])) {                    
+                $param['image_facebook'] = $uploadResult['image_facebook'];
+            }
         } else {   
             if (!empty($self['image_id']) && empty($param['image_id'])) {
                 $image->remove(array(
@@ -1207,6 +1216,9 @@ class Products extends AbstractModel {
                     'src' => 'products'
                 ));
             }
+        }
+        if (isset($param['image_facebook'])) {
+            $set['image_facebook'] = $param['image_facebook'];
         }
         if (isset($param['image_id'])) {
             $set['image_id'] = $param['image_id'];
@@ -1342,6 +1354,7 @@ class Products extends AbstractModel {
                 'made_in',                
                 'active',
                 'image_id',
+                'image_facebook',
                 'default_color_id',
                 'default_size_id',
                 'discount_percent',

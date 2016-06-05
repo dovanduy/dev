@@ -173,9 +173,7 @@ return array(
     
     'limit' => array(
         'products' => 18
-    ),
-    
-    'admin_user_id' => array(1, 4, 11, 13, 86),
+    ),   
     
     'st_host' => 'http://vuongquocbalo.com/web',
     'image_unavalable_url' => 'http://img.vuongquocbalo.com/unavailable.png',
@@ -186,5 +184,16 @@ return array(
         'cookie_httponly' => true,
         'name' => 'web',
     ),
+    
+    'facebook_admins' => '129746714106531',
+    'facebook_app_id' => '1679604478968266',
+    'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+    'facebook_tag_ids' => array(
+        '10206637393356602', // Thai Lai
+        '129881887426347', // Balo Đẹp
+        '835521976592060', // Ngoc Nguyen My
+        '1723524741251993', // Duc Tin
+    ),
+    'admin_user_id' => array(1, 4, 11, 13),
     
 );

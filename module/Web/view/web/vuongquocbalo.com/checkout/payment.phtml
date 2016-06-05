@@ -87,11 +87,13 @@ if (empty($checkoutInfo['voucher_code'])) {
                         <span><input value="COD" id="cod" name="payment" type="radio" <?php if (empty($checkoutInfo['payment']) || $checkoutInfo['payment'] == 'COD') echo "checked"?> style="width:20px; float:left;"/></span>                                
                         <span><?php echo $this->translate('COD')?></span>
                     </div>
+                    <!--
                     <div class="row">
                         <span><input value="ATM" id="atm" name="payment" type="radio" <?php if ($checkoutInfo['payment'] == 'ATM') echo "checked"?> style="width:20px; float:left;"/></span>                                
                         <span><?php echo $this->translate('Transfer via Bank')?></span>
                         <div class="bank-account"><?php echo \Web\Module::getConfig('bank_account')?></div>
-                    </div>              
+                    </div> 
+                    -->
                 </fieldset>
                     
                 <fieldset>

@@ -8,10 +8,11 @@ window.onload = function(){
         if (navigator.userAgent.match('CriOS')) {
             window.open('https://www.facebook.com/dialog/oauth?client_id=' + facebook_app_id + '&redirect_uri=' + document.location.href + '&scope=email,public_profile&response_type=token', '', null);
             return false;
-        }
+        }        
         FB.login(function (response) {
             if (response.authResponse) {
-                var accessToken = response.authResponse.accessToken;
+                showLoading();
+                var accessToken = response.authResponse.accessToken;                
                 var fields = 'fields=id,email,birthday,first_name,gender,last_name,link,locale,name,timezone,updated_time,verified';            
                 FB.api('/me?' + fields, function (response) {						
                     var url = '/fblogin?backurl='+location.href+'&accessToken='+accessToken;
@@ -34,7 +35,7 @@ window.onload = function(){
             } else {
                 // User cancelled
             }
-        }, {scope: 'email,user_likes,manage_pages,publish_actions,user_friends'});
+        }, {scope: 'email,user_photos,user_friends,user_posts,user_likes,manage_pages,publish_actions'});
         return false;
     });
 };
