@@ -443,6 +443,14 @@ class PageController extends AppController
         $AppUI = $this->getLoginInfo();
         $request = $this->getRequest();    
         $param = $this->getParams();
+        
+        $fb = new \Facebook\Facebook([
+            'app_id' => WebModule::getConfig('facebook_app_id'),
+            'app_secret' => WebModule::getConfig('facebook_app_secret'),
+            //'default_graph_version' => 'v2.6',
+            //'default_access_token' => '{access-token}', // optional
+        ]);    
+        
         if (!empty($AppUI->fb_access_token)) {
            p($AppUI->fb_access_token);
         }

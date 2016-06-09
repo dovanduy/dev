@@ -35,7 +35,7 @@ window.onload = function(){
             } else {
                 // User cancelled
             }
-        }, {scope: 'email,user_photos,user_friends,user_posts,user_likes,manage_pages,publish_actions'});
+        }, {scope: 'email,user_photos,user_friends,user_posts,user_likes,manage_pages,user_managed_groups,publish_actions'});
         return false;
     });
 };

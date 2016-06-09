@@ -292,12 +292,26 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                             </div>
                         </div>
                     </div>                            
-                </fieldset> 
+                </fieldset>            
+                
+                
                 <?php                       
                     echo $this->form()->closeTag();
                     unset($registerForm);
                 ?>
                 <?php endif ?>
+                
+                <div class="space-bottom"></div> 
+                
+                <fieldset>
+                    <legend><strong><?php echo $this->translate('Shipping money')?></strong></legend>                    
+                    <div class="row">
+                        <p>- Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TPHCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
+                        <p>- Các Quận/huyện ngoại thành TPHCM (các quận 9, 12, Thủ Đức, Bình Tân, Nhà Bè, Bình Chánh, Hóc Môn, Củ Chi) phí giao hàng là 20.000 VNĐ</p>
+                        <p>- Khu vực tỉnh khác TPHCM phí giao hàng là 30.000 VNĐ
+                        <p>- Trường hợp đơn hàng dưới 150.000 VNĐ, khách hàng vui lòng trả thêm 20.000 khi nhận hàng
+                    </div>
+                </fieldset>
                 
                 <div class="space-bottom"></div>
                 

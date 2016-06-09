@@ -69,7 +69,7 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 100.000 VNĐ ở khu vực nội thành TP HCM</p>
+                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
                 <p>✓ Thanh toán khi nhận hàng</p>
                 <p>✓ Đổi trả trong <strong>7</strong> ngày</p>    
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
@@ -84,7 +84,7 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 100.000 VNĐ ở khu vực nội thành TP HCM</p>
+                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
                 <p>✓ Thanh toán khi nhận hàng</p>
                 <p>✓ Đổi trả trong <strong>7</strong> ngày</p>                               
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               

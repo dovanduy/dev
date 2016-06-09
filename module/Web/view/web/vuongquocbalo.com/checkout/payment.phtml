@@ -1,4 +1,11 @@
 <?php
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
+if (empty($checkoutInfo['payment'])) {
+    $checkoutInfo['payment'] = 'COD';
+}
+if (empty($checkoutInfo['voucher_code'])) {
+    $checkoutInfo['voucher_code'] = '';
+}
 $cartItems = Application\Lib\Cart::get();
 $totalQuantity = 0;
 $totalMoney = 0;
@@ -7,13 +14,6 @@ if (!empty($cartItems)) {
         $totalQuantity += $item['quantity'];
         $totalMoney += $item['quantity'] * $item['price'];
     }
-}
-$checkoutInfo = Application\Lib\Session::get('checkout_step1');
-if (empty($checkoutInfo['payment'])) {
-    $checkoutInfo['payment'] = 'COD';
-}
-if (empty($checkoutInfo['voucher_code'])) {
-    $checkoutInfo['voucher_code'] = '';
 }
 ?>
 <!-- main-container start -->
@@ -153,12 +153,24 @@ if (empty($checkoutInfo['voucher_code'])) {
                             <div class="form-group">
                                 <div  style="padding-top: 0px;" class="col-md-3 control-label">
                                     <div class="form-label">
+                                        <label><?php echo $this->translate('Shipping money')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount"><?php echo !empty($checkoutInfo['ship_money']) ? app_money_format($checkoutInfo['ship_money']) : '0 VND'?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
                                         <label><?php echo $this->translate('Total payment')?></label>
                                     </div>
                                 </div>                         
                                 <div class="col-md-9">
                                     <div class="form-input">
-                                        <span style="padding-top: 7px;"  class="amount" id="last_total_money"><?php echo app_money_format($totalMoney)?></span>
+                                        <span style="padding-top: 7px;"  class="amount" id="last_total_money"><?php echo app_money_format($totalMoney + $checkoutInfo['ship_money'])?></span>
                                     </div>
                                 </div>
                             </div>

@@ -10,9 +10,13 @@ use Web\Lib\Api;
 
 class Products
 {
-    public static function removeCache()
+    public static function removeCache($productId = 0)
     {
-        $key = PRODUCT_HOMEPAGE . WebModule::getConfig('website_id');
+        if (!empty($productId)) {
+             $key = PRODUCT_DETAIL . $productId;
+        } else {
+            $key = PRODUCT_HOMEPAGE . WebModule::getConfig('website_id');
+        }
         Cache::remove($key);
     }
     
@@ -99,11 +103,10 @@ class Products
         return $result;
     }
     
-    public static function homepage()
+    public static function homepage($param = array())
     {
-        $param = array();
         $key = PRODUCT_HOMEPAGE . WebModule::getConfig('website_id');
-        if (!($result = Cache::get($key))) {
+        if (!($result = Cache::get($key)) || $param['force'] == 1) {
             $param = array();
             $result = Api::call('url_products_homepage', $param);         
             if (!empty($result)) {               

@@ -56,7 +56,8 @@ class Products extends AbstractModel {
         $blockModel = new Blocks;
         $blockList = $blockModel->getAll(
             array(
-                'website_id' => $param['website_id']
+                'website_id' => $param['website_id'],
+                'sort' => 'sort ASC',
             )
         );
         if (empty($blockList)) {

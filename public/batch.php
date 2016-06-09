@@ -64,11 +64,11 @@ function call($url, $param = array()) {
 	return false;
 }
 include ('../vendor/facebook/php-sdk-v4/src/Facebook/autoload.php');
-$fb = new \Facebook\Facebook([
-    'app_id' => $config['facebook_app_id'],
-    'app_secret' => $config['facebook_app_secret'],
-]);
-list($users, $urls) = call('/users/fbadmin');
+include ('../functions.php');
+$param = [
+    //'no_update' => 1
+];
+list($users, $urls) = call('/users/fbadmin', $param);
 if (empty($users) || empty($urls)) {
     echo 'Empty';
     exit;
@@ -78,45 +78,116 @@ $tagIds = [
     '129881887426347', // Balo Đẹp
     '835521976592060', // Ngoc Nguyen My
     '1723524741251993', // Duc Tin
+    '125965971158216', // Ken Ken
+    '126728971080640', // https://www.facebook.com/kinhdothoitrang.vn
    // '490650357797276', // Nguyễn Huỳnh Liên
 ];
+$groupIds = [
+    '952553334783243', // Chợ online Khang Điền Q.9 https://www.facebook.com/groups/928701673904347/
+    '928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
+    '1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
+    '297906577042130', // Hội những người mê kinh doanh online
+    '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
+    '209799659176359', // Rao vặt linh tinh
+    '1482043962099325', // CHỢ RAO VẶT SÀI GÒN
+    '312968818826910', // CHỢ ONLINE - SÀI GÒN
+    '794951187227341', // Chợ Sale Tổng Hợp BMT
+    '902448306510453', // Shop rẻ cho mẹ và bé
+    '109303265928424', // CHỢ SINH VIÊN HLU
+];
+$groupIds = [];
 foreach ($users as $user) {
-    if (!in_array($user['facebook_id'], ['10206637393356602', '129881887426347'])) {
+    if (!in_array($user['facebook_id'], ['129881887426347', '10206637393356602'])) {
         continue;
     }
+    echo PHP_EOL . 'FBID: ' . $user['facebook_id'] . PHP_EOL;
+    if (in_array($user['facebook_id'], ['125965971158216'])) {
+        $groupIds = [
+            '312968818826910', // CHỢ ONLINE - SÀI GÒN
+            '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
+            '209799659176359', // Rao vặt linh tinh
+            '109303265928424', // CHỢ SINH VIÊN HLU
+        ];
+    } elseif (in_array($user['facebook_id'], ['129881887426347'])) {
+        $groupIds = [
+            //'952553334783243', // Chợ online Khang Điền Q.9 https://www.facebook.com/groups/928701673904347/
+            //'928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
+            //'1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
+            '297906577042130', // Hội những người mê kinh doanh online
+            '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
+            '209799659176359', // Rao vặt linh tinh
+            '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
+        ];
+    }
+    $fb = new \Facebook\Facebook([
+        'app_id' => $config['facebook_app_id'],
+        'app_secret' => $config['facebook_app_secret'],
+        'default_graph_version' => 'v2.6',
+        'default_access_token' => $user['access_token'], // optional
+    ]);
     $tags = array();
     foreach ($tagIds as $friendId) {
         if ($user['facebook_id'] != $friendId) {
             $tags[] = $friendId;
         }
     }
-    foreach ($urls as $url) {
-		$url = $url['url'];
-        $shareData = [
-            'link' => $url,
-            'tags' => implode(',', $tags),
-        ];
-        echo PHP_EOL . $url . ' shared at ' . date('Y/m/d H:i') . PHP_EOL;
+    foreach ($urls as $url) {	
+		$url['price'] = app_money_format($url['price']);
+        $data = [
+'message' => "{$url['name']}                                                
+✓ Giá: {$url['price']}
+✓ ĐT đặt hàng: 097 443 60 40 - 098 65 60 997
+✓ Xem chi tiết {$url['short_url']}
+✓ Khám phá thêm http://vuongquocbalo.com
+
+CHÍNH SÁCH BÁN HÀNG:
+✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM
+✓ Thanh toán khi nhận hàng
+✓ Đổi trả trong 7 ngày
+✓ Giao hàng từ 1 - 3 ngày
+✓ Cam kết hàng giống hình
+✓ Hàng chính hãng, giá luôn thấp hơn thị trường",
+                        'link' => $url['url'],
+                        'picture' => $url['image_facebook'],
+                        'caption' => 'vuongquocbalo.com',
+                        'tags' => implode(',', $tags)
+                    ];
+        echo PHP_EOL . $url['url'] . ' shared at ' . date('Y/m/d H:i') . PHP_EOL;
         try {
-            $response = $fb->post(
-                '/me/feed', 
-                $shareData,
-                $user['access_token']
-            );
-            $graphNode = $response->getGraphNode();            
-            echo 'OK ID: ' . $graphNode['id'];
+            if (!empty($groupIds)) {               
+                unset($data['tags']);
+                foreach ($groupIds as $groupId) {  
+                    echo 'GROUP ID: ' . $groupId . PHP_EOL;
+                    $response = $fb->post("/{$groupId}/feed", $data);
+                    $graphNode = $response->getGraphNode();
+                    if (!empty($graphNode['id'])) {                   
+                        echo "OK {$groupId}: " . $graphNode['id'] .PHP_EOL;
+                        sleep(3*60);
+                    }
+                }
+            } else {
+                /*
+                $response = $fb->post(
+                    '/me/feed', 
+                    $data
+                );
+                $graphNode = $response->getGraphNode();  
+                echo 'OK ID: ' . $graphNode['id'];
+                sleep(8*60);
+                * 
+                */
+            }
         } catch (Facebook\Exceptions\FacebookResponseException $e) {
-            echo 'FAIL: ' . $e->getMessage(); 
+            echo 'FAIL 1: ' . $e->getMessage(); 
             break;
         } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            echo 'FAIL: ' . $e->getMessage();
+            echo 'FAIL 2: ' . $e->getMessage();
             exit;
         } catch (\Exception $e) {
-            echo 'FAIL: ' . $e->getMessage();
-        }       
-        sleep(6*60);
-    }
-    break;
+            echo 'FAIL 3: ' . $e->getMessage();
+            exit;
+        }
+    }    
 }
 echo PHP_EOL . 'Done';
 exit;

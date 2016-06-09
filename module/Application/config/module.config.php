@@ -135,7 +135,7 @@ return array(
     'upload' => array(
         'image' => array(
             'path' => './data/upload/img',
-            'url' => 'http://img.vuongquocbalo.dev',
+            'url' => 'http://img.vuongquocbalo.com',
             'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
             'extension' => array('jpeg', 'jpg', 'gif', 'png'),
             'filename_prefix' => 'balo_',
@@ -240,7 +240,7 @@ return array(
     'facebook_app_id' => '261013080913491',
     'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
      
-    'admin_user_id' => array(1, 4, 11, 13, 86),
+    'admin_user_id' => array(1, 11, 13, 17, 20),
     
     'google_urlshortener' => array(
         'url' => 'https://www.googleapis.com/urlshortener/v1/url',

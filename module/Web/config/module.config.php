@@ -188,12 +188,53 @@ return array(
     'facebook_admins' => '129746714106531',
     'facebook_app_id' => '1679604478968266',
     'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
-    'facebook_tag_ids' => array(
+    'facebook_tag_ids' => [
         '10206637393356602', // Thai Lai
         '129881887426347', // Balo Đẹp
         '835521976592060', // Ngoc Nguyen My
         '1723524741251993', // Duc Tin
+        '490650357797276', // Nguyễn Huỳnh Liên
+        '126728971080640', // https://www.facebook.com/kinhdothoitrang.vn
+    ],
+    'facebook_group_ids' => [
+        '952553334783243', // Chợ online Khang Điền Q.9 https://www.facebook.com/groups/928701673904347/
+        '928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
+        '1723003697936241', // Free Advertisements https://www.facebook.com/groups/1723003697936241/
+        '1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
+        
+        // Must approve
+        '330951283752456', // Thích ăn uống Cần Thơ https://www.facebook.com/groups/330951283752456/
+        '231774573605976', // Mua Sắm Uy Tín Trực Tuyến https://www.facebook.com/groups/231774573605976/       
+        '172006262810177', // Siêu Thị Thời Trang 2 https://www.facebook.com/groups/172006262810177/
+        '450685568302692', // PHỤ NỮ YÊU THỜI TRANG https://www.facebook.com/groups/phunuyeuthoitrang/
+        '586924924744389', // Hội Mua Bán Quận 12, Hóc Môn, Củ Chi, Gò Vấp https://www.facebook.com/groups/Hoimuabanhocmon/
+        '235978366529258', // MUA SẮM UY TÍN 13 https://www.facebook.com/groups/235978366529258
+    ],    
+    'admin_user_id' => array(1, 4, 11, 13, 17, 20),
+    'ship_district' => array(
+        'VN.HC.QA' => 0, // Quận 1
+        'VN.HC.QB' => 0, // Quận 2
+        'VN.HC.QC' => 0, // Quận 3
+        'VN.HC.QD' => 0, // Quận 4
+        'VN.HC.QE' => 0, // Quận 5
+        'VN.HC.QF' => 0, // Quận 6
+        'VN.HC.QG' => 0, // Quận 7
+        'VN.HC.QH' => 0, // Quận 8
+        'VN.HC.QJ' => 0, // Quận 10
+        'VN.HC.QK' => 0, // Quận 11
+        'VN.HC.TB' => 0, // Tân Bình
+        'VN.HC.TP' => 0, // Tân Phú
+        'VN.HC.BH' => 0, // Bình Thạnh
+        'VN.HC.GV' => 0, // Gò Vấp
+        'VN.HC.PN' => 0, // Phú Nhuận
+        'VN.HC.QI' => 20000, // Quận 9
+        'VN.HC.QL' => 20000, // Quận 12
+        'VN.HC.TD' => 20000, // Thủ Đức
+        'VN.HC.BC' => 20000, // Bình Chánh
+        'VN.HC.BT' => 20000, // Bình Tân
+        'VN.HC.CC' => 20000, // Củ Chi
+        'VN.HC.HM' => 20000, // Hóc Môn
+        'VN.HC.NB' => 20000, // Nhà Bè
     ),
-    'admin_user_id' => array(1, 4, 11, 13),
-    
+    'ship_other' => 30000    
 );

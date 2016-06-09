@@ -280,6 +280,12 @@ class ProductOrders extends AbstractModel {
         if (isset($param['is_cancel'])) {
             $values['is_cancel'] = $param['is_cancel'];
         }
+        if (isset($param['shipping'])) {
+            $values['shipping'] = db_float($param['shipping']);
+        }
+        if (isset($param['discount'])) {
+            $values['discount'] = db_float($param['discount']);
+        }
         if (isset($param['total_money'])) {
             $values['total_money'] = db_float($param['total_money']);
         }

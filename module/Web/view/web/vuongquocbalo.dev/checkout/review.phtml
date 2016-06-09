@@ -1,4 +1,5 @@
 <?php
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
 $cartItems = Application\Lib\Cart::get();
 $totalQuantity = 0;
 $totalMoney = 0;
@@ -8,7 +9,6 @@ if (!empty($cartItems)) {
         $totalMoney += $item['quantity'] * $item['price'];
     }
 }
-$checkoutInfo = Application\Lib\Session::get('checkout_step1');
 ?>
 <!-- main-container start -->
 <!-- ================ -->
@@ -149,7 +149,13 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                 <span class="total-amount"><?php echo app_money_format($checkoutInfo['discount']); ?></span>
                                 (<?php echo $this->translate('Voucher code')?>: <strong><?php echo $checkoutInfo['voucher_code']; ?></strong>)
                             </td>
-                        </tr>                        
+                        </tr> 
+                        <tr>
+                            <td><?php echo $this->translate('Shipping money')?></td>
+                            <td class="information">
+                                <span class="total-amount"><?php echo app_money_format($checkoutInfo['ship_money']); ?></span>                               
+                            </td>
+                        </tr>
                         <tr>
                             <td><?php echo $this->translate('Total payment')?></td>
                             <td class="information total-amount">
@@ -158,9 +164,21 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                         </tr>                        
                         <?php else: ?>
                         <tr>
-                            <td><?php echo $this->translate('Total payment');?></td>
+                            <td><?php echo $this->translate('Total');?></td>
                             <td class="information total-amount">                                
                                 <?php echo app_money_format($totalMoney)?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Shipping money')?></td>
+                            <td class="information">
+                                <span class="total-amount"><?php echo app_money_format($checkoutInfo['ship_money']); ?></span>                               
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Total payment');?></td>
+                            <td class="information total-amount">                                
+                                <?php echo app_money_format($checkoutInfo['ship_money'] + $totalMoney)?>
                             </td>
                         </tr>
                         <?php endif ?>

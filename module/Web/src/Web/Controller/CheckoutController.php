@@ -88,7 +88,7 @@ class CheckoutController extends AppController
             if (empty($checkoutInfo['mobile'])) { 
                 $checkoutInfo['mobile'] = $user['mobile'];
             }
-            if (empty($checkoutInfo['address_id'])) { 
+            if (!isset($checkoutInfo['address_id'])) { 
                 $checkoutInfo['address_id'] = $user['address_id'];
             }
             if (empty($checkoutInfo['country_code'])) { 
@@ -171,6 +171,7 @@ class CheckoutController extends AppController
                         )
                     ));
                 }
+                //
                 $registerAddressForm->setData($post);
                 if ($registerAddressForm->isValid()) {
                     Session::set('checkout_step1', array(
@@ -189,9 +190,15 @@ class CheckoutController extends AppController
                         'web/checkout',
                         array('action' => 'payment')
                     );                        
-                } else { 
+                } else { //p($post);
                     $checkoutInfo['address_id'] = $post['address_id'];
                     Session::set('checkout_step1', $checkoutInfo);
+                    if (!empty($checkoutInfo['address_id'])) {
+                        return $this->redirect()->toRoute(
+                            'web/checkout',
+                            array('action' => 'payment')
+                        ); 
+                    }
                 }
             } 
             
@@ -486,7 +493,7 @@ class CheckoutController extends AppController
                         $result['discount'] = db_float($voucherDetail['amount']);
                         break;
                 }
-                $checkoutInfo['last_total_money'] = ($totalMoney - $result['discount']);
+                $checkoutInfo['last_total_money'] = ($totalMoney + $checkoutInfo['ship_money'] - $result['discount']);
                 $checkoutInfo['discount'] = $result['discount'];
                 $checkoutInfo['voucher_code'] = $post['voucher_code'];                
                 Session::set('checkout_step1', $checkoutInfo); 
@@ -498,7 +505,7 @@ class CheckoutController extends AppController
                 die(json_encode($result));
             } 
           
-            $checkoutInfo['last_total_money'] = ($totalMoney);
+            $checkoutInfo['last_total_money'] = ($totalMoney + $checkoutInfo['ship_money']);
             $checkoutInfo['discount'] = 0;
             $checkoutInfo['voucher_code'] = '';                
             Session::set('checkout_step1', $checkoutInfo);
@@ -526,10 +533,19 @@ class CheckoutController extends AppController
                 ->setAttribute('class', 'form-horizontal')
                 ->create();
         
+        $checkoutInfo = Session::get('checkout_step1');
+        $shipDistrict = WebModule::getConfig('ship_district');
+        $cityCode = $checkoutInfo['city_code'];
+        if (isset($shipDistrict[$cityCode])) {
+            $checkoutInfo['ship_money'] = $shipDistrict[$cityCode];
+        } else {
+            $checkoutInfo['ship_money'] = WebModule::getConfig('ship_other');
+        }
+        Session::set('checkout_step1', $checkoutInfo);
+        
         if ($request->isPost()) {
             $post = (array) $request->getPost();
-            if (!empty($post['payment'])) {
-                $checkoutInfo = Session::get('checkout_step1');
+            if (!empty($post['payment'])) {                
                 $checkoutInfo['payment'] = $post['payment'];              
                 Session::set('checkout_step1', $checkoutInfo);                       
                 return $this->redirect()->toRoute(
@@ -621,6 +637,8 @@ class CheckoutController extends AppController
                         $totalMoney += $item['quantity'] * $item['price'];
                     }
                 }
+                $post['shipping'] = $checkoutInfo['ship_money'];
+                $post['discount'] = $checkoutInfo['discount'];
                 $post['total_money'] = $totalMoney;
                 $post['products'] =  \Zend\Json\Encoder::encode($cartItems);  
                 $post['send_email'] = 1;

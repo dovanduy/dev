@@ -558,15 +558,22 @@ abstract class AbstractModel {
         if (empty($set) || empty($options['where'])) {
             static::errorParamInvalid();
             return false;
-        }       
+        }        
         if (in_array('updated', static::$properties)) {
             $set['updated'] = new Expression('UNIX_TIMESTAMP()'); 
         }
         $update = $sql->update()
                 ->table($options['table'])
-                ->set($set)
-                ->where($where);
-        $updateString = $sql->getSqlStringForSqlObject($update);
+                ->set($set);
+        if (!empty($where)) {
+            $update->where($where);
+        }
+        foreach ($options['where'] as $where) {
+            if ($where instanceof Expression) {
+                $update->where($where);
+            }
+        }
+        $updateString = $sql->getSqlStringForSqlObject($update);       
         Log::info('Update SQL', $updateString);
         if (static::getDb()->query($updateString, Adapter::QUERY_MODE_EXECUTE)) {
             return true;

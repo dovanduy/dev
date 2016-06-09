@@ -50,7 +50,7 @@ class BlocksController extends AppController
             }
             // update blocks.sort
             if (!empty($post['sort'])) {              
-                $post['sort'] = \Zend\Json\Encoder::encode($post['sort']);
+                $post['sort'] = \Zend\Json\Encoder::encode($post['sort']);              
                 Api::call('url_blocks_updatesort', $post); 
                 if (empty(Api::error())) {
                     if ($request->isXmlHttpRequest()) {

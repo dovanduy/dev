@@ -18,7 +18,10 @@ class IndexController extends AppController
         $this->setHead(array(
             'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng'
         ));
-        $blocks = Products::homepage();
+        $param = $this->getParams(array(                      
+            'force' => 0,            
+        ));
+        $blocks = Products::homepage($param);
         return $this->getViewModel(array(
                 'blocks' => $blocks
             )

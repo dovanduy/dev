@@ -44,7 +44,7 @@ class UserFacebooks extends AbstractModel {
         $shareUrlModel = new ShareUrls;
         return array(
             $users,
-            $shareUrlModel->getForShare(array('limit' => 7))
+            $shareUrlModel->getForShare(array('limit' => 5))
         );
     }    
     

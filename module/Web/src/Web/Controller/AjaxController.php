@@ -334,52 +334,116 @@ class AjaxController extends AppController
         if ($request->isXmlHttpRequest() 
             && $request->isPost()
             && !empty($param['url'])
+            && !empty($param['product_id'])
             && !empty($AppUI->facebook_id)
             && !empty($AppUI->fb_access_token)) {
-            $fb = new \Facebook\Facebook([
-                'app_id' => WebModule::getConfig('facebook_app_id'),
-                'app_secret' => WebModule::getConfig('facebook_app_secret'),
-                //'default_graph_version' => 'v2.6',
-                //'default_access_token' => '{access-token}', // optional
-            ]);            
-            $param['url'] = str_replace('.dev', '.com', $param['url']);                   
-            try {
-                // Returns a `Facebook\FacebookResponse` object
-                $tags = array();
-                $tagIds = WebModule::getConfig('facebook_tag_ids');                
-                foreach ($tagIds as $friendId) {
-                    if ($AppUI->facebook_id != $friendId) {
-                        $tags[] = $friendId;
-                    }
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }   
+            if (empty($product['image_facebook'])) {
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 200, 200);
+                if (!empty($product['image_facebook'])) {
+                    $param['image_facebook'] = $product['image_facebook'];
+                }                
+            }
+            $result = Api::call('url_shareurls_add', $param);                 
+            if (empty(Api::error())) {    
+                if (!empty($param['image_facebook'])) {
+                    Products::removeCache($param['product_id']);
                 }
-                $data = [
-                    'link' => Util::googleShortUrl($param['url'] . '?utm_source=facebook&utm_medium=cpc&utm_campaign=product'),
-                    'tags' => implode(',', $tags),
-                    'scrape' => true
-                ];       
-                $response = $fb->post('/me/feed', $data, $AppUI->fb_access_token);
-                $graphNode = $response->getGraphNode();
-                $result = array(
-                    'status' => 'OK',
-                    'message' => "Posted with ID {$graphNode['id']}",
-                );
-                die(\Zend\Json\Encoder::encode($result));
-            } catch (Facebook\Exceptions\FacebookResponseException $e) {
-                $result = array(
-                    'status' => 'OK',
-                    'message' => $e->getMessage(),
-                );
-            } catch (Facebook\Exceptions\FacebookSDKException $e) {
-                $result = array(
-                    'status' => 'OK',
-                    'message' => $e->getMessage(),
-                );
-            } catch (\Exception $e) {
-                $result = array(
-                    'status' => 'OK',
-                    'message' => $e->getMessage(),
-                );
-            }      
+                $product['price'] = app_money_format($product['price']);
+                $fb = new \Facebook\Facebook([
+                    'app_id' => WebModule::getConfig('facebook_app_id'),
+                    'app_secret' => WebModule::getConfig('facebook_app_secret'),
+                    'default_graph_version' => 'v2.6',
+                    'default_access_token' => $AppUI->fb_access_token, // optional
+                ]);  
+                try {               
+                    $tags = array();
+                    $tagIds = WebModule::getConfig('facebook_tag_ids');                
+                    foreach ($tagIds as $friendId) {
+                        if ($AppUI->facebook_id != $friendId) {
+                            $tags[] = $friendId;
+                        }
+                    }
+                    $param['url'] = $param['url']  . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
+                    $shortUrl = Util::googleShortUrl($param['url']);                
+                    $data = [
+'message' => "{$product['name']}                                                
+✓ Giá: {$product['price']}
+✓ ĐT đặt hàng: 097 443 60 40 - 098 65 60 997
+✓ Xem chi tiết {$shortUrl}
+✓ Khám phá thêm http://vuongquocbalo.com
+
+CHÍNH SÁCH BÁN HÀNG:
+✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM
+✓ Thanh toán khi nhận hàng
+✓ Đổi trả trong 7 ngày
+✓ Giao hàng từ 1 - 3 ngày
+✓ Cam kết hàng giống hình
+✓ Hàng chính hãng, giá luôn thấp hơn thị trường",
+                        'link' => $param['url'],
+                        'picture' => $product['image_facebook'],
+                        'caption' => 'vuongquocbalo.com',
+                        'tags' => implode(',', $tags)
+                    ];                  
+                    $result = array(); 
+                    
+                    // post to wall    
+                    /*
+                    $response = $fb->post('/me/feed', $data);
+                    $graphNode = $response->getGraphNode();
+                    if (!empty($graphNode['id'])) {
+                        $result[] = $AppUI->facebook_id . ': ' . $graphNode['id'];
+                    }
+                    */
+                    // post to group 
+                    if (1==1) {                    
+                        unset($data['tags']);
+                        $groupIds = WebModule::getConfig('facebook_group_ids');
+                        $groupIds = array(
+                            '952553334783243', // Chợ online Khang Điền Q.9 https://www.facebook.com/groups/928701673904347/
+                            '928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
+                            '1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
+                            '297906577042130', // Hội những người mê kinh doanh online
+                            '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
+                            '209799659176359', // Rao vặt linh tinh
+                            '1482043962099325', // CHỢ RAO VẶT SÀI GÒN
+                            '312968818826910', // CHỢ ONLINE - SÀI GÒN
+                            '902448306510453', // Shop rẻ cho mẹ và bé
+                        );
+                        foreach ($groupIds as $groupId) {
+                            $response = $fb->post("/{$groupId}/feed", $data);
+                            $graphNode = $response->getGraphNode();
+                            if (!empty($graphNode['id'])) {
+                                $result[] = $groupId . ': ' . $graphNode['id'];
+                            }
+                        }
+                    }
+                    
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => implode('<br/>', $result),
+                    );
+                    die(\Zend\Json\Encoder::encode($result));
+                } catch (Facebook\Exceptions\FacebookResponseException $e) {
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => $e->getMessage(),
+                    );
+                } catch (Facebook\Exceptions\FacebookSDKException $e) {
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => $e->getMessage(),
+                    );
+                } catch (\Exception $e) {
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => $e->getMessage(),
+                    );
+                } 
+            }  
             die(\Zend\Json\Encoder::encode($result));
         }
         exit;
@@ -400,11 +464,21 @@ class AjaxController extends AppController
         $param = $this->getParams();
         if ($request->isXmlHttpRequest() 
             && $request->isPost()
+            && !empty($param['product_id'])
             && !empty($param['url'])) {
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }   
+            if (empty($product['image_facebook'])) {
+                $param['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 200, 200);                
+            }
             $param['url'] = str_replace('.dev', '.com', $param['url']);
-            $param['url'] = Util::googleShortUrl($param['url'] . '?utm_source=facebook&utm_medium=cpc&utm_campaign=product');           
             $result = Api::call('url_shareurls_add', $param);                 
-            if (empty(Api::error())) {                   
+            if (empty(Api::error())) { 
+                if (!empty($param['image_facebook'])) {
+                    Products::removeCache($param['product_id']);
+                }
                 $result = array(
                     'status' => 'OK',
                     'message' => 'Data saved successfully',
