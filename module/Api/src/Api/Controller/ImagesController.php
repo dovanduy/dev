@@ -17,6 +17,14 @@ class ImagesController extends AppController {
         );
     }
     
+    public function allforbatchAction() 
+    {   
+        return \Api\Bus\Images\AllForBatch::getInstance()->execute(
+            $this->getServiceLocator()->get('Images'),
+            $this->getParams()
+        );
+    }
+    
     public function allhascolorAction() 
     {   
         return \Api\Bus\Images\AllHasColor::getInstance()->execute(

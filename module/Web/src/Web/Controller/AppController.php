@@ -204,7 +204,7 @@ class AppController extends AbstractAppController {
     public function isAdmin()
     {
         $AppUI = $this->getLoginInfo();
-        if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))) {
+        if (!empty($AppUI) && in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))) {
             return true;
         }
         return false;

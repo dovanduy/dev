@@ -33,13 +33,18 @@ class PagesController extends AppController
         $this->setHead(array(
             'title' => $pageDetail['title']
         ));
-        
+        $param = $this->getParams(array(                      
+            'force' => 0,            
+        ));
         $urlName = $this->params()->fromRoute('name', '');
         UrlIds::getDetail($urlName, $categoryId, $brandId, $productId, $optionId, $id);        
         if (empty($id)) {
             return $this->notFoundAction();
         }
-        $pageDetail = Pages::getDetail($id);
+        if (isset($param['force']) && $param['force'] == 1) {            
+            Pages::removeCache($id);
+        }
+        $pageDetail = Pages::getDetail($id);        
         if (empty($pageDetail)) {
             return $this->notFoundAction();
         }

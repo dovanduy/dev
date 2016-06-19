@@ -130,7 +130,7 @@ class PageController extends AppController
     }
     
     public function login2Action()
-    {
+    {        
         $this->setHead(array(
             'title' => $this->translate('Login')
         ));
@@ -140,7 +140,7 @@ class PageController extends AppController
         if (!empty($AppUI)) {
             return $this->redirect()->toRoute('web');
         } 
-        
+
         $form = new LoginForm();
         $form->setAttribute('class', 'form-horizontal')
             ->setController($this)
@@ -252,8 +252,8 @@ class PageController extends AppController
         }
     }
     
-    public function fbloginAction()
-    {
+    public function fblogin3Action()
+    {      
         $backUrl = $this->params()->fromQuery('backurl', '/');
         $accessToken = $this->params()->fromQuery('accessToken', '');
         $request = $this->getRequest();        
@@ -296,6 +296,231 @@ class PageController extends AppController
                 );              
             }          
             die(\Zend\Json\Encoder::encode($result));
+        }      
+        exit;
+    }
+    
+    public function fbloginAction()
+    {      
+        $backUrl = $this->params()->fromQuery('backurl', '/');
+        $param = $this->getParams();
+        $fb = new \Facebook\Facebook([
+            'app_id' => WebModule::getConfig('facebook_app_id'),
+            'app_secret' => WebModule::getConfig('facebook_app_secret')
+        ]);
+        $helper = $fb->getRedirectLoginHelper();      
+        try {
+            $accessToken = $helper->getAccessToken();
+            if (!empty($accessToken)) {
+                $oAuth2Client = $fb->getOAuth2Client();
+                $tokenMetadata = $oAuth2Client->debugToken($accessToken);
+                $tokenMetadata->validateAppId(WebModule::getConfig('facebook_app_id'));
+                $tokenMetadata->validateExpiration();
+                if (!$accessToken->isLongLived()) {
+                    try {
+                        $accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+                    } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+                        echo "<p>Error getting long-lived access token: " . $helper->getMessage() . "</p>\n\n";
+                        exit;
+                    }                
+                }
+                $fields = [
+                    'id',
+                    'email',
+                    'birthday',
+                    'first_name',
+                    'gender',
+                    'last_name',
+                    'link',
+                    'locale',
+                    'name',
+                    'timezone',
+                    'updated_time',
+                    'verified'
+                ];
+                $accessToken = $accessToken->getValue();                  
+                $response = $fb->get('/me?fields=' . implode(',', $fields), $accessToken);
+                $graphNode = $response->getGraphNode();
+                if (!empty($graphNode['id'])) {
+                    $post = array(                                       
+                        'id' => $graphNode['id'],                            
+                        'email' => $graphNode['email'],
+                        'name' => !empty($graphNode['name']) ? $graphNode['name'] : '',
+                        'username' => !empty($graphNode['username']) ? $graphNode['username'] : '',               
+                        'first_name' => !empty($graphNode['first_name']) ? $graphNode['first_name'] : '',               
+                        'last_name' => !empty($graphNode['last_name']) ? $graphNode['last_name'] : '',               
+                        'link' => !empty($graphNode['link']) ? $graphNode['link'] : '',                            
+                        'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',               
+                        'access_token' => $accessToken,               
+                    );     
+                    $successMessage = 'Account registed successfully';
+                    $registerVoucher = WebModule::getConfig('vouchers.register');
+                    if (!empty($registerVoucher)) {
+                        $successMessage = 'Account registed successfully, please check email to receive voucher code';
+                        $post = array_merge(
+                            $post,
+                            [
+                                'generate_voucher' => 1,
+                                'voucher_amount' => $registerVoucher['amount'],
+                                'voucher_type' => $registerVoucher['type'],
+                                'voucher_expired' => $registerVoucher['expired'],
+                                'send_email' => $registerVoucher['send_email'],
+                            ]
+                        );                                       
+                    }   
+                    $auth = $this->getServiceLocator()->get('auth');
+                    if ($auth->authenticate(null, null, 'facebook', $post)) {
+                        $AppUI = $this->getLoginInfo();
+                        if ($AppUI->is_first_login == 1) {
+                            $this->addSuccessMessage($successMessage);
+                        }
+                        return $this->redirect()->toUrl($backUrl);
+                    } else { 
+                        $this->addErrorMessage('Invalid Email or password. Please try again');
+                    }
+                }
+                exit;
+            }
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            // When Graph returns an error
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            // When validation fails or other local issues
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        }       
+        try {
+            $permissions = [
+                'public_profile',
+                'email'               
+            ]; // Optional permissions
+            $authUrl = $helper->getLoginUrl(
+                $this->url()->fromRoute(
+                    'web/fblogin'            
+                ),                
+                $permissions
+            );
+            return $this->redirect()->toUrl($authUrl);
+        } catch (\Exception $e) {
+            p($e->getMessage());
+            exit;
+        }     
+        exit;
+    }
+    
+    public function fblogin2Action()
+    {      
+        $backUrl = $this->params()->fromQuery('backurl', '/');
+        $param = $this->getParams();
+        $fb = new \Facebook\Facebook([
+            'app_id' => WebModule::getConfig('facebook_app_id'),
+            'app_secret' => WebModule::getConfig('facebook_app_secret')
+        ]);
+        $helper = $fb->getRedirectLoginHelper();      
+        try {
+            $accessToken = $helper->getAccessToken();
+            if (!empty($accessToken)) {
+                $oAuth2Client = $fb->getOAuth2Client();
+                $tokenMetadata = $oAuth2Client->debugToken($accessToken);
+                $tokenMetadata->validateAppId(WebModule::getConfig('facebook_app_id'));
+                $tokenMetadata->validateExpiration();
+                if (!$accessToken->isLongLived()) {
+                    try {
+                        $accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+                    } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+                        echo "<p>Error getting long-lived access token: " . $helper->getMessage() . "</p>\n\n";
+                        exit;
+                    }                
+                }
+                $fields = [
+                    'id',
+                    'email',
+                    'birthday',
+                    'first_name',
+                    'gender',
+                    'last_name',
+                    'link',
+                    'locale',
+                    'name',
+                    'timezone',
+                    'updated_time',
+                    'verified'
+                ];
+                $accessToken = $accessToken->getValue();                  
+                $response = $fb->get('/me?fields=' . implode(',', $fields), $accessToken);
+                $graphNode = $response->getGraphNode();
+                if (!empty($graphNode['id'])) {
+                    $post = array(                                       
+                        'id' => $graphNode['id'],                            
+                        'email' => $graphNode['email'],
+                        'name' => !empty($graphNode['name']) ? $graphNode['name'] : '',
+                        'username' => !empty($graphNode['username']) ? $graphNode['username'] : '',               
+                        'first_name' => !empty($graphNode['first_name']) ? $graphNode['first_name'] : '',               
+                        'last_name' => !empty($graphNode['last_name']) ? $graphNode['last_name'] : '',               
+                        'link' => !empty($graphNode['link']) ? $graphNode['link'] : '',                            
+                        'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',               
+                        'accessToken' => $accessToken,               
+                    );     
+                    $successMessage = 'Account registed successfully';
+                    $registerVoucher = WebModule::getConfig('vouchers.register');
+                    if (!empty($registerVoucher)) {
+                        $successMessage = 'Account registed successfully, please check email to receive voucher code';
+                        $post = array_merge(
+                            $post,
+                            [
+                                'generate_voucher' => 1,
+                                'voucher_amount' => $registerVoucher['amount'],
+                                'voucher_type' => $registerVoucher['type'],
+                                'voucher_expired' => $registerVoucher['expired'],
+                                'send_email' => $registerVoucher['send_email'],
+                            ]
+                        );                                       
+                    }   
+                    $auth = $this->getServiceLocator()->get('auth');
+                    if ($auth->authenticate(null, null, 'facebook', $post)) {
+                        $AppUI = $this->getLoginInfo();
+                        if ($AppUI->is_first_login == 1) {
+                            $this->addSuccessMessage($successMessage);
+                        }
+                        return $this->redirect()->toUrl($backUrl);
+                    } else { 
+                        $this->addErrorMessage('Invalid Email or password. Please try again');
+                    }
+                }
+                exit;
+            }
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            // When Graph returns an error
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            // When validation fails or other local issues
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        }       
+        try {
+            $permissions = [
+                'public_profile',
+                'email',
+                'user_photos',
+                'user_friends',
+                'user_posts',
+                'user_likes',
+                'manage_pages',
+                'user_managed_groups',
+                'publish_actions'
+            ]; // Optional permissions
+            $authUrl = $helper->getLoginUrl(
+                $this->url()->fromRoute(
+                    'web/fblogin2'            
+                ),                
+                $permissions
+            );
+            return $this->redirect()->toUrl($authUrl);
+        } catch (\Exception $e) {
+            p($e->getMessage());
+            exit;
         }      
         exit;
     }

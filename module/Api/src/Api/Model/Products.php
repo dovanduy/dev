@@ -15,8 +15,10 @@ class Products extends AbstractModel {
         'brand_id',
         'code',
         'code_src',
+        'url_src',
         'model',
         'price',
+        'price_src',
         'original_price',
         'vat',
         'quantity',
@@ -790,10 +792,13 @@ class Products extends AbstractModel {
                 'code_src', 
                 'price',
                 'original_price',
+                'discount_percent',
+                'discount_amount',
                 'sort',
                 'image_id',
                 'priority',
                 'website_id',
+                'image_facebook',
             ))
             ->join(               
                 'product_locales',                    
@@ -847,6 +852,11 @@ class Products extends AbstractModel {
             }
             $select->where(static::$tableName . '._id IN ('. $param['_id'] . ')');  
         }
+        if (!empty($param['has_image_facebook'])) {    
+            $select->where(new Expression(
+                "IFNULL(image_facebook,'') <> ''"
+            )); 
+        }
         if (!empty($param['sort'])) {
             preg_match("/(name|price|created|priority)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
@@ -866,11 +876,12 @@ class Products extends AbstractModel {
         if (!empty($param['limit'])) {
             $select->limit($param['limit']);            
         }
-        return self::response(
+        $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
-        );        
-    } 
+        );          
+        return $result;
+    }
     
     public function add($param, &$id = 0)
     {
@@ -2224,6 +2235,65 @@ class Products extends AbstractModel {
         
        
         
+    }
+
+    public static function updateFbImage($param) {          
+        $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
+        $config = \Application\Module::getConfig('upload.image');        
+        $result = array();
+        foreach ($products as $i => $product) {           
+            try {
+                if (!empty($product['image_facebook'])) {
+                    $oldImage = str_replace($config['url'], $config['path'], $product['image_facebook']); 
+                    if (is_file($oldImage) && file_exists($oldImage)) {
+                        unlink($oldImage);
+                    }
+                }
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300, $product['name']);
+                if (!empty($product['image_facebook'])) {
+                    $ok = self::update([
+                        'table' => 'products',
+                        'set' => [
+                            'image_facebook' => $product['image_facebook']
+                        ],
+                        'where' => [
+                            'website_id' => $product['website_id'],
+                            'product_id' => $product['product_id']
+                        ]
+                    ]);           
+                }
+                $result[$product['product_id']] = !empty($ok) ? $product['image_facebook'] : 'Fail';  
+            } catch (\Exception $e) {
+                \Application\Lib\Log::info("{$i} - {$product['product_id']}: {$e->getMessage()}");
+            }    
+        }
+        return $result;
+    }
+    
+    public static function updatePrice($param) {        
+        $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
+        $result = array();
+        if (!empty($products)) {
+            foreach ($products as $product) {                
+                $set = [
+                    'url_src' => $product['url_src'],
+                    'price_src' => $product['price_src'],
+                    'discount_percent' => $product['discount_percent'],
+                    'original_price' => $product['original_price'],
+                    'price' => $product['price']
+                ];               
+                $ok = self::update([
+                    'table' => 'products',
+                    'set' => $set,
+                    'where' => [
+                        'website_id' => $product['website_id'],
+                        'code' => $product['code']
+                    ]
+                ]);
+                $result[$product['code']] = !empty($ok) ? 'OK' : 'Fail';  
+            }
+        }
+        return $result;
     }
     
 }

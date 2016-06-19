@@ -10,6 +10,7 @@
 namespace Web\Controller;
 
 use Web\Model\Products;
+use Web\Model\Websites;
 
 class IndexController extends AppController
 {
@@ -21,6 +22,10 @@ class IndexController extends AppController
         $param = $this->getParams(array(                      
             'force' => 0,            
         ));
+        if (isset($param['force']) && $param['force'] == 1) {
+            $wesiteModel = new Websites;
+            $wesiteModel->removeCache();
+        }
         $blocks = Products::homepage($param);
         return $this->getViewModel(array(
                 'blocks' => $blocks

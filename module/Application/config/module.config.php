@@ -240,7 +240,8 @@ return array(
     'facebook_app_id' => '261013080913491',
     'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
      
-    'admin_user_id' => array(1, 11, 13, 17, 20),
+    'admin_user_id' => array(11, 13, 17, 20, 23, 24, 25, 26, 27),
+    //'admin_user_id' => array(86),
     
     'google_urlshortener' => array(
         'url' => 'https://www.googleapis.com/urlshortener/v1/url',

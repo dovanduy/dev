@@ -196,6 +196,17 @@ return array(
                     ),
                 ),
 
+                'fblogin2' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/fblogin2',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'fblogin2',
+                        ),
+                    ),
+                ),
+                
                 'glogin' => array(
                     'type'    => 'Segment',
                     'options' => array(

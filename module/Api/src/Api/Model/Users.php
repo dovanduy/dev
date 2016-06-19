@@ -734,9 +734,12 @@ class Users extends AbstractModel {
     public function fbLogin($param) { 
         $isFirstLogin = 0;
         $param['facebook_image'] = "http://graph.facebook.com/{$param['facebook_id']}/picture?type=large";
-        $param['facebook_username'] = !empty($param['facebook_username']) ? $param['facebook_username'] : '';
+        $param['facebook_username'] = !empty($param['facebook_username']) ? $param['facebook_username'] : $param['facebook_id'];
         if (empty($param['access_token'])) {
             $param['access_token'] = '';
+        }
+        if (empty($param['facebook_email'])) {
+            $param['facebook_email'] = $param['facebook_username'] . '-fb-vuongquocbalo@gmail.com'; 
         }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
@@ -1024,7 +1027,7 @@ class Users extends AbstractModel {
     public function getFbAdmin($param)
     {
         $fbModel = new UserFacebooks;
-        return $fbModel->getAdmin();
+        return $fbModel->getAdmin($param);
     }
     
 }

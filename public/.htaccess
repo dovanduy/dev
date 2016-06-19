@@ -19,6 +19,16 @@ RewriteRule ^.*$ - [NC,L]
 # in non-aliased environments as well, providing a safe, one-size 
 # fits all solution
 
+<ifmodule mod_expires.c>
+    <Filesmatch "\.(jpg|jpeg|png|gif|js|css|swf|ico|woff|mp3)$">
+        ExpiresActive on
+        ExpiresDefault "access plus 30 days"
+    </Filesmatch>
+</ifmodule>
+
+<Files *.js>
+	Header add "Cache-Control" "max-age=604800"
+</Files>
 
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)(.+)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]

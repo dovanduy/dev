@@ -87,6 +87,13 @@ class Module
             [MvcEvent::EVENT_RENDER_ERROR, MvcEvent::EVENT_RENDER], 
             new RenderEventListener()
         );
+        
+        $eventManager->getSharedManager()->attach(
+            'Zend\Mvc\Application', 
+            'finish', 
+            array($this, 'compressHtml'), 
+            1002
+        ); 
     }
     
      /**
@@ -242,4 +249,28 @@ class Module
         );
     }
     
+    /**
+     * found somewhere on stack overflow 
+     */
+    private function compress($html) {
+        preg_match_all('!(<(?:code|pre|script).*>[^<]+</(?:code|pre|script)>)!', $html, $pre);
+        $html = preg_replace('!<(?:code|pre).*>[^<]+</(?:code|pre)>!', '#pre#', $html);
+        $html = preg_replace('#<!–[^\[].+–>#', '', $html);
+        $html = preg_replace('/[\r\n\t]+/', ' ', $html);
+        $html = preg_replace('/>[\s]+</', '><', $html);
+        $html = preg_replace('/[\s]+/', ' ', $html);
+        if (!empty($pre[0])) {
+            foreach ($pre[0] as $tag) {
+                $html = preg_replace('!#pre#!', $tag, $html, 1);
+            }
+        }
+        return $html;
+    }
+
+    public function compressHtml(MvcEvent $e) {
+        $response = $e->getResponse();
+        // compress HTML output 
+        $response->setContent($this->compress($response->getContent()));
+    }
+
 }

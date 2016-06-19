@@ -94,6 +94,7 @@ $groupIds = [
     '794951187227341', // Chợ Sale Tổng Hợp BMT
     '902448306510453', // Shop rẻ cho mẹ và bé
     '109303265928424', // CHỢ SINH VIÊN HLU
+    '294533934086284', // https://www.facebook.com/groups/thoitrangvanphong/
 ];
 $groupIds = [];
 foreach ($users as $user) {
@@ -111,8 +112,8 @@ foreach ($users as $user) {
     } elseif (in_array($user['facebook_id'], ['129881887426347'])) {
         $groupIds = [
             //'952553334783243', // Chợ online Khang Điền Q.9 https://www.facebook.com/groups/928701673904347/
-            //'928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
-            //'1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
+            '928701673904347', // Chợ sinh viên giá rẻ https://www.facebook.com/groups/928701673904347/
+            '1648395082048459', // Hội mua bán của các mẹ ở Gò vấp https://www.facebook.com/groups/1648395082048459/
             '297906577042130', // Hội những người mê kinh doanh online
             '519581824789114', // CHỢ RAO VẶT & QUẢNG CÁO ONLINE
             '209799659176359', // Rao vặt linh tinh

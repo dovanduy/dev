@@ -166,6 +166,9 @@ class Module {
                 'ShareUrls' => function ($sm) {
                     return new Model\ShareUrls($sm->get('db'), $sm);
                 },               
+                'SharePostIds' => function ($sm) {
+                    return new Model\SharePostIds($sm->get('db'), $sm);
+                },               
             ),
         );
     }

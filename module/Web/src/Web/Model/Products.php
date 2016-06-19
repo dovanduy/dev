@@ -112,7 +112,7 @@ class Products
             if (!empty($result)) {               
                 Cache::set($key, $result);                
             }
-        }        
+        } 
         return $result;
     } 
 	

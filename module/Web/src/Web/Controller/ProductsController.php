@@ -234,14 +234,12 @@ class ProductsController extends AppController
             }
             if (empty($data['meta_description'])) {
                 $data['meta_description'] = implode(PHP_EOL, array(
-                    'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'],                                        
+                    'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'] . ', giao hàng tận nơi, với nhiều chương trình khuyến mãi...',                                        
                     $data['short'],                    
                 ));              
             }       
             $data['meta_title'] = array(
-                $data['name'],
-                '' . app_money_format($data['price']),
-                'ĐT: ' . $website['phone']                  
+                $data['name']                
             );
             /*
             if (!empty($data['colors'])) {
@@ -257,7 +255,7 @@ class ProductsController extends AppController
             if (!empty($data['image_facebook'])) {
                 $data['meta_image'] = $data['image_facebook'];
             }
-            $data['og_description'] = $data['short'];            
+            $data['og_description'] = 'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'] . ', giao hàng tận nơi, với nhiều chương trình khuyến mãi...';            
             $this->setHead(array(
                 'title' => $data['meta_title'],
                 'meta_name' => array(

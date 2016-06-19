@@ -17,4 +17,11 @@ class ShareurlsController extends AppController {
         );
     }
     
+    public function updatepostidAction()
+    {
+        return \Api\Bus\ShareUrls\UpdatePostId::getInstance()->execute(
+            $this->getServiceLocator(),
+            $this->getParams()
+        );
+    }
 }

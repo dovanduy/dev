@@ -52,7 +52,12 @@ class ProductItemHelper extends AbstractHtmlElement
         ";
         $AppUI = $view->viewModel()->getRoot()->getVariable('AppUI');
         $website = $view->viewModel()->getRoot()->getVariable('website');
-        if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))) {
+        if (is_array($product['category_id']) && !empty($product['category_id'])) {
+            $categoryId = $product['category_id'][0];
+        } else {
+            $categoryId = $product['category_id'];
+        }
+        if (!empty($AppUI) && in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))) {
             $setPriorityUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -178,13 +183,8 @@ class ProductItemHelper extends AbstractHtmlElement
                             'product_id' => $product['product_id']
                         )
                     )
-                );
+                );                
                 
-                if (is_array($product['category_id']) && !empty($product['category_id'])) {
-                    $categoryId = $product['category_id'][0];
-                } else {
-                    $categoryId = $product['category_id'];
-                }
                 $removeFromCategoryUrl = $view->url(
                     'web/ajax', 
                     array(

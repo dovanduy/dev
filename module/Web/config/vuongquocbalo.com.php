@@ -69,13 +69,12 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
+                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">Xem chính sách bán hàng</a></p>
                 <p>✓ Thanh toán khi nhận hàng</p>
                 <p>✓ Đổi trả trong <strong>7</strong> ngày</p>    
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
-                <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                 
-                <!--<p class="text-center"><a href="/signup"><img src="/web/images/signup.png"/></a></p> -->
+                <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>
             </div>              
         </div>
     ',
@@ -93,8 +92,7 @@ return array(
             </div>  
             <div class="guide">  
                 <div class="title">Hướng Dẫn Mua Hàng</div>
-                <p>✓ Đặt hàng trực tiếp tại website, xem <a target="_blank" href="http://vuongquocbalo.com/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></p>
-                <p>✓ Đặt hàng trực tiếp qua chat trên website</p>
+                <p>✓ Đặt hàng trực tiếp tại website, xem <a target="_blank" href="http://vuongquocbalo.com/huong-dan-mua-hang.html">Hướng dẫn mua hàng</a></p>             
                 <p><i class="fa fa-mobile"></i> <strong style="color:#D4232B">097 443 60 40 - 098 65 60 997</strong></p>
                 <p><i class="fa fa-envelope"></i> <a itemprop="email" href="mailto:vuongquocbalo@gmail.com">vuongquocbalo@gmail.com</a></p>           
                 <p><i class="fa fa-skype"></i> <a href="skype:thailvn?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_green_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chat with me" align="absmiddle" /></a></p>                                           
@@ -120,7 +118,7 @@ return array(
         )
     ),
     */
-    'chat' => '<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
+    'chat' => '', //<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
     'ga' => "<script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

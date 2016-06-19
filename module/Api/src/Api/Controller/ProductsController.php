@@ -217,4 +217,20 @@ class ProductsController extends AppController {
         );
     }
     
+    public function updatefbimageAction()
+    {
+        return \Api\Bus\Products\UpdateFbImage::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function updatepriceAction()
+    {
+        return \Api\Bus\Products\UpdatePrice::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
 }

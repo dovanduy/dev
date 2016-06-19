@@ -83,7 +83,7 @@ class Util {
      * @author thailh   
      * @return array | boolean 
      */
-    public static function uploadImageFromUrl($url = '', $maxWidth = 600, $maxHeight = 600)
+    public static function uploadImageFromUrl($url = '', $maxWidth = 600, $maxHeight = 600, $fileName = '')
     { 
         if (!empty($url)) {          
             $config = Module::getConfig('upload.image');
@@ -98,7 +98,13 @@ class Util {
             $fileInfo = pathinfo($url);
             if (is_array($fileInfo) && count($fileInfo) >= 4) {
                 $ext = strtolower(strrchr($fileInfo["basename"], '.'));
-                $fileName = $config['filename_prefix'] . uniqid() . time() . $ext;
+                if (!empty($fileName)) {
+                    $fileName = name_2_url($fileName, $ext);
+                }
+                if (empty($fileName) 
+                    || (is_file($destination . '/' . $fileName) && !file_exists($destination . '/' . $fileName))) {
+                    $fileName = $config['filename_prefix'] . uniqid() . time() . $ext;
+                }
                 $target = $destination . '/' . $fileName;
                 if (app_file_put_contents($target, $image) !== false) {                    
                     $image = new \SimpleImage(); 

@@ -45,7 +45,7 @@ class UsersController extends AppController
             'page' => 1,
             'limit' => \Application\Module::getConfig('general.default_limit'),
             'sort' => 'name-asc',
-            'country_code' => \Application\Module::getConfig('general.default_country_code'),
+            //'country_code' => \Application\Module::getConfig('general.default_country_code'),
         ));      
         
         $request = $this->getRequest();

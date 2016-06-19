@@ -20,6 +20,22 @@ if (!function_exists('p')) {
 
 }
 
+if (!function_exists('app_array_field')) {
+    function app_array_field($arr, $field, $toString = false) {
+       $result = array();
+       if ($arr) {
+           foreach ($arr as $item) {
+               $result[] = $item[$field];
+           }
+       }
+       $result = array_unique($result);
+       if ($toString) {
+           $result = implode(',', $result);
+       }
+       return $result;
+    }
+}
+    
 if (!function_exists('curl_file_create')) {
 
     function curl_file_create($filename, $mimetype = '', $postname = '') {
@@ -54,6 +70,15 @@ if (!function_exists('generate_token')) {
 
 }
 
+if (!function_exists('app_plan_text')) {
+
+    function app_plan_text($text) {  
+         return trim(strip_tags($text));
+    }
+
+}
+ 
+     
 if (!function_exists('str_no_vi')) {
     function str_no_vi($string, $length = 100, $strSymbol = '-', $isToLower = 1)
 	{
@@ -479,34 +504,68 @@ if (!class_exists('SimpleImage')) {
 	}
 }
 
-function app_file_get_contents($url, $retry = true) {        
+function app_echo($message, $flag = true) {
+    if ($flag) {
+        echo $message;
+    }
+}
+
+function app_file_get_contents($url, $retry = true, $echoFlag = false) {        
     $content = @file_get_contents($url);
     if ($content === false) {
-       for ($i = 0; $i <= 99; $i++) {
-           echo $url . ' Retying' . PHP_EOL;
+       for ($i = 0; $i <= 99; $i++) {           
+           app_echo($url . ' Retying' . PHP_EOL, $echoFlag);           
            sleep(3);
            $content = @file_get_contents($url);
            if ($content !== false) {
-               echo $url . ' Done' . PHP_EOL;
+               app_echo($url . ' Done' . PHP_EOL, $echoFlag);
                return $content;
            }
        }
     } else {
-        echo $url . ' Done' . PHP_EOL;    
+        app_echo($url . ' Done' . PHP_EOL, $echoFlag); 
         return $content;
-    }       
+    }   
     return false;
 }
 
-function app_file_put_contents($targetFileName, $content) {
+function app_file_put_contents($targetFileName, $content, $echoFlag = false) {
     $retry = 99;
     do {
         $ok = @file_put_contents($targetFileName, $content);        
-        echo $targetFileName . ' Retrying' . PHP_EOL;
+        app_echo($targetFileName . ' Retrying' . PHP_EOL, $echoFlag);
         $retry--;
         sleep(3);
     } while ($ok === false && $retry > 0);
     return $ok;
+}
+
+function app_get_fb_share_content($product) {    
+    $price = $product['price'];
+    if (!empty($product['discount_percent'])) {
+        $price .= ' (đang giảm giá: ' . $product['discount_percent'] . '%)';
+    }    
+    $short = mb_ereg_replace('!\s+!', ' ', $product['short']); 
+    $data = [
+        'message' => implode(PHP_EOL, [
+            $product['name'],
+            "Giá {$price}", 
+            "Mã hàng: {$product['code']}",                      
+            "NT đặt hàng: {$product['code']} gửi 098 65 60 997", 
+            "ĐT đặt hàng: 097 443 60 40 - 098 65 60 997",                 
+            $short,                 
+            "Chi tiết {$product['short_url']}",
+            'Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)',
+            'Khám phá hàng nghìn balo, túi xách đẹp, chất lượng, giá tốt trên website vuongquocbalo.com',
+        ]),
+        'link' => $product['url'],
+        'picture' => $product['image_facebook'],
+        'caption' => 'vuongquocbalo.com'
+    ];
+    if (!empty($product['tags'])) {
+        $data['tags'] = implode(',', $product['tags']);
+    }
+    return $data;
 }
 
 if (!allowIp()) {

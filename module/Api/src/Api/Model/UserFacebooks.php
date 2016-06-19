@@ -42,9 +42,12 @@ class UserFacebooks extends AbstractModel {
         $selectString = $sql->getSqlStringForSqlObject($select);
         $users = static::toArray(static::selectQuery($selectString));
         $shareUrlModel = new ShareUrls;
+        if (empty($param['limit'])) {
+            $param['limit'] = 4;
+        }
         return array(
             $users,
-            $shareUrlModel->getForShare(array('limit' => 5))
+            $shareUrlModel->getForShare($param)
         );
     }    
     

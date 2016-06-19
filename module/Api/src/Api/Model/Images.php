@@ -286,9 +286,9 @@ class Images extends AbstractModel
     
     public static function getAll($param)
     {
-        if (empty($param['src_id']) || empty($param['src'])) {
+        if (empty($param['src'])) {
             return false;
-        }  
+        } 
         static::$tableName = self::getTableName($param);
         $columns = array(                
             'image_id',
@@ -304,14 +304,12 @@ class Images extends AbstractModel
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)  
-            ->columns($columns)            
-            ->where(
-                array(
-                    static::$tableName . '.src_id' => $param['src_id'],
-                    static::$tableName . '.active' => 1
-                )
-            )
-            ->order('is_main DESC');     
+            ->columns($columns)
+            ->order('is_main DESC');    
+        $select->where(static::$tableName . '.active = 1');
+        if (!empty($param['src_id'])) {
+            $select->where(static::$tableName . '.src_id = ' . $param['src_id']);
+        }
         return self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
@@ -411,6 +409,35 @@ class Images extends AbstractModel
                 )
             )
         );
+    }
+    
+    public static function getForBatch($param)
+    {
+        $srcs = array(
+            'admins',
+            'users',
+            'banners',            
+            'brands',
+            'menus',
+            
+            'websites',
+            'website_categories',
+            
+            'news',
+            'news_categories',    
+            
+            'products',
+            'product_categories',                    
+        );
+        $result = array();
+        foreach ($srcs as $src) {
+            $images = self::getAll(array(
+                'website_id' => $param['website_id'],
+                'src' => $src,
+            ));
+            $result = array_merge($result, $images);
+        }
+        return $result;
     }
     
 }
