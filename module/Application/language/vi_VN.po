@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ZendSkeletonApplication\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-03-28 10:08+0700\n"
-"PO-Revision-Date: 2016-05-26 08:27+0700\n"
+"PO-Revision-Date: 2016-06-19 22:10+0700\n"
 "Last-Translator: Do Nhu Vy <donhuvy@hotmail.com>\n"
 "Language-Team: ZF Contibutors <zf-devteam@zend.com>\n"
 "Language: vi_VN\n"
@@ -1248,6 +1248,9 @@ msgstr "Xoá cache"
 
 msgid "Product information"
 msgstr "Thông tin sản phẩm"
+
+msgid "About product"
+msgstr "Về sản phẩm"
 
 msgid "Color, Size and Price"
 msgstr "Màu sắc, kích thước và giá"

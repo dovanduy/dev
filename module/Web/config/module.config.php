@@ -209,7 +209,9 @@ return array(
         '450685568302692', // PHỤ NỮ YÊU THỜI TRANG https://www.facebook.com/groups/phunuyeuthoitrang/
         '586924924744389', // Hội Mua Bán Quận 12, Hóc Môn, Củ Chi, Gò Vấp https://www.facebook.com/groups/Hoimuabanhocmon/
         '235978366529258', // MUA SẮM UY TÍN 13 https://www.facebook.com/groups/235978366529258
-    ],    
+    ], 
+    'facebook_album_dir' => getcwd() . '/data/fbalbum',  
+    
     'admin_user_id' => array(1, 4, 11, 13, 17, 20),
     'ship_district' => array(
         'VN.HC.QA' => 0, // Quận 1

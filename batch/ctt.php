@@ -75,7 +75,7 @@ foreach ($importList as &$item) {
                     $stop = true;
                 }
             }                    
-        }          
+        }
         $page++;
     } while ($stop == false);
 }
@@ -105,6 +105,20 @@ foreach ($importList as $item) {
                 break;
             }
         }    
+        foreach($html->find('div[class=box-collateral box-despr]') as $element) {                
+            if (!empty($element->innertext)) { 
+                $subHtml = str_get_html($element->innertext); 
+                foreach($subHtml->find('div[class=block-primg]') as $element1) {                
+                    if (!empty($element1->innertext)) {
+                        $product['more'] = strip_tags($element1->innertext, '<p><b><span><strong><div>');
+                        $product['more'] = str_replace(['Zanado.com', 'zanado.com', 'Zanado', 'zanado'], '<a href="http://vuongquocbalo.com">vuongquocbalo.com</a>', $product['more']);
+                        $product['more'] = str_replace(['<p><span></span></p>', '<p></p>', '<p> </p>', '<p><strong><em></em></strong></p>'], '', $product['more']);
+                        $product['more'] = str_replace(['<div style="clear:both;margin: 10px auto;width: 80%;border-top: 1px solid #ddd;"></div>'], '<div style="clear:both;margin: 10px auto;width: 100%;border-top: 1px solid #ddd;"></div>', $product['more']);
+                        break;
+                    }
+                }
+            }
+        }    
        
         foreach($html->find('div[class=product-attribute]') as $element) {
             if (!empty($element->innertext)) {
@@ -131,14 +145,16 @@ foreach ($importList as $item) {
             }
         } 
         $product['url_src'] = $url;        
-        $products[] = $product;   
+        $products[] = $product;
         batch_info($url . ' -> Parse done');
     }
     // end get product detail
 }
 $offset = 0;
-$limit = 100;
+$limit = 30;
+batch_info('Total product: ' . count($products));
 do {
+	batch_info('Updating record ' . $offset . ' - ' . ($offset + $limit - 1));
     $updates = array_slice($products, $offset, $limit);
     if (!empty($updates)) {
         $result = call('/products/updateprice', ['products' => json_encode($updates)]);
@@ -146,10 +162,12 @@ do {
             foreach ($result as $code => $value) {
                 batch_info($code . ' : ' . $value);
             }
-        }
-        $offset =+ $limit;
-    }   
-} while(empty($updates));
- 
+        }        
+    }
+	if ($updates == false) {
+		batch_info('Update Error');
+	}
+	$offset += $limit;	
+} while(!empty($updates) && $result != false); 
 batch_info('Done');
 exit;

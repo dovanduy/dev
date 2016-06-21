@@ -156,6 +156,9 @@ class ProductsController extends AppController
             );
             
         } elseif (!empty($productId)) { // detail page
+            $param = $this->getParams(array(                      
+                'force' => 0,            
+            ));
             $request = $this->getRequest();
         
             $id = $productId;    
@@ -164,9 +167,9 @@ class ProductsController extends AppController
             if (empty($id)) {
                 return $this->notFoundAction();
             }
-
+            
             // get detail             
-            $data = Products::getDetail($id);
+            $data = Products::getDetail($id, $param['force']);
           
             // not found data
             if (empty($data)) {
@@ -229,8 +232,11 @@ class ProductsController extends AppController
             if (empty($data['meta_keyword'])) {
                 $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
             }
-            if (empty($data['code'])) {
-                $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code'];
+            if (!empty($data['code'])) {
+                $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code'];                
+            }
+            if (!empty($data['code_src'])) {
+                $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code_src'];
             }
             if (empty($data['meta_description'])) {
                 $data['meta_description'] = implode(PHP_EOL, array(

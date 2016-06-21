@@ -67,7 +67,7 @@ if (!empty($cartItems)) {
                         </div>
                         
 						<ul class="list-inline hidden-sm hidden-xs">
-                            <?php if (!empty($website['address'])): ?> 
+                            <?php if (!empty($website['address']) && 1==0): ?>  
 							<li>                                
                                 <i class="fa fa-map-marker pr-5 pl-10"></i>
                                 <a itemprop="address" itemscope itemtype="http://schema.org/PostalAddress" href="<?php echo $this->url('web/contact')?>">

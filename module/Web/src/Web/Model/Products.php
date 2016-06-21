@@ -116,10 +116,10 @@ class Products
         return $result;
     } 
 	
-	public static function getDetail($productId)
+	public static function getDetail($productId, $force = 0)
     {       
         $key = PRODUCT_DETAIL . $productId;
-        if (!($result = Cache::get($key))) {            
+        if (!($result = Cache::get($key)) || $force == 1) {            
             $result = Api::call(
                 'url_products_detail', 
                 array(                    

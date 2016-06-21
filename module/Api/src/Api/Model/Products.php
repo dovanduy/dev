@@ -2,6 +2,7 @@
 
 namespace Api\Model;
 
+use Application\Lib\Log;
 use Application\Lib\Arr;
 use Application\Lib\Util;
 use Zend\Db\Sql\Sql;
@@ -34,6 +35,7 @@ class Products extends AbstractModel {
         'name',
         'short',
         'content',
+        'more',
         'meta_keyword',
         'meta_description',
         'created',
@@ -1352,6 +1354,7 @@ class Products extends AbstractModel {
                 '_id', 
                 'brand_id',
                 'code',
+                'code_src',
                 'model',
                 'price',
                 'original_price',
@@ -1380,6 +1383,7 @@ class Products extends AbstractModel {
                     'name', 
                     'short',
                     'content',
+                    'more',
                     'meta_keyword',
                     'meta_description',
                 )  
@@ -1390,6 +1394,9 @@ class Products extends AbstractModel {
         }
         if (!empty($param['product_id'])) {            
             $select->where(static::$tableName . '.product_id = '. self::quote($param['product_id']));  
+        }
+        if (!empty($param['code'])) {            
+            $select->where(static::$tableName . '.code = '. self::quote($param['code']));  
         }
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
@@ -2270,7 +2277,10 @@ class Products extends AbstractModel {
         return $result;
     }
     
-    public static function updatePrice($param) {        
+    public static function updatePrice($param) {    
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
         $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
         $result = array();
         if (!empty($products)) {
@@ -2281,15 +2291,41 @@ class Products extends AbstractModel {
                     'discount_percent' => $product['discount_percent'],
                     'original_price' => $product['original_price'],
                     'price' => $product['price']
-                ];               
+                ]; 
+                
+                $detail = self::find(
+                    array(            
+                        'table' => 'products',
+                        'where' => [                            
+                            'code' => $product['code']
+                        ]
+                    ),
+                    self::RETURN_TYPE_ONE
+                );                 
+                if (empty($detail)) {
+                    Log::warning("CODE {$product['code']} does not exists");
+                    continue;
+                }
                 $ok = self::update([
                     'table' => 'products',
                     'set' => $set,
                     'where' => [
-                        'website_id' => $product['website_id'],
-                        'code' => $product['code']
+                        'website_id' => $detail['website_id'],
+                        'product_id' => $detail['product_id'],
                     ]
                 ]);
+                if ($ok && isset($product['more'])) {
+                    $ok = self::update([
+                        'table' => 'product_locales',
+                        'set' => [
+                            'more' => $product['more']
+                        ],
+                        'where' => [                           
+                            'product_id' => $detail['product_id'],
+                            'locale' => $param['locale']
+                        ]
+                    ]);
+                }
                 $result[$product['code']] = !empty($ok) ? 'OK' : 'Fail';  
             }
         }
