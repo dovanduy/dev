@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>vuongquocbalo.com</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body style="font-family:Helvetica,Arial,sans-serif;font-size:15px;margin: 0; padding: 0;">
+        <?php $campaign = 'utm_source=google&utm_medium=email&utm_campaign=product' ?>
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+            <tr>
+                <td>
+                    <table align="center" border="1" bordercolor="eeeeee" style="border:1px solid #555;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="600">
+                        <tr>
+                            <td align="center" bgcolor="#fcfcfc" style="padding: 20px 0 20px 0;">
+                                <a href="http://vuongquocbalo.com/?<?php echo $campaign?>">
+                                    <img src="http://img.vuongquocbalo.com/2016/05/17/balo_logo_573add4f02fa7.png" alt="Creating Email Magic" style="display: block;" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#ffffff" style="padding: 10px;">
+                                <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="100%">   
+                                    <tr>
+                                        <td>
+                                            <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%">   
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-xach-nu?<?php echo $campaign?>"> Túi xách nữ </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-nu?<?php echo $campaign?>"> Ba lô Nữ </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-nam?<?php echo $campaign?>"> Ba lô Nam </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-xach-cap-tap-nam?<?php echo $campaign?>"> Túi xách, Cặp táp Nam </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-laptop?<?php echo $campaign?>"> Ba lô laptop </a></td></tr>                                                
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-gia-da?<?php echo $campaign?>"> Ba lô in giả da </a></td></tr>                                                
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-tui-xach-du-lich?<?php echo $campaign?>"> Ba lô, túi xách du lịch </a></td></tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%"> 
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-mau-giao?<?php echo $campaign?>"> Ba lô mẫu giáo </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-1?<?php echo $campaign?>"> Ba lô học sinh cấp 1 </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-2-3?<?php echo $campaign?>"> Ba lô học sinh cấp 2,3 </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-cheo-sinh-vien?<?php echo $campaign?>"> Túi chéo sinh viên </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-sinh-vien?<?php echo $campaign?>"> Ba lô sinh viên </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-teen?<?php echo $campaign?>"> Ba lô teen </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-giay-rut?<?php echo $campaign?>"> Ba lô in giây rút </a></td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                            </td>
+                        </tr>     
+                        <tr>
+                            <td bgcolor="#ffffff" style="padding: 10px;">                                
+                                <?php foreach ($data['products'] as $product): ?>
+                                <table style="border:1px solid #eee;margin-bottom: 8px;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="100%">   
+                                    <tr>
+                                        <td>
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                <tr>
+                                                    <td style="padding: 5px;" align="left" valign="top" width="220">
+                                                        <a href="<?php echo $product['short_url'] ?>">
+                                                            <img width="200" src="<?php echo $product['url_image'] ?>" alt="" style="display: block;" />
+                                                        </a>
+                                                    </td>
+                                                    <td style="padding: 5px;" align="left">                                                        
+                                                        <div style="clear:both;float:left;padding:2px 0px">
+                                                            <a href="<?php echo $product['short_url'] ?>">
+                                                                <?php echo $product['name'] ?>
+                                                            </a>
+                                                        </div>                                                        
+                                                        <div style="clear:both;float:left;padding:2px 0px"><?php echo $product['short'] ?></div>
+                                                        <div style="clear:both;float:left;padding:2px 0px;">
+                                                            <span style="float: left;color: #D4232B;font-size: 18px;"><?php echo $product['price'] ?></span>
+                                                            <span style="float: left;margin-left: 4px;margin-top: 4px;text-decoration: line-through;text-transform: uppercase;font-size: 14px;"><?php echo $product['original_price'] ?></span>
+                                                        </div>
+                                                        <div style="clear:both;float:left;padding:2px 0px">
+                                                            <a href="<?php echo $product['short_url'] ?>">
+                                                                Xem chi tiết
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <?php endforeach ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#ffffff" style="padding: 10px;">
+                                <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="100%">   
+                                    <tr>
+                                        <td>
+                                            <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%">   
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-xach-nu?<?php echo $campaign?>"> Túi xách nữ </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-nu?<?php echo $campaign?>"> Ba lô Nữ </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-nam?<?php echo $campaign?>"> Ba lô Nam </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-xach-cap-tap-nam?<?php echo $campaign?>"> Túi xách, Cặp táp Nam </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-laptop?<?php echo $campaign?>"> Ba lô laptop </a></td></tr>                                                
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-gia-da?<?php echo $campaign?>"> Ba lô in giả da </a></td></tr>                                                
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-tui-xach-du-lich?<?php echo $campaign?>"> Ba lô, túi xách du lịch </a></td></tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%"> 
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-mau-giao?<?php echo $campaign?>"> Ba lô mẫu giáo </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-1?<?php echo $campaign?>"> Ba lô học sinh cấp 1 </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-2-3?<?php echo $campaign?>"> Ba lô học sinh cấp 2,3 </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/tui-cheo-sinh-vien?<?php echo $campaign?>"> Túi chéo sinh viên </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-sinh-vien?<?php echo $campaign?>"> Ba lô sinh viên </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-teen?<?php echo $campaign?>"> Ba lô teen </a></td></tr>
+                                                <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-giay-rut?<?php echo $campaign?>"> Ba lô in giây rút </a></td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#fcfcfc" style="padding: 20px 10px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <div style="clear:both;float:left;padding:1px 0px;margin-bottom:2px;">Đơn vị chủ quản: <a href="http://vuongquocbalo.com?<?php echo $campaign?>">vuongquocbalo.com</a></div>                                            
+                                            <div style="clear:both;float:left;padding:1px 0px;margin-bottom:2px;"><?php echo $this->translate('Hotline')?>: 097 443 60 40</div>
+                                            <div style="clear:both;float:left;padding:1px 0px;margin-bottom:2px;">Email: vuongquocbalo@gmail.com</div>
+                                            <div style="clear:both;float:left;padding:1px 0px;margin-bottom:2px;">Website: <a href="http://vuongquocbalo.com?<?php echo $campaign?>">vuongquocbalo.com</a></div>
+                                        </td>                                       
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
