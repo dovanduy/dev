@@ -20,6 +20,8 @@ class UserGoogles extends AbstractModel {
         'google_link',
         'google_image',
         'google_gender', 
+        'access_token', 
+        'access_token_expires_at', 
         'created',
         'updated',           
     );

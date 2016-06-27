@@ -220,16 +220,79 @@ return array(
     
     'email' => array(               
         'from_email' => 'vuongquocbalo@gmail.com',        
-        'from_name' => 'no-reply',        
+        'from_name' => 'no-reply', 
         'smtp' => array(
             'host' => 'smtp.gmail.com',
             'name' => 'gmail.com',
             'port' => 587,
-            'username' => 'mail.vuongquocbalo.com@gmail.com',
+            'username' => 'thailvn@gmail.com',            
+            'password' => 'Mk462008',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ),
+        'smtp_' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'mail.vuongquocbalo.com@gmail.com',            
             'password' => 'balo@2016',
             'timeout' => 2 * 60,
             'ssl' => 'tls',
-        )
+        ),
+        'smtp2' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'mail.vuongquocbalo.vn@gmail.com',            
+            'password' => 'balo@2016',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ), 
+        'smtp3' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'noreply.vuongquocbalo.com@gmail.com',
+            'password' => 'balo@2016',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ),
+        'smtp4' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'noreply1.vuongquocbalo.com@gmail.com',
+            'password' => 'balo@2016',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ),
+        'smtp5' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'noreply2.vuongquocbalo.com@gmail.com',
+            'password' => 'balo@2016',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ),
+        'smtp6' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'kenstore2016@gmail.com',
+            'password' => 'ngoc1984',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ), 
+        'smtp7' => array(
+            'host' => 'smtp-mail.outlook.com',
+            'name' => 'outlook.com',
+            'port' => 587,
+            'username' => 'kinhdothoitrang@outlook.com',
+            'password' => 'Mk462008',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        ), 
     ),
     
     // production
@@ -239,9 +302,15 @@ return array(
     // dev
     'facebook_app_id' => '261013080913491',
     'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
+    'facebook_groups' => [
+        '1479744482314512', // https://www.facebook.com/groups/Thuducquan2quan9/
+        '795251457184853', // https://www.facebook.com/groups/24hmuabanraovat/
+        '113462365452492', // https://www.facebook.com/groups/795251457184853/ HỘI MUA BÁN-RAO VẶT-GIAO LƯU KẾT BẠN TOÀN QUỐC
+        '392392084295942' // https://www.facebook.com/groups/donnhahn18899/
+    ],
     
      
-    'admin_user_id' => array(11, 13, 17, 20, 23, 24, 25, 26, 27),
+    'admin_user_id' => array(4, 13, 20, 23, 25, 27, 30),
     //'admin_user_id' => array(86),
     
     'google_urlshortener' => array(
@@ -249,5 +318,8 @@ return array(
         'key' => 'AIzaSyDORv1kNObIyAhI9khTjsiX230_dL7xUI4',
         'timeout' => 30,
     ),
+    
+    'send_email_file' => getcwd() . '/data/email.serialize',
+    'fbshare_file' => getcwd() . '/data/fbshare.serialize',
     
 );

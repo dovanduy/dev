@@ -17,6 +17,7 @@ use Web\Model\LocaleCities;
 use Web\Model\Users;
 use Web\Form\My\UpdateForm;
 use Web\Form\My\PasswordForm;
+use Web\Form\My\Password2Form;
 use Web\Form\My\AddressListForm;
 use Web\Form\My\AddAddressForm;
 use Web\Form\My\ProductOrderListForm;
@@ -242,6 +243,7 @@ class MyController extends AppController
                                 'url_addresses_onoff', 
                                 $post
                             );
+                            Users::removeCache($AppUI->_id);
                             die('OK');
                         }
                         
@@ -287,14 +289,18 @@ class MyController extends AppController
                         'active' => true
                     ));
                 }
-                
+               
                 // create password form
-                $data['password'] = ''; 
-                $form = new PasswordForm();                  
+                if (empty($data['password'])) {           
+                    $form = new Password2Form();
+                } else {
+                    $data['password'] = '';
+                    $form = new PasswordForm();
+                }        
                 $form->setController($this)                    
                      ->create()
                      ->bindData($data);
-                
+               
                 // save general form
                 if ($request->isPost()) {
                     $post = (array) $request->getPost();                
@@ -303,6 +309,7 @@ class MyController extends AppController
                         $post['_id'] = $id;
                         Api::call('url_users_updatepassword', $post); 
                         if (empty(Api::error())) {
+                            Users::removeCache($id);
                             $this->addSuccessMessage('Data saved successfully');
                             if (isset($post['saveAndBack']) && $backUrl) {
                                 return $this->redirect()->toUrl(base64_decode($backUrl));
@@ -366,6 +373,7 @@ class MyController extends AppController
             default:     
                 
         }
+        
         if (Api::error() || $this->getErrorMessage()) {
             $this->addErrorMessage($this->getErrorMessage());
         }

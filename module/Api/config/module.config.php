@@ -107,6 +107,8 @@ return array(
             'Api\Controller\Productcolors' => 'Api\Controller\ProductcolorsController',
             'Api\Controller\Vouchers' => 'Api\Controller\VouchersController',
             'Api\Controller\Shareurls' => 'Api\Controller\ShareurlsController',
+            'Api\Controller\Productshares' => 'Api\Controller\ProductsharesController',
+            'Api\Controller\Contactlists' => 'Api\Controller\ContactlistsController',
         ),
     ),
     'view_manager' => array(

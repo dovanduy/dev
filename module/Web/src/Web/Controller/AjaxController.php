@@ -10,6 +10,7 @@
 namespace Web\Controller;
 
 use Application\Lib\Util;
+use Application\Lib\Arr;
 use Application\Lib\Log;
 use Web\Model\LocaleCities;
 use Web\Model\LocaleStates;
@@ -321,15 +322,16 @@ class AjaxController extends AppController
     }
     
     /**
-     * Ajax share to facecbook
+     * Ajax share to email
      *
      * @return Zend\View\Model
      */
-    public function fbshareAction()
+    public function emailshareAction()
     {   
+        set_time_limit(0);
         if (!$this->isAdmin()) {
             exit;
-        }        
+        }       
         $AppUI = $this->getLoginInfo(); 
         $request = $this->getRequest();    
         $param = $this->getParams();
@@ -343,6 +345,267 @@ class AjaxController extends AppController
             if (empty($product)) {
                 exit;
             }
+            $emailFile = \Application\Module::getConfig('send_email_file');
+            if (!file_exists($emailFile)) {
+                $data = array();
+            } else {
+                $content = file_get_contents($emailFile);
+                if (!empty($content)) {
+                    $data = unserialize($content);
+                    if (!empty($data)) {
+                        foreach ($data as $row) {
+                            if ($row['product_id'] == $product['product_id']) {
+                                $result = array(
+                                    'status' => 'OK',
+                                    'message' => 'Already existed',
+                                );
+                                die(\Zend\Json\Encoder::encode($result));	
+                            }
+                        }                
+                    }
+                }
+            }            
+            $param['url'] = str_replace('.dev', '.com', $param['url']);
+            $param['url'] .= '?utm_source=google&utm_medium=email&utm_campaign=product';
+            $param['short_url'] = Util::googleShortUrl($param['url']);
+            $data[] = [       
+                'category_id' => $product['category_id'],
+                'product_id' => $product['product_id'],
+                'name' => $product['name'],
+                'short' => $product['short'],
+                'price' => app_money_format($product['price']),
+                'original_price' => app_money_format($product['original_price']),
+                'discount_percent' => $product['discount_percent'],
+                'discount_amount' => $product['discount_amount'],
+                'url_image' => $product['url_image'],
+                'url' => $param['url'],
+                'short_url' => $param['short_url'],        
+            ];
+            if (file_put_contents($emailFile, serialize($data))) {
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Done',
+                );
+            } else {
+                 $result = array(
+                    'status' => 'OK',
+                    'message' => 'Can not write file',
+                );
+            }
+            die(\Zend\Json\Encoder::encode($result));          
+        }
+        exit;
+    }
+    
+    /**
+     * Ajax share to facecbook group
+     *
+     * @return Zend\View\Model
+     */
+    public function shareAction()
+    {   
+        set_time_limit(0);
+        if (!$this->isAdmin()) {
+            exit;
+        }       
+        $AppUI = $this->getLoginInfo(); 
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost()
+            && !empty($param['url'])
+            && !empty($param['product_id'])
+            && !empty($AppUI->facebook_id)
+            && !empty($AppUI->fb_access_token)) {
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }
+            
+            if (empty($product['image_facebook'])) {
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300);
+                if (!empty($product['image_facebook'])) {
+                    $param['image_facebook'] = $product['image_facebook'];
+                }                
+            }
+            
+            $param['url'] = str_replace('.dev', '.com', $param['url']);   
+            $product['url'] = $param['url']  . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
+            $product['short_url'] = Util::googleShortUrl($product['url']);  
+            $data = app_get_fb_share_content($product); 
+            
+            $result = [];
+            foreach (app_facebook_groups() as $groupId) {
+                $shares = Api::call('url_productshares_all', [
+                    'product_id' => $product['product_id'],                       
+                    'owner_id' => $groupId,                       
+                    'is_group' => 1,
+                ]);          
+                if (!empty($shares)) {
+                    $commentData = [
+                        'message' => app_get_comment_message(true),
+                        //'attachment_url' => app_get_comment_icon(true)
+                    ];
+                    $commentId = Fb::commentToPost($shares[0]['social_id'], $commentData, $AppUI->fb_access_token, $errorMessage);
+                    if (!empty($commentId)) {
+                        $result[] = "Group:{$groupId} - Comment:{$commentId}";
+                    } else {
+                        $result[] = "Group:{$groupId} - Comment:{$errorMessage}";
+                    }
+                    continue;
+                }
+                $id = Fb::postToGroup($groupId, $data, $AppUI->fb_access_token, $errorMessage);
+                if (!empty($id)) {
+                    Api::call('url_productshares_add', [
+                        'product_id' => $product['product_id'],
+                        'owner_id' => $groupId,
+                        'social_id' => $id,
+                        'is_group' => 1,
+                    ]);  
+                    if (empty(Api::error())) {
+                        $result[] = "Group:{$groupId} - Post:{$id}";
+                    } else {
+                        $result[] = "Group:{$groupId} - Post:System Error";
+                    }                    
+                } else {
+                    $result[] = "Group:{$groupId}: - Post:{$errorMessage}"; 
+                }               
+            }
+            $result = array(
+                'status' => 'OK',
+                'message' => implode('<br/>', $result),
+            );
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    /**
+     * Ajax share to facecbook
+     *
+     * @return Zend\View\Model
+     */
+    public function fbshareAction()
+    {   
+        set_time_limit(0);
+        if (!$this->isAdmin()) {
+            exit;
+        }       
+        $AppUI = $this->getLoginInfo(); 
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost()
+            && !empty($param['url'])
+            && !empty($param['product_id'])
+            && !empty($AppUI->facebook_id)
+            && !empty($AppUI->fb_access_token)) {
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }
+            $shares = Api::call('url_productshares_all', [
+                'product_id' => $product['product_id'],                       
+                'owner_id' => $AppUI->facebook_id,                       
+                'is_wall' => 1,
+            ]);           
+            if (!empty($shares)) {
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'You have been already shared',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+//                foreach ($shares as $share) { 
+//                    if ($share['owner_id'] != $AppUI->facebook_id) {                     
+//                        $commentList = app_get_comment_list();                       
+//                        $commentIcon = array_rand($commentList);    
+//                        $commentMessage = $commentList[$commentIcon];
+//                        $commentData = [
+//                            'message' => $commentMessage,
+//                            'attachment_url' => $commentIcon
+//                        ];                       
+//                        $commentMessage = $commentList[array_rand($commentList)];   
+//                        $commentData = [
+//                            'message' => $commentMessage                          
+//                        ];
+//                        
+//                    } else {
+//                        $commentData = [
+//                            'message' => 'Cám ơn khách hàng đã ủng hộ'                          
+//                        ];
+//                    }
+//                    $commentId = Fb::commentToPost($share['social_id'], $commentData, $AppUI->fb_access_token, $errorMessage);
+//                    $result = array(
+//                        'status' => 'OK',
+//                        'message' => !empty($commentId) ? 'CommentId: ' . $commentId : $errorMessage,
+//                    );
+//                    die(\Zend\Json\Encoder::encode($result));
+//                }                
+            }
+            
+            if (empty($product['image_facebook'])) {
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300);
+                if (!empty($product['image_facebook'])) {
+                    $param['image_facebook'] = $product['image_facebook'];
+                }                
+            }
+            $param['url'] = str_replace('.dev', '.com', $param['url']);   
+            $product['url'] = $param['url']  . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
+            $product['short_url'] = Util::googleShortUrl($product['url']);
+            $product['tags'] = app_facebook_tags($AppUI->facebook_id);
+            $data = app_get_fb_share_content($product);
+            $photos = array();            
+            if (!empty($product['images'])) {
+                if (!empty($product['colors'])) {                            
+                    foreach ($product['colors'] as $color) {   
+                        $photos[$color['url_image']] = $product['name'] . ' - Màu ' . str_replace('màu', '', mb_strtolower($color['name']));
+                    }
+                }
+                foreach ($product['images'] as $image) {   
+                    if (!isset($photos[$image['url_image']])) {
+                        $photos[$image['url_image']] = $product['name'];
+                    }
+                }
+            }
+            $countUpload = 0;
+            if (!empty($photos)) {
+                $i = 0;
+                foreach ($photos as $imageUrl => $name) { 
+                    $photoData = [
+                        'caption' => implode(PHP_EOL, [ 
+                            $name,
+                            mb_ereg_replace('!\s+!', ' ', $product['short'])
+                        ]),
+                        'url' => $imageUrl,
+                    ];
+                    $photoId = Fb::uploadUpublishedPhoto($photoData, $AppUI->fb_access_token, $errorMessage);
+                    if (!empty($photoId)) {
+                        $countUpload++;
+                        $data["attached_media[{$i}]"] = '{"media_fbid":"' . $photoId . '"}';
+                        $i++;
+                    }
+                }
+            }
+            if ($countUpload > 1) {
+                unset($data['link']);
+                unset($data['picture']);
+            }
+            $id = Fb::postToWall($data, $AppUI->fb_access_token, $errorMessage);
+            if (!empty($id)) {
+                Api::call('url_productshares_add', [
+                    'product_id' => $product['product_id'],
+                    'owner_id' => $AppUI->facebook_id,
+                    'social_id' => $id,
+                    'is_wall' => 1,
+                ]);
+            }
+            $result = array(
+                'status' => 'OK',
+                'message' => !empty($id) ? $id : $errorMessage,
+            );
+            die(\Zend\Json\Encoder::encode($result));
+            
+            /*
             $waitingFile = implode(DS, [WebModule::getConfig('facebook_album_dir'), 'waiting.txt']);
             if (!file_exists($waitingFile)) {
                 $data = array();
@@ -393,13 +656,11 @@ class AjaxController extends AppController
             );
             die(\Zend\Json\Encoder::encode($result));          
             exit;
-    
-            if (empty($product['image_facebook'])) {
-                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300);
-                if (!empty($product['image_facebook'])) {
-                    $param['image_facebook'] = $product['image_facebook'];
-                }                
-            }  
+            */
+            
+             
+            
+            
             $dir = implode(DS, [WebModule::getConfig('facebook_album_dir'), $AppUI->facebook_id]);
             if (mk_dir($dir) === false) {            
                 exit;
@@ -427,7 +688,7 @@ class AjaxController extends AppController
             $product['short_url'] = Util::googleShortUrl($param['url']);
             $price = app_money_format($product['price']);            
             if (!empty($product['discount_percent'])) {
-                $price .= ' (đang giảm giá: ' . $product['discount_percent'] . '%)';
+                $price .= ' (-' . $product['discount_percent'] . '%)';
             }
             $short = mb_ereg_replace('!\s+!', ' ', $product['short']); 
             $albumData = [
@@ -638,7 +899,7 @@ class AjaxController extends AppController
      *
      * @return Zend\View\Model
      */
-    public function shareAction()
+    public function share1Action()
     {   
         if (!$this->isAdmin()) {
             exit;

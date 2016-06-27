@@ -11,7 +11,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 include ('../vendor/facebook/php-sdk-v4/src/Facebook/autoload.php');
 include ('../functions.php');
 
-$env = 'production'; // development, production
+$env = 'development'; // development, production
 $config = [
     'development' => [
         'timeout' => 10*60,
@@ -28,7 +28,7 @@ $config = [
 ];
 $config = $config[$env];
 
-function call($url, $param = array()) {
+function call($url, $param = array(), &$errors = null) {
 	global $config;
 	$method = 'post';
 	if (isset($config[$url])) {
@@ -64,6 +64,7 @@ function call($url, $param = array()) {
                     return $result['results'];                   
                 case 'ERROR_VALIDATION':                                         
                 case 'ERROR':
+                    $errors = $result['results'];    
                     return false;
             }
             return $result;

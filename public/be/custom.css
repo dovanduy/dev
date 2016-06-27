@@ -472,11 +472,11 @@ tfoot .total-money {
     margin-left: 8px;
 }
 .th_total_money {
-    text-align: right;
+   
     padding-right: 10px !important;
 }
 .td_total_money {
-    text-align: right;    
+    
 }
 .add-order a {
     font-weight: bold !important;
@@ -704,4 +704,19 @@ tfoot .total-money {
 
 #attributeForm .form-group fieldset label {
     width: 30%;
+}
+.th_name  {
+	width: 120px;
+}
+.th_created  {
+	width: 100px;
+}
+.th_mobile {
+	width: 120px;
+}
+.th_total_money  {
+	width: 90px;
+}
+.table  th  {
+	text-align: left;
 }

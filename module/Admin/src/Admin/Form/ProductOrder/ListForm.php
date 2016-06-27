@@ -80,26 +80,17 @@ class ListForm extends AbstractForm
                     )
                 ),                             
             ),
-            array(            
-                'name' => 'state_name',
-                'title' => 'State/Province', 
-                'sort' => true,
-            ),
-            array(            
-                'name' => 'city_name',
-                'title' => 'City/District', 
-                'sort' => true,
-            ),
-            array(            
-                'name' => 'street',
-                'title' => 'Address', 
-                'sort' => true,
-            ),
-            array(            
+            array(
                 'name' => 'user_name',
-                'title' => 'Customer name', 
-                'sort' => true,
-            ),
+                'type' => 'html',
+                'title' => 'Customer',  
+                'innerHtml' => "
+                    {user_name}<br/>
+                    {address}
+                ",
+                'sort' => true,                
+            ), 
+            
             array(            
                 'name' => 'user_email',
                 'title' => 'Email', 
@@ -110,6 +101,23 @@ class ListForm extends AbstractForm
                 'title' => 'Mobile', 
                 'sort' => true,
             ),
+           
+//            array(            
+//                'name' => 'state_name',
+//                'title' => 'State/Province', 
+//                'sort' => true,
+//            ),
+//            array(            
+//                'name' => 'city_name',
+//                'title' => 'City/District', 
+//                'sort' => true,
+//            ),
+//            array(            
+//                'name' => 'street',
+//                'title' => 'Address', 
+//                'sort' => true,
+//            ),
+            
             array(
                 'name' => 'total_money',
                 'title' => 'Total money', 
@@ -120,10 +128,11 @@ class ListForm extends AbstractForm
             ),
             array(
                 'name' => 'created',
-                'title' => 'Created', 
+                'title' => 'Order date', 
                 'sort' => 'desc',
                 'attributes' => array(
-                    'datetime' => true
+                    'datetime' => true,
+                    'width' => 150
                 ),
             ),
             array(

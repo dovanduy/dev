@@ -159,7 +159,8 @@ class SearchForm extends AbstractForm
                         'email-asc' => 'Email ASC',
                         'email-desc' => 'Email DESC',
                         'name-asc' => 'Name ASC',
-                        'name-desc' => 'Name DESC'
+                        'name-desc' => 'Name DESC',
+                        'updated-desc' => 'Updated DESC',
                     ),
                 ),
                 'attributes' => array(

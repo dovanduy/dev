@@ -541,29 +541,173 @@ function app_file_put_contents($targetFileName, $content, $echoFlag = false) {
 }
 
 function app_get_fb_share_content($product) {    
-    $price = $product['price'];
-    if (!empty($product['discount_percent'])) {
-        $price .= ' (đang giảm giá: ' . $product['discount_percent'] . '%)';
-    }    
-    $short = mb_ereg_replace('!\s+!', ' ', $product['short']); 
+    $price = app_money_format($product['price']);
+    if (!empty($product['original_price'])) {
+        $price .= ' (giá trước đây ' . app_money_format($product['original_price']) . ')';
+    }   
+    $short = str_replace(PHP_EOL, ' ', mb_ereg_replace('!\s+!', ' ', $product['short'])); 
+    if (in_array(substr($short, -1), ['.', ',', ';', '-', '_'])) {
+        $short = substr($short, 0, strlen($short) - 1);
+    }
+    $short .= " - chi tiết {$product['short_url']}";
     $data = [
         'message' => implode(PHP_EOL, [
             $product['name'],
-            "Giá {$price}", 
-            "Mã hàng: {$product['code']}",                      
-            "NT đặt hàng: {$product['code']} gửi 098 65 60 997", 
-            "ĐT đặt hàng: 097 443 60 40 - 098 65 60 997",                 
-            $short,                 
-            "Chi tiết {$product['short_url']}",
-            'Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)',
-            'Khám phá hàng nghìn balo, túi xách đẹp, chất lượng, giá tốt trên website vuongquocbalo.com',
+            "Giá {$price}",             
+            "Đặt hàng: 097 443 60 40 - 098 65 60 997",                 
+            $short,
+            'Giao hàng TOÀN QUỐC',            
         ]),
         'link' => $product['url'],
         'picture' => $product['image_facebook'],
         'caption' => 'vuongquocbalo.com'
     ];
     if (!empty($product['tags'])) {
-        $data['tags'] = implode(',', $product['tags']);
+        $data['tags'] = is_array($product['tags']) ? implode(',', $product['tags']) : $product['tags'];
+    }
+    return $data;
+}
+
+if (!function_exists('app_random_value')) {
+    function app_random_value($array, $default=null)
+    {
+        $k = mt_rand(0, count($array) - 1);
+        return isset($array[$k])? $array[$k]: $default;
+    }
+}
+
+function app_get_comment_message($random = true) {
+    // Câu nói hay bất hủ về cuộc sống
+    $data1 = [
+        'Có nhiều người lạ lắm, mặc dù họ chẳng hề có ý định dành cho bạn một phần nhỏ xíu nào trong cuộc đời họ nhưng lúc nào cũng muốn là một phần rất quan trọng trong cuộc đời bạn.',
+        'Thời gian một người bỏ ra cho bạn là tình yêu của người đó dành cho bạn. Không phải ai rảnh sẽ bỏ ra nhiều hơn mà là ai yêu nhiều hơn sẽ cố gắng ở bên bạn nhiều hơn',
+        'Không phải vết thương nào chảy máu cũng đều đau. Có đôi khi vết thương không nhìn thấy máu mới thật sự là vết thương đau nhất.',
+        'Đừng lập gia đình sớm, dù bất cứ lý do nào đừng vội khi chưa sẵn sàng, chưa từng trải chưa hiểu được chung sống là một thử thách to lớn thế nào.',
+        'Đừng mơ trong cuộc sống mà hãy sống trong giấc mơ.',
+        'Dù bạn có vấp ngã hàng trăm lần thì cũng đừng bỏ cuộc. Hãy đứng dậy.',
+        'Cuộc sống cũng như một cuốn sách. Khi gặp chuyện buồn hãy tự mình bước sang một trang mới chứ đừng gập sách lại.',
+        'Lời nói của bạn có sức mạnh làm tan vỡ trái tim, hàn gắn mối quan hệ, khai sáng con người và thay đổi thế giới. Hãy nói có trách nhiệm và đừng quên trách nhiệm với lời nói của bạn.',
+        'Con đường đi tới thành công không bao giờ thẳng. Bạn sẽ phải trả giá bằng những ngã rẽ sai lầm nhiều lần trước khi tìm được con đường đúng nhất.',
+        'Bạn hãy nhớ sau này bạn sẽ chỉ hối tiếc về những việc bạn đã không làm khi có cơ hội, chứ không phải những việc bạn đã từng làm. Vì thế hãy hành động ngay khi bạn có cơ hội.',
+        'Khác biệt giữa một thách thức và một cơ hội chỉ nằm ở thái độ của bạn. Khi niềm tin của bạn lớn hơn nỗi sợ hãi, thách thức sẽ biến thành cơ hội của bạn.',
+        'Còn gì đẹp bằng một trái tim đang tan vỡ vẫn có thể tiếp tục tin vào tình yêu. Còn gì cao cả bằng một con người đang trải qua bão tố cuộc đời mình vẫn tiếp tục có thể nâng đỡ những người khác.',
+        'Đôi khi nếu bạn chờ đợi quá nhiều thứ cùng lúc, rất có thể bạn sẽ ra về trắng tay.',
+        'Nếu bạn còn sợ làm điều gì đó chỉ vì người đời sẽ phán xét thì tin mừng là thời buổi này chả ai buồn nhớ điều bạn làm quá một tuần.',
+        'Hãy tự biết cách gây áp lực cho chính bản thân để vươn lên và tỏa sáng. Bởi vì không ai sẽ làm điều đó thay cho bạn.',
+        'Một trong vấn đề nghiêm trọng của thế giới này đó là những kẻ khờ và mù quáng thì luôn quá chắc chắn về bản thân, còn những người khôn ngoan thì lại đầy nghi hoặc.',
+        'Thành công chỉ có thể đạt được bởi những người biết rõ thất bại là không thể tránh khỏi.',
+        'Cuộc sống vẫn vậy nếu nó lấy đi thứ gì của bạn thế nào nó cũng bù lại cho bạn thứ khác chỉ có điều là bạn có chịu đi tìm hay không thôi.',
+        'Khi chúng ta mong ước cuộc đời không nghịch cảnh hãy nhớ rằng cây sồi trở nên mạnh mẽ trong gió ngược, và kim cương hình thành dưới áp lực.',
+    ];
+    
+    // Những câu chúc ngày mới hay và ý nghĩa nhất
+    $data2 = [
+        'Tặng anh một món quà nhỏ bé tên là “Buổi sáng tốt lành!!” được gói bằng sự chân thành, buộc bằng sự quan tâm và dính keo bằng lời cầu nguyện của em để anh được an bình và hạnh phúc cả ngày…',
+        'Hoàng tử của em, dậy thôi nào, qua cái thời làm nũng rồi nhé. Dậy đi, Linh tinh là không chơi với anh nữa đâu nhé. Yêu anh! chúc anh ngày mới tràn ngập niềm vui và hạnh phúc! Chụt!',
+        'Ông mặt trời mọc rồi kìa, với nụ cười ấm áp biết bao! Ông chúc anh một buổi sáng tốt lành và mong anh sẽ có một ngày thật tuyệt!',
+        'Anh dậy chưa? Anh vẫn còn ngủ phải không? Em không muốn ôm một “chú heo con” đâu nhé! Anh dậy chuẩn bị đi làm đi nhé! Anh phải nhớ 3 điều em dặn này: 1. Nhớ em; 2. Thương em; 3. Yêu em. Anh bắt đầu thực hiện kể từ lúc anh nhận được tin nhắn này!',
+        'Anh ơi, dậy chưa? Anh đừng nướng kĩ quá, khét rùi! Em nhìn thấy từ phía nhà anh…”ôi! có khói bốc lên cao rồi kìa” , em sợ ko nhận ra anh mất. Hé hé…',
+        'Tình yêu là gì? Tình yêu chính là điều khiến điện thoại của em lên tiếng chuông mỗi khi anh gửi tin nhắn. Chúc anh luôn sẵn sàng cho ngày mới nhiều thành công.',
+        'Em gửi cho anh 1000 nụ cười, bây giờ anh hãy cười đi nhé. Còn 999 nụ cười anh hãy để dành dưới gối, mỗi sáng thức dậy anh hãy lấy ra 1 nụ cười nhá. Vì em mong muốn anh luôn vui vẻ!^^',
+        'Mặt trời đã hé rạng đằng Đông và những con chim đang ca hót vui vẻ. Bươm bướm đang bay lượn quanh những cành hoa. Đã đến lúc dậy và ngáp một cái thật to nào! Chúc buổi sáng tốt lành !!',
+        'Tối qua em đi ngủ với một nụ cười vì em biết em sẽ mơ thấy anh… Và sáng nay em thức dậy cùng với một nụ cười vì em biết anh không là một giấc mơ.',
+        'Chúc buổi sáng an lành, 1 ngày làm việc may mắn và thành công,chúc bạn luôn vui vẻ tràn ngập tiếng cười.',
+        'Khi anh nói với em rằng “Chúc một buổi sáng tốt lành!”. Đó không đơn thuần là 1 SMS mà còn là một thông điệp: “Anh nhớ em ngay khi anh vừa tỉnh giấc”!!!^^',
+        'Một vòng tay ban đêm sưởi ấm trái tim, một nụ hôn ban đêm thắp sáng bình minh và một buổi sáng tốt lành để bắt đầu một ngày cho anh!!',
+        'Một ngày đối với anh bao giờ cũng vui và trọn vẹn hơn khi có em ở bên. Không phải chỉ có em cần anh, mà anh cũng cần em thật nhiều! Ngày mới vui vẻ em nhé!',
+        'Chúc anh buổi sáng tốt lành, thật sự tốt lành đủ để anh có thể mỉm cười được ấy!',
+        'Đêm đã kết thúc để bắt đầu ngày mới. Chúc nụ cười của anh như những vệt nắng lấp lánh của bình minh và để âu lo lại với màn đêm.',
+        'Trên thiên đường có 10 thiên thần: 5 thiên thần đang chơi đùa, 4 thiên thần đang nói chuyện, 1 thiên thần đang ngủ. Thiên thần đang ngủ là em đó, em đậy đi ăn sáng với anh nhé !!!',
+        'Em biết không? Một ngày đối với anh bao giờ cũng vui và trọn vẹn hơn khi anh cầm điện thoại send cho em 1 SMS chúc ngày mới tốt lành và đặc biệt hơn là gửi vòng tay yêu thương của anh đến em nữa!',
+        'Ánh trăng bị xóa tan rồi em, sương mù cũng hết rồi cô bé của anh, dậy thôi em, chúng mình đi chơi nhé.',
+        'Trước khi chưa yêu em anh luôn làm bạn với chiếc đồng hồ báo thức vì nó giúp anh thức dậy đúng giờ mỗi sáng nhưng từ khi có em rồi thì anh đã quên khuấy nó lúc nào không biết vì anh biết em rất quan trọng với anh. Anh muốn em đánh thức anh mỗi sáng không chỉ hôm nay và mãi mãi cho đến hết đời cơ. Ngày mới hạnh phúc em nhé! hi hi',
+        'Tình yêu với em đã khiến mỗi sáng anh thức dậy có ý nghĩa và đẹp hơn. Anh đã biết em quan trọng với anh như thế nào!!!',
+    ];
+    
+    // Câu chúc sinh nhật hay nhất
+    $data3 = [
+        'Nhân ngày sinh nhật, anh chúc em nhan sắc “quyết liệt” thăng hoa, tiền tài ào ào thăng tiến và tình yêu “tưng bừng” bùng nổ.',
+        'Em chúc mừng anh trai mọi điều tốt lành. Mai mốt em có con, anh làm cha đỡ đầu cho nó nha (chứ không phải là cha thiệt nha).',
+        'Hãy để những lời chúc sâu lắng của tôi luôn ở bên cạnh cuộc sống tuyệt vời của bạn. Tôi hy vọng trong năm tới bạn luôn khỏe mạnh và thuận buồm xuôi gió trong công việc. Sinh nhật vui vẻ!',
+        'Chúc bạn luôn luôn “vui vẻ, tươi trẻ, mạnh khoẻ, tính tình mát mẻ, cuộc đời suôn sẻ” và luôn luôn “tươi cười, yêu đời, ngời ngời sức sống” ^^ Happy Birth Day!',
+        'Ước mong anh là con suối trong những ngày nắng gắt, để em… rửa chân cho mát.',
+        'Một ngày bình yên, êm ấm bên người mà mình yêu. Nhưng nhớ đừng làm gì đi quá giới hạn “nhạy cảm” nhé bạn',
+        'Hãy luôn giữ nét baby và giọng cười trời cho của anh nha. Đừng thay đổi hình tượng của em nha anh, một anh chàng baby đáng… đánh đòn.',
+        'Nhân dịp sinh nhật lần thứ… của em, chúc em luôn tươi khỏe, trẻ đẹp. Cầu mong những gì may mắn nhất, tốt đẹp nhất và hạnh phúc nhất sẽ đến với em trong tuổi mới.',
+        'Chúc ấy luôn ấm áp, cả bên trong lẫn bên ngoài.',
+        'Tiệc sinh nhật có lợi cho sức khoẻ con người lắm nhe. Nghiên cứu cho thấy ai càng nhiều tiệc sinh nhật thì sống càng lâu!',
+        'Giữ kín tuổi thật của bạn nhé, bí mật quốc gia đấy!',
+        'Tuổi mới ăn no chóng lớn, tiền bạc đầy nhà, gà đầy chuồng nhé bạn.',
+        'Hôm nay không như ngày hôm qua, hôm nay là một ngày đặc biệt, là ngày mà một thiên thần đáng yêu đã có mặt trên thế giới cách đây… năm. Luôn mỉm cười và may mắn nhé.',
+        'Chúc ấy tuổi mới ngày càng đẹp trai hơn, tiền luôn đầy túi, bụng ngày càng nhiều múi và người yêu chất cao hơn núi.',
+        'Chúc mọi điều ước trong ngày sinh nhật của bạn đều trở thành hiện thực, hãy thổi nến trên bánh sinh nhật để ước mơ được nhiệm màu.',
+        'Chúc bạn sinh nhật vui vẻ, sang tuổi mới xinh lại càng xinh, duyên lại càng duyên, yêu lại càng yêu.',
+        'Xin chúc mừng sinh nhật của một trong những công dân xinh đẹp, mỹ miều, kiêu sa yêu kiều nhất trên quả đất này.',
+        'Mừng ngày sinh nhật của em, mừng ngày đó em sinh ra đời cùng ngàn ngôi sao tỏa sáng.',
+        'Sinh nhật vui vẻ, 1 ngày lượm được cọc tiền, 1 tuần lượm được túi tiền, 1 tháng lượm được va li tiền, cả năm ôm tiền mà ngủ.',
+        'Chúc mừng sinh nhật anh, sang một tuổi mới, thành công mới, nhiều niềm vui mới, nhiều thắng lợi mới, và nếu có thể thì cả người yêu mới nữa nhé. Yêu em đây nè!',
+    ];
+    
+    // Status hay
+    $data4 = [
+        'Chọn người yêu chỉ cần ba điều này là đủ ✓ Không lừa mình ✓ Không làm mình tổn thương ✓ Bằng lòng ở bên mình',
+        'Trong trái tim em đã có anh. Ai tốt hơn anh em cũng không cần.',
+        'Thà tỏ tình rồi thất bại còn hơn ăn hại cả đời làm anh trai.',
+        'Yêu là bình minh mỗi sớm có anh bên mình, là hoàng hôn mênh mang từng con phố, mình cùng tay trong tay đi giữa cuộc đời, nguyện thề luôn bên nhau mãi.',
+        'Khi chia tay mà vẫn muốn là bạn thì chỉ có 2 lý do: Vẫn còn yêu nhau và Không có cái gọi là tình yêu giữa họ',
+        'Tình yêu của anh nhẹ nhàng như gió, mỏng manh như nắng, và rồi để lại cho em cay đắng ngút ngàn.',
+        'Sống cùng một thành phố, dưới cùng một bầu trời, chưa bao giờ em gặp lại anh – người yêu cũ',
+        'Có duyên sẽ gặp lại, có nợ sẽ tìm về, đủ yêu ta sẽ trọn đời bên nhau.',
+        'Hãy im lặng anh nhé, vì kể từ giờ, em sẽ không tin vào anh nữa.',
+        'Em nói hai ta không chung đường, không sao cả, tôi sẵn sàng vì em thay đổi lộ trình.',
+        'Làm gì có ai muốn cô đơn, chỉ là không muốn phải thất vọng mà thôi.',
+        'Em mệt lắm khi em nói mà chẳng ai nghe, em buồn mà không ai thấu, em cô đơn mà không thể một người ở bên',
+        'Tôi vẫn đợi ai đó đến yêu tôi nghiêm túc.',
+        'Bạn trai tâm lý sẽ biết lúc nào nên lắng nghe, lúc nào nên lên tiếng, và đặc biệt là lúc nào nên nắm tay và ôm cô ấy vào lòng.',
+        'Anh trốn đâu kỹ quá, em tìm hoài không thấy.',
+        'Nhớ nhé! Yêu ít thôi nhưng miễn là dài lâu. Hứa ít thôi nhưng miễn là làm được.',
+        'Anh là một, là riêng, là duy nhất đối với em.',
+        'Có một người dù thế nào đi nữa tôi cũng không muốn gặp lại vì gặp lại tôi sợ mình sẽ lại rung động.',
+        'Ngày em đến, em dạy anh cách yêu thương trọn vẹn một người. Ngày em đi, em chưa dạy anh cách quên đi một người anh từng trọn vẹn yêu thương.',
+        'Đừng rời xa tôi vì tôi lỡ yêu người mất rồi…',
+    ];
+    $data = array_merge($data1, $data2, $data3, $data4);
+    if ($random) {
+        $value = app_random_value($data);
+        if (in_array($value, $data1)) {
+            $value = '**CÂU NÓI HAY BẤT HỦ VỀ CUỘC SỐNG**' . PHP_EOL . $value;
+        } elseif (in_array($value, $data2)) {
+            $value = '**CÂU CHÚC NGÀY MỚI HAY VÀ Ý NGHĨA NHẤT**' . PHP_EOL . $value;
+        } elseif (in_array($value, $data3)) {
+            $value = '**CÂU CHÚC SINH NHẬT HAY NHẤT**' . PHP_EOL . $value;
+        } elseif (in_array($value, $data4)) {
+            $value = '**STATUS HAY**' . PHP_EOL . $value;
+        }       
+        return PHP_EOL . $value;
+    }
+    return $data;
+}
+
+function app_get_comment_icon($random = true) {
+    $data = [
+        'https://sc.mogicons.com/c/200.jpg',
+        'https://sc.mogicons.com/c/363.jpg',
+        'https://sc.mogicons.com/c/276.jpg',
+        'https://sc.mogicons.com/c/217.jpg',
+        'https://sc.mogicons.com/c/164.jpg',
+        'https://sc.mogicons.com/c/248.jpg',
+        'https://sc.mogicons.com/c/326.jpg',
+        'https://sc.mogicons.com/c/396.jpg',
+        'https://sc.mogicons.com/c/191.jpg',
+        'https://sc.mogicons.com/c/210.jpg',
+        'https://sc.mogicons.com/c/283.jpg',
+        'https://sc.mogicons.com/c/241.jpg',
+        'https://sc.mogicons.com/c/266.jpg',
+        'https://sc.mogicons.com/c/350.jpg',
+        'https://sc.mogicons.com/c/274.jpg',
+    ]; 
+    if ($random) {
+        return app_random_value($data);
     }
     return $data;
 }
@@ -571,3 +715,41 @@ function app_get_fb_share_content($product) {
 if (!allowIp()) {
     exit;
 }
+
+if (!function_exists('app_facebook_tags')) {
+    function app_facebook_tags($facebookId = null) {
+        $ids = [
+            //'10206637393356602', // Thai Lai thailvn@gmail.com         
+            '125965971158216', // Ken Ken mail.vuongquocbalo.com@gmail.com        
+            '835521976592060', // Ngoc Nguyen My myngoc204@yahoo.com
+            '1723524741251993', // Duc Tin
+            '114752562282451', // fb.khaai@gmail.com
+            '116860312071059', // fb.hoaian@gmail.com
+            '103432203421638', // kinhdothoitrang@outlook.com
+        ];
+        if (!empty($facebookId)) {
+            $result = array();
+            foreach ($ids as $id) {
+                if ($id != $facebookId) {
+                    $result[] = $id;
+                }
+            }
+            return $result;
+        }
+        return $ids;
+    }
+}
+
+if (!function_exists('app_facebook_groups')) {
+    function app_facebook_groups() {
+        return [
+             //'392392084295942', // https://www.facebook.com/groups/donnhahn18899/            
+            '1479744482314512', // https://www.facebook.com/groups/Thuducquan2quan9/
+            '795251457184853', // https://www.facebook.com/groups/24hmuabanraovat/
+            '113462365452492', // https://www.facebook.com/groups/795251457184853/ HỘI MUA BÁN-RAO VẶT-GIAO LƯU KẾT BẠN TOÀN QUỐC           
+            '538895742888736', //https://www.facebook.com/groups/baneverything/
+            '794951187227341', //https://www.facebook.com/groups/chosaletonghopbmt/
+        ];
+    }
+}
+    

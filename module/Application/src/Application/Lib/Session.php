@@ -56,16 +56,20 @@ class Session {
             if (!empty($id)) { 
                 return isset($items[$id]) ? $items[$id] : false;
             }
+            if (empty($items)) {
+                $items = array();
+            }               
             return $items;
         }
         return false;
     }
     
     public static function set($id, $value) 
-    {                
-        $item = array($id => $value);
-        static::instance()->offsetSet(static::$sessionName, $item);
-        return $item;
+    { 
+        $items = static::get();
+        $items[$id] = $value;
+        static::instance()->offsetSet(static::$sessionName, $items);
+        return $items;
     }
     
     public static function remove($id) 
@@ -77,6 +81,12 @@ class Session {
             return $items;
         } 
         return false;
+    }
+    
+    public static function removeAll() 
+    {         
+        static::instance()->offsetSet(static::$sessionName, []);
+        return [];        
     }
     
 }

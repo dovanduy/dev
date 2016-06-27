@@ -25,9 +25,9 @@ return array(
     'st_host' => 'http://vuongquocbalo.dev/web',
     'website_id' => 1,
     
-    'facebook_admins' => '261013080913491',
-    'facebook_app_id' => '1728509637388409',
-    'facebook_app_secret' => '07ca1f67691d51954fb7d966e6633510',
+    'facebook_admins' => '',
+    'facebook_app_id' => '304999106503304',
+    'facebook_app_secret' => '939d6213f1a40680aa55877b0ccd7931',
     'facebook_tag_ids' => array(),
     'facebook_group_ids' => [        
         '231774573605976',

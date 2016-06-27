@@ -62,14 +62,7 @@ if (!empty($cartItems)) {
                             <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
                         </tr>
                         <?php endforeach ?>                        
-                        <tr class="row-total-payment">                           
-                            <td colspan="4" align="right">
-                                <div class="p-20">
-                                    <strong><?php echo $this->translate('Total')?>:</strong> 
-                                    <span class="total-amount"><?php echo app_money_format($totalMoney)?></span>
-                                </div>
-                            </td>
-                        </tr>
+                       
                     </tbody>
                 </table>
                             
@@ -78,6 +71,9 @@ if (!empty($cartItems)) {
                     $reviewForm->prepare();
                     echo $this->form()->openTag($reviewForm);                 
                 ?>
+                
+                
+                    
                 <table class="table">
                     <thead>
                         <tr>
@@ -218,6 +214,7 @@ if (!empty($cartItems)) {
                     <a href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
                     <a  id="checkoutFinish" 
                         class="btn btn-group btn-default"
+                        style="margin-left:3px;"
                         href="<?php echo $this->url('web/checkout', array('action' => 'comoleted'))?>">
                         <i class="icon-check"></i> <?php echo $this->translate('Complete your order')?>
                     </a>

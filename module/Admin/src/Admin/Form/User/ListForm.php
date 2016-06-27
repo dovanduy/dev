@@ -75,27 +75,28 @@ class ListForm extends AbstractForm
                 'title' => 'Email',
                 'sort' => true,
                 'attributes' => array(
-                    
+                    'width' => 150
                 ),
             ), 
             array(
                 'name' => 'name',
-                'title' => 'Name',
+                'title' => 'Full name',
                 'sort' => 'asc',
                 'attributes' => array(
-                    
+                    'width' => 150
                 ),
             ), 
-            array(
-                'name' => 'display_name',
-                'title' => 'Display name',               
-                'sort' => true,
-            ),  
+//            array(
+//                'name' => 'display_name',
+//                'title' => 'Display name',               
+//                'sort' => true,
+//            ),  
             array(            
                 'name' => 'mobile',
                 'title' => 'Mobile', 
                 'sort' => true,
             ),
+            /*
             array(            
                 'name' => 'state_name',
                 'title' => 'State/Province', 
@@ -110,13 +111,23 @@ class ListForm extends AbstractForm
                 'name' => 'street',
                 'title' => 'Address', 
                 'sort' => true,
-            ),     
+            ), 
+             * 
+             */    
+            array(
+                'name' => 'address',
+                'title' => 'Address',               
+                'attributes' => array(
+                    
+                ),
+            ),
             array(
                 'name' => 'updated',
                 'title' => 'Updated', 
                 'sort' => 'desc',
                 'attributes' => array(
-                    'datetime' => true
+                    'datetime' => true,
+                    'width' => 120
                 ),
             ),
             array(

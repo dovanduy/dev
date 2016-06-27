@@ -1130,6 +1130,7 @@ fieldset .form-control, fieldset .form-control:focus {
 }
 .navbar-custom-menu  li a {
 	color: #fff;
+	padding: 2px 12px 2px 2px;	
 }
 #addressListForm  .th_action {
 	width: 40px;
@@ -1281,7 +1282,7 @@ fieldset .form-control, fieldset .form-control:focus {
 	}    
     */
 	.navbar-nav>.user-menu .user-image {   
-		margin-top: -10px;
+		margin-top: -3px;
 	}
 	
 }
@@ -1923,7 +1924,8 @@ ul.step a:hover:after {
     /*text-transform: uppercase;*/
 }
 .row-total-payment span {
-    font-size: 22px !important;
+    font-size: 18px !important;
+	padding-left: 7px;
 }
 .body-mobile .row-total-payment span {
     font-size: 16px !important;
@@ -2152,4 +2154,22 @@ ul.step a:hover:after {
     margin-top: 0px !important;
     margin-right: 2px;
 }
-    
+#ship_money p {
+	margin-bottom: 7px;
+}
+.btn { 
+    margin-right: 3px;
+}
+.address-row {
+	padding: 2px 0px;
+}
+.list-inline {
+	font-size: 14px;
+}
+.body-mobile .navbar-nav {
+    margin: 2.5px -10px;
+}
+.body-mobile #header-top-second {
+	height: 30px;
+	line-height: 30px;
+}

@@ -180,13 +180,15 @@
                                     <?php 
                                         $form->prepare();
                                         echo $this->form()->openTag($form);
-                                    ?>                                    
+                                    ?>     
+                                    <?php if ($form instanceof \Web\Form\My\PasswordForm): ?>
                                     <div class="form-group has-feedback">
                                         <label for="password_old"><?php echo $this->formLabel($form->get('password_old')); ?></label>
                                         <?php echo $this->formPassword($form->get('password_old')); ?> 
                                         <?php echo $this->formErrorMessage($form->get('password_old')); ?>  
                                         <i class="fa fa-lock form-control-feedback"></i>
-                                    </div>                                   
+                                    </div> 
+                                    <?php endif ?>
                                     <div class="form-group has-feedback">
                                         <label for="password"><?php echo $this->formLabel($form->get('password')); ?></label>
                                         <?php echo $this->formPassword($form->get('password')); ?> 

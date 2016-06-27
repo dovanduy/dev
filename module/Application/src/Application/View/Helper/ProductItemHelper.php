@@ -71,6 +71,19 @@ class ProductItemHelper extends AbstractHtmlElement
                 )
             );
 
+            $emailShareUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'emailshare'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],                       
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             $fbShareUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -112,6 +125,18 @@ class ProductItemHelper extends AbstractHtmlElement
                 );
                 $adminBtn = "
                     <div class=\"admin-action\">
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$emailShareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-envelope-o\"></i>
+                            </a>
+                        </form>
+                        
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
@@ -212,7 +237,17 @@ class ProductItemHelper extends AbstractHtmlElement
                 
                 $adminBtn = "
                     <div class=\"admin-action\">
-                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$emailShareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-envelope-o\"></i>
+                            </a>
+                        </form>
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"

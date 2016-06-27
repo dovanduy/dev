@@ -11,6 +11,7 @@ namespace Web\Controller;
 
 use Web\Model\Products;
 use Web\Model\Websites;
+use Web\Module as WebModule;
 
 class IndexController extends AppController
 {

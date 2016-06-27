@@ -201,6 +201,9 @@ return array(
 		'url_products_addlatestarrival' => 'products/addlatestarrival',
         'url_products_removelatestarrival' => 'products/removelatestarrival',
         'url_products_updatesortlatestarrival' => 'products/updatesortlatestarrival',
+        
+        'url_productshares_all' => 'productshares/all',
+        'url_productshares_add' => 'productshares/add',
 		      
         'url_brands_lists' => 'brands/lists',
         'url_brands_all' => 'brands/all',

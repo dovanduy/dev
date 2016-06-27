@@ -327,7 +327,7 @@ class Users extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(email|name|mobile|display_name|state_name|city_name|street|updated|last_login)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(email|name|mobile|display_name|state_name|city_name|street|created|updated|last_login)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {  
                     case 'state_name':
@@ -769,6 +769,7 @@ class Users extends AbstractModel {
                     'facebook_image',
                     'facebook_gender',
                     'access_token',
+                    'access_token_expires_at',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
@@ -794,21 +795,31 @@ class Users extends AbstractModel {
                     'facebook_image' => $param['facebook_image'],
                     'facebook_gender' => $param['facebook_gender'],
                     'access_token' => $param['access_token'],
+                    'access_token_expires_at' => $param['access_token_expires_at'],
                 ));
-            } else {                
+            } else {   
+                $set = array(
+                    'facebook_id' => $param['facebook_id'],                            
+                    'facebook_email' => $param['facebook_email'],
+                    'facebook_name' => $param['facebook_name'],
+                    'facebook_username' => $param['facebook_username'],                    
+                    'facebook_first_name' => $param['facebook_first_name'],
+                    'facebook_last_name' => $param['facebook_last_name'],
+                    'facebook_link' => $param['facebook_link'],
+                    'facebook_image' => $param['facebook_image'],
+                    'facebook_gender' => $param['facebook_gender'],
+                );
+                if (empty($user['access_token']) 
+                    || empty($user['access_token_expires_at'])
+                    || strtotime($user['access_token_expires_at']) < time()) {
+                    $set['access_token'] = $param['access_token'];
+                    $set['access_token_expires_at'] = $param['access_token_expires_at'];
+                } else {
+                    $param['access_token'] = $user['access_token'];
+                    $param['access_token_expires_at'] = $user['access_token_expires_at'];
+                }
                 $userFacebookModel->update(array(                        
-                    'set' => array(
-                        'facebook_id' => $param['facebook_id'],                            
-                        'facebook_email' => $param['facebook_email'],
-                        'facebook_name' => $param['facebook_name'],
-                        'facebook_username' => $param['facebook_username'],                    
-                        'facebook_first_name' => $param['facebook_first_name'],
-                        'facebook_last_name' => $param['facebook_last_name'],
-                        'facebook_link' => $param['facebook_link'],
-                        'facebook_image' => $param['facebook_image'],
-                        'facebook_gender' => $param['facebook_gender'],
-                        'access_token' => $param['access_token'],
-                    ),
+                    'set' => $set,
                     'where' => array('user_id' => $user['user_id'])
                 ));
             }
@@ -862,6 +873,7 @@ class Users extends AbstractModel {
                     'facebook_image' => $param['facebook_image'],
                     'facebook_gender' => $param['facebook_gender'],
                     'access_token' => $param['access_token'],
+                    'access_token_expires_at' => $param['access_token_expires_at'],
                 ));
             }
         }       
@@ -874,6 +886,10 @@ class Users extends AbstractModel {
             $user = self::getLogin(array('_id' => $user['_id']));
             $user['is_first_login'] = $isFirstLogin;
             $user['facebook_id'] = $param['facebook_id'];
+            if (!empty($param['access_token']) && !empty($param['access_token_expires_at'])) {
+                $user['access_token'] = $param['access_token'];
+                $user['access_token_expires_at'] = $param['access_token_expires_at'];
+            }
             return $user;
         }
         return false;
@@ -888,6 +904,9 @@ class Users extends AbstractModel {
     public function gLogin($param) { 
         $isFirstLogin = 0;        
         $param['google_username'] = !empty($param['google_username']) ? $param['google_username'] : '';
+        if (empty($param['access_token'])) {
+            $param['access_token'] = '';
+        }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
             ->from(static::$tableName)   
@@ -915,6 +934,8 @@ class Users extends AbstractModel {
                     'google_link',
                     'google_image',
                     'google_gender',
+                    'access_token',
+                    'access_token_expires_at',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
@@ -939,20 +960,32 @@ class Users extends AbstractModel {
                     'google_link' => $param['google_link'],
                     'google_image' => $param['google_image'],
                     'google_gender' => $param['google_gender'],
+                    'access_token' => $param['access_token'],
+                    'access_token_expires_at' => $param['access_token_expires_at'],
                 ));
-            } else {                
+            } else {  
+                $set = [
+                    'google_id' => $param['google_id'],                            
+                    'google_email' => $param['google_email'],
+                    'google_name' => $param['google_name'],
+                    'google_username' => $param['google_username'],                    
+                    'google_first_name' => $param['google_first_name'],
+                    'google_last_name' => $param['google_last_name'],
+                    'google_link' => $param['google_link'],
+                    'google_image' => $param['google_image'],
+                    'google_gender' => $param['google_gender'],
+                ];
+                if (empty($user['access_token']) 
+                    || empty($user['access_token_expires_at'])
+                    || strtotime($user['access_token_expires_at']) < time()) {
+                    $set['access_token'] = $param['access_token'];
+                    $set['access_token_expires_at'] = $param['access_token_expires_at'];
+                } else {
+                    $param['access_token'] = $user['access_token'];
+                    $param['access_token_expires_at'] = $user['access_token_expires_at'];
+                }
                 $userGoogleModel->update(array(                        
-                    'set' => array(
-                        'google_id' => $param['google_id'],                            
-                        'google_email' => $param['google_email'],
-                        'google_name' => $param['google_name'],
-                        'google_username' => $param['google_username'],                    
-                        'google_first_name' => $param['google_first_name'],
-                        'google_last_name' => $param['google_last_name'],
-                        'google_link' => $param['google_link'],
-                        'google_image' => $param['google_image'],
-                        'google_gender' => $param['google_gender'],
-                    ),
+                    'set' => $set,
                     'where' => array('user_id' => $user['user_id'])
                 ));
             }
@@ -1005,6 +1038,8 @@ class Users extends AbstractModel {
                     'google_link' => $param['google_link'],
                     'google_image' => $param['google_image'],
                     'google_gender' => $param['google_gender'],
+                    'access_token' => $param['access_token'],
+                    'access_token_expires_at' => $param['access_token_expires_at'],
                 ));
             }
         }       
@@ -1016,6 +1051,11 @@ class Users extends AbstractModel {
             ));
             $user = self::getLogin(array('_id' => $user['_id']));
             $user['is_first_login'] = $isFirstLogin;
+            $user['google_id'] = $param['google_id'];
+            if (!empty($param['access_token']) && !empty($param['access_token_expires_at'])) {
+                $user['access_token'] = $param['access_token'];
+                $user['access_token_expires_at'] = $param['access_token_expires_at'];
+            }
             return $user;
         }
         return false;

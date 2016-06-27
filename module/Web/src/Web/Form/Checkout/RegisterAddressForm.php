@@ -83,6 +83,7 @@ class RegisterAddressForm extends AbstractForm
                 ),
                 'validators' => \Web\Module::getValidatorConfig('general.mobile')
             ),  
+            /*
             array(
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'address_id',               
@@ -106,6 +107,8 @@ class RegisterAddressForm extends AbstractForm
                     'required' => false,
                 ), 
             ),
+            * 
+            */
             array(
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'country_code',               

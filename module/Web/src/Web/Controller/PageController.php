@@ -183,19 +183,24 @@ class PageController extends AppController
     
     public function gloginAction()
     {        
-        $backUrl = $this->params()->fromQuery('backurl', '/');
-        $param = $this->getParams();      
+        $backUrl = $this->params()->fromQuery('backurl', '/'); 
+        $param = $this->getParams();  
+        $scope = implode(' ' , [
+            \Google_Service_Oauth2::USERINFO_EMAIL,
+            //\Google_Service_Gmail::GMAIL_COMPOSE,
+        ]);       
         $client = new \Google_Client();
         $client->setClientId(WebModule::getConfig('google_app_id'));
         $client->setClientSecret(WebModule::getConfig('google_app_secret'));
         $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri'));
-        $client->addScope("https://www.googleapis.com/auth/userinfo.email");
-               
+        $client->addScope($scope);
         $accessToken = !empty(Session::get('google_access_token')) ? Session::get('google_access_token') : '';           
         if (!empty($accessToken)) {
             $client->setAccessToken($accessToken);
             $service = new \Google_Service_Oauth2($client);
-            $post = (array) $service->userinfo->get();
+            $post = (array) $service->userinfo->get(); 
+            $post['accessToken'] = $accessToken;
+            $post['access_token_expires_at'] = date('Y-m-d H:i:s', time() + 60*60);            
             $successMessage = 'Account registed successfully';
             $registerVoucher = WebModule::getConfig('vouchers.register');
             if (!empty($registerVoucher)) {
@@ -205,12 +210,15 @@ class PageController extends AppController
                 $post['voucher_type'] = $registerVoucher['type']; 
                 $post['voucher_expired'] = $registerVoucher['expired']; 
                 $post['send_email'] = $registerVoucher['send_email'];                 
-            }          
+            }         
             $auth = $this->getServiceLocator()->get('auth');
             if ($auth->authenticate(null, null, 'google', $post)) {
                 $AppUI = $this->getLoginInfo();
                 if ($AppUI->is_first_login == 1) {
                     $this->addSuccessMessage($successMessage);
+                }           
+                if (!empty(Session::get('google_backurl'))) {
+                    $backUrl = Session::get('google_backurl');
                 }
                 Session::remove('google_access_token');
                 return $this->redirect()->toUrl($backUrl);
@@ -221,11 +229,13 @@ class PageController extends AppController
         } else {          
             if (!empty($param['code'])) {
                 $client->authenticate($param['code']);
-                Session::set('google_access_token', $client->getAccessToken());                 
+                Session::set('google_access_token', $client->getAccessToken());                                  
                 header('Location: ' . filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
+                //return $this->redirect()->toUrl(filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
                 exit;
             } else {
-                try {
+                try {             
+                    Session::set('google_backurl', $backUrl);
                     $authUrl = $client->createAuthUrl();
                     return $this->redirect()->toUrl($authUrl);
                 } catch (\Exception $e) {
@@ -247,7 +257,8 @@ class PageController extends AppController
                 $cookie = new \Zend\Http\Header\SetCookie('remember', '', time() - 365 * 60 * 60 * 24, '/');                
                 $this->getResponse()->getHeaders()->addHeader($cookie);
             }
-            $auth->clearIdentity();            
+            $auth->clearIdentity();      
+            Session::removeAll();
             return $this->redirect()->toRoute('web');
         }
     }
@@ -302,7 +313,7 @@ class PageController extends AppController
     
     public function fbloginAction()
     {      
-        $backUrl = $this->params()->fromQuery('backurl', '/');
+        $backUrl = $this->params()->fromQuery('backurl', '/');    
         $param = $this->getParams();
         $fb = new \Facebook\Facebook([
             'app_id' => WebModule::getConfig('facebook_app_id'),
@@ -323,7 +334,7 @@ class PageController extends AppController
                         echo "<p>Error getting long-lived access token: " . $helper->getMessage() . "</p>\n\n";
                         exit;
                     }                
-                }
+                }                
                 $fields = [
                     'id',
                     'email',
@@ -350,8 +361,7 @@ class PageController extends AppController
                         'first_name' => !empty($graphNode['first_name']) ? $graphNode['first_name'] : '',               
                         'last_name' => !empty($graphNode['last_name']) ? $graphNode['last_name'] : '',               
                         'link' => !empty($graphNode['link']) ? $graphNode['link'] : '',                            
-                        'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',               
-                        'access_token' => $accessToken,               
+                        'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',                                     
                     );     
                     $successMessage = 'Account registed successfully';
                     $registerVoucher = WebModule::getConfig('vouchers.register');
@@ -389,7 +399,7 @@ class PageController extends AppController
             // When validation fails or other local issues
             echo 'Facebook SDK returned an error: ' . $e->getMessage();
             exit;
-        }       
+        }      
         try {
             $permissions = [
                 'public_profile',
@@ -397,7 +407,9 @@ class PageController extends AppController
             ]; // Optional permissions
             $authUrl = $helper->getLoginUrl(
                 $this->url()->fromRoute(
-                    'web/fblogin'            
+                    'web/fblogin',
+                    array(),
+                    array('query' => array('backurl' => $backUrl))
                 ),                
                 $permissions
             );
@@ -432,7 +444,7 @@ class PageController extends AppController
                         echo "<p>Error getting long-lived access token: " . $helper->getMessage() . "</p>\n\n";
                         exit;
                     }                
-                }
+                }                
                 $fields = [
                     'id',
                     'email',
@@ -447,7 +459,8 @@ class PageController extends AppController
                     'updated_time',
                     'verified'
                 ];
-                $accessToken = $accessToken->getValue();                  
+                $accessTokenExpiresAt = date('Y-m-d H:i:s', $accessToken->getExpiresAt()->getTimestamp());               
+                $accessTokenValue = $accessToken->getValue();                  
                 $response = $fb->get('/me?fields=' . implode(',', $fields), $accessToken);
                 $graphNode = $response->getGraphNode();
                 if (!empty($graphNode['id'])) {
@@ -460,7 +473,8 @@ class PageController extends AppController
                         'last_name' => !empty($graphNode['last_name']) ? $graphNode['last_name'] : '',               
                         'link' => !empty($graphNode['link']) ? $graphNode['link'] : '',                            
                         'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',               
-                        'accessToken' => $accessToken,               
+                        'accessToken' => $accessTokenValue,               
+                        'access_token_expires_at' => $accessTokenExpiresAt,               
                     );     
                     $successMessage = 'Account registed successfully';
                     $registerVoucher = WebModule::getConfig('vouchers.register');

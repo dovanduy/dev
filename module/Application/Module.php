@@ -9,6 +9,7 @@
 
 namespace Application;
 
+use Application\Lib\Log;
 use Application\Lib\Arr;
 use Application\Lib\Mail;
 use Application\Lib\Util;
@@ -65,31 +66,55 @@ class Module implements AutoloaderProviderInterface,
     public function getServiceConfig() {
         return array(
             'factories' => array(
-                "Mail" => function($sm) {
-                    $mail = new Mail();
-                    $mail->setRenderer($sm->get("ViewRenderer"));
-                    $config = \Application\Module::getConfig('email.smtp');                    
-                    $smtpOptions = new \Zend\Mail\Transport\SmtpOptions();  
-                    $smtpOptions
-                        ->setHost($config['host'])
-                        ->setPort($config['port'])
-                        ->setConnectionClass('login')
-                        ->setName($config['name'])
-                        ->setConnectionConfig(array(
-                            'username' => $config['username'],
-                            'password' => $config['password'],
-                            'ssl' => $config['ssl'],
-                        ));
-                    $transporter = new \Zend\Mail\Transport\Smtp($smtpOptions);
-                    $mail->setTransporter($transporter);
-//                    $mail->setFrom(
-//                        \Application\Module::getConfig('from_email'), 
-//                        \Application\Module::getConfig('from_name')
-//                    );
-                    return $mail;
-                }
+                "Mail" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail2" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp2'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail3" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp3'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail4" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp4'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail5" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp5'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail6" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp6'); 
+                    return $this->initMail($sm, $config);
+                },
+                "Mail7" => function($sm) { 
+                    $config = \Application\Module::getConfig('email.smtp7'); 
+                    return $this->initMail($sm, $config);
+                },
             ),
         );
+    }
+    
+    public function initMail($sm, $config = null) {      
+        $mail = new Mail();
+        $mail->setRenderer($sm->get("ViewRenderer"));                      
+        $smtpOptions = new \Zend\Mail\Transport\SmtpOptions();  
+        $smtpOptions
+            ->setHost($config['host'])
+            ->setPort($config['port'])
+            ->setConnectionClass('login')
+            ->setName($config['name'])
+            ->setConnectionConfig(array(
+                'username' => $config['username'],
+                'password' => $config['password'],
+                'ssl' => $config['ssl'],
+            ));
+        $transporter = new \Zend\Mail\Transport\Smtp($smtpOptions);
+        $mail->setTransporter($transporter);
+        return $mail;
     }
     
     public function getConsoleUsage(Console $console) {

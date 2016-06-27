@@ -169,6 +169,12 @@ class Module {
                 'SharePostIds' => function ($sm) {
                     return new Model\SharePostIds($sm->get('db'), $sm);
                 },               
+                'ProductShares' => function ($sm) {
+                    return new Model\ProductShares($sm->get('db'), $sm);
+                },               
+                'ContactLists' => function ($sm) {
+                    return new Model\ContactLists($sm->get('db'), $sm);
+                },               
             ),
         );
     }

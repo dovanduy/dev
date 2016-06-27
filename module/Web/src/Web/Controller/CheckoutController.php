@@ -58,6 +58,7 @@ class CheckoutController extends AppController
                 $addresses = Arr::filter($user['addresses'], 'active', 1);
                 $addresses = Arr::keyValue($addresses, 'address_id', 'address_full');                               
             }
+            /*
             if (!empty($addresses)) {
                 $registerAddressForm->setElementOptions(array(
                     'address_id' => array(
@@ -71,14 +72,12 @@ class CheckoutController extends AppController
                     )
                 ));
             }            
+            */
+            
             $checkoutInfo = Session::get('checkout_step1');
             if (empty($checkoutInfo)) {
                 $checkoutInfo = array();
-            }
-            if ($request->isPost()) {
-                $post = (array) $request->getPost();
-                $checkoutInfo = array_replace_recursive($checkoutInfo, $post); 
-            }
+            }            
             if (empty($checkoutInfo['email'])) { 
                 $checkoutInfo['email'] = $user['email'];
             }
@@ -91,26 +90,32 @@ class CheckoutController extends AppController
             if (!isset($checkoutInfo['address_id'])) { 
                 $checkoutInfo['address_id'] = $user['address_id'];
             }
-            if (empty($checkoutInfo['country_code'])) { 
+            if (empty($addresses)) {
+                $checkoutInfo['address_id'] = 0;
+            }
+            if (!isset($checkoutInfo['country_code'])) { 
                 $checkoutInfo['country_code'] = \Application\Module::getConfig('general.default_country_code');
             }
-            if (empty($checkoutInfo['state_code'])) { 
+            if (!isset($checkoutInfo['state_code'])) { 
                 $checkoutInfo['state_code'] = \Application\Module::getConfig('general.default_state_code');
             }
-            if (!empty($checkoutInfo['country_code'])) {                   
+            if ($request->isPost()) {
+                $post = (array) $request->getPost();
+                $checkoutInfo = array_replace_recursive($checkoutInfo, $post); 
+            }             
+            $registerAddressForm->setElementOptions(array(
+                'state_code' => array(
+                    'value_options' => LocaleStates::getAll($checkoutInfo['country_code'])
+                )
+            ));
+            if (!empty($checkoutInfo['state_code'])) {                    
                 $registerAddressForm->setElementOptions(array(
-                    'state_code' => array(
-                        'value_options' => LocaleStates::getAll($checkoutInfo['country_code'])
+                    'city_code' => array(
+                        'value_options' => LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code'])
                     )
                 ));
-                if (!empty($checkoutInfo['state_code'])) {                    
-                    $registerAddressForm->setElementOptions(array(
-                        'city_code' => array(
-                            'value_options' => LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code'])
-                        )
-                    ));
-                }                    
             }
+            Session::set('checkout_step1', $checkoutInfo);
             $registerAddressForm->setController($this)
                 ->setAttribute('id', 'registerForm')
                 ->setAttribute('class', 'form-horizontal')
@@ -276,11 +281,12 @@ class CheckoutController extends AppController
                 }
             }
         }
-                
+    
         return $this->getViewModel(array(                
                'registerForm' => isset($registerForm) ? $registerForm : null,              
                'registerAddressForm' => isset($registerAddressForm) ? $registerAddressForm : null,              
                'user' => isset($user) ? $user : null,              
+               'addresses' => isset($addresses) ? $addresses : array(),              
             )
         );
     }
@@ -292,6 +298,7 @@ class CheckoutController extends AppController
      */
     public function removeaddressAction()
     {
+        $AppUI = $this->getLoginInfo();
         $request = $this->getRequest();        
         $id = $this->params()->fromRoute('id', 0);
         if ($request->isXmlHttpRequest() && !empty($id)) {
@@ -302,6 +309,7 @@ class CheckoutController extends AppController
                     'value' => '0',
                 )
             );
+            Users::removeCache($AppUI->_id);
             $result['status'] = 'OK';
             die(\Zend\Json\Encoder::encode($result));
         }

@@ -210,9 +210,11 @@ return array(
         '586924924744389', // Hội Mua Bán Quận 12, Hóc Môn, Củ Chi, Gò Vấp https://www.facebook.com/groups/Hoimuabanhocmon/
         '235978366529258', // MUA SẮM UY TÍN 13 https://www.facebook.com/groups/235978366529258
     ], 
-    'facebook_album_dir' => getcwd() . '/data/fbalbum',  
+    'facebook_album_dir' => getcwd() . '/data/fbalbum',
+    'album_dir' => getcwd() . '/data/album',  
     
-    'admin_user_id' => array(1, 4, 11, 13, 17, 20),
+    'admin_user_id' => array(13, 20, 27, 30),
+    
     'ship_district' => array(
         'VN.HC.QA' => 0, // Quận 1
         'VN.HC.QB' => 0, // Quận 2
@@ -238,5 +240,11 @@ return array(
         'VN.HC.HM' => 20000, // Hóc Môn
         'VN.HC.NB' => 20000, // Nhà Bè
     ),
-    'ship_other' => 30000    
+    'ship_other' => 30000,    
+    'ship_money' => "
+        <p>- Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ <strong>100.000</strong> VNĐ ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
+        <p>- Các Quận/huyện ngoại thành TP HCM (các quận 9, 12, Thủ Đức, Bình Tân, Nhà Bè, Bình Chánh, Hóc Môn, Củ Chi) phí giao hàng là <strong>20.000 VNĐ</strong></p>
+        <p>- Khu vực tỉnh khác TP HCM phí giao hàng là <strong>30.000 VNĐ</strong>
+        <p>- Trường hợp đơn hàng dưới <strong>100.000 VNĐ</strong>, khách hàng vui lòng trả thêm <strong>20.000 VNĐ</strong> khi nhận hàng
+    "
 );

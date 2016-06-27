@@ -23,6 +23,18 @@ return array(
         )
     ), 
     
-    'admin_user_id' => array(103),
+    'email' => array(               
+        'from_email' => 'vuongquocbalo@gmail.com',        
+        'from_name' => 'no-reply',        
+        'smtp' => array(
+            'host' => 'smtp.gmail.com',
+            'name' => 'gmail.com',
+            'port' => 587,
+            'username' => 'vuongquocbalo.com@gmail.com',
+            'password' => 'Mk462008',
+            'timeout' => 2 * 60,
+            'ssl' => 'tls',
+        )
+    ),
     
 );

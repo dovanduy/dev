@@ -67,15 +67,7 @@ if (!empty($cartItems)) {
                             </td>
                             <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
                         </tr>
-                        <?php endforeach ?>                        
-                        <tr class="row-total-payment">                           
-                            <td colspan="4" align="right">
-                                <div class="p-20">
-                                    <strong><?php echo $this->translate('Total')?>:</strong> 
-                                    <span class="total-amount"><?php echo app_money_format($totalMoney)?></span>
-                                </div>
-                            </td>
-                        </tr>
+                        <?php endforeach ?>
                     </tbody>
                 </table>
                 
@@ -178,9 +170,18 @@ if (!empty($cartItems)) {
                     </div>
                 </fieldset>
                     
+                <div class="space-bottom"></div> 
+                
+                <fieldset>
+                    <legend><strong><?php echo $this->translate('Shipping money')?></strong></legend>                    
+                    <div class="row" id="ship_money">
+                        <?php echo \Web\Module::getConfig('ship_money')?>
+                    </div>
+                </fieldset>              
+               
                 <div class="text-right checkout-button">
                     <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
-                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
+                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default" style="margin-left:3px;"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
                 </div>
             
                 </form>

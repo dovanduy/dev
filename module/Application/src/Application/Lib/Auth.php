@@ -110,6 +110,7 @@ class Auth implements AuthenticationServiceInterface
                 'facebook_link' => !empty($socialParam['link']) ? $socialParam['link'] : '',                            
                 'facebook_gender' => !empty($socialParam['gender']) ? $socialParam['gender'] : '',               
                 'access_token' => !empty($socialParam['accessToken']) ? $socialParam['accessToken'] : '',               
+                'access_token_expires_at' => !empty($socialParam['access_token_expires_at']) ? $socialParam['access_token_expires_at'] : null,               
             );            
             if (!empty($socialParam['generate_voucher'])) {               
                 $param['generate_voucher'] = $socialParam['generate_voucher']; 
@@ -119,8 +120,9 @@ class Auth implements AuthenticationServiceInterface
                 $param['send_email'] = $socialParam['send_email'];                 
             }
             $user = \Web\Lib\Api::call('url_users_fblogin', $param);
-            if (!empty($param['access_token'])) {
-                $user['fb_access_token'] = $param['access_token'];
+            if (!empty($user['access_token'])) {
+                $user['fb_access_token'] = $user['access_token'];
+                $user['fb_access_token_expires_at'] = $user['access_token_expires_at'];
             }
         } elseif ($type == 'google') {
             $param = array(                                       
@@ -133,6 +135,8 @@ class Auth implements AuthenticationServiceInterface
                 'google_link' => !empty($socialParam['link']) ? $socialParam['link'] : '',                            
                 'google_gender' => !empty($socialParam['gender']) ? $socialParam['gender'] : '',               
                 'google_image' => !empty($socialParam['picture']) ? $socialParam['picture'] : '',               
+                'access_token' => !empty($socialParam['accessToken']) ? $socialParam['accessToken'] : '',               
+                'access_token_expires_at' => !empty($socialParam['access_token_expires_at']) ? $socialParam['access_token_expires_at'] : null,               
             );            
             if (!empty($socialParam['generate_voucher'])) {               
                 $param['generate_voucher'] = $socialParam['generate_voucher']; 
@@ -142,6 +146,10 @@ class Auth implements AuthenticationServiceInterface
                 $param['send_email'] = $socialParam['send_email'];                 
             }
             $user = \Web\Lib\Api::call('url_users_glogin', $param);
+            if (!empty($user['access_token'])) {
+                $user['google_access_token'] = $user['access_token'];
+                $user['google_access_token_expires_at'] = $user['access_token_expires_at'];
+            }
         } else {
             $user = \Web\Lib\Api::call('url_users_login', array(
                 'email' => $email,

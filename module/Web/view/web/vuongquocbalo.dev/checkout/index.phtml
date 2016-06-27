@@ -1,4 +1,5 @@
 <?php
+$request = $this->requestHelper();
 $cartItems = Application\Lib\Cart::get();
 $totalQuantity = 0;
 $totalMoney = 0;
@@ -108,17 +109,36 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                     <?php echo $this->formErrorMessage($registerAddressForm->get('email')); ?>                                
                                 </div>
                             </div>
-                            <div class="form-group<?php echo empty($user['addresses']) ? ' hide' : ''?>">
-                                <div class="col-md-3 control-label"><?php echo $this->formLabel($registerAddressForm->get('address_id'));?></div>
-                                <div class="col-md-9">
-                                    <?php echo $this->formSelect($registerAddressForm->get('address_id'));?>
-                                    <?php echo $this->formErrorMessage($registerAddressForm->get('address_id')); ?>                                
+                            
+                            <?php if (!empty($addresses)): ?>
+                            <div class="form-group">     
+                                <div style="padding-top:0px" class="col-md-3 control-label">Địa chỉ giao hàng</div> 
+                                <div class="col-md-9">                                    
+                                    <?php foreach($addresses as $addressId => $fullAddress): ?>
+                                    <div class="address-row">
+                                        <input name="address_id" 
+                                               type="radio" 
+                                               <?php if (isset($checkoutInfo['address_id']) && $checkoutInfo['address_id']==$addressId) echo 'checked' ?>
+                                               value="<?php echo $addressId?>" 
+                                               onclick='$("#new-address").addClass("hide");'/> 
+                                        <?php echo $fullAddress;?>
+                                    </div>                                    
+                                    <?php endforeach;?>                                     
+                                    <div class="address-row">
+                                        <input name="address_id" 
+                                               type="radio" 
+                                               <?php if (empty($checkoutInfo['address_id'])) echo 'checked' ?>
+                                               value="0" 
+                                               onclick='$("#new-address").removeClass("hide");$("#city_code").val("");$("#street").val("");'/> 
+                                        Địa chỉ khác
+                                    </div>                                    
                                 </div>
                             </div>
+                            <?php endif;?>
                         </div>
                     </div>   
                     
-                    <div class="row hide" id="new-address">
+                    <div class="row <?php echo !empty($checkoutInfo['address_id']) ? ' hide' : ''?>" id="new-address">
                         <!--
                         <div class="col-lg-3">
                             <h3 class="title"><?php echo $this->translate('Delivery address')?></h3>
@@ -208,29 +228,10 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                             <div class="col-sm-offset-3 col-sm-8 mt8m"> 
                                 <span class="text-center text-muted"><?php echo $this->translate('Or login with')?></span>
                                 <ul class="social-links colored circle clearfix mt5 ml0">
-                                    <li class="facebook"><a id="fbLogin" target="_blank" href="http://www.facebook.com"><i class="fa fa-facebook"></i></a></li>                              
-                                    <li class="googleplus"><a href="<?php echo $this->url('web/glogin')?>"><i class="fa fa-google-plus"></i></a></li>
+                                    <li class="facebook"><a href="<?php echo $this->url('web/fblogin', array(), array('query' => array('backurl' => $request->getRequestUri())))?>"><i class="fa fa-facebook"></i></a></li>                              
+                                    <li class="googleplus"><a href="<?php echo $this->url('web/glogin', array(), array('query' => array('backurl' => $request->getRequestUri())))?>"><i class="fa fa-google-plus"></i></a></li>
                                 </ul>
-                            </div>
-                            <?php
-                            echo $this->headScript()->prependFile(Web\Module::getConfig('st_host') . ('/js/fblogin.js'));
-                            echo $this->headScript()->prependFile('https://connect.facebook.net/en_US/all.js');
-                            $facebook_app_id = \Web\Module::getConfig('facebook_app_id');
-                            $this->headScript()->offsetSetScript(101, " 
-                                $(function() {    
-                                    var facebook_app_id = '{$facebook_app_id}';
-                                    $(function () {
-                                        FB.init({
-                                            appId: facebook_app_id,
-                                            cookie: true,
-                                            status: true,
-                                            oauth: true,
-                                            xfbml: true
-                                        });
-                                    });           
-                                });
-                            ");
-                            ?>
+                            </div>                            
                         </div>                            
                     </div>                            
                 </fieldset>   
@@ -283,6 +284,15 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                                     <?php echo $this->formErrorMessage($registerForm->get('street')); ?>                                
                                 </div>
                             </div>
+                            
+                            <?php foreach($addresses as $addressId => $fullAddress): ?>
+                            <div class="form-group">                                
+                                <div class="col-md-12">
+                                    <?php echo $fullAddress;?>
+                                </div>
+                            </div>
+                            <?php endforeach;?>  
+                            
                             <div class="form-group">
                                 <div for="address_name" class="col-md-3 control-label"><?php echo $this->formLabel($registerForm->get('address_name'));?></div>
                                 <div class="col-md-9">
@@ -305,11 +315,8 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                 
                 <fieldset>
                     <legend><strong><?php echo $this->translate('Shipping money')?></strong></legend>                    
-                    <div class="row">
-                        <p>- Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TPHCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
-                        <p>- Các Quận/huyện ngoại thành TPHCM (các quận 9, 12, Thủ Đức, Bình Tân, Nhà Bè, Bình Chánh, Hóc Môn, Củ Chi) phí giao hàng là 20.000 VNĐ</p>
-                        <p>- Khu vực tỉnh khác TPHCM phí giao hàng là 30.000 VNĐ
-                        <p>- Trường hợp đơn hàng dưới 150.000 VNĐ, khách hàng vui lòng trả thêm 20.000 khi nhận hàng
+                    <div class="row" id="ship_money">
+                        <?php echo \Web\Module::getConfig('ship_money')?>
                     </div>
                 </fieldset>
                 
@@ -317,7 +324,7 @@ $checkoutInfo = Application\Lib\Session::get('checkout_step1');
                 
                 <div class="text-right checkout-button">
                     <a href="<?php echo $this->url('web/carts', array('action' => 'view'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Back to cart')?></a>
-                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
+                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default" style="margin-left:3px;"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
                 </div>
 
             </div>

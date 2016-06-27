@@ -1,4 +1,5 @@
 <?php
+// php /home/vuong761/public_html/batch/album_hoimuabanraovattoanquoc.php
 include ('base.php');
 $docRoot = dirname(getcwd());
 $groupId = '795251457184853';
@@ -8,12 +9,15 @@ if (mk_dir($dir) === false) {
     exit;
 }
 do {
+    $waitingFile = implode(DS, [$docRoot, 'data', 'fbalbum', 'waiting.txt']); 
     $h = (int)date('H');
     if ($h >= 23) {
+        if (file_exists($waitingFile)) {
+            unlink($waitingFile);
+        }
         batch_info('Done');
         exit;
-    }
-    $waitingFile = implode(DS, [$docRoot, 'data', 'fbalbum', 'waiting.txt']);   
+    }      
     if (file_exists($waitingFile)) {       
         $content = file_get_contents($waitingFile);
         if (empty($content)) {
@@ -82,10 +86,7 @@ do {
                 $photoId = addPhotoToAlbum($albumId, $data, $accessToken, $errorMessage); 
                 if (!empty($photoId)) {
                     batch_info("Photo {$photoId}");
-                    $result[] = $photoId;
-                    if (count($result) > 5) {
-                        sleep(rand(4*60, 8*60));
-                    }
+                    $result[] = $photoId;                    
                 } else {
                     batch_info($albumId . ':' . $errorMessage);
                     exit;           						
@@ -94,10 +95,8 @@ do {
             if (!empty($result)) {                
                 file_put_contents($file, implode(PHP_EOL, $result));                
             }
-            sleep(rand(25*60, 45*60));
-        }    
-        unlink($waitingFile);
-    } else {
-        sleep(5*60);
+            sleep(rand(30*60, 45*60));
+        }
     }
+    sleep(rand(30*60, 60*60));  
 } while (1);

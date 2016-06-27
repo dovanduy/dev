@@ -204,9 +204,9 @@ class ProductOrders extends AbstractModel {
             if (!empty($row['state_name'])) {
                 $address[] = $row['state_name']; 
             }
-            if (!empty($row['country_name'])) {
-                $address[] = $row['country_name']; 
-            }
+//            if (!empty($row['country_name'])) {
+//                $address[] = $row['country_name']; 
+//            }
             if (!empty($row)) {
                 $row['address'] = implode(', ', $address);
             }
