@@ -123,7 +123,7 @@ class ProductHasColors extends AbstractModel {
     }
     
     /* for batch */
-    public function import($param)
+    public function import($param, $productName)
     { 
         if (empty($param['website_id'])
             || empty($param['colors']) 
@@ -151,7 +151,7 @@ class ProductHasColors extends AbstractModel {
                     if (!empty($image)) {
                         $imageId = $image['image_id'];
                     } else {
-                        $imageUrl = Util::uploadImageFromUrl($color['url_image']); 
+                        $imageUrl = Util::uploadImageFromUrl($color['url_image'], 600, 600, $productName); 
                         $imageId = $imageModel->add(array(
                             'src' => 'products',
                             'src_id' => $param['product_id'],

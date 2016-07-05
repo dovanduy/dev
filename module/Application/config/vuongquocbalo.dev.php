@@ -13,28 +13,25 @@ return array(
         'oauth2_base_uri' => 'http://oauth2.vuongquocbalo.dev/'
 	),	
     
-    'upload' => array(
-        'image' => array(
-            'path' => './data/upload/img',
-            'url' => 'http://img.vuongquocbalo.dev',
-            'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
-            'extension' => array('jpeg', 'jpg', 'gif', 'png'),
-            'filename_prefix' => 'balo_',
-        )
-    ), 
-    
-    'email' => array(               
-        'from_email' => 'vuongquocbalo@gmail.com',        
-        'from_name' => 'no-reply',        
-        'smtp' => array(
-            'host' => 'smtp.gmail.com',
-            'name' => 'gmail.com',
-            'port' => 587,
-            'username' => 'vuongquocbalo.com@gmail.com',
-            'password' => 'Mk462008',
-            'timeout' => 2 * 60,
-            'ssl' => 'tls',
+    'log' => array(
+        'path' => './data/vuongquocbalo/log/web',        
+    ),
+   
+    'cache' => array(
+        'adapter' => array(
+            'name' => 'filesystem',
+            'options' => array(
+                'dirLevel' => 2,
+                'cacheDir' => getcwd() . '/data/vuongquocbalo/cache/web',
+                'dirPermission' => 0755,
+                'filePermission' => 0666,
+                'ttl' => 30*24*60*60,
+                'namespace' => 'app'
+            ),
+        ),
+        'plugins' => array(
+            'exception_handler' => array('throw_exceptions' => false),
+            'serializer'
         )
     ),
-    
 );

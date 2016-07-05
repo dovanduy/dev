@@ -2,6 +2,7 @@
 
 namespace Api\Bus\ProductOrders;
 
+use Application\Lib\Log;
 use Zend\View\Model\ViewModel;
 use Api\Bus\AbstractBus;
 
@@ -29,14 +30,18 @@ class Add extends AbstractBus {
                     'website_id' => $param['website_id'],
                     '_id' => $this->_response,
                 ));          
-                if (!empty($data['user_email'])) {                  
-                    $mail = $sm->get("Mail");        
-                    $viewModel = new ViewModel(array('data' => $data));
-                    $viewModel->setTemplate('email/order');
-                    $mail->setTo($data['user_email']);                                         
-                    $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $data['website_url'], $data['code']));
-                    $mail->setBody($viewModel);
-                    $mail->send();
+                if (!empty($data['user_email'])) { 
+                    try {                       
+                        $mail = $sm->get("Mail");        
+                        $viewModel = new ViewModel(array('data' => $data));
+                        $viewModel->setTemplate('email/order');
+                        $mail->setTo($data['user_email']);                                         
+                        $mail->setSubject(sprintf('%s DA NHAN DUOC DON HANG %s', $data['website_url'], $data['code']));
+                        $mail->setBody($viewModel);
+                        $mail->send();
+                    } catch (\Exception $e) {
+                        Log::warning('ORDER: ' . $data['code'] . ' - ' . $e->getMessage());
+                    }
                 }
             }        
             return $this->result($model->error());

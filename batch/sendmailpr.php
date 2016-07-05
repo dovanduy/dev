@@ -4,7 +4,7 @@
 include_once 'base.php';
 
 // Test
-//$contact['smtp'] = 7;
+//$contact['smtp'] = 6;
 //$contact['email'] = 'thailvn@gmail.com';
 //$result = call('/contactlists/sendmail', $contact, $errors);
 //if (!empty($errors)) {
@@ -22,7 +22,7 @@ $param = [
 $contacts = call('/contactlists/all', $param);
 batch_info('Total contact: ' . count($contacts));
 foreach ($contacts as $i => $contact) {
-    $contact['smtp'] = 7;
+    $contact['smtp'] = 6;
     $result = call('/contactlists/sendmail', $contact, $errors);
     if (!empty($errors)) {
         p($errors, 1);

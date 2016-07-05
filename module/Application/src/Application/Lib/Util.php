@@ -46,9 +46,15 @@ class Util {
         $adapter->setValidators(array($size, $extension));
         $result = array();       
         if ($adapter->isValid()) {
-            $files = $adapter->getFileInfo();
-            foreach ($files as $file) {
-                $target = $file['destination'] . '/' . $config['filename_prefix'] . $file['name'];
+            $files = $adapter->getFileInfo();           
+            foreach ($files as $file) {                
+                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                    $tmpName = end(explode('\\', $file['tmp_name']));
+                } else {
+                    $tmpName = end(explode('/', $file['tmp_name']));
+                }
+                $fileName = str_replace($tmpName . '_', '', $file['name']);
+                $target = $file['destination'] . '/' . $config['filename_prefix'] . $fileName;
                 $adapter->addFilter('Rename', array( 
                     'target' => $target,
                     'use_upload_name' => true,
@@ -99,12 +105,12 @@ class Util {
             if (is_array($fileInfo) && count($fileInfo) >= 4) {
                 $ext = strtolower(strrchr($fileInfo["basename"], '.'));
                 if (!empty($fileName)) {
-                    $fileName = name_2_url($fileName, $ext);
-                }
-                if (empty($fileName) 
-                    || (is_file($destination . '/' . $fileName) && !file_exists($destination . '/' . $fileName))) {
-                    $fileName = $config['filename_prefix'] . uniqid() . time() . $ext;
-                }
+                    $fileName = name_2_url($fileName);
+                } else {
+                    $fileName = $fileInfo["filename"];
+                }               
+                $newFileName = str_replace($ext, '', $fileName) . '_' . uniqid() . $ext;
+                $fileName = $config['filename_prefix'] . $newFileName;                
                 $target = $destination . '/' . $fileName;
                 if (app_file_put_contents($target, $image) !== false) {                    
                     $image = new \SimpleImage(); 

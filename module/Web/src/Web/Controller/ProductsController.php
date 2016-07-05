@@ -77,7 +77,7 @@ class ProductsController extends AppController
             || !empty($param['brand_id']) 
             || !empty($param['option_id'])) { 
                         
-            $result = Products::getList($param); 
+            $result = Products::getList($param);
             
             if (!empty($param['category_id'])) {            
                 $categories = ProductCategories::findAll($website['product_categories'], $param['category_id']);                            

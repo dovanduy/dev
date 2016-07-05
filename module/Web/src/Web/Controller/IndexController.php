@@ -18,7 +18,7 @@ class IndexController extends AppController
     public function indexAction()
     {
         $this->setHead(array(
-            'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng'
+            'title' => WebModule::getConfig('meta_head.title')
         ));
         $param = $this->getParams(array(                      
             'force' => 0,            

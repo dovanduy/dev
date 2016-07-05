@@ -102,12 +102,33 @@ class ListForm extends AbstractForm
                 ),                     
             ),
             array(
-                'name' => 'name',
-                'type' => 'html',
+                'name' => 'name',   
+                'type' => 'link',
                 'title' => 'Product name',  
-                'innerHtml' => '<a href="/products/detail/{_id}">{name}</a><br/>' . $this->translate('SKU') . ': {code}',           
-                'sort' => true,                
-            ),            
+                'innerHtml' => '{name}', 
+                'sort' => true,              
+                'attributes' => array(
+                    'href' => $this->getController()->url()->fromRoute(
+                        'admin/products', 
+                        array(
+                            'action' => 'detail', 
+                            'id' => '{_id}'
+                        ),
+                        array(
+                            'query' => array(
+                                'backurl' => base64_encode($this->getRequest()->getRequestUri())
+                            )
+                        )
+                    )
+                ), 
+            ), 
+//            array(
+//                'name' => 'name',
+//                'type' => 'html',
+//                'title' => 'Product name',  
+//                'innerHtml' => '<a href="/products/detail/{_id}">{name}</a><br/>' . $this->translate('SKU') . ': {code}',           
+//                'sort' => true,                
+//            ),            
             array(
                 'name' => 'price',
                 'title' => 'Price',

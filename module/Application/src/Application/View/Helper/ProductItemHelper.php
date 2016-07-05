@@ -110,6 +110,19 @@ class ProductItemHelper extends AbstractHtmlElement
                 )
             );
             
+            $deleteDbUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'deleteproductdb'
+                ),
+                array(
+                    'query' => array(
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             if (!empty($product['block_id'])) {
                 $removeUrl = $view->url(
                     'web/ajax', 
@@ -292,6 +305,18 @@ class ProductItemHelper extends AbstractHtmlElement
                                 var item = btn.closest('.masonry-grid-item'); 
                                 item.remove();
                             \"><i class=\"fa fa-remove\"></i>
+                        </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                        <a  itemprop=\"url\" href=\"#\" 
+                            style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                            data-url=\"{$deleteDbUrl}\"
+                            data-callback=\"
+                                var item = btn.closest('.masonry-grid-item'); 
+                                item.remove();
+                            \"><i class=\"fa fa-trash-o\"></i>
                         </a>
                         </form>
 

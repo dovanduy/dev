@@ -40,15 +40,9 @@ class Cache {
      * @return	void
      */  
     public static function _init()
-	{        
-        if (!empty(WebModule::getConfig('cache'))) {
-            $cacheConf = WebModule::getConfig('cache');
-        } elseif (!empty(AdminModule::getConfig('cache'))) {
-            $cacheConf = AdminModule::getConfig('cache');
-        } else {            
-            $cacheConf = Module::getConfig('cache');
-        }
-        static::$cache = StorageFactory::factory($cacheConf);       
+	{  
+        $cacheConf = \Application\Module::getConfig('cache');
+        static::$cache = StorageFactory::factory($cacheConf);      
     }
     
     /**

@@ -9,23 +9,45 @@ $loadModule = [
     'vuongquocbalo.dev' => [              
         'OAuth2',        
         'Web',
-    ],
-    'vuongquocbalo.com' => [              
-        'OAuth2',        
-        'Web',
-    ],
+    ],    
     'admin.vuongquocbalo.dev' => [        
         'OAuth2',
         'Admin',
-    ], 
-    'admin.vuongquocbalo.com' => [        
-        'OAuth2',
-        'Admin',
-    ], 
+    ],      
     'oauth2.vuongquocbalo.dev' => [      
         'OAuth2'
     ],
+	'vuongquocbalo.com' => [              
+        'OAuth2',        
+        'Web',
+    ],
+	'admin.vuongquocbalo.com' => [        
+        'OAuth2',
+        'Admin',
+    ],
     'oauth2.vuongquocbalo.com' => [      
+        'OAuth2'
+    ],
+	'zanado.net.vn' => [              
+        'OAuth2',        
+        'Web',
+    ],
+	'admin.zanado.net.vn' => [        
+        'OAuth2',
+        'Admin',
+    ],
+    'oauth2.zanado.net.vn' => [      
+        'OAuth2'
+    ],
+	'thoitrang1.vn' => [              
+        'OAuth2',        
+        'Web',
+    ],
+	'admin.thoitrang1.vn' => [        
+        'OAuth2',
+        'Admin',
+    ],
+    'oauth2.thoitrang1.vn' => [      
         'OAuth2'
     ]
 ];

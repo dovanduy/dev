@@ -227,10 +227,10 @@ class UrlIds extends AbstractModel {
             } 
         } else {
             $values = array(
-                'product_id' => $param['product_id'] ,               
-                'url' => $param['url'],
                 'website_id' => $param['website_id'],
-            ); 
+                'product_id' => $param['product_id'] ,               
+                'url' => $param['url'],                
+            );
             if (self::insert($values)) {        
                 return true;
             }

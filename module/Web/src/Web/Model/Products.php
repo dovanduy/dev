@@ -203,4 +203,11 @@ class Products
         return '';
     }
     
+    public static function getAllDuplicateCode($param)
+    {            
+        $param['is_duplicate_code'] = 1;
+        $result = Api::call('url_products_all', $param);           
+        return $result;
+    }
+    
 }

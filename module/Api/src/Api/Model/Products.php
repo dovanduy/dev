@@ -6,6 +6,7 @@ use Application\Lib\Log;
 use Application\Lib\Arr;
 use Application\Lib\Util;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Predicate\Expression;
 
 class Products extends AbstractModel {
@@ -417,7 +418,7 @@ class Products extends AbstractModel {
     }
     
     public function getFeList($param)
-    {    
+    {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
@@ -576,7 +577,7 @@ class Products extends AbstractModel {
             $select->order(static::$tableName . '.updated DESC');
         }
         $select->group('product_id');        
-        $selectString = $sql->getSqlStringForSqlObject($select);        
+        $selectString = $sql->getSqlStringForSqlObject($select);
         
         if (!empty($param['category_id'])) {
             $categoryHasField = new ProductCategoryHasFields;
@@ -841,12 +842,32 @@ class Products extends AbstractModel {
                     "product_has_categories.category_id IN ({$param['category_id']})"
                 ));            
         }
+        if (!empty($param['is_duplicate_code'])) {            
+            $select->join(
+                array(
+                    'product_duplicate_codes' => 
+                    $sql->select()
+                        ->columns(array(
+                            'code', 
+                            new Expression("COUNT(*)")
+                        ))
+                        ->from('products')                        
+                        ->group('code')
+                        ->having('COUNT(*) > 1')
+                ),                   
+                static::$tableName . '.code = product_duplicate_codes.code',
+                array(
+                    'duplicate_cnt' => 'Expression1'
+                )
+            );     
+            $param['sort'] = 'code-asc';
+        }
         if (!empty($param['not_in_product_id'])) {
             $select->where(new Expression(
                 static::$tableName .  ".product_id NOT IN ({$param['not_in_product_id']})"
             ));
         }
-        if (!empty($param['_id'])) {    
+        if (!empty($param['_id'])) {
             if (is_array($param['_id'])) {
                 $param['_id'] = implode(',', self::quote($param['_id']));
             } else {
@@ -860,7 +881,7 @@ class Products extends AbstractModel {
             )); 
         }
         if (!empty($param['sort'])) {
-            preg_match("/(name|price|created|priority)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(code|name|price|created|priority)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {
                     case 'name':
@@ -875,6 +896,7 @@ class Products extends AbstractModel {
             $select->order(static::$tableName . '.priority DESC'); 
             $select->order(static::$tableName . '.updated DESC'); 
         }
+        $select->order(static::$tableName . '.product_id ASC'); 
         if (!empty($param['limit'])) {
             $select->limit($param['limit']);            
         }
@@ -900,6 +922,160 @@ class Products extends AbstractModel {
         );
         if (!empty($detail)) {
             $id = $detail['product_id'];
+            $set = array();
+            if (isset($param['code_src'])) {
+                $set['code_src'] = $param['code_src'];
+            }
+            if (isset($param['price'])) {
+                $set['price'] = $param['price'];
+            }
+            if (isset($param['price_src'])) {
+                $set['price_src'] = $param['price_src'];
+            }
+            if (isset($param['original_price'])) {
+                $set['original_price'] = $param['original_price'];
+            }
+            if (isset($param['discount_percent'])) {
+                $set['discount_percent'] = $param['discount_percent'];
+            }
+            if (isset($param['default_size_id'])) {
+                $set['default_size_id'] = $param['default_size_id'];
+            }
+            if (isset($param['default_color_id'])) {
+                $set['default_color_id'] = $param['default_color_id'];
+            }
+            if (isset($param['url_src'])) {
+                $set['url_src'] = $param['url_src'];
+            }
+            if (isset($param['priority'])) {
+                $set['priority'] = $param['priority'];
+            }
+            if (!empty($set)) {
+                self::update(array(
+                    'table' => 'products',
+                    'set' => $set,
+                    'where' => array(
+                        'product_id' => $id,
+                        'website_id' => $param['website_id'],
+                    ),            
+                ));            
+            }
+//            if (!empty($param['category_id'])) {
+//                $hasCategoryModel = new ProductHasCategories();
+//                $hasCategoryModel->addUpdate(
+//                    array(
+//                        'product_id' => $id,
+//                        'category_id' => $param['category_id']
+//                    )
+//                );
+//            }
+            if (isset($param['size_id'])) {
+                if (!is_array($param['size_id'])) {
+                    $param['size_id'] = unserialize($param['size_id']);
+                }
+                $hasSizeModel = new ProductHasSizes();
+                $hasSizeModel->addUpdate(
+                    array(
+                        'product_id' => $id,
+                        'size_id' => $param['size_id']
+                    )
+                );
+            }
+            if (isset($param['color_id'])) {
+                if (!is_array($param['color_id'])) {
+                    $param['color_id'] = unserialize($param['color_id']);
+                }
+                $hasColorModel = new ProductHasColors();
+                $hasColorModel->addUpdate(
+                    array(
+                        'product_id' => $id,
+                        'color_id' => $param['color_id']
+                    )
+                );
+            }
+            if (!empty($param['name'])) {
+                $urlIds = new UrlIds();
+                $urlIds->addUpdateByProductId(array(
+                    'url' => name_2_url($param['name']),
+                    'product_id' => $id,
+                    'website_id' => $param['website_id']
+                ));
+            }
+            
+            if (isset($param['import_attributes'])) {
+                if (!is_array($param['import_attributes'])) {
+                    $param['import_attributes'] = unserialize($param['import_attributes']);
+                }
+                /*
+                 * $param['import_attributes'] = array(
+                 *      array(
+                 *          name => ?,
+                 *          value => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasFieldModel = new ProductHasFields;
+                $hasFieldModel->import(array(
+                    'attributes' => $param['import_attributes'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));        
+            }
+            
+            if (isset($param['import_sizes'])) {  
+                if (!is_array($param['import_sizes'])) {
+                    $param['import_sizes'] = unserialize($param['import_sizes']);
+                }
+                /*
+                 * $param['import_sizes'] = array(
+                 *      array(
+                 *          name => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasSizeModel = new ProductHasSizes;
+                $hasSizeModel->import(array(
+                    'sizes' => $param['import_sizes'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));            
+            }
+            
+            if (isset($param['import_colors'])) {   
+                if (!is_array($param['import_colors'])) {
+                    $param['import_colors'] = unserialize($param['import_colors']);
+                }
+                /*
+                 * $param['import_colors'] = array(
+                 *      array(
+                 *          name => ?,
+                 *          url_image => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasColorModel = new ProductHasColors;
+                $hasColorModel->import(array(
+                    'colors' => $param['import_colors'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));            
+            }
+            
+            if (isset($param['import_prices'])) {
+                if (!is_array($param['import_prices'])) {
+                    $param['import_prices'] = unserialize($param['import_prices']);
+                }
+                $priceModel = new ProductPrices();
+                $priceModel->import(array(
+                    'prices' => $param['import_prices'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));
+            }
+            
             return $detail['_id'];
         }
         $_id = mongo_id();  // products._id        
@@ -910,12 +1086,27 @@ class Products extends AbstractModel {
         if (isset($param['sort'])) {
             $values['sort'] = $param['sort'];
         }  
+        if (isset($param['price_src'])) {
+            $values['price_src'] = Util::toPrice($param['price_src']);
+        }  
         if (isset($param['price'])) {
             $values['price'] = Util::toPrice($param['price']);
         }  
         if (isset($param['original_price'])) {
             $values['original_price'] = Util::toPrice($param['original_price']);
         }  
+        if (isset($param['discount_percent'])) {
+            $values['discount_percent'] = $param['discount_percent'];
+        }  
+        if (isset($param['discount_amount'])) {
+            $values['discount_amount'] = $param['discount_amount'];
+        }  
+        if (isset($param['default_size_id'])) {
+            $values['default_size_id'] = $param['default_size_id'];
+        }
+        if (isset($param['default_color_id'])) {
+            $values['default_color_id'] = $param['default_color_id'];
+        }
         if (isset($param['code'])) {
             $values['code'] = $param['code'];
         }  
@@ -934,6 +1125,9 @@ class Products extends AbstractModel {
         if (isset($param['url_other'])) {
             $values['url_other'] = $param['url_other'];
         }  
+        if (isset($param['url_src'])) {
+            $values['url_src'] = $param['url_src'];
+        }  
         if (isset($param['made_in'])) {
             $values['made_in'] = $param['made_in'];
         }  
@@ -945,13 +1139,16 @@ class Products extends AbstractModel {
         }  
         if (isset($param['size'])) {
             $values['size'] = $param['size'];
-        }  
+        } 
         if (isset($param['brand_id'])) {
             $values['brand_id'] = $param['brand_id'];
         }  
         if (isset($param['provider_id'])) {
             $values['provider_id'] = $param['provider_id'];
         }        
+        if (isset($param['priority']) && is_numeric($param['priority'])) {
+            $values['priority'] = $param['priority'];
+        }     
         $imagesModel = new Images();        
         if ($_FILES) {
             $uploadResult = Util::uploadImage();
@@ -962,7 +1159,7 @@ class Products extends AbstractModel {
                 $param['image_facebook'] = $uploadResult['image_facebook'];
             }
         } elseif (!empty($param['url_image'])) {   
-            $mainImageUrl = Util::uploadImageFromUrl($param['url_image']);            
+            $mainImageUrl = Util::uploadImageFromUrl($param['url_image'], 600, 600, $param['name']);            
         }
         if (!empty($mainImageUrl)) {
             $values['image_id'] = $imagesModel->add(array(
@@ -1000,36 +1197,22 @@ class Products extends AbstractModel {
                     'id' => $values['image_id']
                 ));
             }
-            if (isset($param['images'])) {
-                foreach ($param['images'] as $sourceImageUrl) {
-                    if ($param['url_image'] != $sourceImageUrl) {
-                        $imageUrl = Util::uploadImageFromUrl($sourceImageUrl);
-                        $imagesModel->add(array(
-                            'src' => 'products',
-                            'src_id' => $id,
-                            'url_image' => $imageUrl,
-                            'url_image_source' => $sourceImageUrl,
-                            'is_main' => 0,
-                        ));
-                        if (isset($param['add_image_to_content'])) {
-                            $param['content'] .= "<center><p><img src=\"{$imageUrl}\"/></p></center>";
-                        }
-                    }                  
-                }
-            } 
             
-            $localeValues = array(
+			$localeValues = array(
                 'product_id' => $id,
                 'locale' => \Application\Module::getConfig('general.default_locale'),         
             );
             if (isset($param['name'])) {
                 $localeValues['name'] = $param['name'];
-            } 
+            }
             if (isset($param['short'])) {
                 $localeValues['short'] = $param['short'];
             } 
             if (isset($param['content'])) {
                 $localeValues['content'] = $param['content'];
+            }         
+            if (isset($param['more'])) {
+                $localeValues['more'] = $param['more'];
             }         
             if (isset($param['meta_keyword'])) {
                 $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
@@ -1037,9 +1220,17 @@ class Products extends AbstractModel {
             if (isset($param['meta_description'])) {
                 $localeValues['meta_description'] = $param['meta_description'];
             }
-            self::insert($localeValues, 'product_locales');            
+            self::insert($localeValues, 'product_locales');  
+			
+            $hasCategoryModel = new ProductHasCategories();
+            $hasCategoryModel->addUpdate(
+                array(
+                    'product_id' => $id,
+                    'category_id' => $param['category_id']
+                )
+            );                
             
-            if (empty(self::error()) && !empty($param['name'])) {
+            if (!empty($param['name'])) {
                 $urlIds = new UrlIds();
                 $urlIds->addUpdateByProductId(array(
                     'url' => name_2_url($param['name']),
@@ -1047,16 +1238,11 @@ class Products extends AbstractModel {
                     'website_id' => $param['website_id']
                 ));
             }
-            
-            $hasCategoryModel = new ProductHasCategories();
-            $hasCategoryModel->addUpdate(
-                array(
-                    'product_id' => $id,
-                    'category_id' => $param['category_id']
-                )
-            );
-            
+                        
             if (isset($param['size_id'])) {
+                if (!is_array($param['size_id'])) {
+                    $param['size_id'] = unserialize($param['size_id']);
+                }
                 $hasSizeModel = new ProductHasSizes();
                 $hasSizeModel->addUpdate(
                     array(
@@ -1067,6 +1253,9 @@ class Products extends AbstractModel {
             }   
             
             if (isset($param['color_id'])) {
+                if (!is_array($param['color_id'])) {
+                    $param['color_id'] = unserialize($param['color_id']);
+                }
                 $hasColorModel = new ProductHasColors();
                 $hasColorModel->addUpdate(
                     array(
@@ -1076,7 +1265,10 @@ class Products extends AbstractModel {
                 );
             }    
             
-            if (isset($param['import_attributes'])) {        
+            if (isset($param['import_attributes'])) {
+                if (!is_array($param['import_attributes'])) {
+                    $param['import_attributes'] = unserialize($param['import_attributes']);
+                }
                 /*
                  * $param['import_attributes'] = array(
                  *      array(
@@ -1094,25 +1286,31 @@ class Products extends AbstractModel {
                 ));           
             }
             
-            if (isset($param['import_colors'])) {        
-                /*
-                 * $param['import_colors'] = array(
-                 *      array(
-                 *          name => ?,
-                 *          url_image => ?,
-                 *      )
-                 *      ...
-                 * )
-                 */
-                $hasColorModel = new ProductHasColors;
-                $hasColorModel->import(array(
-                    'colors' => $param['import_colors'],
-                    'product_id' => $id,
-                    'website_id' => $param['website_id'],
-                ));            
-            }
+            if (isset($param['images'])) {
+                if (!is_array($param['images'])) {
+                    $param['images'] = unserialize($param['images']);
+                }
+                foreach ($param['images'] as $sourceImageUrl) {
+                    if ($param['url_image'] != $sourceImageUrl) {
+                        $imageUrl = Util::uploadImageFromUrl($sourceImageUrl, 600, 600, $param['name']);
+                        $imagesModel->add(array(
+                            'src' => 'products',
+                            'src_id' => $id,
+                            'url_image' => $imageUrl,
+                            'url_image_source' => $sourceImageUrl,
+                            'is_main' => 0,
+                        ));
+                        if (isset($param['add_image_to_content'])) {
+                            $param['content'] .= "<center><p><img src=\"{$imageUrl}\"/></p></center>";
+                        }
+                    }                  
+                }
+            }   
             
-            if (isset($param['import_sizes'])) {        
+            if (isset($param['import_sizes'])) {  
+                if (!is_array($param['import_sizes'])) {
+                    $param['import_sizes'] = unserialize($param['import_sizes']);
+                }
                 /*
                  * $param['import_sizes'] = array(
                  *      array(
@@ -1127,6 +1325,41 @@ class Products extends AbstractModel {
                     'product_id' => $id,
                     'website_id' => $param['website_id'],
                 ));            
+            }
+            
+            if (isset($param['import_colors'])) {   
+                if (!is_array($param['import_colors'])) {
+                    $param['import_colors'] = unserialize($param['import_colors']);
+                }
+                /*
+                 * $param['import_colors'] = array(
+                 *      array(
+                 *          name => ?,
+                 *          url_image => ?,
+                 *      )
+                 *      ...
+                 * )
+                 */
+                $hasColorModel = new ProductHasColors;
+                $hasColorModel->import(
+                    array(
+                        'colors' => $param['import_colors'],
+                        'product_id' => $id,
+                        'website_id' => $param['website_id'],
+                    ), $param['name']
+                );            
+            }
+            
+            if (isset($param['import_prices'])) {
+                if (!is_array($param['import_prices'])) {
+                    $param['import_prices'] = unserialize($param['import_prices']);
+                }
+                $priceModel = new ProductPrices();
+                $priceModel->import(array(
+                    'prices' => $param['import_prices'],
+                    'product_id' => $id,
+                    'website_id' => $param['website_id'],
+                ));
             }
             
             return $_id;
@@ -1966,11 +2199,11 @@ class Products extends AbstractModel {
                 self::RETURN_TYPE_ONE
             );
             $result['original_price'] = $result['price'];
-            if (!empty($product['discount_percent'])) { 
-                $result['price'] = $result['original_price'] - ($result['original_price'] * $product['discount_percent'] / 100);
-            } elseif (!empty($product['discount_amount'])) {
-                $result['price'] = $result['original_price'] + $product['discount_amount'];
-            }
+//            if (!empty($product['discount_percent'])) { 
+//                $result['price'] = $result['original_price'] - ($result['original_price'] * $product['discount_percent'] / 100);
+//            } elseif (!empty($product['discount_amount'])) {
+//                $result['price'] = $result['original_price'] + $product['discount_amount'];
+//            }
             $result['price'] = round($result['price'], -3);
         }
         return $result;
@@ -2330,6 +2563,67 @@ class Products extends AbstractModel {
             }
         }
         return $result;
+    }
+    
+    public static function deleteProduct($param) {  
+        $imageModel = new Images;
+        $imageList = $imageModel->getAll([
+            'src' => 'products',
+            'src_id' => $param['product_id'],
+        ]);
+        $tables = array(
+            'products',
+            'product_locales',
+            'product_has_colors',
+            'product_has_sizes',
+            'product_has_fields',
+            'product_has_categories',
+            'product_images',
+            'url_ids',
+        );     
+        $db = self::getDb();
+        $sql = new Sql($db); 
+        //$db->getDriver()->getConnection()->beginTransaction();
+        foreach ($tables as $table) {
+            if ($table == 'product_images') {
+                $where = [
+                    'website_id' => $param['website_id'],
+                    'src_id' => $param['product_id'],
+                ];
+            } else {
+                $where = [
+                    'product_id' => $param['product_id'],
+                ];
+                if ($table == 'products') {
+                    $where['website_id'] = $param['website_id'];
+                }
+            }
+            $delete = $sql->delete()
+                ->from($table)                
+                ->where($where);    
+            //Log::info($sql->getSqlStringForSqlObject($delete));
+            $ok = self::getDb()->query($sql->getSqlStringForSqlObject($delete), Adapter::QUERY_MODE_EXECUTE);            
+            //Log::info(json_encode($ok)); 
+            if (!$ok) {
+                //$db->getDriver()->getConnection()->rollback();
+                //return $ok; 
+            }
+        }
+        //$db->getDriver()->getConnection()->commit();
+        if ($ok) {
+            //$db->getDriver()->getConnection()->commit();
+            if (!empty($imageList)) {
+                foreach ($imageList as $image) {
+                    if (!empty($image['url_image'])) {                        
+                        $filename = str_replace(\Application\Module::getConfig('upload.image.url'), \Application\Module::getConfig('upload.image.path'), $image['url_image']);   
+                        if (is_file($filename) && file_exists($filename)) {
+                            unlink($filename);
+                        }
+                    }
+                }
+            }
+        }
+        return $ok;
     }
     
 }

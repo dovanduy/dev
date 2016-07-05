@@ -127,6 +127,9 @@ class InputOptions extends AbstractModel {
         ));
         if (!empty($detail)) {
             $id = $detail['option_id'];
+            if (isset($param['return_id'])) {
+                return $id;
+            }
             return $detail['_id'];
         }
         
@@ -170,6 +173,9 @@ class InputOptions extends AbstractModel {
                         'website_id' => $param['website_id'],
                     ));
                 }
+            }
+            if (isset($param['return_id'])) {
+                return $id;
             }
             return $_id;
         }

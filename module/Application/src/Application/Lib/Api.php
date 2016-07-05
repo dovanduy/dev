@@ -226,7 +226,7 @@ class Api {
                 CURLOPT_TIMEOUT => $config['timeout'],
             );
             curl_setopt_array($ch, $options);
-            $response = curl_exec($ch);
+            $response = curl_exec($ch); 
             $errno = curl_errno($ch);
             if (empty($errno)) {
                 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

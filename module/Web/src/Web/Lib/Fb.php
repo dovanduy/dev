@@ -61,26 +61,26 @@ class Fb {
             }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);           
+            Log::warning($groupId . ' - '  . $errorMessage);           
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($groupId . ' - '  . $errorMessage);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($groupId . ' - '  . $errorMessage);
         }
         return false;
     }
 
-    public static function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
-        try {
-            if (empty($data['message'])) {
-                $data['message'] = 'vuongquocbalo.com';
-            }
-            $response = static::instance()->post("/{$postId}/comments", $data, $accessToken);
+    public static function updatePost($postId, $data, $accessToken, &$errorMessage = '') {     
+        try {           
+            if (isset($data['link'])) {
+				unset($data['link']);
+			}
+            $response = static::instance()->post($postId, $data, $accessToken);
             $graphNode = $response->getGraphNode();
-            if (!empty($graphNode['id'])) {
-                return $graphNode['id'];
+            if (isset($graphNode['success'])) {
+                return $graphNode['success'];
             }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $errorMessage = $e->getMessage();
@@ -91,6 +91,29 @@ class Fb {
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             Log::warning($errorMessage);
+        }
+        return false;
+    }
+    
+    public static function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
+        try {
+            if (empty($postId) || empty($data['message'])) {
+                return false;
+            }
+            $response = static::instance()->post("/{$postId}/comments", $data, $accessToken);
+            $graphNode = $response->getGraphNode();
+            if (!empty($graphNode['id'])) {
+                return $graphNode['id'];
+            }
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $errorMessage = $e->getMessage();
+            Log::warning($postId . ' - '  . $errorMessage);           
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $errorMessage = $e->getMessage();
+            Log::warning($postId . ' - '  . $errorMessage);
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+            Log::warning($postId . ' - '  . $errorMessage);
         }
         return false;
     }
@@ -124,13 +147,13 @@ class Fb {
             }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);           
+            Log::warning($groupId . ' - '  . $errorMessage);          
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($groupId . ' - '  . $errorMessage);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($groupId . ' - '  . $errorMessage);
         }
         return false;
     }
@@ -144,13 +167,13 @@ class Fb {
             }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);           
+            Log::warning($albumId . ' - '  . $errorMessage);          
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($albumId . ' - '  . $errorMessage);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            Log::warning($errorMessage);
+            Log::warning($albumId . ' - '  . $errorMessage);
         }
         return false;
     }

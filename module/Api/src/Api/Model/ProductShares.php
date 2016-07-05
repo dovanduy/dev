@@ -32,7 +32,7 @@ class ProductShares extends AbstractModel {
         $select = $sql->select()
             ->from('product_shares') 
             ->where('product_id = ' . $param['product_id'])
-            ->order('updated DESC');
+            ->order('updated DESC');        
         if (isset($param['is_wall']) && $param['is_wall'] !== '') {
             $select->where('is_wall = ' . $param['is_wall']);
         }

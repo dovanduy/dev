@@ -114,8 +114,16 @@ class Blocks extends AbstractModel {
         );        
     }    
     
-    public function add($param)
+    public function add($param, &$id = 0)
     {
+        $detail = self::getDetail(array(
+            'name' => $param['name'],
+            'website_id' => $param['website_id'],
+        ));
+        if (!empty($detail)) {
+            $id = $detail['block_id'];            
+            return $detail['_id'];
+        }
         $_id = mongo_id();  // blocks._id        
         $values = array(
             '_id' => $_id,
@@ -126,7 +134,7 @@ class Blocks extends AbstractModel {
                     'website_id' => $param['website_id']
                 )
             )) + 1
-        );  
+        );
         if (isset($param['url'])) {
             $values['url'] = $param['url'];
         }       
@@ -183,7 +191,18 @@ class Blocks extends AbstractModel {
             $locales = \Application\Module::getConfig('general.locales');
             if (count($locales) == 1) {
                 $param['locale'] = array_keys($locales)[0];
-                self::addUpdateLocale($param);
+                self::update([
+                    'table' => 'block_locales',
+                    'set' => [
+                        'name' => $param['name'],
+                        'name_url' => $param['name_url'],
+                        'short' => $param['short'],
+                        'locale' => $param['locale'],
+                    ],
+                    'where' => [
+                        'block_id' => $self['block_id'],
+                    ],
+                ]);                
             }                        
             return true;
         } 
@@ -258,13 +277,17 @@ class Blocks extends AbstractModel {
                     'short',                    
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            );            
+            )
+            ->where(static::$tableName . ".website_id = ". self::quote($param['website_id']));            
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
         }
         if (!empty($param['block_id'])) {            
             $select->where(static::$tableName . '.block_id = '. self::quote($param['block_id']));  
         }        
+        if (!empty($param['name'])) {
+            $select->where("block_locales.name = ". self::quote($param['name'])); 
+        } 
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ONE

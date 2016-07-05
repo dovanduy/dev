@@ -59,16 +59,12 @@ class Log {
         $zlog = new \Zend\Log\Logger();
         if (!isset($config['path'])) {
             $config['path'] = getcwd() . '/data/log';
-        }       
-        $destination = $config['path'];
-        if (!empty($domain)) {
-            $destination .= '/' . $domain;
         }
-        $destination .= '/' . date('/Y/m/');
+        $destination = $config['path'] . '/' . date('/Y/m/');
         if (mk_dir($destination) === false) {
             throw new \Exception('Make directory error');            
         }
-        $filename = $destination  .date('d') . '.txt';                      
+        $filename = $destination . date('d') . '.txt';
         $writer = new \Zend\Log\Writer\Stream($filename);
         $format = '%timestamp% - %priorityName% - %message%'; // . PHP_EOL;                
         $formatter = new \Zend\Log\Formatter\Simple($format);

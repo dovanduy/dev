@@ -15,7 +15,8 @@ $env = 'development'; // development, production
 $config = [
     'development' => [
         'timeout' => 10*60,
-        'base_uri' => 'http://api.vuongquocbalo.dev',    
+        //'base_uri' => 'http://api.vuongquocbalo.dev',    
+        'base_uri' => 'http://api.zanado.net.vn',    
         'facebook_app_id' => '261013080913491',
         'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
     ],

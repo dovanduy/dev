@@ -294,6 +294,34 @@ class AjaxController extends AppController
     }
     
     /**
+     * Ajax remove a product from category
+     *
+     * @return Zend\View\Model
+     */
+    public function deleteproductdbAction()
+    { 
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost() 
+            && !empty($param['product_id'])) {            
+            $result = Api::call('url_products_delete', $param);           
+            if (empty(Api::error())) {                   
+                $result = array(
+                    'status' => 'OK',
+                    'message' => 'Data saved successfully',
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }             
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    /**
      * Ajax set display priority for product
      *
      * @return Zend\View\Model
@@ -432,21 +460,21 @@ class AjaxController extends AppController
             $param['url'] = str_replace('.dev', '.com', $param['url']);   
             $product['url'] = $param['url']  . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
             $product['short_url'] = Util::googleShortUrl($product['url']);  
-            $data = app_get_fb_share_content($product); 
+            $data = app_get_fb_share_content($product);
             
             $result = [];
-            foreach (app_facebook_groups() as $groupId) {
-                $shares = Api::call('url_productshares_all', [
-                    'product_id' => $product['product_id'],                       
-                    'owner_id' => $groupId,                       
-                    'is_group' => 1,
-                ]);          
-                if (!empty($shares)) {
-                    $commentData = [
-                        'message' => app_get_comment_message(true),
-                        //'attachment_url' => app_get_comment_icon(true)
-                    ];
-                    $commentId = Fb::commentToPost($shares[0]['social_id'], $commentData, $AppUI->fb_access_token, $errorMessage);
+            $shares = Api::call('url_productshares_all', [
+                'product_id' => $product['product_id'],
+                'is_group' => 1,
+            ]);
+            $groupIds = Arr::rand(app_facebook_groups(), 2);
+            foreach ($groupIds as $groupId) {                
+                if ($groupId == '378628615584963' && !in_array($AppUI->facebook_id, ['103432203421638'])) {
+                    continue;
+                }
+                $shared = Arr::filter($shares, 'owner_id', $groupId, false, false);                       
+                if (!empty($shared)) {                    
+                    $commentId = Fb::commentToPost($shared[0]['social_id'], app_get_fb_share_comment(), $AppUI->fb_access_token, $errorMessage);
                     if (!empty($commentId)) {
                         $result[] = "Group:{$groupId} - Comment:{$commentId}";
                     } else {
@@ -454,6 +482,18 @@ class AjaxController extends AppController
                     }
                     continue;
                 }
+                
+                if (!empty($shared)) {
+                    $socialId = $shared[0]['social_id'];
+                    $ok = Fb::updatePost($socialId, $data, $AppUI->fb_access_token, $errorMessage);
+                    if (!empty($ok)) {
+                        $result[] = "Group:{$groupId} - Updated:{$socialId}";
+                    } else {
+                        $result[] = "Group:{$groupId} - Updated:{$socialId}";
+                    }
+                    continue;
+                }
+                
                 $id = Fb::postToGroup($groupId, $data, $AppUI->fb_access_token, $errorMessage);
                 if (!empty($id)) {
                     Api::call('url_productshares_add', [
@@ -510,11 +550,6 @@ class AjaxController extends AppController
                 'is_wall' => 1,
             ]);           
             if (!empty($shares)) {
-                $result = array(
-                    'status' => 'OK',
-                    'message' => 'You have been already shared',
-                );
-                die(\Zend\Json\Encoder::encode($result));
 //                foreach ($shares as $share) { 
 //                    if ($share['owner_id'] != $AppUI->facebook_id) {                     
 //                        $commentList = app_get_comment_list();                       
@@ -540,7 +575,7 @@ class AjaxController extends AppController
 //                        'message' => !empty($commentId) ? 'CommentId: ' . $commentId : $errorMessage,
 //                    );
 //                    die(\Zend\Json\Encoder::encode($result));
-//                }                
+//                }               
             }
             
             if (empty($product['image_facebook'])) {
@@ -554,6 +589,25 @@ class AjaxController extends AppController
             $product['short_url'] = Util::googleShortUrl($product['url']);
             $product['tags'] = app_facebook_tags($AppUI->facebook_id);
             $data = app_get_fb_share_content($product);
+                        
+            if (!empty($shares)) {
+                $ok = Fb::updatePost($shares[0]['social_id'], $data, $AppUI->fb_access_token, $errorMessage);
+                if ($ok) {                    
+                    $commentId = Fb::commentToPost($shares[0]['social_id'], app_get_fb_share_comment(), $AppUI->fb_access_token, $errorMessage);
+                    if (!empty($commentId)) {
+                        $result[] = "Comment:{$commentId}";
+                    } else {
+                        $result[] = "Comment:{$errorMessage}";
+                    }
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => implode('<br/>', $result)
+                    );
+                    die(\Zend\Json\Encoder::encode($result));
+                }                    
+                exit;
+            }
+             
             $photos = array();            
             if (!empty($product['images'])) {
                 if (!empty($product['colors'])) {                            

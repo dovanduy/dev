@@ -11,5 +11,27 @@ return array(
     'api' => array(
         'base_uri' => 'http://api.vuongquocbalo.dev/',
         'oauth2_base_uri' => 'http://oauth2.vuongquocbalo.dev/'
-	)	
+	),
+    
+    'log' => array(
+        'path' => './data/vuongquocbalo/log/admin',        
+    ),
+    
+    'cache' => array(
+        'adapter' => array(
+            'name' => 'filesystem',
+            'options' => array(
+                'dirLevel' => 2,
+                'cacheDir' => getcwd() . '/data/vuongquocbalo/cache/admin',
+                'dirPermission' => 0755,
+                'filePermission' => 0666,
+                'ttl' => 30*24*60*60,
+                'namespace' => 'app'
+            ),
+        ),
+        'plugins' => array(
+            'exception_handler' => array('throw_exceptions' => false),
+            'serializer'
+        )
+    ),
 );

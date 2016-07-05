@@ -13,7 +13,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
             echo $this->headMeta();
             
             $stHost = Web\Module::getConfig('st_host');            
-            echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+            echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/' . Web\Module::getConfig('meta_head.favicon')))
                 ->prependStylesheet($stHost . ('/css/custom.css?20160626'))                   
                 ->prependStylesheet($stHost . ('/plugins/notification/css/jquery_notification.css')) 
                 ->prependStylesheet($stHost . ('/css/web.css')) 

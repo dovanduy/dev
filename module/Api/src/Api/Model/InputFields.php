@@ -142,6 +142,9 @@ class InputFields extends AbstractModel {
         ));
         if (!empty($detail)) {
             $id = $detail['field_id'];
+            if (isset($param['return_id'])) {
+                return $id;
+            }
             return $detail['_id'];
         }
         $_id = mongo_id();  // input_fields._id        
@@ -155,7 +158,7 @@ class InputFields extends AbstractModel {
                     'website_id' => $param['website_id']
                 )
             )) + 1 
-        );        
+        );       
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'field_id' => $id,
@@ -171,7 +174,10 @@ class InputFields extends AbstractModel {
                 $localeValues['content'] = $param['content'];
             }           
             self::insert($localeValues, 'input_field_locales');
-            if (!empty($param['input_options']) && is_array($param['input_options'])) {
+            if (!is_array($param['input_options'])) {
+                $param['input_options'] = unserialize($param['input_options']);
+            }
+            if (!empty($param['input_options']) && is_array($param['input_options'])) {               
                 $optionModel = new InputOptions;
                 foreach ($param['input_options'] as $option) {
                     if (!empty($option['name'])) {                        
@@ -184,6 +190,9 @@ class InputFields extends AbstractModel {
                         );
                     }
                 }
+            }
+            if (isset($param['return_id'])) {
+                return $id;
             }
             return $_id;
         }        

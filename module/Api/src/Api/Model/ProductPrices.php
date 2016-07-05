@@ -86,4 +86,39 @@ class ProductPrices extends AbstractModel {
         return false;
     }
     
+    
+    /* for batch */
+    public function import($param)
+    { 
+        if (empty($param['website_id'])
+            || empty($param['prices']) 
+            || empty($param['product_id'])) {
+            return false;
+        }        
+        $values = array();                     
+        foreach ($param['prices'] as $price) { 
+            $values[] = array(
+                'color_id' => $price['color_id'],
+                'size_id' => $price['size_id'],      
+                'price' => db_float($price['price']),   
+                'product_id' => $param['product_id'],
+                'website_id' => $param['website_id'],
+                'created' => new Expression('UNIX_TIMESTAMP()'),
+                'updated' => new Expression('UNIX_TIMESTAMP()'),
+            );
+        }
+        if (!empty($values) && self::batchInsert(
+                $values, 
+                array( 
+                    'price' => new Expression('VALUES(`price`)'),
+                    'updated' => new Expression('VALUES(`updated`)'),
+                ),
+                false
+            )
+        ) {
+            return true;
+        }
+        return false;        
+    }
+    
 }

@@ -37,17 +37,19 @@ class Users extends AbstractModel {
     protected static $tableName = 'users';
 
     public function duplicateEmail($param) {
-        $sql = new Sql(static::getDb());
-        $select = $sql->select()
-                ->from(static::$tableName)
-                ->where(array(static::$tableName . '.email' => $param['email']));
-        if (!empty($param['notId'])) {
-            $select->where(new Expression(static::$tableName . ".user_id <> '{$param['notId']}'"));
-        }
-        $selectString = $sql->getSqlStringForSqlObject($select);
-        $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
-        if ($result->count() > 0) {
-            return 1;            
+        if (!empty($param['email'])) {        
+            $sql = new Sql(static::getDb());
+            $select = $sql->select()
+                    ->from(static::$tableName)
+                    ->where(array(static::$tableName . '.email' => $param['email']));
+            if (!empty($param['notId'])) {
+                $select->where(new Expression(static::$tableName . ".user_id <> '{$param['notId']}'"));
+            }
+            $selectString = $sql->getSqlStringForSqlObject($select);
+            $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
+            if ($result->count() > 0) {
+                return 1;            
+            }
         }
         return 0;
     }
@@ -191,13 +193,17 @@ class Users extends AbstractModel {
     * @param password
     * @return array()
     */  
-    public function getLogin($param) {    
+    public function getLogin($param) {
+        $where['active'] = 1;
+        if (!empty($param['_id'])) {
+            $where['_id'] = $param['_id'];
+        }
+        if (!empty($param['user_id'])) {
+            $where['user_id'] = $param['user_id'];
+        }
         $user = self::find(
             array(
-                'where' => array(
-                    '_id' => $param['_id'],
-                    'active' => 1,
-                )
+                'where' => $where
             ),
             self::RETURN_TYPE_ONE
         );
@@ -732,14 +738,29 @@ class Users extends AbstractModel {
     * @return array()
     */  
     public function fbLogin($param) { 
-        $isFirstLogin = 0;
         $param['facebook_image'] = "http://graph.facebook.com/{$param['facebook_id']}/picture?type=large";
-        $param['facebook_username'] = !empty($param['facebook_username']) ? $param['facebook_username'] : $param['facebook_id'];
-        if (empty($param['access_token'])) {
-            $param['access_token'] = '';
-        }
+        $isFirstLogin = 0;                
+        $userFacebookModel = new UserFacebooks;
+        // only check facebook email
         if (empty($param['facebook_email'])) {
-            $param['facebook_email'] = $param['facebook_username'] . '-fb-vuongquocbalo@gmail.com'; 
+            $userFacebook = $userFacebookModel->find([
+                'table' => 'user_facebooks',
+                'where' => [
+                    'facebook_id' => $param['facebook_id'],
+                    'website_id' => $param['website_id'],
+                ]
+            ]);
+            if (!empty($userFacebook['user_id'])) {                        
+                $websiteHasUserModel = new WebsiteHasUsers;
+                $websiteHasUserModel->addUpdate([
+                    'website_id' => $param['website_id'],
+                    'user_id' => $userFacebook['user_id'],
+                ]);
+                $user = self::getLogin(['user_id' => $userFacebook['user_id']]);
+                $user['is_first_login'] = 0;
+                $user['facebook_id'] = $param['facebook_id'];
+                return $user;
+            }            
         }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
@@ -756,7 +777,12 @@ class Users extends AbstractModel {
                 'mobile',   
             ))
             ->join(
-                'user_facebooks', 
+                array(
+                    'user_facebooks' => 
+                    $sql->select()
+                        ->from('user_facebooks')
+                        ->where("website_id = ". self::quote($param['website_id']))
+                ),
                 static::$tableName . '.user_id = user_facebooks.user_id',
                 array(
                     'facebook_id',
@@ -772,58 +798,14 @@ class Users extends AbstractModel {
                     'access_token_expires_at',
                 ),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
-            )
+            )            
             ->where(static::$tableName . '.email = '. static::quote($param['facebook_email']))
             ->limit(1)
-            ->offset(0);
-        $selectString = $sql->getSqlStringForSqlObject($select);
-        $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
-        $user = self::response($result, self::RETURN_TYPE_ONE);   
-        $userFacebookModel = new UserFacebooks;    
-        $image = new Images;
-        if (!empty($user['user_id'])) {
-            if (empty($user['facebook_email'])) {
-                $userFacebookModel->insert(array(
-                    'user_id' => $user['user_id'],
-                    'facebook_id' => $param['facebook_id'],
-                    'facebook_email' => $param['facebook_email'],
-                    'facebook_name' => $param['facebook_name'],
-                    'facebook_username' => $param['facebook_username'],                    
-                    'facebook_first_name' => $param['facebook_first_name'],
-                    'facebook_last_name' => $param['facebook_last_name'],
-                    'facebook_link' => $param['facebook_link'],
-                    'facebook_image' => $param['facebook_image'],
-                    'facebook_gender' => $param['facebook_gender'],
-                    'access_token' => $param['access_token'],
-                    'access_token_expires_at' => $param['access_token_expires_at'],
-                ));
-            } else {   
-                $set = array(
-                    'facebook_id' => $param['facebook_id'],                            
-                    'facebook_email' => $param['facebook_email'],
-                    'facebook_name' => $param['facebook_name'],
-                    'facebook_username' => $param['facebook_username'],                    
-                    'facebook_first_name' => $param['facebook_first_name'],
-                    'facebook_last_name' => $param['facebook_last_name'],
-                    'facebook_link' => $param['facebook_link'],
-                    'facebook_image' => $param['facebook_image'],
-                    'facebook_gender' => $param['facebook_gender'],
-                );
-                if (empty($user['access_token']) 
-                    || empty($user['access_token_expires_at'])
-                    || strtotime($user['access_token_expires_at']) < time()) {
-                    $set['access_token'] = $param['access_token'];
-                    $set['access_token_expires_at'] = $param['access_token_expires_at'];
-                } else {
-                    $param['access_token'] = $user['access_token'];
-                    $param['access_token_expires_at'] = $user['access_token_expires_at'];
-                }
-                $userFacebookModel->update(array(                        
-                    'set' => $set,
-                    'where' => array('user_id' => $user['user_id'])
-                ));
-            }
-        } else {
+            ->offset(0);   
+        $result = static::getDb()->query($sql->getSqlStringForSqlObject($select), Adapter::QUERY_MODE_EXECUTE); 
+        $user = self::response($result, self::RETURN_TYPE_ONE);  
+        if (empty($user['user_id'])) { 
+            $isFirstLogin = 1;
             if ($param['facebook_gender'] == 'male') {
                 $param['gender'] = 1;
             } elseif ($param['facebook_gender'] == 'female') {
@@ -831,13 +813,16 @@ class Users extends AbstractModel {
             } else {
                 $param['gender'] = 0;
             }
+            if (empty($param['facebook_email'])) {
+                $param['facebook_email'] = '';
+            }
             $param['name'] = array();
             if (!empty($param['facebook_last_name'])) {
                 $param['name'][] = $param['facebook_last_name'];
             }
             if (!empty($param['facebook_first_name'])) {
                 $param['name'][] = $param['facebook_first_name'];
-            }
+            }            
             $param['name'] = !empty($param['name']) ? implode(' ', $param['name']) : '';
             $user['_id'] = self::add(array(              
                 'email' => $param['facebook_email'],
@@ -846,53 +831,54 @@ class Users extends AbstractModel {
                 'name' => $param['name'], 
                 'gender' => $param['gender'],
                 'website_id' => $param['website_id'],
-            ), $user['user_id']);
-            if (!empty($user['user_id'])) {
-                $isFirstLogin = 1;
-                $param['image_id'] = $image->add(array(
-                    'src' => 'users',
-                    'src_id' => $user['user_id'],
-                    'url_image' => $param['facebook_image'],
-                    'is_main' => 1,
-                ));    
+            ), $user['user_id']);    
+            if (empty($user['user_id'])) {
+                return false;
+            }            
+        }
+        // no update new token
+        if (!empty($user['access_token']) 
+            && !empty($user['access_token_expires_at'])
+            && strtotime($user['access_token_expires_at']) > time()) {
+            unset($param['access_token']);
+            unset($param['access_token_expires_at']);
+        } else {
+            $user['access_token'] = $param['access_token'];
+            $user['access_token_expires_at'] = $param['access_token_expires_at'];
+        }
+        if (empty($user['image_id'])) {
+            $imageModel = new Images;
+            $imageId = $imageModel->add(array(
+                'src' => 'users',
+                'src_id' => $user['user_id'],
+                'url_image' => $param['facebook_image'],
+                'is_main' => 1,
+            ));
+            if (!empty($imageId)) {
                 self::update(array(
-                    'set' => array(
-                        'image_id' => $param['image_id']
-                    ),
-                    'where' => array('user_id' => $user['user_id'])
-                ));
-                $userFacebookModel->insert(array(
-                    'user_id' => $user['user_id'],
-                    'facebook_id' => $param['facebook_id'],
-                    'facebook_email' => $param['facebook_email'],
-                    'facebook_name' => $param['facebook_name'],
-                    'facebook_username' => $param['facebook_username'],                    
-                    'facebook_first_name' => $param['facebook_first_name'],
-                    'facebook_last_name' => $param['facebook_last_name'],
-                    'facebook_link' => $param['facebook_link'],
-                    'facebook_image' => $param['facebook_image'],
-                    'facebook_gender' => $param['facebook_gender'],
-                    'access_token' => $param['access_token'],
-                    'access_token_expires_at' => $param['access_token_expires_at'],
+                    'table' => 'users',
+                    'set' => ['image_id' => $imageId],
+                    'where' => ['user_id' => $user['user_id']]
                 ));
             }
-        }       
-        if (!empty($user['_id'])) {            
+        }
+        $param['user_id'] = $user['user_id'];
+        if ($userFacebookModel->addUpdate($param)) {
             $websiteHasUserModel = new WebsiteHasUsers;
             $websiteHasUserModel->addUpdate(array(
                 'website_id' => $param['website_id'],
                 'user_id' => $user['user_id'],
             ));
-            $user = self::getLogin(array('_id' => $user['_id']));
-            $user['is_first_login'] = $isFirstLogin;
-            $user['facebook_id'] = $param['facebook_id'];
-            if (!empty($param['access_token']) && !empty($param['access_token_expires_at'])) {
-                $user['access_token'] = $param['access_token'];
-                $user['access_token_expires_at'] = $param['access_token_expires_at'];
+            $login = self::getLogin(array('user_id' => $user['user_id']));
+            $login['is_first_login'] = $isFirstLogin;
+            $login['facebook_id'] = $param['facebook_id'];
+            if (!empty($user['access_token']) && !empty($user['access_token_expires_at'])) {
+                $login['access_token'] = $user['access_token'];
+                $login['access_token_expires_at'] = $user['access_token_expires_at'];
             }
-            return $user;
+            return $login;
         }
-        return false;
+        return false;    
     }
     
     /*

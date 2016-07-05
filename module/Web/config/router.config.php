@@ -63,7 +63,21 @@ return array(
                     ),
                 ),
 
+                'isduplicatecode' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/search/isduplicatecode',
+                        'constraints' => array(
 
+                        ),                            
+                        'defaults' => array(
+                            'module' => 'web',
+                            'controller' => 'search',
+                            'action' => 'isduplicatecode',
+                        ),
+                    ),
+                ),
+                
                 'ajax' => array(
                     'type'    => 'Segment',
                     'options' => array(

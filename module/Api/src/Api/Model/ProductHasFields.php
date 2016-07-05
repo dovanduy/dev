@@ -111,6 +111,51 @@ class ProductHasFields extends AbstractModel {
             if (empty($attribute['value'])) {
                 continue;
             }
+            $field = $fieldModel->getDetail([
+                'website_id' => $param['website_id'],
+                'name' => $attribute['name']
+            ]);
+            if (empty($field['type'])) {
+                $field['type'] = 'text';
+            }
+            switch ($field['type']) {
+                case 'radio':
+                case 'checkbox':
+                    $searchValue = '[' . name_2_url($attribute['value']) . ']';                  
+                    $values[] = array(
+                        'field_id' => $field['field_id'],
+                        'product_id' => $param['product_id'],
+                        'value_id' => isset($attribute['option_id']) ? '[' . $attribute['option_id'] . ']' : 0,
+                        'value' => $attribute['value'],
+                        'value_search' => $searchValue,
+                        'created' => new Expression('UNIX_TIMESTAMP()'),
+                        'updated' => new Expression('UNIX_TIMESTAMP()'),
+                    );
+                    break;  
+                default:
+                    $fieldModel->add(
+                        array(
+                            'name' => $attribute['name'],
+                            'type' => 'text',
+                            'website_id' => $param['website_id']
+                        ), $fieldId
+                    );
+                    $arrayValue = explode(',', $attribute['value']);
+                    foreach ($arrayValue as $k => $v) {
+                        $arrayValue[$k] = name_2_url($attribute['name'] . '-' . $v);
+                    }             
+                    $searchValue = '[' . implode('],[', $arrayValue) . ']';                  
+                    $values[] = array(
+                        'field_id' => $fieldId,
+                        'product_id' => $param['product_id'],
+                        'value_id' => isset($attribute['option_id']) ? $attribute['option_id'] : 0,
+                        'value' => $attribute['value'],
+                        'value_search' => $searchValue,
+                        'created' => new Expression('UNIX_TIMESTAMP()'),
+                        'updated' => new Expression('UNIX_TIMESTAMP()'),
+                    );
+            }
+            /*
             $fieldModel->add(
                 array(
                     'name' => $attribute['name'],
@@ -122,23 +167,26 @@ class ProductHasFields extends AbstractModel {
                 $arrayValue = explode(',', $attribute['value']);
                 foreach ($arrayValue as $k => $v) {
                     $arrayValue[$k] = name_2_url($attribute['name'] . '-' . $v);
-                }               
+                }             
                 $searchValue = '[' . implode('],[', $arrayValue) . ']';                  
                 $values[] = array(
                     'field_id' => $fieldId,
                     'product_id' => $param['product_id'],
-                    'value_id' => 0,
+                    'value_id' => isset($attribute['option_id']) ? $attribute['option_id'] : 0,
                     'value' => $attribute['value'],
                     'value_search' => $searchValue,
                     'created' => new Expression('UNIX_TIMESTAMP()'),
                     'updated' => new Expression('UNIX_TIMESTAMP()'),
                 );
             }
+            * 
+            */
         }
         if (!empty($values) && self::batchInsert(
                 $values, 
                 array(                   
                     'value' => new Expression('VALUES(`value`)'),
+                    'value_search' => new Expression('VALUES(`value_search`)'),
                     'updated' => new Expression('VALUES(`updated`)'),
                 ),
                 false

@@ -573,7 +573,7 @@ class ProductsController extends AppController
                     if ($form->isValid()) {                                                     
                         $post['src'] = 'products';
                         $post['src_id'] = $data['product_id'];
-                        $post['current'] = json_encode($image);
+                        $post['current'] = json_encode($image); //p($post, 1);
                         Api::call('url_images_addhascolor', $post);
                         if (empty(Api::error())) {
                             $this->addSuccessMessage('Data saved successfully');

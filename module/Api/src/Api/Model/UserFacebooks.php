@@ -22,6 +22,7 @@ class UserFacebooks extends AbstractModel {
         'facebook_gender', 
         'access_token', 
         'access_token_expires_at', 
+        'website_id', 
         'created',
         'updated',           
     );
@@ -52,5 +53,40 @@ class UserFacebooks extends AbstractModel {
         );
     }    
     
+    public function addUpdate($param)
+    {         
+        $param['facebook_username'] = '';
+        $value = array(
+            'user_id' => $param['user_id'],  
+            'facebook_id' => $param['facebook_id'],  
+            'facebook_name' => $param['facebook_name'],  
+            'facebook_username' => $param['facebook_username'],  
+            'facebook_email' => $param['facebook_email'],  
+            'facebook_first_name' => $param['facebook_first_name'],  
+            'facebook_last_name' => $param['facebook_last_name'],  
+            'facebook_link' => $param['facebook_link'],  
+            'facebook_image' => $param['facebook_image'],  
+            'facebook_gender' => $param['facebook_gender'],              
+            'website_id' => $param['website_id'],             
+            'created' => new Expression('UNIX_TIMESTAMP()'),
+            'updated' => new Expression('UNIX_TIMESTAMP()'),
+        );        
+        $onDuplicate['updated'] = new Expression('VALUES(`updated`)');
+        if (isset($param['access_token'])) {
+            $onDuplicate['access_token'] = $value['access_token'] = $param['access_token'];
+        }
+        if (isset($param['access_token_expires_at'])) {
+            $onDuplicate['access_token_expires_at'] = $value['access_token_expires_at'] = $param['access_token_expires_at'];
+        }
+        if (self::batchInsert(
+                $value, 
+                $onDuplicate,
+                false
+            )
+        ) { 
+            return true;
+        }
+        return false;        
+    }
     
 }

@@ -38,7 +38,7 @@ class RenderEventListener
             'AppUI' => $sm->get('auth')->getIdentity(),
             'website' => \Web\Model\Websites::getDetail(),
         ));
-        
+      
         $error = $e->getError();   
         switch ($error) {
             case 'error-router-no-match': // not found url format in router config
@@ -60,7 +60,7 @@ class Module
      * @return void
      */
     public function onBootstrap(MvcEvent $e)
-    {        
+    {   
         $translator = $e->getApplication()->getServiceManager()->get('translator');         
         $translator->setLocale('vi_VN');
         AbstractValidator::setDefaultTranslator($translator);

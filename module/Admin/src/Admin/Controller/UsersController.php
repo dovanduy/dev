@@ -44,9 +44,8 @@ class UsersController extends AppController
         $param = $this->getParams(array(
             'page' => 1,
             'limit' => \Application\Module::getConfig('general.default_limit'),
-            'sort' => 'updated-desc',
-            
-        ));      
+            'sort' => 'updated-desc',            
+        ));
         
         $request = $this->getRequest();
         if ($request->isPost()) {

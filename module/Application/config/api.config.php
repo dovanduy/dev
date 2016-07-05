@@ -184,6 +184,7 @@ return array(
         'url_products_price' => 'products/price',
         'url_products_addprice' => 'products/addprice',
         'url_products_saveprice' => 'products/saveprice',
+        'url_products_delete' => 'products/delete',
         
         'url_products_reviews_add' => 'productreviews/add',
         'url_products_reviews_lists' => 'productreviews/lists',

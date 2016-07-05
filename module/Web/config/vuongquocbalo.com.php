@@ -126,6 +126,10 @@ return array(
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
         ga('create', 'UA-77904073-1', 'auto');
         ga('send', 'pageview');
-      </script>"
+      </script>",
     
+    'meta_head' => [
+        'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng, với nhiều chương trình khuyến mãi',
+        'favicon' => 'favicon.ico'
+    ]
 );

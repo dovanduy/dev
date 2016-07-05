@@ -193,11 +193,16 @@ class Images extends AbstractModel
                     );
                 }  
             }
-            
+            Log::info($values);
             if (!empty($values)) {
                 self::batchInsert(
                     $values, 
-                    array('updated' => new Expression('UNIX_TIMESTAMP()')), 
+                    array(
+                        'product_id' => new Expression('VALUES(`product_id`)'),
+                        'color_id' => new Expression('VALUES(`color_id`)'),
+                        'image_id' => new Expression('VALUES(`image_id`)'),
+                        'updated' => new Expression('UNIX_TIMESTAMP()')
+                    ), 
                     false, 
                     'product_has_colors'
                 );

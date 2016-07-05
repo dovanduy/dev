@@ -21,5 +21,27 @@ return array(
                 ),                
             ),
         ),
-    ),    
+    ),   
+    
+    'log' => array(
+        'path' => './data/vuongquocbalo/log/oauth2',        
+    ),
+    
+    'cache' => array(
+        'adapter' => array(
+            'name' => 'filesystem',
+            'options' => array(
+                'dirLevel' => 2,
+                'cacheDir' => getcwd() . '/data/vuongquocbalo/cache/oauth2',
+                'dirPermission' => 0755,
+                'filePermission' => 0666,
+                'ttl' => 30*24*60*60,
+                'namespace' => 'app'
+            ),
+        ),
+        'plugins' => array(
+            'exception_handler' => array('throw_exceptions' => false),
+            'serializer'
+        )
+    ),
 );

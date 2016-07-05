@@ -153,6 +153,9 @@ class ProductCategories extends AbstractModel {
         ));
         if (!empty($detail)) {
             $id = $detail['category_id'];
+            if (isset($param['return_id'])) {
+                return $id;
+            }
             return $detail['_id'];
         }
         $_id = mongo_id();  // product_categories._id
@@ -218,6 +221,9 @@ class ProductCategories extends AbstractModel {
                     'category_id' => $id,
                     'website_id' => $param['website_id'],
                 ));
+            }
+            if (isset($param['return_id'])) {
+                return $id;
             }
             return $_id;
         }        

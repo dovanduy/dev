@@ -552,11 +552,11 @@ function app_get_fb_share_content($product) {
     $short .= " - chi tiết {$product['short_url']}";
     $data = [
         'message' => implode(PHP_EOL, [
-            $product['name'],
-            "Giá {$price}",             
-            "Đặt hàng: 097 443 60 40 - 098 65 60 997",                 
-            $short,
-            'Giao hàng TOÀN QUỐC',            
+            "💼 {$product['name']}",
+            "💰 {$price}",             
+            "📞 097 443 60 40 - 098 65 60 997",                 
+            "❝ {$short} ❞",
+            "✈ 🚏 🚕 🚄 Ship TOÀN QUỐC",            
         ]),
         'link' => $product['url'],
         'picture' => $product['image_facebook'],
@@ -568,15 +568,76 @@ function app_get_fb_share_content($product) {
     return $data;
 }
 
+function app_get_fb_share_comment() {    
+    $files = array(
+        'truyen-cuoi-gia-dinh.php',
+        'truyen-cuoi-hoc-duong.php', 
+        'truyen-cuoi-con-gai.php',
+        'truyen-cuoi-dan-gian.php',
+        'truyen-cuoi-con-trai.php',     
+        'truyen-cuoi-cong-nghe.php',
+        'truyen-cuoi-nghe-nghiep.php',
+        'truyen-cuoi-y-hoc.php',
+        'truyen-cuoi-tinh-yeu.php',
+        'truyen-cuoi-giao-thong.php',
+        'truyen-cuoi-say-xin.php',
+        'truyen-cuoi-the-thao.php',
+        'truyen-cuoi-phap-luat.php',
+        'truyen-cuoi-nha-hang.php',
+        'truyen-cuoi-nha-binh.php',
+        'truyen-cuoi-khoa-hoc.php',
+        'truyen-cuoi-ton-giao.php',
+        'truyen-cuoi-danh-nhan.php',
+        'truyen-trang-quynh.php',
+        'truyen-cuoi-vova.php',
+        'tho-ca-cuoi.php',
+    );
+    do {
+        $file = app_random_value($files);
+        $message = app_random_value(include ('include/' . $file)); 
+    } while (empty($message));
+    return [
+        'message' => $message,
+    ];
+}
+
 if (!function_exists('app_random_value')) {
-    function app_random_value($array, $default=null)
+    function app_random_value($array, $default = null)
     {
         $k = mt_rand(0, count($array) - 1);
-        return isset($array[$k])? $array[$k]: $default;
+        return isset($array[$k])? $array[$k] : $default;
     }
 }
 
 function app_get_comment_message($random = true) {
+    $files = array(
+        'truyen-cuoi-gia-dinh.php',
+        'truyen-cuoi-hoc-duong.php', 
+        'truyen-cuoi-con-gai.php',
+        'truyen-cuoi-dan-gian.php',
+        'truyen-cuoi-con-trai.php',     
+        'truyen-cuoi-cong-nghe.php',
+        'truyen-cuoi-nghe-nghiep.php',
+        'truyen-cuoi-y-hoc.php',
+        'truyen-cuoi-tinh-yeu.php',
+        'truyen-cuoi-giao-thong.php',
+        'truyen-cuoi-say-xin.php',
+        'truyen-cuoi-the-thao.php',
+        'truyen-cuoi-phap-luat.php',
+        'truyen-cuoi-nha-hang.php',
+        'truyen-cuoi-nha-binh.php',
+        'truyen-cuoi-khoa-hoc.php',
+        'truyen-cuoi-ton-giao.php',
+        'truyen-cuoi-danh-nhan.php',
+        'truyen-trang-quynh.php',
+        'truyen-cuoi-vova.php',
+        'tho-ca-cuoi.php',
+    );
+    $file = app_random_value($files);
+    $data = include_once ('include/' . $file);   
+    return app_random_value($data);            
+      
+    
     // Câu nói hay bất hủ về cuộc sống
     $data1 = [
         'Có nhiều người lạ lắm, mặc dù họ chẳng hề có ý định dành cho bạn một phần nhỏ xíu nào trong cuộc đời họ nhưng lúc nào cũng muốn là một phần rất quan trọng trong cuộc đời bạn.',
@@ -683,7 +744,65 @@ function app_get_comment_message($random = true) {
         } elseif (in_array($value, $data4)) {
             $value = '**STATUS HAY**' . PHP_EOL . $value;
         }       
-        return PHP_EOL . $value;
+        return $value;
+    }
+    return $data;
+}
+
+function app_get_comment_night($random = true) {
+    $data = [
+'|""\|""|:"* . *":
+| |gu?_.-"
+|__|\__|gon nha!
+\ \ / /:" * . * ":
+\ \ / / a"-. _ .-" 
+\ \/ / co\'
+|""\|""| :"* . *":
+| |hung_.-"
+|__|\__| giac\' mo
+|"_"""_"|:"* . *":
+|_|uyet _.-"
+|_| voi !!!.
+»™ ¶_ove ß@ßY ™«',
+'.*"" ._. "" ._. ""*. 
+" I☆U " 
+" ._. "" _ . " 
+*(`\'·.¸(`\'·.¸*¤*¸.·\'´)¸.·\'´)*
+(»°☆ngu ngon☆°«) 
+°¶-¶äpy and ¶-¶äpy°
+☆°。。☆°。。°☆
+™ ¶_ove ß@ßY ™«',
+'☆.¸0¸.☆
+».•º`•.NGU.•´º•.«
+☆•\'0`\'•☆
+☆.¸0¸.☆
+».•º`•.NGoN.•\´º•.«
+☆•\'0`\'•☆
+☆.¸0¸.☆
+».•º`•.NHE!.•´º•.«
+☆•\'0`\'•☆
+»™ ¶_ove ß@ßY ™«',
+    ];        
+    if ($random) {
+        $value = app_random_value($data);       
+        return $value;
+    }
+    return $data;
+}
+
+function app_get_comment_night_icon($random = true) {
+    $data = [
+        'http://vuongquocbalo.com/web/images/good_night1.jpg',
+        'http://vuongquocbalo.com/web/images/good_night2.jpg',
+        'http://vuongquocbalo.com/web/images/good_night3.jpg',
+        'http://vuongquocbalo.com/web/images/good_night4.jpg',
+        'http://vuongquocbalo.com/web/images/good_night5.jpg',
+        'http://vuongquocbalo.com/web/images/good_night6.jpg',
+        'http://vuongquocbalo.com/web/images/good_night7.jpg',
+    ];    
+    if ($random) {
+        $value = app_random_value($data);       
+        return $value;
     }
     return $data;
 }
@@ -749,6 +868,9 @@ if (!function_exists('app_facebook_groups')) {
             '113462365452492', // https://www.facebook.com/groups/795251457184853/ HỘI MUA BÁN-RAO VẶT-GIAO LƯU KẾT BẠN TOÀN QUỐC           
             '538895742888736', //https://www.facebook.com/groups/baneverything/
             '794951187227341', //https://www.facebook.com/groups/chosaletonghopbmt/
+            '292297640870438', //https://www.facebook.com/groups/292297640870438 Rao vặt Thủ Đức
+            '378628615584963', //https://www.facebook.com/groups/bachhoa/
+            '426697040774331', //https://www.facebook.com/groups/426697040774331/ Chợ Tốt - Cần Thơ
         ];
     }
 }

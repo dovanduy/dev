@@ -53,4 +53,38 @@ class SearchController extends AppController
         ); 
     }
     
+     /**
+     * Search products
+     *
+     * @return Zend\View\Model
+     */
+    public function isduplicatecodeAction()
+    {
+        $param = $this->getParams(array(            
+            'page' => 1,
+            'limit' => 100,            
+        ));
+        $param['keyword'] = 'Duplicate code';
+        $result = Products::getAllDuplicateCode($param);
+        $result = [
+            'data' => $result,
+            'limit' => count($result),
+            'count' => count($result),            
+        ];
+        $id = 'web_index_index';
+        $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);
+        if (!empty($page)) {
+            $page->setLabel($this->translate('Search result by keyword') . ' <strong>' . $param['keyword'] . '</strong> (<strong>' . count($result['data']) . '</strong> ' . $this->translate('result') . ')');
+            $page->setActive(true);            
+        }
+        $this->setHead(array(
+            'title' => $this->translate('Search result by keyword') . ' ' . $param['keyword']           
+        ));
+        return $this->getViewModel(array(
+                'params' => $this->params()->fromQuery(),
+                'result' => $result,                
+            )
+        ); 
+    }
+    
 }

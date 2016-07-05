@@ -127,6 +127,12 @@ return array(
     ),
     */
     //'chat' => '<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
-    'ga' => ""
+    'ga' => "",
+    
+    'meta_head' => [
+        'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng, với nhiều chương trình khuyến mãi',
+        'favicon' => 'favicon.ico'
+    ]
+    
     
 );

@@ -232,5 +232,13 @@ class ProductsController extends AppController {
             $this->getParams()
         );
     }
+
+    public function deleteAction()
+    {
+        return \Api\Bus\Products\Delete::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
     
 }
