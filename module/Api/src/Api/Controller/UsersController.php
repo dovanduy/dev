@@ -153,4 +153,12 @@ class UsersController extends AppController {
         );
     }
     
+    public function googleAction()
+    {
+        return \Api\Bus\Users\Google::getInstance()->execute(
+            $this->getServiceLocator()->get('Users'),
+            $this->getParams()
+        );
+    }
+    
 }

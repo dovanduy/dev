@@ -1,4 +1,5 @@
 <?php
+$request = $this->requestHelper();  
 $categories = \Web\Model\ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, false);
 $cartItems = Application\Lib\Cart::get();
 $totalQuantity = 0;
@@ -129,6 +130,11 @@ if (!empty($cartItems)) {
                                                         <span itemprop="name"><?php echo $this->translate('Delete cache this page')?></span>
                                                     </a>
                                                 </div>
+                                                <div class="col-xs-12 text-left">
+                                                    <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'allorders')))?>">
+                                                        <span itemprop="name"><?php echo $this->translate('Manage orders')?></span>
+                                                    </a>
+                                                </div>
                                                 <?php endif ?>
                                                 <div class="col-xs-12 text-left">
                                                     <a itemprop="url" href="<?php echo $this->url('web/my')?>">
@@ -144,7 +150,7 @@ if (!empty($cartItems)) {
                                                     <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'productorder')))?>">
                                                         <span itemprop="name"><?php echo $this->translate('Order list')?></span>
                                                     </a>
-                                                </div>
+                                                </div>                                                
                                                 <div class="col-xs-12 text-left">
                                                     <a itemprop="url" href="<?php echo $this->url('web/my', array(), array('query' => array('tab' => 'password')))?>"><?php echo $this->translate('Change password')?></a>
                                                 </div>
@@ -202,11 +208,7 @@ if (!empty($cartItems)) {
 						<!-- logo -->
 						<div itemscope itemtype="http://schema.org/Organization" id="logo" class="logo mb-10">
                             <a itemprop="url" href="/">
-                            <?php if (!empty($website['url_image'])): ?>
-                                <img itemprop="image" id="logo_img" src="<?php echo $website['url_image'] ?>" alt="<?php echo $website['name'] ?>">
-                            <?php else: ?>  
-                                <h2><?php echo $website['logo_text']; ?></h2> 
-                            <?php endif ?>  
+                                <img itemprop="image" id="logo_img" src="/web/images/vuongquocbalo.com.png" alt="<?php echo $website['name'] ?>"> 
                             </a>
                         </div>
 					</div>
@@ -245,6 +247,12 @@ if (!empty($cartItems)) {
 
 								<!-- Collect the nav links, forms, and other content for toggling -->
 								<div class="collapse navbar-collapse" id="navbar-collapse-1">
+                                    <form id="searchForm" action="/search" role="search" class="search-box margin-clear">
+                                        <div class="form-group has-feedback">
+                                            <input value="<?php if (isset($keyword)) echo $keyword;?>" id="q" name="q" type="text" class="form-control" placeholder="<?php echo $this->translate('Enter product name or brand name')?>">
+                                            <i class="icon-search form-control-feedback"></i>
+                                        </div>
+                                    </form>
 									<!-- main-menu -->
                                     <?php if (!empty($website['header_menus'])): ?>
 									<ul itemscope itemtype="http://schema.org/ItemList" class="nav navbar-nav">                                        
@@ -279,6 +287,7 @@ if (!empty($cartItems)) {
 									
 									<!-- header dropdown buttons -->                                    
 									<div id="searchArea" class="header-dropdown-buttons hidden-xs">
+                                        <!--
 										<div class="btn-group dropdown">
 											<button id="showSearchFormBtn" type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i></button>
 											<ul class="dropdown-menu dropdown-menu-right dropdown-animation">
@@ -292,6 +301,7 @@ if (!empty($cartItems)) {
 												</li>
 											</ul>
 										</div>
+                                        -->
 										<div class="btn-group dropdown" id="dropdown-cart">
 											<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
                                                 <i class="icon-basket-1"></i><span class="cart-count default-bg"><?php echo $totalQuantity ?></span>

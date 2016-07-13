@@ -11,6 +11,46 @@
 <section class="section light-gray-bg clearfix">
 	<div class="container">        
 		<div class="row">
+            
+			<div class="col-md-9 mt-10">                
+				
+				<div class="tab-content clear-style">
+					<div class="tab-pane active" id="pill-1">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 1082.02px;">
+                        <?php                         
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper();    
+                            $products = !empty($result['data']) ? $result['data'] : array();
+                            $limit = !empty($result['limit']) ? $result['limit'] : 10;
+                            $count = !empty($result['count']) ? $result['count'] : 0; 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    echo $this->productItemHelper($product);                                                                                                                    
+                                }
+                            } else {
+                                echo "<center class=\"not-found\">{$this->translate('Product not found')}</center>";
+                            }
+                        ?>   
+						</div>
+					</div>
+                    <!-- pills end -->
+                    <!-- pagination start -->
+                    <nav class="text-center">
+                        <?php   
+                            if ($count > $limit) {
+                                echo $this->paginatorHelper(
+                                    $params, 
+                                    $count, 
+                                    $limit,
+                                    Web\Module::getConfig('display_page')
+                                );
+                            }
+                        ?>
+                    </nav>                    
+				</div>
+				<!-- pills end -->
+			</div>
+		
             <div class="col-md-9">
                 <form id="sidebar_products_index_form">                
                     <div class="sidebar">
@@ -185,45 +225,7 @@
                     </div>
                 </form>
             </div>
-			<div class="col-md-9">                
-				
-				<div class="tab-content clear-style">
-					<div class="tab-pane active" id="pill-1">
-						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 1082.02px;">
-                        <?php                         
-                            $locales = \Application\Module::getConfig('general.locales');
-                            $request = $this->requestHelper();    
-                            $products = !empty($result['data']) ? $result['data'] : array();
-                            $limit = !empty($result['limit']) ? $result['limit'] : 10;
-                            $count = !empty($result['count']) ? $result['count'] : 0; 
-                            if (!empty($products)) {
-                                foreach ($products as $product) {
-                                    echo $this->productItemHelper($product);                                                                                                                    
-                                }
-                            } else {
-                                echo "<center class=\"not-found\">{$this->translate('Product not found')}</center>";
-                            }
-                        ?>   
-						</div>
-					</div>
-                    <!-- pills end -->
-                    <!-- pagination start -->
-                    <nav class="text-center">
-                        <?php   
-                            if ($count > $limit) {
-                                echo $this->paginatorHelper(
-                                    $params, 
-                                    $count, 
-                                    $limit,
-                                    Web\Module::getConfig('display_page')
-                                );
-                            }
-                        ?>
-                    </nav>                    
-				</div>
-				<!-- pills end -->
-			</div>
-		</div>
+        </div>
 	</div>
 </section>
 <!-- section end -->

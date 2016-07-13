@@ -1,0 +1,138 @@
+<?php
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
+<!-- main-container start -->
+<!-- ================ -->
+<section class="main-container">
+
+    <div class="container">
+        <div class="row">
+
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-md-12">
+              
+                <ul class="step clearfix" id="order_step">
+                    <li class="step_current first">
+                        <span><em>01.</em> <?php echo $this->translate('Cart')?></span>
+                    </li>
+                    <li class="step_todo second">
+                        <span><em>02.</em> <?php echo $this->translate('Customer information')?></span>
+                    </li>
+                    <li class="step_todo third">
+                        <span><em>03.</em> <?php echo $this->translate('Checkout')?></span>
+                    </li>
+                    <li id="step_end" class="step_todo last">
+                      <span><em>04.</em> <?php echo $this->translate('Confirm')?></span>
+                    </li>
+                </ul>
+                
+                <!-- page-title end -->
+                <?php if (!empty($cartItems)) : ?>
+                <form method="post" id="cartForm" novalidate>
+                <table class="table cart table-hover table-colored">
+                    <thead>
+                        <tr>
+                            <th class="th-product-name"><strong><?php echo $this->translate('Product name')?></strong></th>
+                            <th class="th-product-price"><strong><?php echo $this->translate('Price')?></strong></th>
+                            <th class="th-product-qunatity"><strong><?php echo $this->translate('Quantity')?></strong></th>                            
+                            <th class="th-product-amount" class="amount"><strong><?php echo $this->translate('Total')?></strong></th>
+                            <th class="th-remove"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cartItems as $keyId => $item) : ?>
+                        <tr class="remove-data form-table-row-<?php echo $keyId?>">                            
+                            <td class="product">
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($item['name'])))?>">
+                                    <?php echo $item['custom_name']?>
+                                </a> 
+                            </td>
+                            <td class="price"><?php echo app_money_format($item['price'])?> </td>
+                            <td class="quantity">
+                                <div class="form-group">
+                                    <input 
+                                        name="quantity[<?php echo $keyId?>]"   
+                                        data-product_id="<?php echo $keyId?>"
+                                        data-url="<?php 
+                                        echo $this->url(
+                                            'web/carts', 
+                                            array(
+                                                'action' => 'updateitems'
+                                            )
+                                        )?>"
+                                        data-callback="                                          
+                                            $('.total-amount').html(result.totalMoney);
+                                            $.each(result.items, function( keyId, value ) {                                                 
+                                                $(concat('.cart-item-total-money-', keyId)).html(value.total_money);
+                                            });
+                                        " 
+                                        type="text" 
+                                        value="<?php echo $item['quantity']?>"
+                                        class="form-control number ajax-change"
+                                    >
+                                </div>											
+                            </td>
+                            
+                            <td class="amount">
+                                <span class="cart-item-total-money-<?php echo $keyId?>">
+                                    <?php echo app_money_format($item['quantity'] * $item['price'])?> 
+                                </span>
+                            </td>
+                            
+                            <td class="remove">
+                                <a  class="ajax-submit"
+                                    title="<?php echo $this->translate('Remove')?>"
+                                    data-callback = "      
+                                        <?php echo "var keyId = '{$keyId}'" ?>;
+                                        var li = btn.closest('li'); 
+                                        li.remove();
+                                        $('.total-amount').html(result.totalMoney);
+                                        if ($('#cartForm .form-table-row-'+keyId).length > 0) {
+                                            $('#cartForm .form-table-row-'+keyId).remove();
+                                        }
+                                    "
+                                    data-url="                                                
+                                    <?php echo $this->url(
+                                            'web/carts', 
+                                            array(
+                                                'action' => 'removeitem',
+                                                'id' => $keyId
+                                            ))
+                                    ?>">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach ?>
+                        <tr class="row-total-payment">                           
+                            <td colspan="5" align="right">
+                                <div class="p-20">
+                                    <strong><?php echo $this->translate('Total')?>:</strong> 
+                                    <span class="total-amount"><?php echo app_money_format($totalMoney)?></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-right checkout-button">
+                    <a href="/" class="btn btn-group btn-default"><i class="icon-left-open-big"></i><?php echo $this->translate('Continue shopping!')?></a>
+                    <a href="/checkout" class="btn btn-group btn-default" style="margin-left:3px;"><?php echo $this->translate('Next step')?></a>
+                </div>
+                </form>
+                <?php endif ?>
+            </div>
+            <!-- main end -->
+
+        </div>
+    </div>
+</section>
+<!-- main-container end -->

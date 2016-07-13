@@ -1,0 +1,118 @@
+<?php
+    $website = $this->viewModel()->getRoot()->getVariable('website');
+?>
+<section class="main-container">
+    <div id="collapseMap" class="banner mb10">
+        <!-- google map start -->
+        <!-- ================ -->
+        <div id="map-canvas"></div>
+        <!-- google maps end -->
+    </div>  
+	<div class="container">
+		<div class="row">
+                      
+            <div class="main col-md-8">
+                <!-- page-title start -->
+                <!-- ================ -->
+                <h1 class="page-title"><?php echo $this->translate('Contact Us') ?></h1>
+                <div class="separator-2"></div>
+                <!-- 
+                <p>It would be great to hear from you! Just drop us a line and ask for anything with which you think we could be helpful. We are looking forward to hearing from you!</p>
+                <div class="alert alert-success hidden" id="MessageSent">
+                    We have received your message, we will contact you very soon.
+                </div>
+                <div class="alert alert-danger hidden" id="MessageNotSent">
+                    Oops! Something went wrong please refresh the page and try again.
+                </div>
+                -->
+                <div class="contact-form">
+                    <?php 
+                        $contactForm->prepare();
+                        echo $this->form()->openTag($contactForm);
+                    ?>                    
+                    <div class="form-group has-feedback">
+                        <label for="name"><?php echo $this->formLabel($contactForm->get('name')); ?></label>
+                        <?php echo $this->formText($contactForm->get('name')); ?>  
+                        <?php echo $this->formErrorMessage($contactForm->get('name')); ?>
+                        <i class="fa fa-user form-control-feedback"></i>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="email"><?php echo $this->formLabel($contactForm->get('email')); ?></label>
+                        <?php echo $this->formText($contactForm->get('email')); ?> 
+                        <?php echo $this->formErrorMessage($contactForm->get('email')); ?>
+                        <i class="fa fa-envelope form-control-feedback"></i>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="subject"><?php echo $this->formLabel($contactForm->get('subject')); ?></label>
+                        <?php echo $this->formText($contactForm->get('subject')); ?> 
+                        <?php echo $this->formErrorMessage($contactForm->get('subject')); ?>
+                        <i class="fa fa-navicon form-control-feedback"></i>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="message"><?php echo $this->formLabel($contactForm->get('content')); ?></label>
+                        <?php echo $this->formTextArea($contactForm->get('content')); ?> 
+                        <?php echo $this->formErrorMessage($contactForm->get('content')); ?>
+                        <i class="fa fa-pencil form-control-feedback"></i>
+                    </div>
+                    <input type="submit" value="<?php echo $this->translate('Send') ?>" class="submit-button btn btn-default">
+                    <?php                       
+                        echo $this->form()->closeTag();
+                        unset($form);
+                    ?>
+                </div>
+            </div>
+            
+            <aside class="col-md-4 col-lg-3 col-lg-offset-1">
+                <div class="sidebar">
+                    <div class="block clearfix">
+                        <h3 class="title"><?php echo $this->translate('Find Us') ?></h3>
+                        <div class="separator-2"></div>
+                        <ul class="list">
+                            <?php if (!empty($website['address'])):?>
+                            <li>
+                                <i class="fa fa-home pr-10"></i>
+                                <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                    <?php echo $website['address']?>
+                                </span>
+                            </li>
+                            <?php endif ?>
+                            
+                            <?php if (!empty($website['phone'])):?>
+                            <li>
+                                <i class="fa fa-phone pr-10"></i>
+                                <span itemprop="telephone"><?php echo $website['phone']?></span>
+                            </li>
+                            <?php endif ?>
+                            
+                            <?php if (!empty($website['fax'])):?>
+                            <li>
+                                <i class="fa fa-fax pr-10"></i>
+                                <span itemprop="faxNumber"><?php echo $website['fax']?></span>
+                            </li>
+                            <?php endif ?>
+                            
+                            <?php if (!empty($website['email'])):?>
+                            <li>
+                                <i class="fa fa-envelope pr-10"></i>
+                                <a itemprop="email" href="mailto:<?php echo $website['email']?>"><?php echo $website['email']?></a>
+                            </li>
+                            <?php endif ?>
+                        </ul>
+                        <a class="btn btn-gray collapsed map-show btn-animated" data-toggle="collapse" href="#collapseMap" aria-expanded="false" aria-controls="collapseMap"><?php echo $this->translate('Show Map') ?> <i class="fa fa-plus"></i></a>
+                    </div>
+                </div>
+            </aside> 
+		</div>
+	</div>
+</section>
+<script>
+    var websiteName = "<?php echo $website['name']?>";
+    var websiteAddress = "<?php echo $website['address']?>";
+    var websiteEmail = "<?php echo $website['email']?>";
+    var websitePhone = "<?php echo $website['phone']?>";
+    var websiteFax = "<?php echo !empty($website['fax']) ? $website['fax'] : ''?>";
+</script>
+<?php echo $this->headScript()
+    ->prependFile(Web\Module::getConfig('st_host') . ('/js/google.map.config.js'))
+    ->prependFile('//maps.google.com/maps/api/js?sensor=false')
+;?>

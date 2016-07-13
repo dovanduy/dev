@@ -19,7 +19,7 @@ class IndexController extends AppController
     {
         $this->setHead(array(
             'title' => WebModule::getConfig('meta_head.title')
-        ));
+        )); 
         $param = $this->getParams(array(                      
             'force' => 0,            
         ));
@@ -27,7 +27,7 @@ class IndexController extends AppController
             $wesiteModel = new Websites;
             $wesiteModel->removeCache();
         }
-        $blocks = Products::homepage($param);
+        $blocks = Products::homepage($param); 
         return $this->getViewModel(array(
                 'blocks' => $blocks
             )

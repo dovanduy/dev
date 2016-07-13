@@ -232,6 +232,17 @@ return array(
                     ),
                 ),
                 
+                'glogin2' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/glogin2',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'glogin2',
+                        ),
+                    ),
+                ),
+                
                 'signup' => array(
                     'type'    => 'Segment',
                     'options' => array(

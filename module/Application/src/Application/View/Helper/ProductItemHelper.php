@@ -110,6 +110,19 @@ class ProductItemHelper extends AbstractHtmlElement
                 )
             );
             
+            $shareBloggerUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'shareblogger'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],                       
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             $deleteDbUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -138,10 +151,11 @@ class ProductItemHelper extends AbstractHtmlElement
                 );
                 $adminBtn = "
                     <div class=\"admin-action\">
+                        
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$emailShareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
@@ -153,7 +167,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$fbShareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
@@ -165,7 +179,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$shareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
@@ -177,7 +191,19 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$shareBloggerUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-tag\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$setPriorityUrl}\"
                                 data-callback=\"   
                                     showMessage('Updated');
@@ -188,8 +214,9 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$removeUrl}\"
+                                data-confirmmessage=\"Are you sure?\"
                                 data-callback=\"
                                     var item = btn.closest('.masonry-grid-item'); 
                                     item.remove();
@@ -253,7 +280,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$emailShareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
@@ -264,7 +291,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$fbShareUrl}\"    
                                 data-showloading=\"1\"
                                 data-callback=\"                                        
@@ -276,7 +303,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$shareUrl}\"      
                                 data-showloading=\"1\"  
                                 data-callback=\"                                       
@@ -288,7 +315,19 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$shareBloggerUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-tag\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$setPriorityUrl}\"
                                 data-callback=\"   
                                     showMessage('Updated');
@@ -299,8 +338,9 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                         <a  itemprop=\"url\" href=\"#\" 
                             style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                            class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                             data-url=\"{$removeFromCategoryUrl}\"
+                            data-confirmmessage=\"Are you sure?\"
                             data-callback=\"
                                 var item = btn.closest('.masonry-grid-item'); 
                                 item.remove();
@@ -311,8 +351,9 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                         <a  itemprop=\"url\" href=\"#\" 
                             style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                            class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                             data-url=\"{$deleteDbUrl}\"
+                            data-confirmmessage=\"Are you sure?\"
                             data-callback=\"
                                 var item = btn.closest('.masonry-grid-item'); 
                                 item.remove();
@@ -378,7 +419,7 @@ class ProductItemHelper extends AbstractHtmlElement
             $discount = "<div class=\"discount-text\">-{$amount}%</div>";            
         }
         if ($product['price'] < $product['original_price']) {
-            $product['price'] = app_money_format($product['price']);        
+            $product['price'] = app_money_format($product['price'], false);        
             $product['original_price'] = app_money_format($product['original_price']);
         } else {
             $product['price'] = app_money_format($product['price']);   
@@ -411,9 +452,10 @@ class ProductItemHelper extends AbstractHtmlElement
                             </a>
                         </h3>
                         <div class=\"elements-list clearfix\">
-                            <div class=\"price-block\">
-                                <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
-                                <span itemprop=\"price\" class=\"original-price\">{$product['original_price']} </span>                                
+                            <div itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\" class=\"price-block\">
+                                <meta itemprop=\"priceCurrency\" content=\"VND\" />
+								<span itemprop=\"price\" class=\"price\">{$product['price']}</span><span class=\"price currency\">VND</span>
+                                <span class=\"original-price\">{$product['original_price']}</span>                                
                             </div>
                             {$btn}                                                          
                         </div>

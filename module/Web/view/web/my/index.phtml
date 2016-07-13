@@ -22,6 +22,9 @@
                             <li class="<?php if ($tab=='address') echo "active" ?>"><a href="<?php echo $url . '?tab=address&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('My address') ?></a></li>
                             <li class="<?php if ($tab=='productorder') echo "active" ?>"><a href="<?php echo $url . '?tab=productorder&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Order list') ?></a></li>
                             <li class="<?php if ($tab=='password') echo "active" ?>"><a href="<?php echo $url . '?tab=password&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Change password') ?></a></li>
+                            <?php if (in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))): ?>
+                            <li class="<?php if ($tab=='allorders') echo "active" ?>"><a href="<?php echo $url . '?tab=allorders&backurl=' . $backUrl;?>" aria-expanded="false"><?php echo $this->translate('Manage orders') ?></a></li>
+                            <?php endif ?>
                         </ul>
                         <div class="tab-content no-padding">
                             <div class="box-body">
@@ -168,7 +171,7 @@
                                     echo $this->htmlListForm($listForm);
                                 ?>   
                                 
-                            <?php elseif ($tab == 'productorder'): ?>
+                            <?php elseif ($tab == 'productorder' || $tab == 'allorders'): ?>
                                 
                             <?php
                                 echo $this->htmlListForm($listForm);

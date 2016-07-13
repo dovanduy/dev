@@ -72,7 +72,14 @@ File Description: Place here your custom CSS styles
 }
 .pagination { 
     margin-top: 8px;
-    margin-right: 2px;   
+    margin-right: 2px;  
+	text-align: center;	
+	width: 100%;
+}
+ul.pager, ul.pagination {   
+    text-align: center;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 .control-label {
     /*color: #f39c12;*/
@@ -138,8 +145,8 @@ File Description: Place here your custom CSS styles
 
 .form-control {
     height: 36px;
-    border-color: #d2d6de;
-    border-radius: 0 !important;
+    border-color: #d5d5d5;
+    border-radius: 5px !important;
     box-shadow: none;
 }
 .Hidden
@@ -942,6 +949,9 @@ tfoot .total-money {
     border-bottom-left-radius: 3px;
     padding: 1px 5px;
 }
+#my_index .box-body {
+	padding: 0px;
+}
 .nav-tabs-custom>.nav-tabs {
     margin: 0px;
     border-bottom-color: #f4f4f4;
@@ -1196,8 +1206,8 @@ fieldset .form-control, fieldset .form-control:focus {
     position: relative;    
 }
 .body-pc .masonry-grid-item .image img {
-    max-height: 95%;  
-    max-width: 95%; 
+    max-height: 90%;  
+    max-width: 84%; 
     width: auto;
     height: auto;
     position: absolute;  
@@ -1219,8 +1229,8 @@ fieldset .form-control, fieldset .form-control:focus {
     position: relative;
 }
 .body-mobile .masonry-grid-item .image img {
-    max-height: 95%;  
-    max-width: 95%; 
+    max-height: 92%;  
+    max-width: 80%; 
     width: auto;
     height: auto;
     position: absolute;  
@@ -1330,13 +1340,13 @@ img {
 }
 .logo img {
 	display: block;
-    height: 50px;
+    max-height: 50px;
 }
 #logo_img {
-    height: 50px;
+    max-height: 50px;
 }
 .body-mobile #logo_img {
-    height: 42px;
+    max-height: 42px;
 	margin-top: 8px;
 }
 #detailForm #productSize {
@@ -1365,6 +1375,11 @@ img {
     border: 0;
     background-color: white;
 }
+
+.header-top-dropdown .btn-group {
+	margin-left: 3px;
+} 
+
 .navbar-default .navbar-brand {
     color: #777;
 }
@@ -2120,9 +2135,13 @@ ul.step a:hover:after {
     float: left;
 }
 .price-block .price {
-    float: left;
-    clear: both;
+    float: left;    
     font-size: 16px;
+}
+.price-block .currency {
+    float: left;    
+    font-size: 16px;
+	margin-left: 3px;
 }
 .price-block .original-price { 
     float: left;
@@ -2152,7 +2171,8 @@ ul.step a:hover:after {
 .admin-action form {
     float: left;
     margin-top: 0px !important;
-    margin-right: 2px;
+    margin-right: 5px;
+	margin-bottom: 10px;
 }
 #ship_money p {
 	margin-bottom: 7px;
@@ -2166,10 +2186,44 @@ ul.step a:hover:after {
 .list-inline {
 	font-size: 14px;
 }
+.body-mobile .list-inline {
+	font-size: 14px;
+	margin-top: 5px;
+    margin-bottom: 2px;
+}
 .body-mobile .navbar-nav {
     margin: 2.5px -10px;
 }
 .body-mobile #header-top-second {
 	height: 30px;
 	line-height: 30px;
+}
+.sidebar .original-price {
+	margin-left: 2px;
+}
+.price {
+	margin-right: 2px;
+}
+#navbar-collapse-1 #searchForm {
+	margin-top: 16px !important;
+	margin-right: 74px !important;
+	width: 80%;
+	float: right;
+}
+.form-control-feedback {    
+    top: -2px;
+}
+@media (min-width: 768px) {
+	.lead {
+		font-size: 16px;
+	}
+}
+.admin-action {
+	width: 110px;
+}
+.admin-action select {
+	margin-right: 4px;
+}
+.btn-adm  {
+	width: 44px !important;
 }

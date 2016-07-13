@@ -41,6 +41,14 @@ class ImagesController extends AppController {
         );
     }
     
+    public function updateAction()
+    {
+        return \Api\Bus\Images\Update::getInstance()->execute(
+            $this->getServiceLocator()->get('Images'),
+            $this->getParams()
+        );
+    }
+    
     public function addhascolorAction()
     {
         return \Api\Bus\Images\AddHasColor::getInstance()->execute(
@@ -52,6 +60,14 @@ class ImagesController extends AppController {
     public function detailAction()
     {
         return \Api\Bus\Images\Detail::getInstance()->execute(
+            $this->getServiceLocator()->get('Images'),
+            $this->getParams()
+        );
+    }
+    
+    public function uploadAction()
+    {
+        return \Api\Bus\Images\UploadImg::getInstance()->execute(
             $this->getServiceLocator()->get('Images'),
             $this->getParams()
         );

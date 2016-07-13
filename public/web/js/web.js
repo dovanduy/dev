@@ -708,4 +708,319 @@ boxes.each(function(){box2Darr[rowIndex][colIndex]=$(this);colIndex++;if(colInde
 if(i===totalBoxes-1){setTimeout(function(){box.animate({opacity:'1',width:w,height:h},settings.animSpeed/1.3,'',function(){slider.trigger('nivo:animFinished');});},(100+time));}else{setTimeout(function(){box.animate({opacity:'1',width:w,height:h},settings.animSpeed/1.3);},(100+time));}})(rows,prevCol,timeBuff,i,totalBoxes);i++;}
 prevCol--;}
 timeBuff+=100;}}};var shuffle=function(arr){for(var j,x,i=arr.length;i;j=parseInt(Math.random()*i,10),x=arr[--i],arr[i]=arr[j],arr[j]=x);return arr;};var trace=function(msg){if(this.console&&typeof console.log!=='undefined'){console.log(msg);}};this.stop=function(){if(!$(element).data('nivo:vars').stop){$(element).data('nivo:vars').stop=true;trace('Stop Slider');}};this.start=function(){if($(element).data('nivo:vars').stop){$(element).data('nivo:vars').stop=false;trace('Start Slider');}};settings.afterLoad.call(this);return this;};$.fn.nivoSlider=function(options){return this.each(function(key,value){var element=$(this);if(element.data('nivoslider')){return element.data('nivoslider');}
-var nivoslider=new NivoSlider(this,options);element.data('nivoslider',nivoslider);});};$.fn.nivoSlider.defaults={effect:'random',slices:15,boxCols:8,boxRows:4,animSpeed:500,pauseTime:3000,startSlide:0,directionNav:true,controlNav:true,controlNavThumbs:false,pauseOnHover:true,manualAdvance:false,prevText:'Prev',nextText:'Next',randomStart:false,beforeChange:function(){},afterChange:function(){},slideshowEnd:function(){},lastSlide:function(){},afterLoad:function(){}};$.fn._reverse=[].reverse;})(jQuery);
+var nivoslider=new NivoSlider(this,options);element.data('nivoslider',nivoslider);});};$.fn.nivoSlider.defaults={effect:'random',slices:15,boxCols:8,boxRows:4,animSpeed:500,pauseTime:3000,startSlide:0,directionNav:true,controlNav:true,controlNavThumbs:false,pauseOnHover:true,manualAdvance:false,prevText:'Prev',nextText:'Next',randomStart:false,beforeChange:function(){},afterChange:function(){},slideshowEnd:function(){},lastSlide:function(){},afterLoad:function(){}};$.fn._reverse=[].reverse;})(jQuery);;
+/*!
+* Timepicker Component for Twitter Bootstrap
+*
+* Copyright 2013 Joris de Wit
+*
+* Contributors https://github.com/jdewit/bootstrap-timepicker/graphs/contributors
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+(function($,window,document,undefined){'use strict';var Timepicker=function(element,options){this.widget='';this.$element=$(element);this.defaultTime=options.defaultTime;this.disableFocus=options.disableFocus;this.isOpen=options.isOpen;this.minuteStep=options.minuteStep;this.modalBackdrop=options.modalBackdrop;this.secondStep=options.secondStep;this.showInputs=options.showInputs;this.showMeridian=options.showMeridian;this.showSeconds=options.showSeconds;this.template=options.template;this.appendWidgetTo=options.appendWidgetTo;this.upArrowStyle=options.upArrowStyle;this.downArrowStyle=options.downArrowStyle;this.containerClass=options.containerClass;this._init();};Timepicker.prototype={constructor:Timepicker,_init:function(){var self=this;if(this.$element.parent().hasClass('input-append')||this.$element.parent().hasClass('input-prepend')){if(this.$element.parent('.input-append, .input-prepend').find('.add-on').length){this.$element.parent('.input-append, .input-prepend').find('.add-on').on({'click.timepicker':$.proxy(this.showWidget,this)});}else{this.$element.closest(this.containerClass).find('.add-on').on({'click.timepicker':$.proxy(this.showWidget,this)});}
+this.$element.on({'focus.timepicker':$.proxy(this.highlightUnit,this),'click.timepicker':$.proxy(this.highlightUnit,this),'keydown.timepicker':$.proxy(this.elementKeydown,this),'blur.timepicker':$.proxy(this.blurElement,this)});}else{if(this.template){this.$element.on({'focus.timepicker':$.proxy(this.showWidget,this),'click.timepicker':$.proxy(this.showWidget,this),'blur.timepicker':$.proxy(this.blurElement,this)});}else{this.$element.on({'focus.timepicker':$.proxy(this.highlightUnit,this),'click.timepicker':$.proxy(this.highlightUnit,this),'keydown.timepicker':$.proxy(this.elementKeydown,this),'blur.timepicker':$.proxy(this.blurElement,this)});}}
+if(this.template!==false){this.$widget=$(this.getTemplate()).prependTo(this.$element.parents(this.appendWidgetTo)).on('click',$.proxy(this.widgetClick,this));}else{this.$widget=false;}
+if(this.showInputs&&this.$widget!==false){this.$widget.find('input').each(function(){$(this).on({'click.timepicker':function(){$(this).select();},'keydown.timepicker':$.proxy(self.widgetKeydown,self)});});}
+this.setDefaultTime(this.defaultTime);},blurElement:function(){this.highlightedUnit=undefined;this.updateFromElementVal();},decrementHour:function(){if(this.showMeridian){if(this.hour===1){this.hour=12;}else if(this.hour===12){this.hour--;return this.toggleMeridian();}else if(this.hour===0){this.hour=11;return this.toggleMeridian();}else{this.hour--;}}else{if(this.hour===0){this.hour=23;}else{this.hour--;}}
+this.update();},decrementMinute:function(step){var newVal;if(step){newVal=this.minute-step;}else{newVal=this.minute-this.minuteStep;}
+if(newVal<0){this.decrementHour();this.minute=newVal+60;}else{this.minute=newVal;}
+this.update();},decrementSecond:function(){var newVal=this.second-this.secondStep;if(newVal<0){this.decrementMinute(true);this.second=newVal+60;}else{this.second=newVal;}
+this.update();},elementKeydown:function(e){switch(e.keyCode){case 9:this.updateFromElementVal();switch(this.highlightedUnit){case'hour':e.preventDefault();this.highlightNextUnit();break;case'minute':if(this.showMeridian||this.showSeconds){e.preventDefault();this.highlightNextUnit();}
+break;case'second':if(this.showMeridian){e.preventDefault();this.highlightNextUnit();}
+break;}
+break;case 27:this.updateFromElementVal();break;case 37:e.preventDefault();this.highlightPrevUnit();this.updateFromElementVal();break;case 38:e.preventDefault();switch(this.highlightedUnit){case'hour':this.incrementHour();this.highlightHour();break;case'minute':this.incrementMinute();this.highlightMinute();break;case'second':this.incrementSecond();this.highlightSecond();break;case'meridian':this.toggleMeridian();this.highlightMeridian();break;}
+break;case 39:e.preventDefault();this.updateFromElementVal();this.highlightNextUnit();break;case 40:e.preventDefault();switch(this.highlightedUnit){case'hour':this.decrementHour();this.highlightHour();break;case'minute':this.decrementMinute();this.highlightMinute();break;case'second':this.decrementSecond();this.highlightSecond();break;case'meridian':this.toggleMeridian();this.highlightMeridian();break;}
+break;}},formatTime:function(hour,minute,second,meridian){hour=hour<10?'0'+hour:hour;minute=minute<10?'0'+minute:minute;second=second<10?'0'+second:second;return hour+':'+minute+(this.showSeconds?':'+second:'')+(this.showMeridian?' '+meridian:'');},getCursorPosition:function(){var input=this.$element.get(0);if('selectionStart'in input){return input.selectionStart;}else if(document.selection){input.focus();var sel=document.selection.createRange(),selLen=document.selection.createRange().text.length;sel.moveStart('character',-input.value.length);return sel.text.length-selLen;}},getTemplate:function(){var template,hourTemplate,minuteTemplate,secondTemplate,meridianTemplate,templateContent;if(this.showInputs){hourTemplate='<input type="text" name="hour" class="bootstrap-timepicker-hour form-control" maxlength="2"/>';minuteTemplate='<input type="text" name="minute" class="bootstrap-timepicker-minute form-control" maxlength="2"/>';secondTemplate='<input type="text" name="second" class="bootstrap-timepicker-second form-control" maxlength="2"/>';meridianTemplate='<input type="text" name="meridian" class="bootstrap-timepicker-meridian form-control" maxlength="2"/>';}else{hourTemplate='<span class="bootstrap-timepicker-hour"></span>';minuteTemplate='<span class="bootstrap-timepicker-minute"></span>';secondTemplate='<span class="bootstrap-timepicker-second"></span>';meridianTemplate='<span class="bootstrap-timepicker-meridian"></span>';}
+templateContent='<table>'+'<tr>'+'<td><a href="#" data-action="incrementHour"><i class="'+this.upArrowStyle+'"></i></a></td>'+'<td class="separator">&nbsp;</td>'+'<td><a href="#" data-action="incrementMinute"><i class="'+this.upArrowStyle+'"></i></a></td>'+
+(this.showSeconds?'<td class="separator">&nbsp;</td>'+'<td><a href="#" data-action="incrementSecond"><i class="'+this.upArrowStyle+'"></i></a></td>':'')+
+(this.showMeridian?'<td class="separator">&nbsp;</td>'+'<td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="'+this.upArrowStyle+'"></i></a></td>':'')+'</tr>'+'<tr>'+'<td>'+hourTemplate+'</td> '+'<td class="separator">:</td>'+'<td>'+minuteTemplate+'</td> '+
+(this.showSeconds?'<td class="separator">:</td>'+'<td>'+secondTemplate+'</td>':'')+
+(this.showMeridian?'<td class="separator">&nbsp;</td>'+'<td>'+meridianTemplate+'</td>':'')+'</tr>'+'<tr>'+'<td><a href="#" data-action="decrementHour"><i class="'+this.downArrowStyle+'"></i></a></td>'+'<td class="separator"></td>'+'<td><a href="#" data-action="decrementMinute"><i class="'+this.downArrowStyle+'"></i></a></td>'+
+(this.showSeconds?'<td class="separator">&nbsp;</td>'+'<td><a href="#" data-action="decrementSecond"><i class="'+this.downArrowStyle+'"></i></a></td>':'')+
+(this.showMeridian?'<td class="separator">&nbsp;</td>'+'<td><a href="#" data-action="toggleMeridian"><i class="'+this.downArrowStyle+'"></i></a></td>':'')+'</tr>'+'</table>';switch(this.template){case'modal':template='<div class="bootstrap-timepicker-widget modal hide fade in" data-backdrop="'+(this.modalBackdrop?'true':'false')+'">'+'<div class="modal-header">'+'<a href="#" class="close" data-dismiss="modal">×</a>'+'<h3>Pick a Time</h3>'+'</div>'+'<div class="modal-content">'+
+templateContent+'</div>'+'<div class="modal-footer">'+'<a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>'+'</div>'+'</div>';break;case'dropdown':template='<div class="bootstrap-timepicker-widget dropdown-menu">'+templateContent+'</div>';break;}
+return template;},getTime:function(){return this.formatTime(this.hour,this.minute,this.second,this.meridian);},hideWidget:function(){if(this.isOpen===false){return;}
+if(this.showInputs){this.updateFromWidgetInputs();}
+this.$element.trigger({'type':'hide.timepicker','time':{'value':this.getTime(),'hours':this.hour,'minutes':this.minute,'seconds':this.second,'meridian':this.meridian}});if(this.template==='modal'&&this.$widget.modal){this.$widget.modal('hide');}else{this.$widget.removeClass('open');}
+$(document).off('mousedown.timepicker');this.isOpen=false;},highlightUnit:function(){this.position=this.getCursorPosition();if(this.position>=0&&this.position<=2){this.highlightHour();}else if(this.position>=3&&this.position<=5){this.highlightMinute();}else if(this.position>=6&&this.position<=8){if(this.showSeconds){this.highlightSecond();}else{this.highlightMeridian();}}else if(this.position>=9&&this.position<=11){this.highlightMeridian();}},highlightNextUnit:function(){switch(this.highlightedUnit){case'hour':this.highlightMinute();break;case'minute':if(this.showSeconds){this.highlightSecond();}else if(this.showMeridian){this.highlightMeridian();}else{this.highlightHour();}
+break;case'second':if(this.showMeridian){this.highlightMeridian();}else{this.highlightHour();}
+break;case'meridian':this.highlightHour();break;}},highlightPrevUnit:function(){switch(this.highlightedUnit){case'hour':this.highlightMeridian();break;case'minute':this.highlightHour();break;case'second':this.highlightMinute();break;case'meridian':if(this.showSeconds){this.highlightSecond();}else{this.highlightMinute();}
+break;}},highlightHour:function(){var $element=this.$element.get(0);this.highlightedUnit='hour';if($element.setSelectionRange){setTimeout(function(){$element.setSelectionRange(0,2);},0);}},highlightMinute:function(){var $element=this.$element.get(0);this.highlightedUnit='minute';if($element.setSelectionRange){setTimeout(function(){$element.setSelectionRange(3,5);},0);}},highlightSecond:function(){var $element=this.$element.get(0);this.highlightedUnit='second';if($element.setSelectionRange){setTimeout(function(){$element.setSelectionRange(6,8);},0);}},highlightMeridian:function(){var $element=this.$element.get(0);this.highlightedUnit='meridian';if($element.setSelectionRange){if(this.showSeconds){setTimeout(function(){$element.setSelectionRange(9,11);},0);}else{setTimeout(function(){$element.setSelectionRange(6,8);},0);}}},incrementHour:function(){if(this.showMeridian){if(this.hour===11){this.hour++;return this.toggleMeridian();}else if(this.hour===12){this.hour=0;}}
+if(this.hour===23){this.hour=0;return;}
+this.hour++;this.update();},incrementMinute:function(step){var newVal;if(step){newVal=this.minute+step;}else{newVal=this.minute+this.minuteStep-(this.minute%this.minuteStep);}
+if(newVal>59){this.incrementHour();this.minute=newVal-60;}else{this.minute=newVal;}
+this.update();},incrementSecond:function(){var newVal=this.second+this.secondStep-(this.second%this.secondStep);if(newVal>59){this.incrementMinute(true);this.second=newVal-60;}else{this.second=newVal;}
+this.update();},remove:function(){$('document').off('.timepicker');if(this.$widget){this.$widget.remove();}
+delete this.$element.data().timepicker;},setDefaultTime:function(defaultTime){if(!this.$element.val()){if(defaultTime==='current'){var dTime=new Date(),hours=dTime.getHours(),minutes=Math.floor(dTime.getMinutes()/this.minuteStep)*this.minuteStep,seconds=Math.floor(dTime.getSeconds()/this.secondStep)*this.secondStep,meridian='AM';if(this.showMeridian){if(hours===0){hours=12;}else if(hours>=12){if(hours>12){hours=hours-12;}
+meridian='PM';}else{meridian='AM';}}
+this.hour=hours;this.minute=minutes;this.second=seconds;this.meridian=meridian;this.update();}else if(defaultTime===false){this.hour=0;this.minute=0;this.second=0;this.meridian='AM';}else{this.setTime(defaultTime);}}else{this.updateFromElementVal();}},setTime:function(time){var arr,timeArray;if(this.showMeridian){arr=time.split(' ');timeArray=arr[0].split(':');this.meridian=arr[1];}else{timeArray=time.split(':');}
+this.hour=parseInt(timeArray[0],10);this.minute=parseInt(timeArray[1],10);this.second=parseInt(timeArray[2],10);if(isNaN(this.hour)){this.hour=0;}
+if(isNaN(this.minute)){this.minute=0;}
+if(this.showMeridian){if(this.hour>12){this.hour=12;}else if(this.hour<1){this.hour=12;}
+if(this.meridian==='am'||this.meridian==='a'){this.meridian='AM';}else if(this.meridian==='pm'||this.meridian==='p'){this.meridian='PM';}
+if(this.meridian!=='AM'&&this.meridian!=='PM'){this.meridian='AM';}}else{if(this.hour>=24){this.hour=23;}else if(this.hour<0){this.hour=0;}}
+if(this.minute<0){this.minute=0;}else if(this.minute>=60){this.minute=59;}
+if(this.showSeconds){if(isNaN(this.second)){this.second=0;}else if(this.second<0){this.second=0;}else if(this.second>=60){this.second=59;}}
+this.update();},showWidget:function(){if(this.isOpen){return;}
+if(this.$element.is(':disabled')){return;}
+var self=this;$(document).on('mousedown.timepicker',function(e){if($(e.target).closest('.bootstrap-timepicker-widget').length===0){self.hideWidget();}});this.$element.trigger({'type':'show.timepicker','time':{'value':this.getTime(),'hours':this.hour,'minutes':this.minute,'seconds':this.second,'meridian':this.meridian}});if(this.disableFocus){this.$element.blur();}
+this.updateFromElementVal();if(this.template==='modal'&&this.$widget.modal){this.$widget.modal('show').on('hidden',$.proxy(this.hideWidget,this));}else{if(this.isOpen===false){this.$widget.addClass('open');}}
+this.isOpen=true;},toggleMeridian:function(){this.meridian=this.meridian==='AM'?'PM':'AM';this.update();},update:function(){this.$element.trigger({'type':'changeTime.timepicker','time':{'value':this.getTime(),'hours':this.hour,'minutes':this.minute,'seconds':this.second,'meridian':this.meridian}});this.updateElement();this.updateWidget();},updateElement:function(){this.$element.val(this.getTime()).change();},updateFromElementVal:function(){var val=this.$element.val();if(val){this.setTime(val);}},updateWidget:function(){if(this.$widget===false){return;}
+var hour=this.hour<10?'0'+this.hour:this.hour,minute=this.minute<10?'0'+this.minute:this.minute,second=this.second<10?'0'+this.second:this.second;if(this.showInputs){this.$widget.find('input.bootstrap-timepicker-hour').val(hour);this.$widget.find('input.bootstrap-timepicker-minute').val(minute);if(this.showSeconds){this.$widget.find('input.bootstrap-timepicker-second').val(second);}
+if(this.showMeridian){this.$widget.find('input.bootstrap-timepicker-meridian').val(this.meridian);}}else{this.$widget.find('span.bootstrap-timepicker-hour').text(hour);this.$widget.find('span.bootstrap-timepicker-minute').text(minute);if(this.showSeconds){this.$widget.find('span.bootstrap-timepicker-second').text(second);}
+if(this.showMeridian){this.$widget.find('span.bootstrap-timepicker-meridian').text(this.meridian);}}},updateFromWidgetInputs:function(){if(this.$widget===false){return;}
+var time=$('input.bootstrap-timepicker-hour',this.$widget).val()+':'+
+$('input.bootstrap-timepicker-minute',this.$widget).val()+
+(this.showSeconds?':'+$('input.bootstrap-timepicker-second',this.$widget).val():'')+
+(this.showMeridian?' '+$('input.bootstrap-timepicker-meridian',this.$widget).val():'');this.setTime(time);},widgetClick:function(e){e.stopPropagation();e.preventDefault();var action=$(e.target).closest('a').data('action');if(action){this[action]();}},widgetKeydown:function(e){var $input=$(e.target).closest('input'),name=$input.attr('name');switch(e.keyCode){case 9:if(this.showMeridian){if(name==='meridian'){return this.hideWidget();}}else{if(this.showSeconds){if(name==='second'){return this.hideWidget();}}else{if(name==='minute'){return this.hideWidget();}}}
+this.updateFromWidgetInputs();break;case 27:this.hideWidget();break;case 38:e.preventDefault();switch(name){case'hour':this.incrementHour();break;case'minute':this.incrementMinute();break;case'second':this.incrementSecond();break;case'meridian':this.toggleMeridian();break;}
+break;case 40:e.preventDefault();switch(name){case'hour':this.decrementHour();break;case'minute':this.decrementMinute();break;case'second':this.decrementSecond();break;case'meridian':this.toggleMeridian();break;}
+break;}}};$.fn.timepicker=function(option){var args=Array.apply(null,arguments);args.shift();return this.each(function(){var $this=$(this),data=$this.data('timepicker'),options=typeof option==='object'&&option;if(!data){$this.data('timepicker',(data=new Timepicker(this,$.extend({},$.fn.timepicker.defaults,options,$(this).data()))));}
+if(typeof option==='string'){data[option].apply(data,args);}});};$.fn.timepicker.defaults={defaultTime:'current',disableFocus:false,isOpen:false,minuteStep:15,modalBackdrop:false,secondStep:15,showSeconds:false,showInputs:true,showMeridian:true,template:'dropdown',appendWidgetTo:'.bootstrap-timepicker',upArrowStyle:'glyphicon glyphicon-chevron-up',downArrowStyle:'glyphicon glyphicon-chevron-down',containerClass:'bootstrap-timepicker'};$.fn.timepicker.Constructor=Timepicker;})(jQuery,window,document);;(function($,undefined){var $window=$(window);function UTCDate(){return new Date(Date.UTC.apply(Date,arguments));}
+function UTCToday(){var today=new Date();return UTCDate(today.getFullYear(),today.getMonth(),today.getDate());}
+function alias(method){return function(){return this[method].apply(this,arguments);};}
+var DateArray=(function(){var extras={get:function(i){return this.slice(i)[0];},contains:function(d){var val=d&&d.valueOf();for(var i=0,l=this.length;i<l;i++)
+if(this[i].valueOf()===val)
+return i;return-1;},remove:function(i){this.splice(i,1);},replace:function(new_array){if(!new_array)
+return;if(!$.isArray(new_array))
+new_array=[new_array];this.clear();this.push.apply(this,new_array);},clear:function(){this.splice(0);},copy:function(){var a=new DateArray();a.replace(this);return a;}};return function(){var a=[];a.push.apply(a,arguments);$.extend(a,extras);return a;};})();var Datepicker=function(element,options){this.dates=new DateArray();this.viewDate=UTCToday();this.focusDate=null;this._process_options(options);this.element=$(element);this.isInline=false;this.isInput=this.element.is('input');this.component=this.element.is('.date')?this.element.find('.add-on, .input-group-addon, .btn'):false;this.hasInput=this.component&&this.element.find('input').length;if(this.component&&this.component.length===0)
+this.component=false;this.picker=$(DPGlobal.template);this._buildEvents();this._attachEvents();if(this.isInline){this.picker.addClass('datepicker-inline').appendTo(this.element);}
+else{this.picker.addClass('datepicker-dropdown dropdown-menu');}
+if(this.o.rtl){this.picker.addClass('datepicker-rtl');}
+this.viewMode=this.o.startView;if(this.o.calendarWeeks)
+this.picker.find('tfoot th.today').attr('colspan',function(i,val){return parseInt(val)+1;});this._allow_update=false;this.setStartDate(this._o.startDate);this.setEndDate(this._o.endDate);this.setDaysOfWeekDisabled(this.o.daysOfWeekDisabled);this.fillDow();this.fillMonths();this._allow_update=true;this.update();this.showMode();if(this.isInline){this.show();}};Datepicker.prototype={constructor:Datepicker,_process_options:function(opts){this._o=$.extend({},this._o,opts);var o=this.o=$.extend({},this._o);var lang=o.language;if(!dates[lang]){lang=lang.split('-')[0];if(!dates[lang])
+lang=defaults.language;}
+o.language=lang;switch(o.startView){case 2:case'decade':o.startView=2;break;case 1:case'year':o.startView=1;break;default:o.startView=0;}
+switch(o.minViewMode){case 1:case'months':o.minViewMode=1;break;case 2:case'years':o.minViewMode=2;break;default:o.minViewMode=0;}
+o.startView=Math.max(o.startView,o.minViewMode);if(o.multidate!==true){o.multidate=Number(o.multidate)||false;if(o.multidate!==false)
+o.multidate=Math.max(0,o.multidate);else
+o.multidate=1;}
+o.multidateSeparator=String(o.multidateSeparator);o.weekStart%=7;o.weekEnd=((o.weekStart+6)%7);var format=DPGlobal.parseFormat(o.format);if(o.startDate!==-Infinity){if(!!o.startDate){if(o.startDate instanceof Date)
+o.startDate=this._local_to_utc(this._zero_time(o.startDate));else
+o.startDate=DPGlobal.parseDate(o.startDate,format,o.language);}
+else{o.startDate=-Infinity;}}
+if(o.endDate!==Infinity){if(!!o.endDate){if(o.endDate instanceof Date)
+o.endDate=this._local_to_utc(this._zero_time(o.endDate));else
+o.endDate=DPGlobal.parseDate(o.endDate,format,o.language);}
+else{o.endDate=Infinity;}}
+o.daysOfWeekDisabled=o.daysOfWeekDisabled||[];if(!$.isArray(o.daysOfWeekDisabled))
+o.daysOfWeekDisabled=o.daysOfWeekDisabled.split(/[,\s]*/);o.daysOfWeekDisabled=$.map(o.daysOfWeekDisabled,function(d){return parseInt(d,10);});var plc=String(o.orientation).toLowerCase().split(/\s+/g),_plc=o.orientation.toLowerCase();plc=$.grep(plc,function(word){return(/^auto|left|right|top|bottom$/).test(word);});o.orientation={x:'auto',y:'auto'};if(!_plc||_plc==='auto');else if(plc.length===1){switch(plc[0]){case'top':case'bottom':o.orientation.y=plc[0];break;case'left':case'right':o.orientation.x=plc[0];break;}}
+else{_plc=$.grep(plc,function(word){return(/^left|right$/).test(word);});o.orientation.x=_plc[0]||'auto';_plc=$.grep(plc,function(word){return(/^top|bottom$/).test(word);});o.orientation.y=_plc[0]||'auto';}},_events:[],_secondaryEvents:[],_applyEvents:function(evs){for(var i=0,el,ch,ev;i<evs.length;i++){el=evs[i][0];if(evs[i].length===2){ch=undefined;ev=evs[i][1];}
+else if(evs[i].length===3){ch=evs[i][1];ev=evs[i][2];}
+el.on(ev,ch);}},_unapplyEvents:function(evs){for(var i=0,el,ev,ch;i<evs.length;i++){el=evs[i][0];if(evs[i].length===2){ch=undefined;ev=evs[i][1];}
+else if(evs[i].length===3){ch=evs[i][1];ev=evs[i][2];}
+el.off(ev,ch);}},_buildEvents:function(){if(this.isInput){this._events=[[this.element,{focus:$.proxy(this.show,this),keyup:$.proxy(function(e){if($.inArray(e.keyCode,[27,37,39,38,40,32,13,9])===-1)
+this.update();},this),keydown:$.proxy(this.keydown,this)}]];}
+else if(this.component&&this.hasInput){this._events=[[this.element.find('input'),{focus:$.proxy(this.show,this),keyup:$.proxy(function(e){if($.inArray(e.keyCode,[27,37,39,38,40,32,13,9])===-1)
+this.update();},this),keydown:$.proxy(this.keydown,this)}],[this.component,{click:$.proxy(this.show,this)}]];}
+else if(this.element.is('div')){this.isInline=true;}
+else{this._events=[[this.element,{click:$.proxy(this.show,this)}]];}
+this._events.push([this.element,'*',{blur:$.proxy(function(e){this._focused_from=e.target;},this)}],[this.element,{blur:$.proxy(function(e){this._focused_from=e.target;},this)}]);this._secondaryEvents=[[this.picker,{click:$.proxy(this.click,this)}],[$(window),{resize:$.proxy(this.place,this)}],[$(document),{'mousedown touchstart':$.proxy(function(e){if(!(this.element.is(e.target)||this.element.find(e.target).length||this.picker.is(e.target)||this.picker.find(e.target).length)){this.hide();}},this)}]];},_attachEvents:function(){this._detachEvents();this._applyEvents(this._events);},_detachEvents:function(){this._unapplyEvents(this._events);},_attachSecondaryEvents:function(){this._detachSecondaryEvents();this._applyEvents(this._secondaryEvents);},_detachSecondaryEvents:function(){this._unapplyEvents(this._secondaryEvents);},_trigger:function(event,altdate){var date=altdate||this.dates.get(-1),local_date=this._utc_to_local(date);this.element.trigger({type:event,date:local_date,dates:$.map(this.dates,this._utc_to_local),format:$.proxy(function(ix,format){if(arguments.length===0){ix=this.dates.length-1;format=this.o.format;}
+else if(typeof ix==='string'){format=ix;ix=this.dates.length-1;}
+format=format||this.o.format;var date=this.dates.get(ix);return DPGlobal.formatDate(date,format,this.o.language);},this)});},show:function(){if(!this.isInline)
+this.picker.appendTo('body');this.picker.show();this.place();this._attachSecondaryEvents();this._trigger('show');},hide:function(){if(this.isInline)
+return;if(!this.picker.is(':visible'))
+return;this.focusDate=null;this.picker.hide().detach();this._detachSecondaryEvents();this.viewMode=this.o.startView;this.showMode();if(this.o.forceParse&&(this.isInput&&this.element.val()||this.hasInput&&this.element.find('input').val()))
+this.setValue();this._trigger('hide');},remove:function(){this.hide();this._detachEvents();this._detachSecondaryEvents();this.picker.remove();delete this.element.data().datepicker;if(!this.isInput){delete this.element.data().date;}},_utc_to_local:function(utc){return utc&&new Date(utc.getTime()+(utc.getTimezoneOffset()*60000));},_local_to_utc:function(local){return local&&new Date(local.getTime()-(local.getTimezoneOffset()*60000));},_zero_time:function(local){return local&&new Date(local.getFullYear(),local.getMonth(),local.getDate());},_zero_utc_time:function(utc){return utc&&new Date(Date.UTC(utc.getUTCFullYear(),utc.getUTCMonth(),utc.getUTCDate()));},getDates:function(){return $.map(this.dates,this._utc_to_local);},getUTCDates:function(){return $.map(this.dates,function(d){return new Date(d);});},getDate:function(){return this._utc_to_local(this.getUTCDate());},getUTCDate:function(){return new Date(this.dates.get(-1));},setDates:function(){var args=$.isArray(arguments[0])?arguments[0]:arguments;this.update.apply(this,args);this._trigger('changeDate');this.setValue();},setUTCDates:function(){var args=$.isArray(arguments[0])?arguments[0]:arguments;this.update.apply(this,$.map(args,this._utc_to_local));this._trigger('changeDate');this.setValue();},setDate:alias('setDates'),setUTCDate:alias('setUTCDates'),setValue:function(){var formatted=this.getFormattedDate();if(!this.isInput){if(this.component){this.element.find('input').val(formatted).change();}}
+else{this.element.val(formatted).change();}},getFormattedDate:function(format){if(format===undefined)
+format=this.o.format;var lang=this.o.language;return $.map(this.dates,function(d){return DPGlobal.formatDate(d,format,lang);}).join(this.o.multidateSeparator);},setStartDate:function(startDate){this._process_options({startDate:startDate});this.update();this.updateNavArrows();},setEndDate:function(endDate){this._process_options({endDate:endDate});this.update();this.updateNavArrows();},setDaysOfWeekDisabled:function(daysOfWeekDisabled){this._process_options({daysOfWeekDisabled:daysOfWeekDisabled});this.update();this.updateNavArrows();},place:function(){if(this.isInline)
+return;var calendarWidth=this.picker.outerWidth(),calendarHeight=this.picker.outerHeight(),visualPadding=10,windowWidth=$window.width(),windowHeight=$window.height(),scrollTop=$window.scrollTop();var zIndex=parseInt(this.element.parents().filter(function(){return $(this).css('z-index')!=='auto';}).first().css('z-index'))+10;var offset=this.component?this.component.parent().offset():this.element.offset();var height=this.component?this.component.outerHeight(true):this.element.outerHeight(false);var width=this.component?this.component.outerWidth(true):this.element.outerWidth(false);var left=offset.left,top=offset.top;this.picker.removeClass('datepicker-orient-top datepicker-orient-bottom '+'datepicker-orient-right datepicker-orient-left');if(this.o.orientation.x!=='auto'){this.picker.addClass('datepicker-orient-'+this.o.orientation.x);if(this.o.orientation.x==='right')
+left-=calendarWidth-width;}
+else{this.picker.addClass('datepicker-orient-left');if(offset.left<0)
+left-=offset.left-visualPadding;else if(offset.left+calendarWidth>windowWidth)
+left=windowWidth-calendarWidth-visualPadding;}
+var yorient=this.o.orientation.y,top_overflow,bottom_overflow;if(yorient==='auto'){top_overflow=-scrollTop+offset.top-calendarHeight;bottom_overflow=scrollTop+windowHeight-(offset.top+height+calendarHeight);if(Math.max(top_overflow,bottom_overflow)===bottom_overflow)
+yorient='top';else
+yorient='bottom';}
+this.picker.addClass('datepicker-orient-'+yorient);if(yorient==='top')
+top+=height;else
+top-=calendarHeight+parseInt(this.picker.css('padding-top'));this.picker.css({top:top,left:left,zIndex:zIndex});},_allow_update:true,update:function(){if(!this._allow_update)
+return;var oldDates=this.dates.copy(),dates=[],fromArgs=false;if(arguments.length){$.each(arguments,$.proxy(function(i,date){if(date instanceof Date)
+date=this._local_to_utc(date);dates.push(date);},this));fromArgs=true;}
+else{dates=this.isInput?this.element.val():this.element.data('date')||this.element.find('input').val();if(dates&&this.o.multidate)
+dates=dates.split(this.o.multidateSeparator);else
+dates=[dates];delete this.element.data().date;}
+dates=$.map(dates,$.proxy(function(date){return DPGlobal.parseDate(date,this.o.format,this.o.language);},this));dates=$.grep(dates,$.proxy(function(date){return(date<this.o.startDate||date>this.o.endDate||!date);},this),true);this.dates.replace(dates);if(this.dates.length)
+this.viewDate=new Date(this.dates.get(-1));else if(this.viewDate<this.o.startDate)
+this.viewDate=new Date(this.o.startDate);else if(this.viewDate>this.o.endDate)
+this.viewDate=new Date(this.o.endDate);if(fromArgs){this.setValue();}
+else if(dates.length){if(String(oldDates)!==String(this.dates))
+this._trigger('changeDate');}
+if(!this.dates.length&&oldDates.length)
+this._trigger('clearDate');this.fill();},fillDow:function(){var dowCnt=this.o.weekStart,html='<tr>';if(this.o.calendarWeeks){var cell='<th class="cw">&nbsp;</th>';html+=cell;this.picker.find('.datepicker-days thead tr:first-child').prepend(cell);}
+while(dowCnt<this.o.weekStart+7){html+='<th class="dow">'+dates[this.o.language].daysMin[(dowCnt++)%7]+'</th>';}
+html+='</tr>';this.picker.find('.datepicker-days thead').append(html);},fillMonths:function(){var html='',i=0;while(i<12){html+='<span class="month">'+dates[this.o.language].monthsShort[i++]+'</span>';}
+this.picker.find('.datepicker-months td').html(html);},setRange:function(range){if(!range||!range.length)
+delete this.range;else
+this.range=$.map(range,function(d){return d.valueOf();});this.fill();},getClassNames:function(date){var cls=[],year=this.viewDate.getUTCFullYear(),month=this.viewDate.getUTCMonth(),today=new Date();if(date.getUTCFullYear()<year||(date.getUTCFullYear()===year&&date.getUTCMonth()<month)){cls.push('old');}
+else if(date.getUTCFullYear()>year||(date.getUTCFullYear()===year&&date.getUTCMonth()>month)){cls.push('new');}
+if(this.focusDate&&date.valueOf()===this.focusDate.valueOf())
+cls.push('focused');if(this.o.todayHighlight&&date.getUTCFullYear()===today.getFullYear()&&date.getUTCMonth()===today.getMonth()&&date.getUTCDate()===today.getDate()){cls.push('today');}
+if(this.dates.contains(date)!==-1)
+cls.push('active');if(date.valueOf()<this.o.startDate||date.valueOf()>this.o.endDate||$.inArray(date.getUTCDay(),this.o.daysOfWeekDisabled)!==-1){cls.push('disabled');}
+if(this.range){if(date>this.range[0]&&date<this.range[this.range.length-1]){cls.push('range');}
+if($.inArray(date.valueOf(),this.range)!==-1){cls.push('selected');}}
+return cls;},fill:function(){var d=new Date(this.viewDate),year=d.getUTCFullYear(),month=d.getUTCMonth(),startYear=this.o.startDate!==-Infinity?this.o.startDate.getUTCFullYear():-Infinity,startMonth=this.o.startDate!==-Infinity?this.o.startDate.getUTCMonth():-Infinity,endYear=this.o.endDate!==Infinity?this.o.endDate.getUTCFullYear():Infinity,endMonth=this.o.endDate!==Infinity?this.o.endDate.getUTCMonth():Infinity,todaytxt=dates[this.o.language].today||dates['en'].today||'',cleartxt=dates[this.o.language].clear||dates['en'].clear||'',tooltip;this.picker.find('.datepicker-days thead th.datepicker-switch').text(dates[this.o.language].months[month]+' '+year);this.picker.find('tfoot th.today').text(todaytxt).toggle(this.o.todayBtn!==false);this.picker.find('tfoot th.clear').text(cleartxt).toggle(this.o.clearBtn!==false);this.updateNavArrows();this.fillMonths();var prevMonth=UTCDate(year,month-1,28),day=DPGlobal.getDaysInMonth(prevMonth.getUTCFullYear(),prevMonth.getUTCMonth());prevMonth.setUTCDate(day);prevMonth.setUTCDate(day-(prevMonth.getUTCDay()-this.o.weekStart+7)%7);var nextMonth=new Date(prevMonth);nextMonth.setUTCDate(nextMonth.getUTCDate()+42);nextMonth=nextMonth.valueOf();var html=[];var clsName;while(prevMonth.valueOf()<nextMonth){if(prevMonth.getUTCDay()===this.o.weekStart){html.push('<tr>');if(this.o.calendarWeeks){var
+ws=new Date(+prevMonth+(this.o.weekStart-prevMonth.getUTCDay()-7)%7*864e5),th=new Date(Number(ws)+(7+4-ws.getUTCDay())%7*864e5),yth=new Date(Number(yth=UTCDate(th.getUTCFullYear(),0,1))+(7+4-yth.getUTCDay())%7*864e5),calWeek=(th-yth)/864e5/7+1;html.push('<td class="cw">'+calWeek+'</td>');}}
+clsName=this.getClassNames(prevMonth);clsName.push('day');if(this.o.beforeShowDay!==$.noop){var before=this.o.beforeShowDay(this._utc_to_local(prevMonth));if(before===undefined)
+before={};else if(typeof(before)==='boolean')
+before={enabled:before};else if(typeof(before)==='string')
+before={classes:before};if(before.enabled===false)
+clsName.push('disabled');if(before.classes)
+clsName=clsName.concat(before.classes.split(/\s+/));if(before.tooltip)
+tooltip=before.tooltip;}
+clsName=$.unique(clsName);html.push('<td class="'+clsName.join(' ')+'"'+(tooltip?' title="'+tooltip+'"':'')+'>'+prevMonth.getUTCDate()+'</td>');if(prevMonth.getUTCDay()===this.o.weekEnd){html.push('</tr>');}
+prevMonth.setUTCDate(prevMonth.getUTCDate()+1);}
+this.picker.find('.datepicker-days tbody').empty().append(html.join(''));var months=this.picker.find('.datepicker-months').find('th:eq(1)').text(year).end().find('span').removeClass('active');$.each(this.dates,function(i,d){if(d.getUTCFullYear()===year)
+months.eq(d.getUTCMonth()).addClass('active');});if(year<startYear||year>endYear){months.addClass('disabled');}
+if(year===startYear){months.slice(0,startMonth).addClass('disabled');}
+if(year===endYear){months.slice(endMonth+1).addClass('disabled');}
+html='';year=parseInt(year/10,10)*10;var yearCont=this.picker.find('.datepicker-years').find('th:eq(1)').text(year+'-'+(year+9)).end().find('td');year-=1;var years=$.map(this.dates,function(d){return d.getUTCFullYear();}),classes;for(var i=-1;i<11;i++){classes=['year'];if(i===-1)
+classes.push('old');else if(i===10)
+classes.push('new');if($.inArray(year,years)!==-1)
+classes.push('active');if(year<startYear||year>endYear)
+classes.push('disabled');html+='<span class="'+classes.join(' ')+'">'+year+'</span>';year+=1;}
+yearCont.html(html);},updateNavArrows:function(){if(!this._allow_update)
+return;var d=new Date(this.viewDate),year=d.getUTCFullYear(),month=d.getUTCMonth();switch(this.viewMode){case 0:if(this.o.startDate!==-Infinity&&year<=this.o.startDate.getUTCFullYear()&&month<=this.o.startDate.getUTCMonth()){this.picker.find('.prev').css({visibility:'hidden'});}
+else{this.picker.find('.prev').css({visibility:'visible'});}
+if(this.o.endDate!==Infinity&&year>=this.o.endDate.getUTCFullYear()&&month>=this.o.endDate.getUTCMonth()){this.picker.find('.next').css({visibility:'hidden'});}
+else{this.picker.find('.next').css({visibility:'visible'});}
+break;case 1:case 2:if(this.o.startDate!==-Infinity&&year<=this.o.startDate.getUTCFullYear()){this.picker.find('.prev').css({visibility:'hidden'});}
+else{this.picker.find('.prev').css({visibility:'visible'});}
+if(this.o.endDate!==Infinity&&year>=this.o.endDate.getUTCFullYear()){this.picker.find('.next').css({visibility:'hidden'});}
+else{this.picker.find('.next').css({visibility:'visible'});}
+break;}},click:function(e){e.preventDefault();var target=$(e.target).closest('span, td, th'),year,month,day;if(target.length===1){switch(target[0].nodeName.toLowerCase()){case'th':switch(target[0].className){case'datepicker-switch':this.showMode(1);break;case'prev':case'next':var dir=DPGlobal.modes[this.viewMode].navStep*(target[0].className==='prev'?-1:1);switch(this.viewMode){case 0:this.viewDate=this.moveMonth(this.viewDate,dir);this._trigger('changeMonth',this.viewDate);break;case 1:case 2:this.viewDate=this.moveYear(this.viewDate,dir);if(this.viewMode===1)
+this._trigger('changeYear',this.viewDate);break;}
+this.fill();break;case'today':var date=new Date();date=UTCDate(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0);this.showMode(-2);var which=this.o.todayBtn==='linked'?null:'view';this._setDate(date,which);break;case'clear':var element;if(this.isInput)
+element=this.element;else if(this.component)
+element=this.element.find('input');if(element)
+element.val("").change();this.update();this._trigger('changeDate');if(this.o.autoclose)
+this.hide();break;}
+break;case'span':if(!target.is('.disabled')){this.viewDate.setUTCDate(1);if(target.is('.month')){day=1;month=target.parent().find('span').index(target);year=this.viewDate.getUTCFullYear();this.viewDate.setUTCMonth(month);this._trigger('changeMonth',this.viewDate);if(this.o.minViewMode===1){this._setDate(UTCDate(year,month,day));}}
+else{day=1;month=0;year=parseInt(target.text(),10)||0;this.viewDate.setUTCFullYear(year);this._trigger('changeYear',this.viewDate);if(this.o.minViewMode===2){this._setDate(UTCDate(year,month,day));}}
+this.showMode(-1);this.fill();}
+break;case'td':if(target.is('.day')&&!target.is('.disabled')){day=parseInt(target.text(),10)||1;year=this.viewDate.getUTCFullYear();month=this.viewDate.getUTCMonth();if(target.is('.old')){if(month===0){month=11;year-=1;}
+else{month-=1;}}
+else if(target.is('.new')){if(month===11){month=0;year+=1;}
+else{month+=1;}}
+this._setDate(UTCDate(year,month,day));}
+break;}}
+if(this.picker.is(':visible')&&this._focused_from){$(this._focused_from).focus();}
+delete this._focused_from;},_toggle_multidate:function(date){var ix=this.dates.contains(date);if(!date){this.dates.clear();}
+else if(ix!==-1){this.dates.remove(ix);}
+else{this.dates.push(date);}
+if(typeof this.o.multidate==='number')
+while(this.dates.length>this.o.multidate)
+this.dates.remove(0);},_setDate:function(date,which){if(!which||which==='date')
+this._toggle_multidate(date&&new Date(date));if(!which||which==='view')
+this.viewDate=date&&new Date(date);this.fill();this.setValue();this._trigger('changeDate');var element;if(this.isInput){element=this.element;}
+else if(this.component){element=this.element.find('input');}
+if(element){element.change();}
+if(this.o.autoclose&&(!which||which==='date')){this.hide();}},moveMonth:function(date,dir){if(!date)
+return undefined;if(!dir)
+return date;var new_date=new Date(date.valueOf()),day=new_date.getUTCDate(),month=new_date.getUTCMonth(),mag=Math.abs(dir),new_month,test;dir=dir>0?1:-1;if(mag===1){test=dir===-1?function(){return new_date.getUTCMonth()===month;}:function(){return new_date.getUTCMonth()!==new_month;};new_month=month+dir;new_date.setUTCMonth(new_month);if(new_month<0||new_month>11)
+new_month=(new_month+12)%12;}
+else{for(var i=0;i<mag;i++)
+new_date=this.moveMonth(new_date,dir);new_month=new_date.getUTCMonth();new_date.setUTCDate(day);test=function(){return new_month!==new_date.getUTCMonth();};}
+while(test()){new_date.setUTCDate(--day);new_date.setUTCMonth(new_month);}
+return new_date;},moveYear:function(date,dir){return this.moveMonth(date,dir*12);},dateWithinRange:function(date){return date>=this.o.startDate&&date<=this.o.endDate;},keydown:function(e){if(this.picker.is(':not(:visible)')){if(e.keyCode===27)
+this.show();return;}
+var dateChanged=false,dir,newDate,newViewDate,focusDate=this.focusDate||this.viewDate;switch(e.keyCode){case 27:if(this.focusDate){this.focusDate=null;this.viewDate=this.dates.get(-1)||this.viewDate;this.fill();}
+else
+this.hide();e.preventDefault();break;case 37:case 39:if(!this.o.keyboardNavigation)
+break;dir=e.keyCode===37?-1:1;if(e.ctrlKey){newDate=this.moveYear(this.dates.get(-1)||UTCToday(),dir);newViewDate=this.moveYear(focusDate,dir);this._trigger('changeYear',this.viewDate);}
+else if(e.shiftKey){newDate=this.moveMonth(this.dates.get(-1)||UTCToday(),dir);newViewDate=this.moveMonth(focusDate,dir);this._trigger('changeMonth',this.viewDate);}
+else{newDate=new Date(this.dates.get(-1)||UTCToday());newDate.setUTCDate(newDate.getUTCDate()+dir);newViewDate=new Date(focusDate);newViewDate.setUTCDate(focusDate.getUTCDate()+dir);}
+if(this.dateWithinRange(newDate)){this.focusDate=this.viewDate=newViewDate;this.setValue();this.fill();e.preventDefault();}
+break;case 38:case 40:if(!this.o.keyboardNavigation)
+break;dir=e.keyCode===38?-1:1;if(e.ctrlKey){newDate=this.moveYear(this.dates.get(-1)||UTCToday(),dir);newViewDate=this.moveYear(focusDate,dir);this._trigger('changeYear',this.viewDate);}
+else if(e.shiftKey){newDate=this.moveMonth(this.dates.get(-1)||UTCToday(),dir);newViewDate=this.moveMonth(focusDate,dir);this._trigger('changeMonth',this.viewDate);}
+else{newDate=new Date(this.dates.get(-1)||UTCToday());newDate.setUTCDate(newDate.getUTCDate()+dir*7);newViewDate=new Date(focusDate);newViewDate.setUTCDate(focusDate.getUTCDate()+dir*7);}
+if(this.dateWithinRange(newDate)){this.focusDate=this.viewDate=newViewDate;this.setValue();this.fill();e.preventDefault();}
+break;case 32:break;case 13:focusDate=this.focusDate||this.dates.get(-1)||this.viewDate;this._toggle_multidate(focusDate);dateChanged=true;this.focusDate=null;this.viewDate=this.dates.get(-1)||this.viewDate;this.setValue();this.fill();if(this.picker.is(':visible')){e.preventDefault();if(this.o.autoclose)
+this.hide();}
+break;case 9:this.focusDate=null;this.viewDate=this.dates.get(-1)||this.viewDate;this.fill();this.hide();break;}
+if(dateChanged){if(this.dates.length)
+this._trigger('changeDate');else
+this._trigger('clearDate');var element;if(this.isInput){element=this.element;}
+else if(this.component){element=this.element.find('input');}
+if(element){element.change();}}},showMode:function(dir){if(dir){this.viewMode=Math.max(this.o.minViewMode,Math.min(2,this.viewMode+dir));}
+this.picker.find('>div').hide().filter('.datepicker-'+DPGlobal.modes[this.viewMode].clsName).css('display','block');this.updateNavArrows();}};var DateRangePicker=function(element,options){this.element=$(element);this.inputs=$.map(options.inputs,function(i){return i.jquery?i[0]:i;});delete options.inputs;$(this.inputs).datepicker(options).bind('changeDate',$.proxy(this.dateUpdated,this));this.pickers=$.map(this.inputs,function(i){return $(i).data('datepicker');});this.updateDates();};DateRangePicker.prototype={updateDates:function(){this.dates=$.map(this.pickers,function(i){return i.getUTCDate();});this.updateRanges();},updateRanges:function(){var range=$.map(this.dates,function(d){return d.valueOf();});$.each(this.pickers,function(i,p){p.setRange(range);});},dateUpdated:function(e){if(this.updating)
+return;this.updating=true;var dp=$(e.target).data('datepicker'),new_date=dp.getUTCDate(),i=$.inArray(e.target,this.inputs),l=this.inputs.length;if(i===-1)
+return;$.each(this.pickers,function(i,p){if(!p.getUTCDate())
+p.setUTCDate(new_date);});if(new_date<this.dates[i]){while(i>=0&&new_date<this.dates[i]){this.pickers[i--].setUTCDate(new_date);}}
+else if(new_date>this.dates[i]){while(i<l&&new_date>this.dates[i]){this.pickers[i++].setUTCDate(new_date);}}
+this.updateDates();delete this.updating;},remove:function(){$.map(this.pickers,function(p){p.remove();});delete this.element.data().datepicker;}};function opts_from_el(el,prefix){var data=$(el).data(),out={},inkey,replace=new RegExp('^'+prefix.toLowerCase()+'([A-Z])');prefix=new RegExp('^'+prefix.toLowerCase());function re_lower(_,a){return a.toLowerCase();}
+for(var key in data)
+if(prefix.test(key)){inkey=key.replace(replace,re_lower);out[inkey]=data[key];}
+return out;}
+function opts_from_locale(lang){var out={};if(!dates[lang]){lang=lang.split('-')[0];if(!dates[lang])
+return;}
+var d=dates[lang];$.each(locale_opts,function(i,k){if(k in d)
+out[k]=d[k];});return out;}
+var old=$.fn.datepicker;$.fn.datepicker=function(option){var args=Array.apply(null,arguments);args.shift();var internal_return;this.each(function(){var $this=$(this),data=$this.data('datepicker'),options=typeof option==='object'&&option;if(!data){var elopts=opts_from_el(this,'date'),xopts=$.extend({},defaults,elopts,options),locopts=opts_from_locale(xopts.language),opts=$.extend({},defaults,locopts,elopts,options);if($this.is('.input-daterange')||opts.inputs){var ropts={inputs:opts.inputs||$this.find('input').toArray()};$this.data('datepicker',(data=new DateRangePicker(this,$.extend(opts,ropts))));}
+else{$this.data('datepicker',(data=new Datepicker(this,opts)));}}
+if(typeof option==='string'&&typeof data[option]==='function'){internal_return=data[option].apply(data,args);if(internal_return!==undefined)
+return false;}});if(internal_return!==undefined)
+return internal_return;else
+return this;};var defaults=$.fn.datepicker.defaults={autoclose:false,beforeShowDay:$.noop,calendarWeeks:false,clearBtn:false,daysOfWeekDisabled:[],endDate:Infinity,forceParse:true,format:'mm/dd/yyyy',keyboardNavigation:true,language:'en',minViewMode:0,multidate:false,multidateSeparator:',',orientation:"auto",rtl:false,startDate:-Infinity,startView:0,todayBtn:false,todayHighlight:false,weekStart:0};var locale_opts=$.fn.datepicker.locale_opts=['format','rtl','weekStart'];$.fn.datepicker.Constructor=Datepicker;var dates=$.fn.datepicker.dates={en:{days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],daysShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat","Sun"],daysMin:["Su","Mo","Tu","We","Th","Fr","Sa","Su"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],monthsShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],today:"Today",clear:"Clear"}};var DPGlobal={modes:[{clsName:'days',navFnc:'Month',navStep:1},{clsName:'months',navFnc:'FullYear',navStep:1},{clsName:'years',navFnc:'FullYear',navStep:10}],isLeapYear:function(year){return(((year%4===0)&&(year%100!==0))||(year%400===0));},getDaysInMonth:function(year,month){return[31,(DPGlobal.isLeapYear(year)?29:28),31,30,31,30,31,31,30,31,30,31][month];},validParts:/dd?|DD?|mm?|MM?|yy(?:yy)?/g,nonpunctuation:/[^ -\/:-@\[\u3400-\u9fff-`{-~\t\n\r]+/g,parseFormat:function(format){var separators=format.replace(this.validParts,'\0').split('\0'),parts=format.match(this.validParts);if(!separators||!separators.length||!parts||parts.length===0){throw new Error("Invalid date format.");}
+return{separators:separators,parts:parts};},parseDate:function(date,format,language){if(!date)
+return undefined;if(date instanceof Date)
+return date;if(typeof format==='string')
+format=DPGlobal.parseFormat(format);var part_re=/([\-+]\d+)([dmwy])/,parts=date.match(/([\-+]\d+)([dmwy])/g),part,dir,i;if(/^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/.test(date)){date=new Date();for(i=0;i<parts.length;i++){part=part_re.exec(parts[i]);dir=parseInt(part[1]);switch(part[2]){case'd':date.setUTCDate(date.getUTCDate()+dir);break;case'm':date=Datepicker.prototype.moveMonth.call(Datepicker.prototype,date,dir);break;case'w':date.setUTCDate(date.getUTCDate()+dir*7);break;case'y':date=Datepicker.prototype.moveYear.call(Datepicker.prototype,date,dir);break;}}
+return UTCDate(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate(),0,0,0);}
+parts=date&&date.match(this.nonpunctuation)||[];date=new Date();var parsed={},setters_order=['yyyy','yy','M','MM','m','mm','d','dd'],setters_map={yyyy:function(d,v){return d.setUTCFullYear(v);},yy:function(d,v){return d.setUTCFullYear(2000+v);},m:function(d,v){if(isNaN(d))
+return d;v-=1;while(v<0)v+=12;v%=12;d.setUTCMonth(v);while(d.getUTCMonth()!==v)
+d.setUTCDate(d.getUTCDate()-1);return d;},d:function(d,v){return d.setUTCDate(v);}},val,filtered;setters_map['M']=setters_map['MM']=setters_map['mm']=setters_map['m'];setters_map['dd']=setters_map['d'];date=UTCDate(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0);var fparts=format.parts.slice();if(parts.length!==fparts.length){fparts=$(fparts).filter(function(i,p){return $.inArray(p,setters_order)!==-1;}).toArray();}
+function match_part(){var m=this.slice(0,parts[i].length),p=parts[i].slice(0,m.length);return m===p;}
+if(parts.length===fparts.length){var cnt;for(i=0,cnt=fparts.length;i<cnt;i++){val=parseInt(parts[i],10);part=fparts[i];if(isNaN(val)){switch(part){case'MM':filtered=$(dates[language].months).filter(match_part);val=$.inArray(filtered[0],dates[language].months)+1;break;case'M':filtered=$(dates[language].monthsShort).filter(match_part);val=$.inArray(filtered[0],dates[language].monthsShort)+1;break;}}
+parsed[part]=val;}
+var _date,s;for(i=0;i<setters_order.length;i++){s=setters_order[i];if(s in parsed&&!isNaN(parsed[s])){_date=new Date(date);setters_map[s](_date,parsed[s]);if(!isNaN(_date))
+date=_date;}}}
+return date;},formatDate:function(date,format,language){if(!date)
+return'';if(typeof format==='string')
+format=DPGlobal.parseFormat(format);var val={d:date.getUTCDate(),D:dates[language].daysShort[date.getUTCDay()],DD:dates[language].days[date.getUTCDay()],m:date.getUTCMonth()+1,M:dates[language].monthsShort[date.getUTCMonth()],MM:dates[language].months[date.getUTCMonth()],yy:date.getUTCFullYear().toString().substring(2),yyyy:date.getUTCFullYear()};val.dd=(val.d<10?'0':'')+val.d;val.mm=(val.m<10?'0':'')+val.m;date=[];var seps=$.extend([],format.separators);for(var i=0,cnt=format.parts.length;i<=cnt;i++){if(seps.length)
+date.push(seps.shift());date.push(val[format.parts[i]]);}
+return date.join('');},headTemplate:'<thead>'+'<tr>'+'<th class="prev">&laquo;</th>'+'<th colspan="5" class="datepicker-switch"></th>'+'<th class="next">&raquo;</th>'+'</tr>'+'</thead>',contTemplate:'<tbody><tr><td colspan="7"></td></tr></tbody>',footTemplate:'<tfoot>'+'<tr>'+'<th colspan="7" class="today"></th>'+'</tr>'+'<tr>'+'<th colspan="7" class="clear"></th>'+'</tr>'+'</tfoot>'};DPGlobal.template='<div class="datepicker">'+'<div class="datepicker-days">'+'<table class="table table-condensed">'+
+DPGlobal.headTemplate+'<tbody></tbody>'+
+DPGlobal.footTemplate+'</table>'+'</div>'+'<div class="datepicker-months">'+'<table class="table table-condensed">'+
+DPGlobal.headTemplate+
+DPGlobal.contTemplate+
+DPGlobal.footTemplate+'</table>'+'</div>'+'<div class="datepicker-years">'+'<table class="table table-condensed">'+
+DPGlobal.headTemplate+
+DPGlobal.contTemplate+
+DPGlobal.footTemplate+'</table>'+'</div>'+'</div>';$.fn.datepicker.DPGlobal=DPGlobal;$.fn.datepicker.noConflict=function(){$.fn.datepicker=old;return this;};$(document).on('focus.datepicker.data-api click.datepicker.data-api','[data-provide="datepicker"]',function(e){var $this=$(this);if($this.data('datepicker'))
+return;e.preventDefault();$this.datepicker('show');});$(function(){$('[data-provide="datepicker-inline"]').datepicker();});}(window.jQuery));;(function($){$.fn.lightBox=function(settings){settings=jQuery.extend({overlayBgColor:'#000',overlayOpacity:0.8,fixedNavigation:false,imageLoading:'/be/plugins/lightbox/lightbox-ico-loading.gif',imageBtnPrev:'/be/plugins/lightbox/lightbox-btn-prev.gif',imageBtnNext:'/be/plugins/lightbox/lightbox-btn-next.gif',imageBtnClose:'/be/plugins/lightbox/lightbox-btn-close.gif',imageBlank:'/be/plugins/lightbox/lightbox-blank.gif',containerBorderSize:10,containerResizeSpeed:400,txtImage:'Image',txtOf:'of',keyToClose:'c',keyToPrev:'p',keyToNext:'n',imageArray:[],activeImage:0},settings);var jQueryMatchedObj=this;function _initialize(){_start(this,jQueryMatchedObj);return false;}
+function _start(objClicked,jQueryMatchedObj){$('embed, object, select').css({'visibility':'hidden'});_set_interface();settings.imageArray.length=0;settings.activeImage=0;if(jQueryMatchedObj.length==1){settings.imageArray.push(new Array(objClicked.getAttribute('href'),objClicked.getAttribute('title')));}else{for(var i=0;i<jQueryMatchedObj.length;i++){settings.imageArray.push(new Array(jQueryMatchedObj[i].getAttribute('href'),jQueryMatchedObj[i].getAttribute('title')));}}
+while(settings.imageArray[settings.activeImage][0]!=objClicked.getAttribute('href')){settings.activeImage++;}
+_set_image_to_view();}
+function _set_interface(){$('body').append('<div id="jquery-overlay"></div><div id="jquery-lightbox"><div id="lightbox-container-image-box"><div id="lightbox-container-image"><img id="lightbox-image"><div style="" id="lightbox-nav"><a href="#" id="lightbox-nav-btnPrev"></a><a href="#" id="lightbox-nav-btnNext"></a></div><div id="lightbox-loading"><a href="#" id="lightbox-loading-link"><img src="'+settings.imageLoading+'"></a></div></div></div><div id="lightbox-container-image-data-box"><div id="lightbox-container-image-data"><div id="lightbox-image-details"><span id="lightbox-image-details-caption"></span><span id="lightbox-image-details-currentNumber"></span></div><div id="lightbox-secNav"><a href="#" id="lightbox-secNav-btnClose"><img src="'+settings.imageBtnClose+'"></a></div></div></div></div>');var arrPageSizes=___getPageSize();$('#jquery-overlay').css({backgroundColor:settings.overlayBgColor,opacity:settings.overlayOpacity,width:arrPageSizes[0],height:arrPageSizes[1]}).fadeIn();var arrPageScroll=___getPageScroll();$('#jquery-lightbox').css({top:arrPageScroll[1]+(arrPageSizes[3]/10),left:arrPageScroll[0]}).show();$('#jquery-overlay,#jquery-lightbox').click(function(){_finish();});$('#lightbox-loading-link,#lightbox-secNav-btnClose').click(function(){_finish();return false;});$(window).resize(function(){var arrPageSizes=___getPageSize();$('#jquery-overlay').css({width:arrPageSizes[0],height:arrPageSizes[1]});var arrPageScroll=___getPageScroll();$('#jquery-lightbox').css({top:arrPageScroll[1]+(arrPageSizes[3]/10),left:arrPageScroll[0]});});}
+function _set_image_to_view(){$('#lightbox-loading').show();if(settings.fixedNavigation){$('#lightbox-image,#lightbox-container-image-data-box,#lightbox-image-details-currentNumber').hide();}else{$('#lightbox-image,#lightbox-nav,#lightbox-nav-btnPrev,#lightbox-nav-btnNext,#lightbox-container-image-data-box,#lightbox-image-details-currentNumber').hide();}
+var objImagePreloader=new Image();objImagePreloader.onload=function(){$('#lightbox-image').attr('src',settings.imageArray[settings.activeImage][0]);_resize_container_image_box(objImagePreloader.width,objImagePreloader.height);objImagePreloader.onload=function(){};};objImagePreloader.src=settings.imageArray[settings.activeImage][0];};function _resize_container_image_box(intImageWidth,intImageHeight){var intCurrentWidth=$('#lightbox-container-image-box').width();var intCurrentHeight=$('#lightbox-container-image-box').height();var intWidth=(intImageWidth+(settings.containerBorderSize*2));var intHeight=(intImageHeight+(settings.containerBorderSize*2));var intDiffW=intCurrentWidth-intWidth;var intDiffH=intCurrentHeight-intHeight;$('#lightbox-container-image-box').animate({width:intWidth,height:intHeight},settings.containerResizeSpeed,function(){_show_image();});if((intDiffW==0)&&(intDiffH==0)){if($.browser.msie){___pause(250);}else{___pause(100);}}
+$('#lightbox-container-image-data-box').css({width:intImageWidth+20});$('#lightbox-nav-btnPrev,#lightbox-nav-btnNext').css({height:intImageHeight+(settings.containerBorderSize*2)});};function _show_image(){$('#lightbox-loading').hide();$('#lightbox-image').fadeIn(function(){_show_image_data();_set_navigation();});_preload_neighbor_images();};function _show_image_data(){$('#lightbox-container-image-data-box').slideDown('fast');$('#lightbox-image-details-caption').hide();if(settings.imageArray[settings.activeImage][1]){$('#lightbox-image-details-caption').html(settings.imageArray[settings.activeImage][1]).show();}
+if(settings.imageArray.length>1){$('#lightbox-image-details-currentNumber').html(settings.txtImage+' '+(settings.activeImage+1)+' '+settings.txtOf+' '+settings.imageArray.length).show();}}
+function _set_navigation(){$('#lightbox-nav').show();$('#lightbox-nav-btnPrev,#lightbox-nav-btnNext').css({'background':'transparent url('+settings.imageBlank+') no-repeat'});if(settings.activeImage!=0){if(settings.fixedNavigation){$('#lightbox-nav-btnPrev').css({'background':'url('+settings.imageBtnPrev+') left 15% no-repeat'}).unbind().bind('click',function(){settings.activeImage=settings.activeImage-1;_set_image_to_view();return false;});}else{$('#lightbox-nav-btnPrev').unbind().hover(function(){$(this).css({'background':'url('+settings.imageBtnPrev+') left 15% no-repeat'});},function(){$(this).css({'background':'transparent url('+settings.imageBlank+') no-repeat'});}).show().bind('click',function(){settings.activeImage=settings.activeImage-1;_set_image_to_view();return false;});}}
+if(settings.activeImage!=(settings.imageArray.length-1)){if(settings.fixedNavigation){$('#lightbox-nav-btnNext').css({'background':'url('+settings.imageBtnNext+') right 15% no-repeat'}).unbind().bind('click',function(){settings.activeImage=settings.activeImage+1;_set_image_to_view();return false;});}else{$('#lightbox-nav-btnNext').unbind().hover(function(){$(this).css({'background':'url('+settings.imageBtnNext+') right 15% no-repeat'});},function(){$(this).css({'background':'transparent url('+settings.imageBlank+') no-repeat'});}).show().bind('click',function(){settings.activeImage=settings.activeImage+1;_set_image_to_view();return false;});}}
+_enable_keyboard_navigation();}
+function _enable_keyboard_navigation(){$(document).keydown(function(objEvent){_keyboard_action(objEvent);});}
+function _disable_keyboard_navigation(){$(document).unbind();}
+function _keyboard_action(objEvent){if(objEvent==null){keycode=event.keyCode;escapeKey=27;}else{keycode=objEvent.keyCode;escapeKey=objEvent.DOM_VK_ESCAPE;}
+key=String.fromCharCode(keycode).toLowerCase();if((key==settings.keyToClose)||(key=='x')||(keycode==escapeKey)){_finish();}
+if((key==settings.keyToPrev)||(keycode==37)){if(settings.activeImage!=0){settings.activeImage=settings.activeImage-1;_set_image_to_view();_disable_keyboard_navigation();}}
+if((key==settings.keyToNext)||(keycode==39)){if(settings.activeImage!=(settings.imageArray.length-1)){settings.activeImage=settings.activeImage+1;_set_image_to_view();_disable_keyboard_navigation();}}}
+function _preload_neighbor_images(){if((settings.imageArray.length-1)>settings.activeImage){objNext=new Image();objNext.src=settings.imageArray[settings.activeImage+1][0];}
+if(settings.activeImage>0){objPrev=new Image();objPrev.src=settings.imageArray[settings.activeImage-1][0];}}
+function _finish(){$('#jquery-lightbox').remove();$('#jquery-overlay').fadeOut(function(){$('#jquery-overlay').remove();});$('embed, object, select').css({'visibility':'visible'});}
+function ___getPageSize(){var xScroll,yScroll;if(window.innerHeight&&window.scrollMaxY){xScroll=window.innerWidth+window.scrollMaxX;yScroll=window.innerHeight+window.scrollMaxY;}else if(document.body.scrollHeight>document.body.offsetHeight){xScroll=document.body.scrollWidth;yScroll=document.body.scrollHeight;}else{xScroll=document.body.offsetWidth;yScroll=document.body.offsetHeight;}
+var windowWidth,windowHeight;if(self.innerHeight){if(document.documentElement.clientWidth){windowWidth=document.documentElement.clientWidth;}else{windowWidth=self.innerWidth;}
+windowHeight=self.innerHeight;}else if(document.documentElement&&document.documentElement.clientHeight){windowWidth=document.documentElement.clientWidth;windowHeight=document.documentElement.clientHeight;}else if(document.body){windowWidth=document.body.clientWidth;windowHeight=document.body.clientHeight;}
+if(yScroll<windowHeight){pageHeight=windowHeight;}else{pageHeight=yScroll;}
+if(xScroll<windowWidth){pageWidth=xScroll;}else{pageWidth=windowWidth;}
+arrayPageSize=new Array(pageWidth,pageHeight,windowWidth,windowHeight);return arrayPageSize;};function ___getPageScroll(){var xScroll,yScroll;if(self.pageYOffset){yScroll=self.pageYOffset;xScroll=self.pageXOffset;}else if(document.documentElement&&document.documentElement.scrollTop){yScroll=document.documentElement.scrollTop;xScroll=document.documentElement.scrollLeft;}else if(document.body){yScroll=document.body.scrollTop;xScroll=document.body.scrollLeft;}
+arrayPageScroll=new Array(xScroll,yScroll);return arrayPageScroll;};function ___pause(ms){var date=new Date();curDate=null;do{var curDate=new Date();}
+while(curDate-date<ms);};return this.unbind('click').click(_initialize);};})(jQuery);;function showNotification(params){var options={'showAfter':0,'duration':0,'autoClose':false,'type':'success','message':'','link_notification':'','description':''};$.extend(true,options,params);var msgclass='succ_bg';if(options['type']=='error'){msgclass='error_bg';}else if(options['type']=='information'){msgclass='info_bg';}else if(options['type']=='warning'){msgclass='warn_bg';}
+var container='<div id="info_message" class="'+msgclass+'"><div class="center_auto"><div class="info_message_text message_area">';container+=options['message'];container+='</div><div class="info_close_btn button_area" onclick="return closeNotification()"></div><div class="clearboth"></div>';container+='</div><div class="info_more_descrption"></div></div>';$notification=$(container);$('body').append($notification);var divHeight=$('div#info_message').height();$('div#info_message').css({top:'-'+divHeight+'px'});$('div#info_message').show();slideDownNotification(options['showAfter'],options['autoClose'],options['duration']);}
+function closeNotification(duration){var divHeight=$('div#info_message').height();setTimeout(function(){$('div#info_message').animate({top:'-'+divHeight});setTimeout(function(){$('div#info_message').remove();},200);},parseInt(duration*1000));}
+function slideDownNotification(startAfter,autoClose,duration){setTimeout(function(){$('div#info_message').animate({top:0});if(autoClose){setTimeout(function(){closeNotification(duration);},duration);}},parseInt(startAfter*1000));}

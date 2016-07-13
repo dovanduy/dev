@@ -21,6 +21,7 @@ use Web\Form\My\Password2Form;
 use Web\Form\My\AddressListForm;
 use Web\Form\My\AddAddressForm;
 use Web\Form\My\ProductOrderListForm;
+use Web\Form\My\AllOrderListForm;
 
 class MyController extends AppController
 {    
@@ -369,7 +370,60 @@ class MyController extends AppController
                             ->setAttribute('id', 'orderListForm')
                             ->setDataset($orderList)
                             ->create();
-                break;    
+                break; 
+            
+            case 'allorders': 
+                if (!$this->isAdmin()) {
+                    exit;
+                } 
+                $this->setHead(array(
+                    'title' => $this->translate('Manage orders')
+                ));
+                $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_my_index');
+                if ($navigationPage) {
+                    $navigationPage->setLabel('');
+                    $navigationPage->addPage(array( 
+                        'uri' => '',
+                        'label' => 'Manage orders',
+                        'active' => true
+                    ));
+                }
+                
+                $param = $this->getParams(array(
+                    'page' => 1,
+                    'limit' => \Application\Module::getConfig('general.default_limit'),
+                    'sort' => 'order_id-desc'
+                ));
+                // create list form
+                $orderList = Api::call('url_productorders_lists', $param);               
+                if (!empty($orderList)) {
+                    foreach ($orderList['data'] as &$order) {
+                        $order['created'] = datetime_format($order['created']);                        
+                        $order['total_money'] = app_money_format($order['total_money']);
+                        switch ($order['status']) {
+                            case 'done':
+                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status done\">" . $this->translate('Done') . "</span>" ;
+                                break;
+                            case 'shipping':
+                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status shipping\">" . $this->translate('Shipping') . "</span>" ;
+                                break;
+                            case 'cancel':
+                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status cancel\">" . $this->translate('Canceled') . "</span>" ;
+                                break;
+                            default:
+                                $order['status_name'] = "<span style=\"display:inline\" class=\"btn-flat order-status new\">" . $this->translate('Processing') . "</span>" ;
+                                break;
+                        }
+                    }
+                    unset($order);
+                }
+                $listForm = new AllOrderListForm();
+                $listForm   ->setController($this)
+                            ->setAttribute('id', 'orderListForm')
+                            ->setDataset($orderList)
+                            ->create();
+                break; 
+            
             default:     
                 
         }
@@ -420,7 +474,7 @@ class MyController extends AppController
         );  
     }
     
-    public function cancelorderAction()
+    public function submitcancelAction()
     { 
         $request = $this->getRequest();
         $id = $this->params()->fromRoute('id', 0);
@@ -429,6 +483,91 @@ class MyController extends AppController
             $post = array(
                 '_id' => $id,
                 'is_cancel' => '1',
+                'get_detail' => '1',
+            );
+            Api::call('url_productorders_update', $post);  
+            if (empty(Api::error())) {
+                $result['date'] = datetime_format();
+                $result['status'] = 'OK';
+            } else {
+                $result['status'] = 'FAIL';
+                $result['error'] = $this->getErrorMessage();
+            }
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+
+    public function submitshippingAction()
+    { 
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $request = $this->getRequest();
+        $id = $this->params()->fromRoute('id', 0);
+        if (!empty($id)           
+            && $request->isXmlHttpRequest()) {
+            $post = array(
+                '_id' => $id,
+                'is_shipping' => '1',
+                'get_detail' => '1',
+                'send_email' => '1'
+            );
+            Api::call('url_productorders_update', $post);  
+            if (empty(Api::error())) {
+                $result['date'] = datetime_format();
+                $result['status'] = 'OK';
+            } else {
+                $result['status'] = 'FAIL';
+                $result['error'] = $this->getErrorMessage();
+            }
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    public function submitpaymentAction()
+    { 
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $request = $this->getRequest();
+        $id = $this->params()->fromRoute('id', 0);
+        if (!empty($id)           
+            && $request->isXmlHttpRequest()) {
+            $post = array(
+                '_id' => $id,
+                'is_paid' => '1',
+                'get_detail' => '1',
+                'send_email' => '1'
+            );
+            Api::call('url_productorders_update', $post);  
+            if (empty(Api::error())) {
+                $result['date'] = datetime_format();
+                $result['status'] = 'OK';
+            } else {
+                $result['status'] = 'FAIL';
+                $result['error'] = $this->getErrorMessage();
+            }
+            die(\Zend\Json\Encoder::encode($result));
+        }
+        exit;
+    }
+    
+    public function submitdoneAction()
+    { 
+        if (!$this->isAdmin()) {
+            exit;
+        } 
+        $request = $this->getRequest();
+        $id = $this->params()->fromRoute('id', 0);
+        if (!empty($id)           
+            && $request->isXmlHttpRequest()) {
+            $post = array(
+                '_id' => $id,
+                'is_done' => '1',
+                'get_detail' => '1',
+                'send_email' => '1'
             );
             Api::call('url_productorders_update', $post);  
             if (empty(Api::error())) {

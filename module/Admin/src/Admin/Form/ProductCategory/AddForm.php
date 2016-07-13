@@ -65,6 +65,20 @@ class AddForm extends AbstractForm
                 'validators' => \Admin\Module::getValidatorConfig('general.image')
             ),
             array(            
+                'name' => 'url',
+                'type' => 'Zend\Form\Element\Url',
+                'attributes' => array(
+                    'id' => 'url',
+                    'type' => 'text',
+                    'required' => false,
+                    'class' => 'form-control'
+                ),
+                'options' => array(
+                    'label' => 'Url',
+                ),
+                'validators' => \Admin\Module::getValidatorConfig('general.uri')
+            ),
+            array(            
                 'name' => 'name',
                 'attributes' => array(
                     'id' => 'name',

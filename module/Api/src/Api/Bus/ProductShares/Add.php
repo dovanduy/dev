@@ -16,9 +16,10 @@ use Api\Bus\AbstractBus;
 class Add extends AbstractBus {
     
     protected $_required = array(
-        'owner_id',        
+        'user_id',        
         'product_id',
         'social_id',
+        'website_id',
     );
     
     public function operateDB($model, $param) {

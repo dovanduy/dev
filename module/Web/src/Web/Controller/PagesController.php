@@ -48,8 +48,11 @@ class PagesController extends AppController
         if (empty($pageDetail)) {
             return $this->notFoundAction();
         }
+        $this->setHead(array(
+            'title' => $pageDetail['title']
+        )); 
         $navigationPage = $this->getServiceLocator()->get('web_navigation')->findBy('id', 'web_pages_index');
-        if (!empty($navigationPage)) { 
+        if (!empty($navigationPage)) {
             $navigationPage->setLabel('');
             $navigationPage->addPage(array( 
                 'uri' => '',

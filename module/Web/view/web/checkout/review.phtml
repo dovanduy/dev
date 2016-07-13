@@ -1,15 +1,15 @@
-<!-- breadcrumb start -->
-<!-- ================ -->
-<div class="breadcrumb-container">
-    <div class="container">
-        <ol class="breadcrumb">
-            <li><i class="fa fa-home pr-10"></i><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/index.html">Home</a></li>
-            <li class="active">Checkout Review</li>
-        </ol>
-    </div>
-</div>
-<!-- breadcrumb end -->
-
+<?php
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
 <!-- main-container start -->
 <!-- ================ -->
 <section class="main-container">
@@ -21,142 +21,209 @@
             <!-- ================ -->
             <div class="main col-md-12">
 
-                <!-- page-title start -->
-                <!-- ================ -->
-                <h1 class="page-title">Checkout Review</h1>
-                <div class="separator-2"></div>
-                <!-- page-title end -->
+                <ul class="step clearfix" id="order_step">
+                    <li class="step_todo first">
+                        <span><em>01.</em> <?php echo $this->translate('Cart')?></span>
+                    </li>
+                    <li class="step_todo second">
+                        <span><em>02.</em> <?php echo $this->translate('Customer information')?></span>
+                    </li>
+                    <li class="step_todo third">
+                        <span><em>03.</em> <?php echo $this->translate('Checkout')?></span>
+                    </li>
+                    <li id="step_end" class="step_current last">
+                      <span><em>04.</em> <?php echo $this->translate('Confirm')?></span>
+                    </li>
+                </ul>
 
                 <table class="table cart">
                     <thead>
                         <tr>
-                            <th>Product </th>
-                            <th>Price </th>
-                            <th>Quantity</th>
-                            <th class="amount">Total </th>
+                            <th><strong><?php echo $this->translate('Product name')?></strong></th>
+                            <th><strong><?php echo $this->translate('Price')?></strong></th>
+                            <th><strong><?php echo $this->translate('Quantity')?></strong></th>
+                            <th class="amount"><strong><?php echo $this->translate('Total')?></strong></th>
                         </tr>
                     </thead>
                     <tbody>
+                        <?php foreach ($cartItems as $item) : ?>
                         <tr>
-                            <td class="product"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Product Title 1</a> <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas inventore modi.</small></td>
-                            <td class="price">$99.50 </td>
+                            <td class="product">
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($item['name'])))?>">
+                                    <?php echo $item['custom_name']?>
+                                </a> 
+                            </td>
+                            <td class="price"><?php echo app_money_format($item['price'])?></td>
                             <td class="quantity">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" value="2" disabled="">
+                                    <input type="text" class="form-control" value="<?php echo $item['quantity']?>" disabled="">
                                 </div>											
                             </td>
-                            <td class="amount">$199.00 </td>
+                            <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
                         </tr>
-                        <tr>
-                            <td class="product"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Product Title 2</a> <small>Quas inventore modi</small></td>
-                            <td class="price"> $99.66 </td>
-                            <td class="quantity">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" value="3" disabled="">
-                                </div>											
-                            </td>
-                            <td class="amount">$299.00 </td>
-                        </tr>
-                        <tr>
-                            <td class="product"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Product Title 3</a> <small>Fugiat nemo enim officiis repellendus</small></td>
-                            <td class="price"> $499.66 </td>
-                            <td class="quantity">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" value="3" disabled="">
-                                </div>											
-                            </td>
-                            <td class="amount">$1499.00 </td>
-                        </tr>
-                        <tr>
-                            <td class="total-quantity" colspan="3">Subtotal</td>
-                            <td class="amount">$1997.00</td>
-                        </tr>
-                        <tr>										
-                            <td class="total-quantity" colspan="2">Discount Coupon</td>
-                            <td class="price">TheProject25672</td>
-                            <td class="amount">-20%</td>
-                        </tr>
-                        <tr>
-                            <td class="total-quantity" colspan="3">Total 8 Items</td>
-                            <td class="total-amount">$1597.00</td>
-                        </tr>
+                        <?php endforeach ?>                        
+                       
                     </tbody>
                 </table>
-                <div class="space-bottom"></div>
+                            
+                
+                <?php 
+                    $reviewForm->prepare();
+                    echo $this->form()->openTag($reviewForm);                 
+                ?>
+                
+                
+                    
                 <table class="table">
                     <thead>
                         <tr>
-                            <th colspan="2">Billing Information </th>
+                            <th colspan="2"><strong><?php echo $this->translate('Order confirmation')?></strong></th>
                         </tr>
                     </thead>
                     <tbody>
+                        <?php if (!empty($checkoutInfo['name'])): ?>
                         <tr>
-                            <td>Full Name</td>
-                            <td class="information">John Doe </td>
+                            <td><?php echo $this->translate('Customer name')?></td>
+                            <td class="information"><?php echo $checkoutInfo['name'];?></td>
+                        </tr>
+                        <?php endif ?>                        
+                        <?php if (!empty($checkoutInfo['phone'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Home phone')?></td>
+                            <td class="information"><?php echo $checkoutInfo['phone'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <?php if (!empty($checkoutInfo['mobile'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Mobile')?></td>
+                            <td class="information"><?php echo $checkoutInfo['mobile'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <?php if (!empty($checkoutInfo['email'])): ?>
+                        <tr>
+                            <td><?php echo $this->translate('Email')?></td>
+                            <td class="information"><?php echo $checkoutInfo['email'];?></td>
+                        </tr>
+                        <?php endif ?>
+                        <tr>
+                            <td><?php echo $this->translate('Delivery address')?></td>
+                            <td class="information">
+                                <?php
+                                    $address = array();
+                                    if (!empty($checkoutInfo['street'])) {
+                                        $address[] = $checkoutInfo['street'];
+                                    }
+                                    if (!empty($checkoutInfo['city_code']) 
+                                        && !empty($checkoutInfo['state_code']) 
+                                        && !empty($checkoutInfo['country_code'])) {
+                                        $cities = \Application\Model\LocaleCities::getAll($checkoutInfo['state_code'], $checkoutInfo['country_code']);                                                
+                                        $address[] = $cities[$checkoutInfo['city_code']];
+                                    }   
+                                    if (!empty($checkoutInfo['state_code']) 
+                                        && !empty($checkoutInfo['country_code'])) {
+                                        $states = \Application\Model\LocaleStates::getAll($checkoutInfo['country_code']);                                                
+                                        $address[] = $states[$checkoutInfo['state_code']];
+                                    }                                   
+                                    if (!empty($checkoutInfo['country_code'])) {
+                                        $countries = \Application\Model\LocaleCountries::getAll();  
+                                        $address[] = $countries[$checkoutInfo['country_code']];
+                                    }                                    
+                                    echo implode(', ', $address);
+                                ?>
+                            </td>
+                        </tr>                         
+                        <?php if (!empty($checkoutInfo['discount'])): ?> 
+                        <tr>
+                            <td><?php echo $this->translate('Total');?></td>
+                            <td class="information total-amount">                                
+                                <?php echo app_money_format($totalMoney)?>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Email</td>
-                            <td class="information">johndoe@mail.com </td>
+                            <td><?php echo $this->translate('Discount')?></td>
+                            <td class="information">
+                                <span class="total-amount"><?php echo app_money_format($checkoutInfo['discount']); ?></span>
+                                (<?php echo $this->translate('Voucher code')?>: <strong><?php echo $checkoutInfo['voucher_code']; ?></strong>)
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td><?php echo $this->translate('Shipping money')?></td>
+                            <td class="information">
+                                <span class="total-amount"><?php echo app_money_format($checkoutInfo['ship_money']); ?></span>                               
+                            </td>
                         </tr>
                         <tr>
-                            <td>Telephone</td>
-                            <td class="information">+00 123 123 1234</td>
+                            <td><?php echo $this->translate('Total payment')?></td>
+                            <td class="information total-amount">
+                                <?php echo app_money_format($checkoutInfo['last_total_money']); ?>
+                            </td>
+                        </tr>                        
+                        <?php else: ?>
+                        <tr>
+                            <td><?php echo $this->translate('Total');?></td>
+                            <td class="information total-amount">                                
+                                <?php echo app_money_format($totalMoney)?>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Address</td>
-                            <td class="information">One infinity loop, 54100, United States</td>
+                            <td><?php echo $this->translate('Shipping money')?></td>
+                            <td class="information">
+                                <span class="total-amount"><?php echo app_money_format($checkoutInfo['ship_money']); ?></span>                               
+                            </td>
                         </tr>
                         <tr>
-                            <td>Additional Info</td>
-                            <td class="information">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum accusamus pariatur odit neque.</td>
+                            <td><?php echo $this->translate('Total payment');?></td>
+                            <td class="information total-amount">                                
+                                <?php echo app_money_format($checkoutInfo['ship_money'] + $totalMoney)?>
+                            </td>
                         </tr>
+                        <?php endif ?>
+                        
+                        <tr>
+                            <td><?php echo $this->translate('Payment')?></td>
+                            <td class="information">
+                            <?php if ($checkoutInfo['payment'] == 'ATM'): ?> 
+                                ✓ <?php echo $this->translate('Transfer via Bank') ?>
+                                <div class="bank-account" style="padding-left:0px;"><?php echo \Web\Module::getConfig('bank_account')?></div>
+                            <?php else: ?>   
+                                ✓ <?php echo $this->translate('COD'); ?>
+                            <?php endif ?> 
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><?php echo $this->formLabel($reviewForm->get('note'));?></td>
+                            <td class="information">
+                                <?php echo $this->formTextArea($reviewForm->get('note'));?>
+                                <?php echo $this->formErrorMessage($reviewForm->get('note')); ?>
+                            </td>
+                        </tr>
+                        <!--
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="information">                                
+                                <span><input id="confirmation" name="confirmation" type="checkbox" style="width:20px; float:left;"/></span>                                
+                                <span><?php echo $this->translate('I want to have this order')?></span>                                
+                            </td>
+                        </tr>
+                        -->
                     </tbody>
                 </table>
-                <div class="space-bottom"></div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Shipping Information </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Full Name</td>
-                            <td class="information">John Doe </td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td class="information">johndoe@mail.com </td>
-                        </tr>
-                        <tr>
-                            <td>Telephone</td>
-                            <td class="information">+00 123 123 1234</td>
-                        </tr>
-                        <tr>
-                            <td>Address</td>
-                            <td class="information">One infinity loop, 54100, United States</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="space-bottom"></div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Payment </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Credit Card</td>
-                            <td class="information">Visa ***917 </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="text-right">	
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-checkout-payment.html" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> Go Back</a>
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-checkout-completed.html" class="btn btn-group btn-default"><i class="icon-check"></i> Complete Your Order</a>
+                
+                <div class="text-right checkout-button">
+                    <a href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
+                    <a  id="checkoutFinish" 
+                        class="btn btn-group btn-default"
+                        style="margin-left:3px;"
+                        href="<?php echo $this->url('web/checkout', array('action' => 'comoleted'))?>">
+                        <i class="icon-check"></i> <?php echo $this->translate('Complete your order')?>
+                    </a>
                 </div>
-
+                <?php           
+                    echo $this->formHidden($reviewForm->get('csrf'));
+                    echo $this->form()->closeTag();
+                    unset($reviewForm);
+                ?>                
             </div>
             <!-- main end -->
 
@@ -164,315 +231,3 @@
     </div>
 </section>
 <!-- main-container end -->
-
-<!-- section start -->
-<!-- ================ -->
-<section class="pv-30 dark-translucent-bg padding-bottom-clear" style="background-image:url(&#39;images/shop-banner.jpg&#39;);background-position: 50% 32%;">
-    <div class="container">
-        <div class="row grid-space-10">
-            <div class="col-md-3 col-sm-6">
-                <div class="pv-30 ph-20 feature-box text-center object-non-visible animated object-visible fadeInDownSmall" data-animation-effect="fadeInDownSmall" data-effect-delay="100">
-                    <span class="icon default-bg"><i class="fa fa-diamond"></i></span>
-                    <h3>Premium &amp; Guaranteed Quality</h3>
-                    <div class="separator clearfix"></div>
-                    <p>Voluptatem ad provident non repudiandae beatae cupiditate.</p>
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-services.html" class="link-dark">Read More<i class="pl-5 fa fa-angle-double-right"></i></a>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="pv-30 ph-20 feature-box text-center object-non-visible animated object-visible fadeInDownSmall" data-animation-effect="fadeInDownSmall" data-effect-delay="150">
-                    <span class="icon default-bg"><i class="icon-lock"></i></span>
-                    <h3>Secure &amp; Safe Payment</h3>
-                    <div class="separator clearfix"></div>
-                    <p>Iure sequi unde hic. Sapiente quaerat sequi inventore.</p>
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-services.html" class="link-dark">Read More<i class="pl-5 fa fa-angle-double-right"></i></a>
-                </div>
-            </div>
-            <div class="clearfix visible-sm"></div>
-            <div class="col-md-3 col-sm-6">
-                <div class="pv-30 ph-20 feature-box text-center object-non-visible animated object-visible fadeInDownSmall" data-animation-effect="fadeInDownSmall" data-effect-delay="200">
-                    <span class="icon default-bg"><i class="icon-globe"></i></span>
-                    <h3 class="pl-10 pr-10">Free &amp; Fast Shipping</h3>
-                    <div class="separator clearfix"></div>
-                    <p>Inventore dolores aut laboriosam cum consequuntur.</p>
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-services.html" class="link-dark">Read More<i class="pl-5 fa fa-angle-double-right"></i></a>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="pv-30 ph-20 feature-box text-center object-non-visible animated object-visible fadeInDownSmall" data-animation-effect="fadeInDownSmall" data-effect-delay="250">
-                    <span class="icon default-bg"><i class="icon-thumbs-up"></i></span>
-                    <h3>24/7 Customer Support</h3>
-                    <div class="separator clearfix"></div>
-                    <p>Inventore dolores aut laboriosam cum consequuntur.</p>
-                    <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/page-services.html" class="link-dark">Read More<i class="pl-5 fa fa-angle-double-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- section end -->
-
-<!-- section start -->
-<!-- ================ -->
-<section class="pv-30 clearfix">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="block clearfix">
-                    <h3 class="title">Top Rated</h3>
-                    <div class="separator-2"></div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-1.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Lorem ipsum dolor sit amet</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                            </p>
-                            <p class="price">$99.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-2.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Eum repudiandae ipsam</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$299.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-3.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Quia aperiam velit fuga</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$9.99</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-4.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Fugit non natus officiis</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$399.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="block clearfix">
-                    <h3 class="title">Related</h3>
-                    <div class="separator-2"></div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-5.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Lorem ipsum dolor sit amet</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                            </p>
-                            <p class="price">$99.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-6.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Eum repudiandae ipsam</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$299.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-7.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Quia aperiam velit fuga</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$9.99</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-8.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Fugit non natus officiis</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$399.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="block clearfix">
-                    <h3 class="title">Best Sellers</h3>
-                    <div class="separator-2"></div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-3.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Lorem ipsum dolor sit amet</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                            </p>
-                            <p class="price">$99.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-5.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Eum repudiandae ipsam</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$299.00</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-7.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Quia aperiam velit fuga</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$9.99</p>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="media margin-clear">
-                        <div class="media-left">
-                            <div class="overlay-container">
-                                <img class="media-object" src="/web/images/product-1.jpg" alt="blog-thumb">
-                                <a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html" class="overlay-link small"><i class="fa fa-link"></i></a>
-                            </div>
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading"><a href="http://htmlcoder.me/preview/the_project/v.1.1/template/shop-product.html">Fugit non natus officiis</a></h6>
-                            <p class="margin-clear">
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star text-default"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </p>
-                            <p class="price">$399.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- section end -->

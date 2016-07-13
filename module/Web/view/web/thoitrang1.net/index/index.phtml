@@ -1,0 +1,181 @@
+<?php
+    $website = $this->viewModel()->getRoot()->getVariable('website');
+    $banners = $website['banners'];
+    $categories = Web\Model\ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, false);
+    $featuredBrands = $website['brand_featureds'];
+    $groupCategories = [
+        'Thời Trang Nam' => [],
+        'Thời Trang Nữ' => [],       
+    ];
+    foreach ($categories as $category) {
+        if (in_array($category['category_id'], [50, 55, 59, 63, 64, 68, 71])) {
+            $groupCategories['Thời Trang Nữ'][] = $category;
+        } elseif (in_array($category['category_id'], [75, 79, 83, 87, 88])) {
+            $groupCategories['Thời Trang Nam'][] = $category;
+        } 
+    }
+?>
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">
+        <div class="row">
+            <?php foreach ($groupCategories as $groupName => $categories) : ?>  
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <?php if (!empty($categories)): ?>
+                    <div class="block clearfix">
+                        <h3 class="title"><?php echo $groupName?></h3>
+                        <div class="separator-2"></div>
+                        <nav class="app-category">
+                            <ul class="nav nav-pills nav-stacked">
+                                <?php foreach ($categories as $category) : ?>  
+                                <?php if (!empty($category['sub'])) : ?>                                  
+                                    <li class="dropdown">
+                                        <a  class="dropdown-toggle" 
+                                            data-toggle="dropdown" 
+                                            href="<?php echo !empty($category['url']) ? $category['url'] : $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <?php echo $category['name'] ?>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <?php foreach ($category['sub'] as $subCategory) : ?> 
+                                            <?php if (!empty($subCategory['sub'])) : ?>  
+                                            <li class="divider"></li>
+                                            <li class="dropdown-header"><?php echo $subCategory['name'] ?></li>
+                                            <?php foreach ($subCategory['sub'] as $subCategory2) : ?>
+                                            <li class="sub-category2">
+                                                <a href="<?php echo !empty($subCategory2['url']) ? $subCategory2['url'] : $this->url('web/products', array('name' => name_2_url($subCategory2['name'])))?>">
+                                                    <?php echo $subCategory2['name'] ?>
+                                                </a>                                        
+                                            </li>    
+                                            <?php endforeach ?>  
+                                            <?php else: ?>     
+                                            <li>
+                                                <a href="<?php echo !empty($subCategory['url']) ? $subCategory['url'] : $this->url('web/products', array('name' => name_2_url($subCategory['name'])))?>">
+                                                    <?php echo $subCategory['name'] ?>
+                                                </a>                                        
+                                            </li>
+                                            <?php endif ?>
+                                            <?php endforeach ?>                                            
+                                            <!--<li class="divider"></li>-->
+                                            <!--<li class="dropdown-header">Nav header</li>-->                                            
+                                        </ul>
+                                    </li>                                
+                                <?php else: ?>     
+                                     <li>
+                                        <a  href="<?php echo !empty($category['url']) ? $category['url'] : $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <?php echo $category['name'] ?>
+                                        </a>                                        
+                                    </li>  
+                                <?php endif ?> 
+                                    
+                                <?php endforeach ?>                                
+                            </ul>
+                        </nav>
+                    </div>
+                    <?php endif ?>
+                </div>
+            </div>  
+            <?php endforeach ?> 
+            <?php if (!empty($banners)): ?>
+            <div class="col-md-6">
+                <div class="slider-wrapper theme-default app-banner">
+                    <div id="slider" class="nivoSlider"> 
+                        <?php foreach ($banners as $i => $banner) : ?>
+                            <a href="<?php echo $banner['url']?>">
+                                <img src="<?php echo $banner['url_image']?>" data-thumb="<?php echo $banner['url_image']?>" alt="" /> 
+                            </a> 
+                        <?php endforeach; ?>	                        
+                    </div>                    
+                </div>
+            </div>
+            <?php endif ?>
+            <!--
+            <div class="col-md-2">
+                <?php echo \Web\Module::getConfig('commitment')?>
+            </div>
+            -->
+        </div>
+        
+        <div class="row">
+            <?php if (!empty($featuredBrands)): ?> 		            
+            <div class="col-md-12"> 
+                <!-- section start -->
+                <!-- ================ -->
+                <section class="section clearfix">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!--
+                                <h3 class="logo-font"><?php echo $this->translate('Brands')?></h3>
+                                <div class="separator-2"></div>          
+                                -->
+                                <div class="clients-container">
+                                    <div itemscope itemtype="http://schema.org/Brand" class="clients">
+                                        <?php
+                                        foreach ($featuredBrands as $brand) {                                             
+                                            $brand['url'] = $this->url(
+                                                'web/products', 
+                                                array(                                                  
+                                                    'name' => name_2_url($brand['name'])
+                                                )
+                                            );                                         
+                                            echo "
+                                            <div class=\"client-image object-non-visible animated object-visible fadeIn\" data-animation-effect=\"fadeIn\" data-effect-delay=\"100\">
+                                                <a itemprop=\"url\" href=\"{$brand['url']}\"><img itemprop=\"image\" src=\"{$brand['url_image']}\" alt=\"\"></a>
+                                            </div>
+                                            ";
+                                        }
+                                        ?>                                                                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- section end -->
+            </div>
+            <?php endif ?>
+            
+            <?php foreach ($blocks as $block) : ?> 
+			<div class="col-md-12 mb-10">
+                <?php if (!empty($block['products'])): ?> 
+                <div class="nav nav-tabs style-1" role="tablist">
+                    <div class="tab-title">
+                        <?php echo $block['name'] ?>
+                    </div>
+                    <?php if (!empty($block['url'])): ?>
+                    <div class="tab-more">
+                        <a itemprop="url" href="<?php echo $block['url']?>" class="pull-right margin-clear btn btn-sm btn-default-transparent btn-animated">
+                            <?php echo !empty($block['name_url']) ? $block['name_url'] : $this->translate('View more')?><i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                    </div>
+                    <?php endif ?>                   
+                </div>
+                
+                <!-- Tab panes -->
+				<div class="tab-content clear-style">
+					<div class="tab-pane active">
+						<div id="grid-4" class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+                        <?php       
+                            $products = $block['products'];
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper(); 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    $product['block_id'] = $block['block_id'];
+                                    echo $this->productItemHelper($product, 4);                                                                                                                    
+                                }
+                            }
+                        ?>  
+						</div>
+					</div>
+                </div>
+                <?php endif ?>                              
+			</div>
+            <?php endforeach ?>  
+		</div>
+	</div>
+</section>
+<!-- section end -->

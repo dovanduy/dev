@@ -1,0 +1,94 @@
+<?php echo $this->doctype(); ?>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:og="http://opengraphprotocol.org/schema/" 
+xmlns:fb="http://www.facebook.com/2008/fbml">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<?php 
+            echo $this->headTitle()
+                ->setSeparator(' - ')
+                ->setAutoEscape(false);
+            
+            echo $this->headMeta();
+            
+            $stHost = Web\Module::getConfig('st_host');            
+            echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/thoitrang1.vn.ico'))
+                ->prependStylesheet($stHost . ('/css/thoitrang1.css'))                   
+                ->prependStylesheet($stHost . ('/css/custom.css'))                   
+                ->prependStylesheet($stHost . ('/plugins/notification/css/jquery_notification.css')) 
+                ->prependStylesheet($stHost . ('/css/web.css'))           
+        ;?>        
+		<link rel="alternate" href="http://thoitrang1.net" hreflang="vi-vn" />
+        <link rel="apple-touch-icon" sizes="57x57" href="/img/thoitrang1/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="/img/thoitrang1/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/img/thoitrang1/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/img/thoitrang1/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/img/thoitrang1/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/img/thoitrang1/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="/img/thoitrang1/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/img/thoitrang1/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/thoitrang1/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="/img/thoitrang1/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/img/thoitrang1/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="/img/thoitrang1/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/img/thoitrang1/favicon-16x16.png">
+        <link rel="manifest" href="/img/thoitrang1/manifest.json">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="/img/thoitrang1/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="google-site-verification" content="" />
+        <?php echo Web\Module::getConfig('ga') ?> 
+        <script>        
+            var isMobile = <?php echo Application\Lib\Util::isMobile()?>;        
+            var facebook_app_id = '<?php echo \Web\Module::getConfig('facebook_app_id')?>';        
+        </script>
+    </head>   
+    
+    <body class="thoitrang1 wide <?php echo Application\Lib\Util::isMobile() ? 'body-mobile' : 'body-pc'?>" id="<?php echo "{$controller}_{$action}"?>">
+	
+		<!-- scrollToTop -->
+		<!-- ================ -->		
+		<div class="scrollToTop circle"><i class="icon-up-open-big"></i></div>
+		
+		<!-- page wrapper start -->
+		<!-- ================ -->
+		<div class="page-wrapper">
+			<?php      
+                echo $this->partial('web/header');
+            ?>
+			<?php 
+                if (!in_array($controller, array('index', 'page'))) {
+                    echo $this->navigation('web_navigation')                            
+                                ->breadcrumbs()      
+                                ->setLinkLast(true)  
+                                ->setMinDepth(0)
+                                ->setMaxDepth(10) 
+                                ->setPartial('web/breadcrumb');   
+                } 
+            ?>
+            <div class="container">
+            <?php
+				echo $this->flashMessenger()->renderCurrent('error', array('alert', 'alert-dismissible', 'alert-danger'));
+				echo $this->flashMessenger()->renderCurrent('success', array('alert', 'alert-dismissible', 'alert-success'));
+				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('success');
+				$this->flashMessenger()->getPluginFlashMessenger()->clearCurrentMessagesFromNamespace('error');
+            ?>
+            </div> 
+            <?php
+                echo $this->content; 
+			?> 	
+			<?php echo $this->partial('web/footer'); ?>  
+		</div>
+        
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+            ->prependFile($stHost . ('/js/main.js'))             
+            ->prependFile($stHost . ('/plugins/notification/js/jquery_notification_v.1.js'))
+            ->prependFile($stHost . ('/plugins/lazyload/jquery.lazyload.min.js'))  
+            ->prependFile($stHost . ('/js/web.js'))
+        ; ?>
+        <?php echo $this->inlineScript() ?>         
+        <?php echo Web\Module::getConfig('chat') ?>         
+    </body>
+</html>

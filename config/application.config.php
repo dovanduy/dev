@@ -28,18 +28,7 @@ $loadModule = [
     'oauth2.vuongquocbalo.com' => [      
         'OAuth2'
     ],
-	'zanado.net.vn' => [              
-        'OAuth2',        
-        'Web',
-    ],
-	'admin.zanado.net.vn' => [        
-        'OAuth2',
-        'Admin',
-    ],
-    'oauth2.zanado.net.vn' => [      
-        'OAuth2'
-    ],
-	'thoitrang1.vn' => [              
+    'thoitrang1.vn' => [              
         'OAuth2',        
         'Web',
     ],
@@ -49,12 +38,34 @@ $loadModule = [
     ],
     'oauth2.thoitrang1.vn' => [      
         'OAuth2'
+    ],
+	'thoitrang1.net' => [              
+        'OAuth2',        
+        'Web',
+    ],
+	'admin.thoitrang1.net' => [        
+        'OAuth2',
+        'Admin',
+    ],
+    'oauth2.thoitrang1.net' => [      
+        'OAuth2'
     ]
+];
+$allowIp = [
+    'api.vuongquocbalo.com' => [        
+        '112.213.89.30'
+    ],	
 ];
 $modules = [   
     'Application',         
     'Api',
 ];
+if (isset($allowIp[domain()]) 
+    && isset($_SERVER['REMOTE_ADDR'])
+    && !in_array($_SERVER['REMOTE_ADDR'], $allowIp[domain()])) {
+    echo 'Access denied';
+    exit;
+}
 if (isset($loadModule[domain()])) {
     $modules = array_unique(array_merge($modules, $loadModule[domain()]));
 }

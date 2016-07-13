@@ -14,22 +14,28 @@ include ('../../functions.php');
 $env = 'development'; // development, production
 $config = [
     'development' => [
-        'timeout' => 10*60,       
+        'timeout' => 60*60,       
         'base_uri' => 'http://api.thoitrang1.vn',    
         'facebook_app_id' => '261013080913491',
         'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
+        'img_domain' => 'http://img.thoitrang1.vn',
     ],
     'production' => [
-        'timeout' => 10*60,
+        'timeout' => 60*60,
         'base_uri' => 'http://api.thoitrang1.vn',   
         'facebook_app_id' => '1679604478968266',
         'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+        'img_domain' => 'http://img.thoitrang1.vn',
     ]
 ];
 $config = $config[$env];
+$imgDomain = $config['img_domain'];
+$docRoot = dirname(dirname(getcwd()));
+$imgDir = implode(DS, [$docRoot, 'data', 'thoitrang1', 'img']);
+$websiteId = 2;
 
 function call($url, $param = array(), &$errors = null) {
-	global $config;
+	global $config, $websiteId;
 	$method = 'post';
 	if (isset($config[$url])) {
 		if (is_array($config[$url])) {
@@ -39,6 +45,7 @@ function call($url, $param = array(), &$errors = null) {
 		}
 	}
 	try {		
+        $param['website_id'] = $websiteId;
 		$headers = array("Content-Type:multipart/form-data");
 		$url = $config['base_uri'] . $url;
 		$ch = curl_init();
@@ -65,10 +72,14 @@ function call($url, $param = array(), &$errors = null) {
                 case 'ERROR_VALIDATION':                                         
                 case 'ERROR':
                     $errors = $result['results'];    
+                    p($errors);
                     return false;
             }
             return $result;
-		}
+		} else {
+            p($response);
+            p($errno);
+        }
 		if (!empty($ch)) {
 			@curl_close($ch);
 		}

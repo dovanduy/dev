@@ -1188,39 +1188,7 @@ class Products extends AbstractModel {
             );           
         }
             
-        if ($id = self::insert($values)) { 
-            
-            if (!empty($values['image_id'])) {                
-                $imagesModel->updateInfo(array(
-                    'src' => 'products',
-                    'src_id' => $id,
-                    'id' => $values['image_id']
-                ));
-            }
-            
-			$localeValues = array(
-                'product_id' => $id,
-                'locale' => \Application\Module::getConfig('general.default_locale'),         
-            );
-            if (isset($param['name'])) {
-                $localeValues['name'] = $param['name'];
-            }
-            if (isset($param['short'])) {
-                $localeValues['short'] = $param['short'];
-            } 
-            if (isset($param['content'])) {
-                $localeValues['content'] = $param['content'];
-            }         
-            if (isset($param['more'])) {
-                $localeValues['more'] = $param['more'];
-            }         
-            if (isset($param['meta_keyword'])) {
-                $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
-            }        
-            if (isset($param['meta_description'])) {
-                $localeValues['meta_description'] = $param['meta_description'];
-            }
-            self::insert($localeValues, 'product_locales');  
+        if ($id = self::insert($values, 'products')) { 
 			
             $hasCategoryModel = new ProductHasCategories();
             $hasCategoryModel->addUpdate(
@@ -1286,26 +1254,62 @@ class Products extends AbstractModel {
                 ));           
             }
             
+            if (!empty($values['image_id'])) {                
+                $imagesModel->updateInfo(array(
+                    'src' => 'products',
+                    'src_id' => $id,
+                    'id' => $values['image_id']
+                ));
+            }
+            
             if (isset($param['images'])) {
                 if (!is_array($param['images'])) {
                     $param['images'] = unserialize($param['images']);
-                }
+                }               
+                Log::error(implode(PHP_EOL, $param['images']));
                 foreach ($param['images'] as $sourceImageUrl) {
                     if ($param['url_image'] != $sourceImageUrl) {
                         $imageUrl = Util::uploadImageFromUrl($sourceImageUrl, 600, 600, $param['name']);
-                        $imagesModel->add(array(
+                        if (!empty($imageUrl) && $imagesModel->add(array(
                             'src' => 'products',
                             'src_id' => $id,
                             'url_image' => $imageUrl,
                             'url_image_source' => $sourceImageUrl,
                             'is_main' => 0,
-                        ));
-                        if (isset($param['add_image_to_content'])) {
-                            $param['content'] .= "<center><p><img src=\"{$imageUrl}\"/></p></center>";
+                        ))) {
+                            if (isset($param['add_image_to_content'])) {
+                                $param['content'] .= "<center><p><img src=\"{$imageUrl}\"/></p></center>";                                
+                            }
+                        } else {
+                             Log::error('Error: ' . $imageUrl);
                         }
                     }                  
-                }
-            }   
+                }                
+            }
+            $localeValues = array(
+                'product_id' => $id,
+                'locale' => \Application\Module::getConfig('general.default_locale'),         
+            );
+            if (isset($param['name'])) {
+                $localeValues['name'] = $param['name'];
+            }
+            if (isset($param['short'])) {
+                $localeValues['short'] = $param['short'];
+            } 
+            if (isset($param['content'])) {
+                $localeValues['content'] = $param['content'];
+            }         
+            if (isset($param['more'])) {
+                $localeValues['more'] = $param['more'];
+            }         
+            if (isset($param['meta_keyword'])) {
+                $localeValues['meta_keyword'] = mb_strtolower($param['meta_keyword']);
+            }        
+            if (isset($param['meta_description'])) {
+                $localeValues['meta_description'] = $param['meta_description'];
+            }
+            Log::error($localeValues);
+            self::insert($localeValues, 'product_locales'); 
             
             if (isset($param['import_sizes'])) {  
                 if (!is_array($param['import_sizes'])) {
@@ -1521,7 +1525,7 @@ class Products extends AbstractModel {
     {
         if (empty($param['locale'])) {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
-        }
+        }       
         $detail = self::getDetail(array(
             '_id' => $param['_id'],
             'locale' => $param['locale'], 
@@ -1530,8 +1534,7 @@ class Products extends AbstractModel {
         if (empty($detail)) {
             self::errorNotExist('_id');
             return false;
-        }        
-       
+        }
         $values = array();
         if (isset($param['name'])) {
             $values['name'] = $param['name'];
@@ -1574,6 +1577,84 @@ class Products extends AbstractModel {
         return $ok;
     }
 
+    public function updateLocale($param)
+    {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $detail = self::getDetail(array(
+            'code' => !empty($param['code']) ? $param['code'] : null,
+            'product_id' => !empty($param['product_id']) ? $param['product_id'] : null,
+            'locale' => $param['locale'], 
+            'website_id' => $param['website_id']
+        ));        
+        if (empty($detail)) {
+            self::errorNotExist('product_id');
+            return false;
+        }
+        $values = array();
+        if (isset($param['name'])) {
+            $values['name'] = $param['name'];
+        } 
+        if (isset($param['short'])) {
+            $values['short'] = $param['short'];
+        } 
+        if (isset($param['content'])) {
+            $values['content'] = $param['content'];
+        }
+        if (isset($param['more'])) {
+            $values['more'] = $param['more'];
+        }
+        if (isset($param['meta_keyword'])) {
+            $values['meta_keyword'] = mb_strtolower($param['meta_keyword']);
+        }
+        if (isset($param['meta_description'])) {
+            $values['meta_description'] = $param['meta_description'];
+        }
+        if (isset($param['add_image_to_content']) 
+            && !empty($param['website_id'])
+            && !empty($detail['product_id'])) {
+            $imageModel = new Images;
+            $images = $imageModel->getForBatch(array(
+                'product_images_only' => 1,
+                'website_id' => $param['website_id'],
+                'product_id' => $detail['product_id'],
+            ));          
+            if (!empty($images)) {
+                if (empty($values['content'])) {
+                    $values['content'] = $detail['content'];
+                }
+                $values['content'] = strip_tags($values['content'], '<p><div><span><ul><li><strong><b><br><center>');
+                $values['content'] = str_replace(PHP_EOL, '<br/>', $values['content']);
+                foreach ($images as $image) { 
+                    $values['content'] .= "<center><p><img src=\"{$image['url_image']}\"/></p></center>";
+                }
+            }          
+        }
+        $ok = false;
+        if (!empty($values)) {
+            $ok = self::update(
+                array(
+                    'table' => 'product_locales',
+                    'set' => $values,
+                    'where' => array(
+                        'product_id' => $detail['product_id'],
+                        'locale' => $param['locale'],
+                    ),
+                )
+            );
+        }
+        if ($ok && !empty($param['name']) && $param['name'] != $detail['name']) {
+            $urlIds = new UrlIds();
+            $urlIds->addUpdateByProductId(array(
+                'url' => name_2_url($param['name']),
+                'product_id' => $detail['product_id'],
+                'website_id' => $param['website_id']
+            ));
+        }
+        return $ok;
+    }
+    
     public function getDetail($param)
     {
         if (empty($param['locale'])) {
@@ -2199,11 +2280,11 @@ class Products extends AbstractModel {
                 self::RETURN_TYPE_ONE
             );
             $result['original_price'] = $result['price'];
-//            if (!empty($product['discount_percent'])) { 
-//                $result['price'] = $result['original_price'] - ($result['original_price'] * $product['discount_percent'] / 100);
-//            } elseif (!empty($product['discount_amount'])) {
-//                $result['price'] = $result['original_price'] + $product['discount_amount'];
-//            }
+            if (!empty($product['discount_percent'])) { 
+                $result['price'] = $result['original_price'] - ($result['original_price'] * $product['discount_percent'] / 100);
+            } elseif (!empty($product['discount_amount'])) {
+                $result['price'] = $result['original_price'] + $product['discount_amount'];
+            }
             $result['price'] = round($result['price'], -3);
         }
         return $result;
@@ -2479,7 +2560,7 @@ class Products extends AbstractModel {
 
     public static function updateFbImage($param) {          
         $products = \Zend\Json\Decoder::decode($param['products'], \Zend\Json\Json::TYPE_ARRAY);            
-        $config = \Application\Module::getConfig('upload.image');        
+        $config = \Application\Module::getConfig('upload.image'); 
         $result = array();
         foreach ($products as $i => $product) {           
             try {
@@ -2624,6 +2705,87 @@ class Products extends AbstractModel {
             }
         }
         return $ok;
+    }
+    
+    public function getForBlogger($param) {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        if (empty($param['limit'])) {
+            $param['limit'] = 30;
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns(array(                
+                'product_id',                
+                'code', 
+                'code_src', 
+                'price',
+                'original_price',
+                'discount_percent',
+                'discount_amount',
+                'sort',
+                'image_id',
+                'priority',
+                'website_id'
+            ))
+            ->join(               
+                'product_locales',                    
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(                   
+                    'name',                     
+                )
+            )
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.active = 1')
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
+            ->where("product_locales.locale = ". self::quote($param['locale']))
+            ->where(new Expression(
+                "NOT EXISTS (
+                    SELECT * 
+                    FROM blogger_post_ids 
+                    WHERE
+                        blog_id = " . self::quote($param['blog_id']) . " 
+                        AND blogger_post_ids.product_id = products.product_id)"
+            ));
+        
+        if (!empty($param['category_id'])) {
+            if (is_numeric($param['category_id'])) {
+                $categoryModel = new ProductCategories;
+                $categories = $categoryModel->getAll(array(
+                    'website_id' => $param['website_id'],
+                    'locale' => $param['locale'],
+                    'parent_id' => $param['category_id'],
+                ));
+                if (!empty($categories)) {
+                    $param['category_id'] = implode(',', Arr::field($categories, 'category_id'));
+                }
+            }
+            $select->join(
+                    'product_has_categories', 
+                    static::$tableName . '.product_id = product_has_categories.product_id',
+                    array(
+                        'category_id'
+                    )    
+                )
+                ->where(new Expression(
+                    "product_has_categories.category_id IN ({$param['category_id']})"
+                ));            
+        }      
+       
+        $select->order(static::$tableName . '.product_id DESC');
+        $select->limit($param['limit']);
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );          
+        return $result;
     }
     
 }

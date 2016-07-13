@@ -7,15 +7,24 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-return array(
-    
-    'view_manager' => array(        
-        'template_map' => array(            
-            'web/header' => __DIR__ . '/../view/partial/mobile/header.phtml',           
-            'web/footer' => __DIR__ . '/../view/partial/mobile/footer.phtml'         
-        ),        
-    ),
-    
-    'display_page' => 5,
-    
-);
+if (in_array(domain(), ['thoitrang1.net', 'thoitrang1.vn'])) {
+    return array(
+        'view_manager' => array(        
+            'template_map' => array(            
+                'web/header' => __DIR__ . '/../view/partial/thoitrang1/mobile/header.phtml',           
+                'web/footer' => __DIR__ . '/../view/partial/thoitrang1/mobile/footer.phtml'         
+            ),        
+        ),
+        'display_page' => 5,
+    );    
+} else {
+    return array(
+        'view_manager' => array(        
+            'template_map' => array(            
+                'web/header' => __DIR__ . '/../view/partial/mobile/header.phtml',           
+                'web/footer' => __DIR__ . '/../view/partial/mobile/footer.phtml'         
+            ),        
+        ),
+        'display_page' => 5,
+    );
+}

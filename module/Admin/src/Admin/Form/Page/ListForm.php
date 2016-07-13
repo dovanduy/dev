@@ -61,7 +61,15 @@ class ListForm extends AbstractForm
      */
     public function columns()
     {
-        return array(              
+        return array( 
+            array(
+                'name' => 'page_id',
+                'title' => 'ID',
+                'sort' => true,
+                'attributes' => array(
+                  
+                ),
+            ),
             array(
                 'name' => 'title',
                 'title' => 'Title',

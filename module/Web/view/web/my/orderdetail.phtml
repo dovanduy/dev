@@ -19,7 +19,7 @@ if (empty($data['shipping'])) {
     </h4>
 </div>
 <div class="modal-body">
-    <section class="invoice">    
+    <section class="invoice" id="invoice-detail">    
 
         <!-- info row -->
         <div class="row invoice-info">
@@ -63,12 +63,13 @@ if (empty($data['shipping'])) {
                     <?php echo $this->translate('Cancel date') ?>:
                     <span class="cancel-date"><?php echo !empty($data['cancel_date']) ? datetime_format($data['cancel_date']) : '-'; ?></span><br>
                 </div>
-
+                
                 <?php echo $this->translate('Order status') ?>:            
                 <span <?php if ($data['status'] == 'new') echo 'style="display:inline"' ?> class="btn btn-flat order-status new"><?php echo $this->translate('Processing'); ?></span>
                 <span <?php if ($data['status'] == 'shipping') echo 'style="display:inline"' ?>class="btn btn-flat order-status shipping"><?php echo $this->translate('Shipping'); ?></span>
                 <span <?php if ($data['status'] == 'done') echo 'style="display:inline"' ?>class="btn btn-flat order-status done"><?php echo $this->translate('Done'); ?></span>
                 <span <?php if ($data['status'] == 'cancel') echo 'style="display:inline"' ?>class="btn btn-flat order-status cancel"><?php echo $this->translate('Canceled'); ?></span>
+                
                 <br>
             </div>
             <!-- /.col -->
@@ -157,13 +158,14 @@ if (empty($data['shipping'])) {
                     data-dismiss='modal'
                     class="btn btn-default pull-right">
                     <i class="fa fa-close"></i> <?php echo $this->translate('Close') ?>
-                </a>                 
+                </a>
+                <?php if (!in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))): ?>
                 <?php if ($data['status'] == 'new'): ?>
                 <a href='#'                             
                    data-url="<?php echo $this->url(
                              'web/my', 
                              array(
-                                 'action' => 'cancelorder',
+                                 'action' => 'submitcancel',
                                  'id' => $data['_id']
                              ))
                    ?>"
@@ -172,11 +174,11 @@ if (empty($data['shipping'])) {
                         if ($('#btn-submit-cancel').length > 0) {
                             $('#btn-submit-cancel').remove();
                         }
-                        $('.invoice-col .order-status').hide();
-                        $('.invoice-col .cancel').show();
-                        $('.invoice-col .status-date').hide();
-                        $('.invoice-col .status-cancel-date').show();
-                        $('.invoice-col .cancel-date').html(result.date);
+                        $('#invoice-detail .invoice-col .order-status').hide();
+                        $('#invoice-detail .invoice-col .cancel').show();
+                        $('#invoice-detail .invoice-col .status-date').hide();
+                        $('#invoice-detail .invoice-col .status-cancel-date').show();
+                        $('#invoice-detail .invoice-col .cancel-date').html(result.date);
                     "
                     style="margin-left: 5px;"
                     id="btn-submit-cancel"
@@ -184,6 +186,119 @@ if (empty($data['shipping'])) {
                     <i class="fa fa-remove"></i> <?php echo $this->translate('Cancel order') ?>
                 </a>  
                 <?php endif ?> 
+                
+                <?php else: ?>           
+                     
+                <a href='#'                             
+                   data-url="<?php echo $this->url(
+                             'web/my', 
+                             array(
+                                 'action' => 'submitcancel',
+                                 'id' => $data['_id']
+                             ))
+                   ?>"
+                   data-confirmmessage='<?php echo $this->translate('Are you sure cancel this order?') ?>'
+                   data-callback="                                               
+                        $(btn).addClass('disabled');
+                        if (!$('#btn-submit-shipping').hasClass('disabled')) {
+                            $('#btn-submit-shipping').addClass('disabled');         
+                        }
+                        if (!$('#btn-submit-paid').hasClass('disabled')) {
+                            $('#btn-submit-paid').addClass('disabled');         
+                        }
+                        if (!$('#btn-submit-done').hasClass('disabled')) {
+                            $('#btn-submit-done').addClass('disabled');         
+                        }
+                        $('#invoice-detail .invoice-col .order-status').hide();
+                        $('#invoice-detail .invoice-col .cancel').show();
+                        $('#invoice-detail .invoice-col .status-date').hide();
+                        $('#invoice-detail .invoice-col .status-cancel-date').show();
+                        $('#invoice-detail .invoice-col .cancel-date').html(result.date);                     
+                    "
+                    style="margin-left: 5px;"
+                    id="btn-submit-cancel"
+                    class="btn btn-danger ajax-submit pull-right  <?php if (in_array($data['status'], ['shipping', 'done', 'cancel'])) echo 'disabled'?>">
+                    <i class="fa fa-remove"></i> <?php echo $this->translate('Cancel') ?>
+                </a> 
+                
+                <a href='#'                             
+                   data-url="<?php echo $this->url(
+                            'web/my', 
+                            array(
+                                'action' => 'submitdone',
+                                'id' => $data['_id']
+                            ))
+                    ?>"
+                    data-confirmmessage='<?php echo $this->translate('Are you sure?') ?>'
+                    data-callback="
+                        $(btn).addClass('disabled');
+                        if (!$('#btn-submit-paid').hasClass('disabled')) {
+                            $('#btn-submit-paid').addClass('disabled');         
+                        }
+                        if (!$('#btn-submit-shipping').hasClass('disabled')) {
+                            $('#btn-submit-shipping').addClass('disabled');         
+                        }
+                        $('#invoice-detail .invoice-col .order-status').hide();
+                        $('#invoice-detail .invoice-col .done').show();
+                        if ($('#invoice-detail .invoice-col .done-date').html() == '-') {
+                            $('#invoice-detail .invoice-col .done-date').html(result.date);
+                        }
+                        $('#invoice-detail .invoice-col .done-date').html(result.date);
+                        showMessage('<?php echo $this->translate('Status updated successfully') ?>')
+                    "
+                    style="margin-left: 5px;"
+                    id="btn-submit-done"
+                    class="btn btn-success ajax-submit pull-right <?php if (in_array($data['status'], ['done', 'cancel'])) echo 'disabled'?>">
+                   <i class="fa fa-credit-card"></i> <?php echo $this->translate('Done') ?>
+                </a>
+                
+                <a href='#'                             
+                   data-url="<?php echo $this->url(
+                            'web/my', 
+                            array(
+                                'action' => 'submitpayment',
+                                'id' => $data['_id']
+                            ))
+                    ?>"
+                    data-confirmmessage='<?php echo $this->translate('Are you sure?') ?>'
+                    data-callback="                        
+                        $(btn).addClass('disabled');                        
+                        $('#invoice-detail .invoice-col .payment-date').html(result.date);
+                        showMessage('<?php echo $this->translate('Status updated successfully') ?>')
+                    "
+                    style="margin-left: 5px;"
+                    id="btn-submit-paid"
+                    class="btn btn-success ajax-submit pull-right <?php if ($data['is_paid'] == 1 || in_array($data['status'], ['paid', 'done', 'cancel'])) echo 'disabled'?>">
+                   <i class="fa fa-credit-card"></i> <?php echo $this->translate('Paid') ?>
+                </a>
+                
+                <a href='#'                             
+                   data-url="<?php echo $this->url(
+                            'web/my',
+                            array(
+                                'action' => 'submitshipping',
+                                'id' => $data['_id']
+                            ))
+                    ?>"
+                    data-confirmmessage='<?php echo $this->translate('Are you sure?') ?>'
+                    data-callback="
+                        $(btn).addClass('disabled');
+                        if (!$('#btn-submit-cancel').hasClass('disabled')) {
+                            $('#btn-submit-cancel').addClass('disabled');         
+                        }
+                        $('#invoice-detail .invoice-col .order-status').hide();
+                        $('#invoice-detail .invoice-col .shipping').show();
+                        $('#invoice-detail .invoice-col .shipping-date').html(result.date);
+                        showMessage('<?php echo $this->translate('Status updated successfully') ?>')
+                    "
+                    style="margin-left: 5px;"
+                    id="btn-submit-shipping"
+                    class="btn btn-warning ajax-submit pull-right <?php if (in_array($data['status'], ['done', 'cancel', 'shipping'])) echo 'disabled'?>">
+                    <i class="fa fa-ship"></i> <?php echo $this->translate('Shipping') ?>
+                </a>
+                
+                <?php endif ?>
+                
             </div>
         </div>
     </section>

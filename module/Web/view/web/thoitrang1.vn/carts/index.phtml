@@ -1,0 +1,40 @@
+<?php
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
+<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+    <i class="icon-basket-1"></i><span class="cart-count default-bg"><?php echo $totalQuantity ?></span>
+</button>    
+<?php if (!empty($cartItems)) : ?>
+<ul class="dropdown-menu dropdown-menu-right dropdown-animation cart">
+    <li>
+        <table class="table table-hover">                                                       
+            <tbody>
+                <?php foreach ($cartItems as $item) : ?>
+                <tr class="cart-item-row-<?php echo $item['product_id']?>">																
+                    <td class="product" align="left"><?php echo $item['quantity']?> x <a href="<?php echo $this->url('web/products', array('action' => 'detail', 'id' => $item['_id']))?>"><?php echo $item['custom_name']?></a></td>
+                    <td class="amount" align="right"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
+                </tr>
+                <?php endforeach ?>                                                            
+                <tr class="footer">
+                    <td align="right" colspan="2">
+                        <?php echo $this->translate('Total')?>: <span class="amount"><?php echo app_money_format($totalMoney)?></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="panel-body text-right" style="padding: 5px 5px;">	
+            <a href="<?php echo $this->url('web/carts', array('action' => 'view'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('View cart')?></a>
+            <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-gray btn-sm"><?php echo $this->translate('Checkout')?></a>
+        </div>
+    </li>
+</ul>
+<?php endif; ?>
+<?php exit; ?>

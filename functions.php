@@ -179,7 +179,7 @@ function domain() {
         return null;
     }
     $domain = 'localhost';
-    preg_match("/^([a-zA-Z0-9-.]+)(.com.vn|.vn|.com|.in|.co|.info|.name|.dev)$/", $_SERVER['SERVER_NAME'], $match);   
+    preg_match("/^([a-zA-Z0-9-.]+)(.com.vn|.vn|.com|.net|.in|.co|.info|.name|.dev)$/", $_SERVER['SERVER_NAME'], $match);   
     if (!empty($match[0])) {
         $domain = $match[0];
     }
@@ -259,9 +259,9 @@ if (!function_exists('truncate')) {
 }
     
 if (!function_exists('app_money_format')) {
-    function app_money_format($value) {        
+    function app_money_format($value, $withCurrency = true) {        
         if (is_numeric($value)) {
-            return number_format($value, 0, ',', '.') . ' VND';
+            return number_format($value, 0, ',', '.') . ($withCurrency ? ' VND' : '');
         }
         return $value;
     }
@@ -515,7 +515,7 @@ function app_file_get_contents($url, $retry = true, $echoFlag = false) {
     if ($content === false) {
        for ($i = 0; $i <= 99; $i++) {           
            app_echo($url . ' Retying' . PHP_EOL, $echoFlag);           
-           sleep(3);
+           //sleep(3);
            $content = @file_get_contents($url);
            if ($content !== false) {
                app_echo($url . ' Done' . PHP_EOL, $echoFlag);
@@ -535,7 +535,7 @@ function app_file_put_contents($targetFileName, $content, $echoFlag = false) {
         $ok = @file_put_contents($targetFileName, $content);        
         app_echo($targetFileName . ' Retrying' . PHP_EOL, $echoFlag);
         $retry--;
-        sleep(3);
+        //sleep(3);
     } while ($ok === false && $retry > 0);
     return $ok;
 }
@@ -568,7 +568,16 @@ function app_get_fb_share_content($product) {
     return $data;
 }
 
-function app_get_fb_share_comment() {    
+function app_get_fb_share_comment() { 
+//    $urls = [
+//        'http://www.webtretho.com/forum/f26/cong-nghe-trung-ga-nuong-sieu-ban-2278471/',
+//        'http://nld.com.vn/thoi-su-trong-nuoc/khiep-dam-cong-nghe-so-che-mang-thoi-su-dung-chat-gay-ung-thu-20160510103154348.htm',
+//        'http://nld.com.vn/thoi-su-trong-nuoc/moi-ngay-ban-gan-400-chai-giam-lam-tu-a-xit-va-nuoc-la-ra-thi-truong-20160408082101929.htm',
+//        'http://nld.com.vn/kinh-te/kinh-hoang-gio-cha-20150210215041.htm',
+//    ];
+//    return [
+//        'message' => app_random_value($urls)
+//    ];
     $files = array(
         'truyen-cuoi-gia-dinh.php',
         'truyen-cuoi-hoc-duong.php', 
@@ -845,6 +854,8 @@ if (!function_exists('app_facebook_tags')) {
             '114752562282451', // fb.khaai@gmail.com
             '116860312071059', // fb.hoaian@gmail.com
             '103432203421638', // kinhdothoitrang@outlook.com
+            '654221838062471', // trongnhan0409@yahoo.com.vn
+            '663142563836916', // myngan641993@gmail.com
         ];
         if (!empty($facebookId)) {
             $result = array();
@@ -862,6 +873,7 @@ if (!function_exists('app_facebook_tags')) {
 if (!function_exists('app_facebook_groups')) {
     function app_facebook_groups() {
         return [
+            //'170515796307593', //https://www.facebook.com/groups/170515796307593/ Shop xinh 2
              //'392392084295942', // https://www.facebook.com/groups/donnhahn18899/            
             '1479744482314512', // https://www.facebook.com/groups/Thuducquan2quan9/
             '795251457184853', // https://www.facebook.com/groups/24hmuabanraovat/
@@ -871,7 +883,85 @@ if (!function_exists('app_facebook_groups')) {
             '292297640870438', //https://www.facebook.com/groups/292297640870438 Rao vặt Thủ Đức
             '378628615584963', //https://www.facebook.com/groups/bachhoa/
             '426697040774331', //https://www.facebook.com/groups/426697040774331/ Chợ Tốt - Cần Thơ
+            
         ];
     }
 }
     
+if (!function_exists('app_bloggers')) {
+    /*
+       4029409002377533713 - Đồ Lót Nam Nữ - http://dolot-namnu.blogspot.com/
+        8354038990681577795 - Ba Lô Học Sinh - http://balohs.blogspot.com/
+        6785887626226742648 - Ba Lô Sinh Viên - http://balosv.blogspot.com/
+        6127647545379207498 - Túi Xách Nam - http://tuixach-nam.blogspot.com/
+        7043789476566410639 - Túi Xách Nữ - http://tuxach-nu.blogspot.com/
+        3597765508119977852 - Váy Đầm Nữ - http://vaydam-nu.blogspot.com/
+        8682455286264257014 - Váy Đầm Teen - http://vaydamteen.blogspot.com/
+        356436408663739932 - Thời Trang Nam - http://ttnam.blogspot.com/
+        1186553982152317300 - Thời Trang Nữ - http://ttnu.blogspot.com/
+        8907742852579159487 - Ba Lô Giả Da - http://balogiada.blogspot.com/
+        5115517794363944463 - Túi Rút - http://tuirutdep.blogspot.com/
+        7504283056362133341 - Thế Giới BaLo - http://vuongquocbalo.blogspot.com/
+     */
+    function app_bloggers($categoryId = null) {
+        $blogs = [
+            '4029409002377533713' => [                
+                'url' => 'http://dolot-namnu.blogspot.com/',
+                'categories' => []
+            ],
+            '8354038990681577795' => [
+                'url' => 'http://balohs.blogspot.com/',
+                'categories' => []
+            ],
+            '6785887626226742648' => [
+                'url' => 'http://balosv.blogspot.com/',
+                'categories' => []
+            ],
+            '6127647545379207498' => [
+                'url' => 'http://tuixach-nam.blogspot.com/',
+                'categories' => []
+            ],
+            '7043789476566410639' => [
+                'url' => 'http://tuixach-nu.blogspot.com/',
+                'categories' => []
+            ],
+            '3597765508119977852' => [
+                'url' => 'http://vaydam-nu.blogspot.com/',
+                'categories' => []
+            ],
+            '8682455286264257014' => [
+                'url' => 'http://vaydamteen.blogspot.com/',
+                'categories' => []
+            ],
+            '356436408663739932' => [
+                'url' => 'http://ttnam.blogspot.com/',
+                'categories' => []
+            ],
+            '1186553982152317300' => [
+                'url' => 'http://ttnu.blogspot.com/',
+                'categories' => []
+            ],
+            '8907742852579159487' => [
+                'url' => 'http://balogiada.blogspot.com/',
+                'categories' => []
+            ],
+            '5115517794363944463' => [
+                'url' => 'http://tuirutdep.blogspot.com/',
+                'categories' => [16]
+            ],
+            '7504283056362133341' => [
+                'url' => 'http://vuongquocbalo.blogspot.com/',
+                'categories' => []
+            ],                    
+        ];        
+        if (!empty($categoryId)) {
+            foreach ($blogs as $blogId => $blog) {
+                if (in_array($categoryId, $blog['categories'])) {
+                    $result[] = $blogId;
+                }
+            }
+            return $result;
+        }
+        return $blogs;
+    }
+}

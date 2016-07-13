@@ -426,8 +426,8 @@ if (file_exists($fileProducts)) {
             }   
             if ($categoryId == 15) {
                 $product['import_prices'] = [
-                    ['color_id' => 0, 'size_id' => 1, 'price' => '187000'],
-                    ['color_id' => 0, 'size_id' => 2, 'price' => '159000'],
+                    ['color_id' => 0, 'size_id' => 1, 'price' => '205000'],
+                    ['color_id' => 0, 'size_id' => 2, 'price' => '175000'],
                 ];
             }
             $products[] = $product;

@@ -1,0 +1,204 @@
+<?php
+$checkoutInfo = Application\Lib\Session::get('checkout_step1');
+if (empty($checkoutInfo['payment'])) {
+    $checkoutInfo['payment'] = 'COD';
+}
+if (empty($checkoutInfo['voucher_code'])) {
+    $checkoutInfo['voucher_code'] = '';
+}
+$cartItems = Application\Lib\Cart::get();
+$totalQuantity = 0;
+$totalMoney = 0;
+if (!empty($cartItems)) {    
+    foreach ($cartItems as $item) {
+        $totalQuantity += $item['quantity'];
+        $totalMoney += $item['quantity'] * $item['price'];
+    }
+}
+?>
+<!-- main-container start -->
+<!-- ================ -->
+<section class="main-container">
+
+    <div class="container">
+        <div class="row">
+
+            <!-- main start -->
+            <!-- ================ -->
+            <div class="main col-md-12">
+                
+                <ul class="step clearfix" id="order_step">
+                    <li class="step_todo first">
+                        <span><em>01.</em> <?php echo $this->translate('Cart')?></span>
+                    </li>
+                    <li class="step_todo second">
+                        <span><em>02.</em> <?php echo $this->translate('Customer information')?></span>
+                    </li>
+                    <li class="step_current third">
+                        <span><em>03.</em> <?php echo $this->translate('Checkout')?></span>
+                    </li>
+                    <li id="step_end" class="step_todo last">
+                        <span><em>04.</em> <?php echo $this->translate('Confirm')?></span>
+                    </li>
+                </ul>
+                
+                <table class="table cart">
+                    <thead>
+                        <tr>
+                            <th><strong><?php echo $this->translate('Product name')?></strong></th>
+                            <th><strong><?php echo $this->translate('Price')?></strong></th>
+                            <th><strong><?php echo $this->translate('Quantity')?></strong></th>
+                            <th class="amount"><strong><?php echo $this->translate('Total')?></strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cartItems as $item) : ?>
+                        <tr>
+                            <td class="product">
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($item['name'])))?>">
+                                    <?php echo $item['custom_name']?>
+                                </a> 
+                            </td>
+                            <td class="price"><?php echo app_money_format($item['price'])?></td>
+                            <td class="quantity">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" value="<?php echo $item['quantity']?>" disabled="">
+                                </div>											
+                            </td>
+                            <td class="amount"><?php echo app_money_format($item['quantity'] * $item['price'])?></td>
+                        </tr>
+                        <?php endforeach ?>
+                    </tbody>
+                </table>
+                
+                
+                <form method="post" id="paymentForm" class="form-horizontal" novalidate="novalidate">
+                <fieldset>
+                    <legend><strong><?php echo $this->translate('Payment')?></strong></legend>                   
+                    <div class="row mb-10">
+                        <span><input value="COD" id="cod" name="payment" type="radio" <?php if (empty($checkoutInfo['payment']) || $checkoutInfo['payment'] == 'COD') echo "checked"?> style="width:20px; float:left;"/></span>                                
+                        <span><?php echo $this->translate('COD')?></span>
+                    </div>
+                    <!--
+                    <div class="row">
+                        <span><input value="ATM" id="atm" name="payment" type="radio" <?php if ($checkoutInfo['payment'] == 'ATM') echo "checked"?> style="width:20px; float:left;"/></span>                                
+                        <span><?php echo $this->translate('Transfer via Bank')?></span>
+                        <div class="bank-account"><?php echo \Web\Module::getConfig('bank_account')?></div>
+                    </div> 
+                    -->
+                </fieldset>
+                    
+                <fieldset>
+                    <legend><strong><?php echo $this->translate('Checkout')?></strong></legend>                   
+                    <div class="row mb-10">
+                        <div class="col-lg-10 col-lg-offset-1">
+                            <div class="form-group">
+                                <div style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Total')?></label>
+                                    </div>
+                                </div>                            
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span class="amount" id="total"><?php echo app_money_format($totalMoney)?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-group-voucher_code">
+                                <div class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label for="name"><?php echo $this->translate('Input voucher code')?></label>
+                                    </div>
+                                </div>                            
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <input maxlength="5" style="width: 100px; padding: 4px; text-align: center; float: left;" class="form-control" value="<?php echo $checkoutInfo['voucher_code']?>" id="voucher_code" name="voucher_code" type="text"/>
+                                        <a style="float: left; margin: 0px 0px 0px 5px;" 
+                                           data-url="<?php echo $this->url('web/checkout', array('action' => 'applyvoucher'))?>" 
+                                           class="btn btn-group btn-default ajax-submit"
+                                           href="#"
+                                           data-errorcallback="	
+                                               $('#discount').html('0 VND');                                           
+                                               $('#last_total_money').html($('#total').html());                                           
+                                           "
+                                           data-callback="	
+                                               $('#discount').html(result.discount);
+                                               $('#last_total_money').html(result.last_total_money);
+                                           ">
+                                           <?php echo $this->translate('Apply')?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Discount')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount" id="discount"><?php echo !empty($checkoutInfo['discount']) ? app_money_format($checkoutInfo['discount']) : '0 VND'?> </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Shipping money')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount"><?php echo !empty($checkoutInfo['ship_money']) ? app_money_format($checkoutInfo['ship_money']) : '0 VND'?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div  style="padding-top: 0px;" class="col-md-3 control-label">
+                                    <div class="form-label">
+                                        <label><?php echo $this->translate('Total payment')?></label>
+                                    </div>
+                                </div>                         
+                                <div class="col-md-9">
+                                    <div class="form-input">
+                                        <span style="padding-top: 7px;"  class="amount" id="last_total_money"><?php echo app_money_format($totalMoney + $checkoutInfo['ship_money'])?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                    
+                <div class="space-bottom"></div> 
+                
+                <fieldset>
+                    <legend><strong><?php echo $this->translate('Shipping money')?></strong></legend>                    
+                    <div class="row" id="ship_money">
+                        <?php echo \Web\Module::getConfig('ship_money')?>
+                    </div>
+                </fieldset>              
+               
+                <div class="text-right checkout-button">
+                    <a href="<?php echo $this->url('web/checkout', array('action' => 'index'))?>" class="btn btn-group btn-default"><i class="icon-left-open-big"></i> <?php echo $this->translate('Go back')?></a>
+                    <a id="checkout-next" href="<?php echo $this->url('web/checkout', array('action' => 'payment'))?>" class="btn btn-group btn-default" style="margin-left:3px;"><?php echo !empty($AppUI) ? $this->translate('Next step') : $this->translate('Signup Account and Go next step')?> <i class="icon-right-open-big"></i></a>
+                </div>
+            
+                </form>
+            </div>
+            <!-- main end -->
+
+        </div>
+    </div>
+</section>
+<!-- main-container end -->
+<?php
+$this->headScript()->offsetSetScript(100, " 
+    $(function() {
+        var address_id = $('#address_id').val(); 
+        if (address_id == '') {
+            $('#new-address').removeClass('hide');
+        }
+    });
+");
+?>	

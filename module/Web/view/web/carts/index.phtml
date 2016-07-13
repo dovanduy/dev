@@ -9,7 +9,9 @@ if (!empty($cartItems)) {
     }
 }
 ?>
-
+<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+    <i class="icon-basket-1"></i><span class="cart-count default-bg"><?php echo $totalQuantity ?></span>
+</button>    
 <?php if (!empty($cartItems)) : ?>
 <ul class="dropdown-menu dropdown-menu-right dropdown-animation cart">
     <li>

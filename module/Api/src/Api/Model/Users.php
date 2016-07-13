@@ -1047,6 +1047,55 @@ class Users extends AbstractModel {
         return false;
     }
     
+    /*
+    * Google Login
+    * @param email
+    * @param password
+    * @return array()
+    */  
+    public function google($param) {         
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)   
+            ->columns(array(                
+                'user_id', 
+                '_id', 
+                'email', 
+                'name',
+                'display_name',
+                'active',
+                'website_id',
+                'phone',        
+                'mobile',   
+            ))
+            ->join(
+                'user_googles', 
+                static::$tableName . '.user_id = user_googles.user_id',
+                array(
+                    'google_id',
+                    'google_name',
+                    'google_username',
+                    'google_email',
+                    'google_first_name',
+                    'google_last_name',
+                    'google_link',
+                    'google_image',
+                    'google_gender',
+                    'access_token',
+                    'access_token_expires_at',
+                ),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.email = '. static::quote($param['email']))
+            ->limit(1)
+            ->offset(0);
+        $selectString = $sql->getSqlStringForSqlObject($select);
+        $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
+        $user = self::response($result, self::RETURN_TYPE_ONE);   
+        return $user;
+    }
+    
+    
      /*
     * @desction get List users
     */

@@ -109,6 +109,7 @@ return array(
             'Api\Controller\Shareurls' => 'Api\Controller\ShareurlsController',
             'Api\Controller\Productshares' => 'Api\Controller\ProductsharesController',
             'Api\Controller\Contactlists' => 'Api\Controller\ContactlistsController',
+            'Api\Controller\Bloggerpostids' => 'Api\Controller\BloggerpostidsController',
         ),
     ),
     'view_manager' => array(
@@ -132,4 +133,6 @@ return array(
             ),
         ),
     ),
+    
+    
 );

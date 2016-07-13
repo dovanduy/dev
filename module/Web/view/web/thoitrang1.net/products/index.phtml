@@ -1,0 +1,204 @@
+<?php 
+    $request = $this->requestHelper();
+    $priceFrom = $request->getQuery('price_from', '');
+    $priceTo = $request->getQuery('price_to', '');    
+    $categoryId = !empty($detailCategory['category_id']) ? $detailCategory['category_id'] : 0;
+    $brandId = !empty($detailBrand['brand_id']) ? $detailBrand['brand_id'] : 0;
+    $groupCategories = [
+        'Thời Trang Nữ' => [],
+        'Thời Trang Nam' => [],
+    ];
+    foreach ($filter['categories'] as $category) {
+        if (in_array($category['category_id'], [50, 55, 59, 63, 64, 68, 71])) {
+            $groupCategories['Thời Trang Nữ'][] = $category;
+        } elseif (in_array($category['category_id'], [75, 79, 83, 87, 88])) {
+            $groupCategories['Thời Trang Nam'][] = $category;
+        } 
+    }
+?>
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">        
+		<div class="row">
+            <div class="col-md-3">
+                <form id="sidebar_products_index_form">                
+                    <div class="sidebar">                        
+                        <?php foreach ($groupCategories as $groupName => $categories) : ?> 
+                        <div class="block clearfix">
+                            <h3 class="title"><?php echo $groupName ?></h3>
+                            <div class="separator-2"></div>
+                            <nav class="app-category">
+                                <ul itemscope itemtype="http://schema.org/Product" class="nav nav-pills nav-stacked nav-show">
+                                    <?php foreach ($categories as $category) : ?>  
+                                    <?php if (!empty($category['sub'])) : ?>  
+                                        <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
+                                            <a style="border:0px;" itemprop="name" data-toggle="dropdown" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                                <?php echo $category['name'] ?>
+                                            </a>
+                                            <ul class="dropdown-menu" id="subCategory_<?php echo $category['category_id'];?>">
+                                                <?php foreach ($category['sub'] as $subCategory1) : ?> 
+                                                <?php if (!empty($subCategory1['sub'])) : ?>  
+                                                <li class="divider"></li>
+                                                <li class="dropdown-header"><?php echo $subCategory1['name'] ?></li>
+                                                <?php foreach ($subCategory1['sub'] as $subCategory2) : ?>
+                                                <li class="sub-category2">
+                                                    <a itemprop="name" href="<?php echo !empty($subCategory2['url']) ? $subCategory2['url'] : $this->url('web/products', array('name' => name_2_url($subCategory2['name'])))?>">
+                                                        <?php echo $subCategory2['name'] ?>
+                                                    </a>                                        
+                                                </li>    
+                                                <?php endforeach ?>  
+                                                <?php else: ?>     
+                                                <li<?php if ($categoryId==$subCategory1['category_id']) echo ' class="active"'?>>
+                                                    <a itemprop="name" href="<?php echo !empty($subCategory1['url']) ? $subCategory1['url'] : $this->url('web/products', array('name' => name_2_url($subCategory1['name'])))?>">
+                                                        <?php echo $subCategory1['name'] ?>
+                                                    </a>                                        
+                                                </li>
+                                                <?php endif ?>
+                                                <?php endforeach ?>                       
+                                            </ul>
+                                        </li>   
+                                    <?php else: ?>     
+                                         <li<?php if ($categoryId==$category['category_id']) echo ' class="active"'?>>
+                                            <a itemprop="name" href="<?php echo !empty($category['url']) ? $category['url'] : $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                                <?php echo $category['name'] ?>
+                                            </a>                                        
+                                        </li>  
+                                    <?php endif ?>                                
+                                    <?php endforeach ?>                                
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endforeach ?>                   
+
+                        <?php if (!empty($filter['brands'])): ?>
+                        <div class="block clearfix">
+                            <h3 class="title"><?php echo $this->translate('Brand') ?></h3>
+                            <div class="separator-2"></div>
+                            <nav>
+                                <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
+                                    <?php foreach ($filter['brands'] as $brand) : ?> 
+                                    <?php if (!empty($brand['brand_name'])): ?>
+                                    <li<?php if ($brandId==$brand['brand_id']) echo ' class="active"'?>>
+                                        <a href="<?php 
+                                            $routerParam = array(
+                                                'name2' => name_2_url($brand['brand_name'])
+                                            );
+                                            if (!empty($detailCategory['name'])) {
+                                                $routerParam['name'] = name_2_url($detailCategory['name']);
+                                            }
+                                            echo $this->url(
+                                                'web/products', 
+                                                $routerParam
+                                            )?>">
+                                            <span itemprop="name"><?php echo $brand['brand_name'] ?></span>
+                                        </a>
+                                    </li>
+                                    <?php endif ?>                                
+                                    <?php endforeach ?>                                
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endif ?>
+                        
+                        <?php if (!empty($filter['attributes'])): ?>
+                        <?php foreach ($filter['attributes'] as $attribute) : ?> 
+                        <div class="block clearfix">
+                            <h3 class="title"><?php echo $attribute['name'] ?></h3>
+                            <div class="separator-2"></div>
+                            <nav class="attributes">
+                                <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
+                                    <?php foreach ($attribute['value'] as $value): ?>                                    
+                                    <li<?php if ($optionId==$value) echo ' class="active"'?>>
+                                        <a href="<?php 
+                                            $routerParam = array(
+                                                'name3' => name_2_url($attribute['name'] . '-' . $value)
+                                            );
+                                            if (!empty($detailCategory['name'])) {
+                                                $routerParam['name'] = name_2_url($detailCategory['name']);
+                                            }
+                                            if (!empty($detailBrand['brand_name'])) {
+                                                $routerParam['name2'] = name_2_url($detailBrand['brand_name']);
+                                            }
+                                            echo $this->url(
+                                                'web/products', 
+                                                $routerParam
+                                            )?>">
+                                            <span itemprop="name"><?php echo $value ?></span>
+                                        </a>
+                                    </li>                                                           
+                                    <?php endforeach ?>                                
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endforeach ?>  
+                        <?php endif ?>
+                        
+                        <?php if (!empty($filter['price']['max'])): ?>
+                        <div class="block clearfix">
+                            <h3 class="title"><?php echo $this->translate('Price') ?></h3>
+                            <div class="separator-2"></div>
+                            <?php
+                                $slideValue = $filter['price']['min'] . ',' . $filter['price']['max'];
+                                if ($priceFrom !== '' && $priceTo !== '') {
+                                    $slideValue = db_float($priceFrom) . ',' . db_float($priceTo);
+                                }
+                                echo $this->sliderHelper(
+                                    'price-range', 
+                                    'price_from', 
+                                    'price_to',
+                                    $filter['price']['min'],
+                                    $filter['price']['max'],
+                                    '5000',
+                                    $slideValue
+                                );
+                            ?>                                                   
+                        </div>
+                        <?php endif ?>
+                        
+                    </div>
+                </form>
+            </div>
+			<div class="col-md-9">                
+				
+				<div class="tab-content clear-style">
+					<div class="tab-pane active" id="pill-1">
+						<div class="row masonry-grid-fitrows grid-space-10" style="position: relative; height: 1082.02px;">
+                        <?php                         
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper();    
+                            $products = !empty($result['data']) ? $result['data'] : array();
+                            $limit = !empty($result['limit']) ? $result['limit'] : 10;
+                            $count = !empty($result['count']) ? $result['count'] : 0; 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    echo $this->productItemHelper($product);                                                                                                                    
+                                }
+                            } else {
+                                echo "<center class=\"not-found\">{$this->translate('Catelog is importing')}</center>";
+                            }
+                        ?>   
+						</div>
+					</div>
+                    <!-- pills end -->
+                    <!-- pagination start -->
+                    <nav class="text-center">
+                        <?php   
+                            if ($count > $limit) {
+                                echo $this->paginatorHelper(
+                                    $params, 
+                                    $count, 
+                                    $limit,
+                                    Web\Module::getConfig('display_page')
+                                );
+                            }
+                        ?>
+                    </nav>                    
+				</div>
+				<!-- pills end -->
+			</div>
+		</div>
+	</div>
+</section>
+<!-- section end -->

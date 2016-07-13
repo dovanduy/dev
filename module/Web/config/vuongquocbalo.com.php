@@ -33,6 +33,13 @@ return array(
     'google_app_secret' => 'dk1V5W0lodxaD1xEXZYEeMfN',
     'google_app_redirect_uri' => 'http://vuongquocbalo.com/glogin',
     
+	 // Admin
+	'google_app_id2' => '692650781994-mv3unhde1gf92i26s3qajrrbrs9hbsae.apps.googleusercontent.com',
+    'google_app_secret2' => 'kEAA8MNKgFbmhL3ZDU9U4eTp',
+    'google_app_redirect_uri2' => 'http://vuongquocbalo.com/glogin2',
+    
+    'blogger_blog_id' => '7504283056362133341',
+	
     'site_name' => 'vuongquocbalo',   
     'head_meta' => array(
         'owner' => 'vuongquocbalo',
@@ -46,7 +53,7 @@ return array(
             'name' => 'filesystem',
             'options' => array(
                 'dirLevel' => 2,
-                'cacheDir' => getcwd() . '/data/cache/vuongquocbalo',
+                'cacheDir' => getcwd() . '/data/vuongquocbalo/cache/web',
                 'dirPermission' => 0755,
                 'filePermission' => 0666,
                 'ttl' => 60*60,
@@ -69,9 +76,8 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">Xem chính sách bán hàng</a></p>
-                <p>✓ Thanh toán khi nhận hàng</p>
-                <p>✓ Đổi trả trong <strong>7</strong> ngày</p>    
+                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
+                <p>✓ Thanh toán khi nhận hàng</p>                  
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>
@@ -84,8 +90,7 @@ return array(
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
                 <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
-                <p>✓ Thanh toán khi nhận hàng</p>
-                <p>✓ Đổi trả trong <strong>7</strong> ngày</p>                               
+                <p>✓ Thanh toán khi nhận hàng</p>                                           
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                                   

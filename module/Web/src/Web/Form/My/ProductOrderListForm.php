@@ -54,7 +54,7 @@ class ProductOrderListForm extends AbstractForm
                         <tbody>  
                             <tr>
                                 <td colspan='2'>
-                                    <strong>{code}</strong>
+                                    <strong>#{code}</strong>
                                     <span class='fr'>
                                         <a  href='#'          
                                             data-url='{$this->getController()->url()->fromRoute('web/my', array('action' => 'orderdetail', 'id' => '{_id}'))}'

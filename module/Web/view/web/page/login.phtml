@@ -43,19 +43,19 @@
                         <div class="col-sm-offset-3 col-sm-8">
                             <div class="remember-me">
                                 <div class="checkbox fl">
-                                    <label>
+                                    <label class="hide">
                                         <?php echo $this->formInput($form->get('remember')); ?>                         
                                         <?php echo $this->translate('Remember me')?>
                                     </label>
+                                    <button type="submit" class="btn btn-group btn-default btn-animated">
+                                        <?php echo $this->translate('Login')?>
+                                        <i class="fa fa-user"></i>
+                                    </button>
                                 </div>	
                                 <div class="fr forgot-password">
                                     <a href="<?php echo $this->url('web/forgetpassword')?>"><?php echo $this->translate('Forgot your password')?>?</a>
                                 </div>
-                            </div>
-                            <button type="submit" class="btn btn-group btn-default btn-animated">
-                                <?php echo $this->translate('Login')?>
-                                <i class="fa fa-user"></i>
-                            </button>
+                            </div>                            
                         </div>
                         <div class="col-sm-offset-3 col-sm-8 mt8m">
                             <span class="text-center text-muted"><?php echo $this->translate('Or login with')?></span>

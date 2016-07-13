@@ -36,7 +36,7 @@ class AjaxController extends AppController
             $result = Products::getPrice($param);
             if (!empty($result)) {
                 die(\Zend\Json\Encoder::encode(array(
-                    'price' => app_money_format($result['price'], -3),
+                    'price' => app_money_format($result['price'], false),
                     'original_price' => app_money_format($result['original_price']),
                 )));
             }
@@ -451,10 +451,17 @@ class AjaxController extends AppController
             }
             
             if (empty($product['image_facebook'])) {
-                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300);
-                if (!empty($product['image_facebook'])) {
-                    $param['image_facebook'] = $product['image_facebook'];
-                }                
+                Api::call('url_products_updatefbimage', [
+                    'products' => \Zend\Json\Encoder::encode([
+                        [
+                            'website_id' => $product['website_id'], 
+                            'product_id' => $product['product_id'], 
+                            'url_image' => $product['url_image'],
+                            'name' => $product['name'],
+                        ]
+                    ])
+                ]);
+                Products::removeCache($product['product_id']);             
             }
             
             $param['url'] = str_replace('.dev', '.com', $param['url']);   
@@ -465,14 +472,14 @@ class AjaxController extends AppController
             $result = [];
             $shares = Api::call('url_productshares_all', [
                 'product_id' => $product['product_id'],
-                'is_group' => 1,
+                'group_only' => 1,
             ]);
             $groupIds = Arr::rand(app_facebook_groups(), 2);
             foreach ($groupIds as $groupId) {                
                 if ($groupId == '378628615584963' && !in_array($AppUI->facebook_id, ['103432203421638'])) {
                     continue;
                 }
-                $shared = Arr::filter($shares, 'owner_id', $groupId, false, false);                       
+                $shared = Arr::filter($shares, 'group_id', $groupId, false, false);                       
                 if (!empty($shared)) {                    
                     $commentId = Fb::commentToPost($shared[0]['social_id'], app_get_fb_share_comment(), $AppUI->fb_access_token, $errorMessage);
                     if (!empty($commentId)) {
@@ -482,7 +489,7 @@ class AjaxController extends AppController
                     }
                     continue;
                 }
-                
+                /*
                 if (!empty($shared)) {
                     $socialId = $shared[0]['social_id'];
                     $ok = Fb::updatePost($socialId, $data, $AppUI->fb_access_token, $errorMessage);
@@ -493,15 +500,16 @@ class AjaxController extends AppController
                     }
                     continue;
                 }
-                
+                */
                 $id = Fb::postToGroup($groupId, $data, $AppUI->fb_access_token, $errorMessage);
                 if (!empty($id)) {
                     Api::call('url_productshares_add', [
+                        'user_id' => $AppUI->id,
                         'product_id' => $product['product_id'],
-                        'owner_id' => $groupId,
-                        'social_id' => $id,
-                        'is_group' => 1,
-                    ]);  
+                        'facebook_id' => $AppUI->facebook_id,
+                        'group_id' => $groupId,
+                        'social_id' => $id
+                    ]); 
                     if (empty(Api::error())) {
                         $result[] = "Group:{$groupId} - Post:{$id}";
                     } else {
@@ -546,8 +554,8 @@ class AjaxController extends AppController
             }
             $shares = Api::call('url_productshares_all', [
                 'product_id' => $product['product_id'],                       
-                'owner_id' => $AppUI->facebook_id,                       
-                'is_wall' => 1,
+                'facebook_id' => $AppUI->facebook_id,                       
+                'wall_only' => 1,
             ]);           
             if (!empty($shares)) {
 //                foreach ($shares as $share) { 
@@ -576,14 +584,8 @@ class AjaxController extends AppController
 //                    );
 //                    die(\Zend\Json\Encoder::encode($result));
 //                }               
-            }
-            
-            if (empty($product['image_facebook'])) {
-                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300);
-                if (!empty($product['image_facebook'])) {
-                    $param['image_facebook'] = $product['image_facebook'];
-                }                
-            }
+            }            
+           
             $param['url'] = str_replace('.dev', '.com', $param['url']);   
             $product['url'] = $param['url']  . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
             $product['short_url'] = Util::googleShortUrl($product['url']);
@@ -648,9 +650,9 @@ class AjaxController extends AppController
             if (!empty($id)) {
                 Api::call('url_productshares_add', [
                     'product_id' => $product['product_id'],
-                    'owner_id' => $AppUI->facebook_id,
-                    'social_id' => $id,
-                    'is_wall' => 1,
+                    'user_id' => $AppUI->id,
+                    'facebook_id' => $AppUI->facebook_id,
+                    'social_id' => $id
                 ]);
             }
             $result = array(
@@ -711,8 +713,6 @@ class AjaxController extends AppController
             die(\Zend\Json\Encoder::encode($result));          
             exit;
             */
-            
-             
             
             
             $dir = implode(DS, [WebModule::getConfig('facebook_album_dir'), $AppUI->facebook_id]);
@@ -989,4 +989,116 @@ class AjaxController extends AppController
         }
         exit;
     }
+    
+    /**
+     * Ajax remove a product from category
+     *
+     * @return Zend\View\Model
+     */
+    public function sharebloggerAction()
+    { 
+        if (!$this->isAdmin()) {
+            exit;
+        }
+        $AppUI = $this->getLoginInfo();
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost() 
+            && !empty($param['product_id'])) {      
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }         
+            $param['url'] = str_replace('.dev', '.com', $param['url']);
+            $product['url_image'] = str_replace('.dev', '.com', $product['url_image']);
+            $product['url'] = $param['url']  . '?utm_source=blogger&utm_medium=social&utm_campaign=product';
+            $product['content'] = strip_tags($product['content'], '<p><div><span><ul><li><strong><b><br><center>');
+            $product['content'] = str_replace(PHP_EOL, '<br/>', $product['content']);
+            if (!empty($product['images'])) {
+                foreach ($product['images'] as $image) { 
+                    $image['url_image'] = str_replace('.dev', '.com', $image['url_image']);
+                    $product['content'] .= "<center><p><img style=\"width:80%\" src=\"{$image['url_image']}\"/></p></center>";
+                }    
+            }
+            $htmlCategories = '<center><table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="90%">   
+                <tr>
+                    <th colspan="2" align="center" bgcolor="#dedede"><strong><a href="http://vuongquocbalo.com?utm_source=blogger&utm_medium=social&utm_campaign=product">VUONGQUOCBALO.COM</a></strong></th>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%">   
+                            <tr><td><a href="http://vuongquocbalo.com/tui-xach-nu?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi xách nữ </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-nu?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô Nữ </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-nam?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô Nam </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/tui-xach-cap-tap-nam?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi xách, Cặp táp Nam </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-laptop?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô laptop </a></td></tr>                                                
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-gia-da?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô in giả da </a></td></tr>                                                
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-tui-xach-du-lich?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô, túi xách du lịch </a></td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%"> 
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-mau-giao?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô mẫu giáo </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-1?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô học sinh cấp 1 </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-2-3?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô học sinh cấp 2,3 </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/tui-cheo-sinh-vien?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi chéo sinh viên </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-sinh-vien?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô sinh viên </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-teen?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô teen </a></td></tr>
+                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-day-rut?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô in dây rút </a></td></tr>
+                        </table>
+                    </td>
+                </tr>
+            </table></center>';            
+            $product['content'] = implode('<br/>', [
+                $product['short'],                 
+                $product['content'],          
+                "<span style=\"color:#D4232B;float:left;font-size:20px;\">💰 " . app_money_format($product['price']) . "</span><span style=\"text-decoration: line-through;float:left;margin-left:3px;\">" . app_money_format($product['original_price']) . "</span>",               
+                "✈ 🚏 🚕 🚄 Ship TOÀN QUỐC",
+                "<center><a href=\"{$product['url']}\"><img src=\"http://vuongquocbalo.com/web/images/buy-now.png\"/></a></center>",
+                $htmlCategories
+            ]);                
+            $scope = implode(' ' , [
+                \Google_Service_Oauth2::USERINFO_EMAIL, 
+                \Google_Service_Blogger::BLOGGER_READONLY,
+                \Google_Service_Blogger::BLOGGER
+            ]);     
+            $client = new \Google_Client();
+            $client->setClientId(WebModule::getConfig('google_app_id'));
+            $client->setClientSecret(WebModule::getConfig('google_app_secret'));
+            $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri'));
+            $client->addScope($scope);
+            try {
+                $client->setAccessToken($AppUI->google_access_token);
+                $service = new \Google_Service_Blogger($client);
+                $bloggerPost = new \Google_Service_Blogger_Post();
+                $bloggerPost->setTitle($product['name']);
+                $bloggerPost->setContent($product['content']);
+                $labels = [];
+                if (!empty($product['categories'])) {
+                    foreach ($product['categories'] as $category) {
+                        $labels[] = $category['name'];
+                    }
+                }             
+                $bloggerPostImage = new \Google_Service_Blogger_PostImages();
+                $bloggerPostImage->setUrl($product['url_image']);
+                $bloggerPost->setLabels($labels);                  
+                $bloggerPost->setImages($bloggerPostImage);
+                $post = $service->posts->insert(WebModule::getConfig('blogger_blog_id'), $bloggerPost);  
+                $result = array(
+                    'status' => 'OK',
+                    'message' => $post->getId(),
+                );
+                die(\Zend\Json\Encoder::encode($result));                
+            } catch (\Exception $e) {
+                $result = array(
+                    'status' => 'OK',
+                    'message' => $e->getMessage(),
+                );
+                die(\Zend\Json\Encoder::encode($result));
+            }            
+        }
+        exit;
+    }
+    
 }

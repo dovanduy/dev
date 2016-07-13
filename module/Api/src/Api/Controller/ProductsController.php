@@ -241,4 +241,20 @@ class ProductsController extends AppController {
         );
     }
     
+    public function updatelocaleAction()
+    {
+        return \Api\Bus\Products\UpdateLocale::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function allforbloggerAction()
+    {
+        return \Api\Bus\Products\AddForBlogger::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
 }

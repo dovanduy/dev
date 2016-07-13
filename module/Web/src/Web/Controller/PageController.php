@@ -98,6 +98,7 @@ class PageController extends AppController
         $request = $this->getRequest();
         if ($request->isPost()) {
             $post = (array) $request->getPost();
+            $post['remember'] = 1;
             $form->setData($post);
             if ($form->isValid()) {    
                 $auth = $this->getServiceLocator()->get('auth');
@@ -186,9 +187,11 @@ class PageController extends AppController
         $backUrl = $this->params()->fromQuery('backurl', '/'); 
         $param = $this->getParams();  
         $scope = implode(' ' , [
-            \Google_Service_Oauth2::USERINFO_EMAIL,
+            \Google_Service_Oauth2::USERINFO_EMAIL,            
+            //\Google_Service_Blogger::BLOGGER_READONLY,
+            //\Google_Service_Blogger::BLOGGER
             //\Google_Service_Gmail::GMAIL_COMPOSE,
-        ]);       
+        ]);     
         $client = new \Google_Client();
         $client->setClientId(WebModule::getConfig('google_app_id'));
         $client->setClientSecret(WebModule::getConfig('google_app_secret'));
@@ -231,6 +234,82 @@ class PageController extends AppController
                 $client->authenticate($param['code']);
                 Session::set('google_access_token', $client->getAccessToken());                                  
                 header('Location: ' . filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
+                //return $this->redirect()->toUrl(filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
+                exit;
+            } else {
+                try {             
+                    Session::set('google_backurl', $backUrl);
+                    $authUrl = $client->createAuthUrl();
+                    return $this->redirect()->toUrl($authUrl);
+                } catch (\Exception $e) {
+                    p($e->getMessage());
+                    exit;
+                }
+            }
+        }        
+        exit;        
+    }
+    
+    public function glogin2Action()
+    {        
+        $backUrl = $this->params()->fromQuery('backurl', '/'); 
+        $param = $this->getParams();  
+        $scope = implode(' ' , [
+            \Google_Service_Oauth2::USERINFO_EMAIL,            
+            \Google_Service_Blogger::BLOGGER_READONLY,
+            \Google_Service_Blogger::BLOGGER
+        ]);       
+        $client = new \Google_Client();
+        $client->setClientId(WebModule::getConfig('google_app_id2'));
+        $client->setClientSecret(WebModule::getConfig('google_app_secret2'));
+        $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri2'));
+        $client->addScope($scope);
+		$client->setAccessType('offline');
+		$client->setApprovalPrompt('force');
+		/*
+		if ($client->isAccessTokenExpired()) {
+			$newToken = json_decode(json_encode($client->getAccessToken()));
+			$client->refreshToken($newToken->refresh_token);
+			file_put_contents(storage_path('app/client_id.txt'), json_encode($client->getAccessToken()));
+		}
+		*/
+        $accessToken = !empty(Session::get('google_access_token')) ? Session::get('google_access_token') : '';           
+        if (!empty($accessToken)) {
+            $client->setAccessToken($accessToken);
+            $service = new \Google_Service_Oauth2($client);
+            $post = (array) $service->userinfo->get(); 
+            $post['accessToken'] = $accessToken;
+            $post['access_token_expires_at'] = date('Y-m-d H:i:s', time() + 60*60);            
+            $successMessage = 'Account registed successfully';
+            $registerVoucher = WebModule::getConfig('vouchers.register');
+            if (!empty($registerVoucher)) {
+                $successMessage = 'Account registed successfully, please check email to receive voucher code';
+                $post['generate_voucher'] = 1; 
+                $post['voucher_amount'] = $registerVoucher['amount']; 
+                $post['voucher_type'] = $registerVoucher['type']; 
+                $post['voucher_expired'] = $registerVoucher['expired']; 
+                $post['send_email'] = $registerVoucher['send_email'];                 
+            }         
+            $auth = $this->getServiceLocator()->get('auth');
+            if ($auth->authenticate(null, null, 'google', $post)) {
+                $AppUI = $this->getLoginInfo();
+                if ($AppUI->is_first_login == 1) {
+                    $this->addSuccessMessage($successMessage);
+                }           
+                if (!empty(Session::get('google_backurl'))) {
+                    $backUrl = Session::get('google_backurl');
+                }
+                Session::remove('google_access_token');
+                return $this->redirect()->toUrl($backUrl);
+            } else {              
+                Session::remove('google_access_token');
+                $this->addErrorMessage('Invalid Email or password. Please try again');
+            }
+        } else {          
+            if (!empty($param['code'])) {
+                $client->authenticate($param['code']);
+                Session::set('google_access_token', $client->getAccessToken());                                  
+                header('Location: ' . filter_var(WebModule::getConfig('google_app_redirect_uri2'), FILTER_SANITIZE_URL));
                 //return $this->redirect()->toUrl(filter_var(WebModule::getConfig('google_app_redirect_uri'), FILTER_SANITIZE_URL));
                 exit;
             } else {
@@ -384,6 +463,12 @@ class PageController extends AppController
                         if ($AppUI->is_first_login == 1) {
                             $this->addSuccessMessage($successMessage);
                         }
+                        $remember = serialize(array(
+                            'email' => $post['email'],
+                            'facebook_id' => $AppUI->facebook_id,
+                        ));
+                        $cookie = new \Zend\Http\Header\SetCookie('remember', $remember, time() + 365 * 60 * 60 * 24, '/');
+                        $this->getResponse()->getHeaders()->addHeader($cookie);
                         return $this->redirect()->toUrl($backUrl);
                     } else { 
                         $this->addErrorMessage('Invalid Email or password. Please try again');
@@ -497,6 +582,12 @@ class PageController extends AppController
                         if ($AppUI->is_first_login == 1) {
                             $this->addSuccessMessage($successMessage);
                         }
+                        $remember = serialize(array(
+                            'email' => $post['email'],
+                            'facebook_id' => $AppUI->facebook_id,
+                        ));
+                        $cookie = new \Zend\Http\Header\SetCookie('remember', $remember, time() + 365 * 60 * 60 * 24, '/');
+                        $this->getResponse()->getHeaders()->addHeader($cookie);
                         return $this->redirect()->toUrl($backUrl);
                     } else { 
                         $this->addErrorMessage('Invalid Email or password. Please try again');
@@ -694,5 +785,90 @@ class PageController extends AppController
            p($AppUI->fb_access_token);
         }
         exit;
+    }
+    
+    public function testAction()
+    {
+        $AppUI = $this->getLoginInfo();
+        $userId = "self";
+        $blogId = "7504283056362133341";
+        $postId = "4630923087029612407";
+
+        $scope = implode(' ' , [
+            \Google_Service_Oauth2::USERINFO_EMAIL, 
+            \Google_Service_Blogger::BLOGGER_READONLY,
+            \Google_Service_Blogger::BLOGGER
+        ]);       
+        $client = new \Google_Client();
+        $client->setClientId(WebModule::getConfig('google_app_id'));
+        $client->setClientSecret(WebModule::getConfig('google_app_secret'));
+        $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri'));
+        $client->addScope($scope);
+       
+        // List by UserId
+        
+        try {
+           
+            $client->setAccessToken($AppUI->google_access_token);
+            $service = new \Google_Service_Blogger($client);
+            
+            
+            
+            $results = $service->blogs->listByUser($userId);
+            
+             echo "<table>";
+            foreach ($results->getItems() as $blog) {
+                echo "<tr>";
+                echo "<th colspan=\"2\">";
+                echo $blog->getId() . " - " . $blog->getName() . " - " . $blog->getUrl();  
+                echo "</th>";
+                echo "</tr>";
+                /*
+                $posts = $service->posts->listPosts($blog->getId(), array("maxResults" => 100)); 
+                foreach ($posts as $post) {            
+                    echo "<tr>";
+                    echo "<td>" . $post->getId() . "</td>";           
+                    echo "<td>"; 
+                    echo $post->getTitle(); 
+                  
+                    $comments = $service->comments->listComments($blog->getId(), $post->getId(), array("maxResults" => 100));
+                    foreach ($comments as $comment) { 
+                        echo '<br/>' . $comment->getContent(); 
+                    }
+                   
+                    echo "</td>";
+                    echo "</tr>";
+                }
+                * 
+                */
+            }    
+            echo "</table><br/>";
+            exit;
+            
+            $id = '6508';
+            $data = \Web\Model\Products::getDetail($id);
+            //p($data, 1);
+            
+            $bloggerPost = new \Google_Service_Blogger_Post();
+            $bloggerPostImage = new \Google_Service_Blogger_PostImages();            
+            $bloggerPostImage->setUrl(str_replace('.dev', '.com', $data['url_image']));
+            $bloggerPost->setTitle($data['name']);
+            $bloggerPost->setContent($data['more']);
+            $bloggerPost->setLabels(array($data['code'], $data['categories'][0]['name']));
+            $bloggerPost->setImages($bloggerPostImage);
+            $results = $service->posts->insert($blogId, $bloggerPost);  
+            
+            print_r('<br/>ID:' . $results->getId());
+    
+            //p($results, 1);
+        } catch (\Exception $e) {
+            p($e->getMessage(), 1);
+        }
+        exit;
+        
+//        $url = 'http://a4vn.com/media/catalog/product/cache/all/thumbnail/700x817/7b8fef0172c2eb72dd8fd366c999954c/5/_/5_36_120.jpg';
+//        $result = Util::uploadImageFromUrl($url, 600, 600, 'abc');
+//        p($result, 1);
+        
     }
 }

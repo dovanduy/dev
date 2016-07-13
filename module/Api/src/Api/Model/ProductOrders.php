@@ -157,7 +157,7 @@ class ProductOrders extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(code|state_name|city_name|street|user_name|user_email|user_mobile|total_money|created|updated)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(order_id|code|state_name|city_name|street|user_name|user_email|user_mobile|total_money|created|updated)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {  
                     case 'state_name':

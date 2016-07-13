@@ -168,7 +168,7 @@ if (file_exists($fileProducts)) {
             foreach ($html->find('div[class=overview]') as $element) {
                 if (!empty($element->innertext)) {
                     $product['content'] = $element->innertext;
-                    $product['content'] = strip_tags($product['content'], '<div></span><ul></li><strong><b>');
+                    $product['content'] = strip_tags($product['content'], '<p><div><span><ul><li><strong><b><br><center>');
                     break;
                 }
             }
@@ -225,7 +225,7 @@ if (file_exists($fileProducts)) {
                     $subHtml = str_get_html($element->innertext);
                     foreach ($subHtml->find('div[class=block-primg]') as $element1) {
                         if (!empty($element1->innertext)) {
-                            $product['more'] = strip_tags($element1->innertext, '<p><b><span><strong><div>');
+                            $product['more'] = strip_tags($element1->innertext, '<p><div><span><ul><li><strong><b><br><center>');
                             $product['more'] = str_replace(['Zanado.com', 'zanado.com', 'Zanado', 'zanado'], '<a href="http://vuongquocbalo.com">vuongquocbalo.com</a>', $product['more']);
                             $product['more'] = str_replace(['<p><span></span></p>', '<p></p>', '<p> </p>', '<p><strong><em></em></strong></p>'], '', $product['more']);
                             $product['more'] = str_replace(['<div style="clear:both;margin: 10px auto;width: 80%;border-top: 1px solid #ddd;"></div>'], '<div style="clear:both;margin: 10px auto;width: 100%;border-top: 1px solid #ddd;"></div>', $product['more']);
@@ -300,7 +300,7 @@ if (file_exists($fileProducts)) {
     app_file_put_contents($fileProducts, serialize($products));
 }
 batch_info('END: Parse Product Detail');
-
+exit;
 if (file_exists($fileFails)) {
     $products = unserialize(app_file_get_contents($fileFails));
 }

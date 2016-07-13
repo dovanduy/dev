@@ -27,6 +27,7 @@ class ProductCategories extends AbstractModel {
         'image_id',
         'parent_id',
         'path_id',
+        'url',
         'website_id'
     );
     
@@ -106,6 +107,7 @@ class ProductCategories extends AbstractModel {
                 'image_id',
                 'featured',
                 'path_id',
+                'url',
                 'parent_id'
             ))
             ->join(               
@@ -184,6 +186,9 @@ class ProductCategories extends AbstractModel {
         if (isset($param['website_id'])) {
             $values['website_id'] = $param['website_id'];
         }
+        if (isset($param['url'])) {
+            $values['url'] = $param['url'];
+        }
         if ($id = self::insert($values)) {
             $localeValues = array(
                 'category_id' => $id,
@@ -255,6 +260,9 @@ class ProductCategories extends AbstractModel {
         }
         if (isset($param['parent_id'])) {
             $set['parent_id'] = $param['parent_id'];
+        }
+        if (isset($param['url'])) {
+            $set['url'] = $param['url'];
         }
         $pathId = Arr::field(self::findParent($param), 'category_id');
         if (!empty($pathId)) {
@@ -378,6 +386,7 @@ class ProductCategories extends AbstractModel {
                 'sort',
                 'image_id',
                 'path_id',
+                'url',
                 'parent_id'
             ))
             ->join(               

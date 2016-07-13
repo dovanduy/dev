@@ -91,38 +91,61 @@ class Util {
      */
     public static function uploadImageFromUrl($url = '', $maxWidth = 600, $maxHeight = 600, $fileName = '')
     { 
-        if (!empty($url)) {          
-            $config = Module::getConfig('upload.image');
-            $destination = $config['path'] . date('/Y/m/d');
-            if (mk_dir($destination) === false) {
-                return false;
-            }
-            $image = app_file_get_contents($url);
-            if ($image === false) {
-                return null;
-            }
-            $fileInfo = pathinfo($url);
-            if (is_array($fileInfo) && count($fileInfo) >= 4) {
-                $ext = strtolower(strrchr($fileInfo["basename"], '.'));
-                if (!empty($fileName)) {
-                    $fileName = name_2_url($fileName);
-                } else {
-                    $fileName = $fileInfo["filename"];
-                }               
-                $newFileName = str_replace($ext, '', $fileName) . '_' . uniqid() . $ext;
-                $fileName = $config['filename_prefix'] . $newFileName;                
-                $target = $destination . '/' . $fileName;
-                if (app_file_put_contents($target, $image) !== false) {                    
-                    $image = new \SimpleImage(); 
-                    if ($image->load($target)) {
-                        if ($image->getWidth() > $maxWidth 
-                            || $image->getHeight() > $maxHeight) {
-                            $image->maxarea($maxWidth, $maxHeight);
-                            $image->save($target);   
-                        }
-                        return $config['url'] . date('/Y/m/d/') . $fileName;
-                    }                    
+        if (!empty($url)) {   
+            try {
+                $config = Module::getConfig('upload.image');
+                $destination = $config['path'] . date('/Y/m/d');
+                if (mk_dir($destination) === false) {
+                    return false;
                 }
+                $image = app_file_get_contents($url, false);
+                if ($image === false) {
+                    Log::error('Cannot get file: ' . $url);
+                    return null;
+                }
+                $fileInfo = pathinfo($url);
+                if (is_array($fileInfo) && count($fileInfo) >= 4) {
+                    $ext = strtolower(strrchr($fileInfo["basename"], '.'));
+                    if (!empty($fileName)) {
+                        $fileName = name_2_url($fileName);
+                    } else {
+                        $fileName = $fileInfo["filename"];
+                    }               
+                    $newFileName = str_replace($ext, '', $fileName) . '_' . uniqid() . $ext;
+                    $fileName = $config['filename_prefix'] . $newFileName;                
+                    $target = $destination . '/' . $fileName;
+                    if (app_file_put_contents($target, $image, false) !== false) {                    
+                        $image = new \SimpleImage(); 
+                        if ($image->load($target)) {
+                            if ($image->getWidth() > $maxWidth 
+                                || $image->getHeight() > $maxHeight) {
+                                $image->maxarea($maxWidth, $maxHeight);
+                                $image->save($target);   
+                            }
+                            return $config['url'] . date('/Y/m/d/') . $fileName;
+                        } else {
+                            Log::error('Cannot load file: ' . $url);
+                        }                  
+                    } else {
+                        Log::error('Cannot create file: ' . $url);
+                    }
+                } else {
+                     Log::error('Cannot get pathinfo: ' . $url);
+                }
+            } catch (\Exception $e) {
+                Log::error(sprintf("Exception\n"
+                    . " - Message : %s\n"
+                    . " - Code : %s\n"
+                    . " - File : %s\n"
+                    . " - Line : %d\n"
+                    . " - Stack trace : \n"
+                    . "%s",
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString())
+                );
             }
         }
         return null;

@@ -4,6 +4,7 @@
 <section class="section light-gray-bg clearfix">
 	<div class="container">       
 		<div class="row">
+            
             <div class="col-md-3">
                 <form>                
                     <div class="sidebar">
@@ -12,7 +13,7 @@
                             <nav>
                                 <ul itemscope itemtype="http://schema.org/ItemList" class="nav nav-pills nav-stacked">
                                     <?php foreach ($pages as $page) : ?>  
-                                    <?php if (!empty($page['title'])) : ?>  
+                                    <?php if (!empty($page['title']) && in_array($page['page_id'], [31, 32, 49, 52, 53])) : ?>  
                                     <li<?php if ($pageDetail['_id']==$page['_id']) echo ' class="active"'?>>
                                         <a href="<?php                                            
                                             echo $this->url(

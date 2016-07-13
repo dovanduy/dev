@@ -48,15 +48,15 @@ $categories = [
 	['name' => 'Quần Kiểu Nam', 'parent' => 'Quần Nam'],
     
 	['name' => 'Đồ Lót, Đồ Tắm Nam', 'parent' => ''],	
-	['name' => 'Đồ Lót Nam', 'parent' => 'Đồ Lót, Đồ Lót, Đồ Tắm Nam'],
+	['name' => 'Đồ Lót Nam', 'parent' => 'Đồ Lót, Đồ Tắm Nam'],
 	['name' => 'Đồ Bơi, Đồ Tắm Nam', 'parent' => 'Đồ Lót, Đồ Tắm Nam'],
     
     ['name' => 'Đồ Thể Thao Nam', 'parent' => ''],
 	
 	['name' => 'Ba Lô, Túi xách, Ví Nam', 'parent' => ''],
-    ['name' => 'Ba Lô Nam', 'parent' => 'Ba lô, Túi xách, Ví Nam'],
-	['name' => 'Túi Xách Nam', 'parent' => 'Ba lô, Túi xách, Ví Nam'],
-	['name' => 'Bóp Ví Nam', 'parent' => 'Ba lô, Túi xách, Ví Nam'],
+    ['name' => 'Ba Lô Nam', 'parent' => 'Ba Lô, Túi xách, Ví Nam'],
+	['name' => 'Túi Xách Nam', 'parent' => 'Ba Lô, Túi xách, Ví Nam'],
+	['name' => 'Bóp Ví Nam', 'parent' => 'Ba Lô, Túi xách, Ví Nam'],
 	
 	['name' => 'Quần Áo Trẻ Em', 'parent' => ''],
 	['name' => 'Quần Áo Bé Gái', 'parent' => 'Quần Áo Trẻ Em'],

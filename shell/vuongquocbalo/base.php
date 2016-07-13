@@ -8,28 +8,41 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 } else {
     define('OUTPUT_TO_NULL', '> /dev/null &');
 }
-include ('../../vendor/facebook/php-sdk-v4/src/Facebook/autoload.php');
+//include ('../../vendor/facebook/php-sdk-v4/src/Facebook/autoload.php');
+include ('../../vendor/autoload.php');
 include ('../../functions.php');
 
 $env = 'development'; // development, production
 $config = [
     'development' => [
-        'timeout' => 10*60,       
+        'timeout' => 30*60,       
         'base_uri' => 'http://api.vuongquocbalo.dev',    
+        
         'facebook_app_id' => '261013080913491',
         'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
+        
+        'google_app_id' => '1027124832421-00lmm9qstsa4umk76bgr2hpcsfu2kgo2.apps.googleusercontent.com',
+        'google_app_secret' => 'EDfKgxjtBo-I_guWfg6y85YU',
+        'google_app_redirect_uri' => 'http://vuongquocbalo.dev/glogin2',
+        
+        'img_domain' => 'http://img.vuongquocbalo.dev',
     ],
     'production' => [
-        'timeout' => 10*60,
+        'timeout' => 30*60,
         'base_uri' => 'http://api.vuongquocbalo.com',   
         'facebook_app_id' => '1679604478968266',
         'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+        'img_domain' => 'http://img.vuongquocbalo.com',
     ]
 ];
 $config = $config[$env];
+$imgDomain = $config['img_domain'];
+$docRoot = dirname(dirname(getcwd()));
+$imgDir = implode(DS, [$docRoot, 'data', 'vuongquocbalo', 'img']);
+$websiteId = 1;
 
 function call($url, $param = array(), &$errors = null) {
-	global $config;
+	global $config, $websiteId;
 	$method = 'post';
 	if (isset($config[$url])) {
 		if (is_array($config[$url])) {
@@ -39,6 +52,7 @@ function call($url, $param = array(), &$errors = null) {
 		}
 	}
 	try {		
+        $param['website_id'] = $websiteId;
 		$headers = array("Content-Type:multipart/form-data");
 		$url = $config['base_uri'] . $url;
 		$ch = curl_init();

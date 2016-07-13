@@ -1,0 +1,166 @@
+<?php
+    $website = $this->viewModel()->getRoot()->getVariable('website');
+    
+    $featuredCategories = \Application\Lib\Arr::filter($website['product_categories'], 'featured', 1, false, false);
+    //p($website, 1);
+?>
+
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">
+        <div class="row">     
+            <div class="mt-5"></div>
+            <?php if (!empty($banners)): ?>
+            <div class="col-md-12">
+                <div class="slider-wrapper theme-default app-banner">
+                    <div id="slider" class="nivoSlider"> 
+                        <?php foreach ($banners as $i => $banner) : ?>
+                            <a href="<?php echo $banner['url']?>">
+                                <img src="<?php echo $banner['url_image']?>" data-thumb="<?php echo $banner['url_image']?>" alt="" /> 
+                            </a> 
+                        <?php endforeach; ?>	                        
+                    </div>                    
+                </div>
+            </div>
+            <?php endif ?>
+            <div class="col-md-12">
+                <?php echo \Web\Module::getConfig('commitment')?>
+            </div>
+        </div>
+        
+        <div class="row"> 
+            <div class="main col-md-12">         
+                <h1 class="page-title text-center">Our Services</h1>
+                <?php foreach ($featuredCategories as $i => $category) : ?> 
+                <div class="image-box space-top style-4">
+                    <div class="row grid-space-0">
+                    <?php if ($i%2==0): ?> 
+                        <div class="col-md-6">
+                            <div class="overlay-container">
+                                <img itemprop="image" src="<?php echo $category['url_image']?>" alt="">
+                                <div class="overlay-to-top">
+                                    <p class="small margin-clear"><em>Some info <br> Lorem ipsum dolor sit</em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body">
+                                <div class="pv-30 visible-lg"></div>
+                                <h3><?php echo $category['name'] ?></h3>
+                                <div class="separator-2"></div>
+                                <p class="margin-clear"><?php echo $category['short']?></p>
+                                <br>
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>" class="btn btn-gray-transparent btn-sm btn-animated margin-clear">
+                                    <?php echo $this->translate('View more')?><i class="fa fa-arrow-right pl-10"></i>
+                                </a>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="col-md-6 col-md-push-6">
+                            <div class="overlay-container">
+                                <img src="images/service-2.jpg" alt="">
+                                <div class="overlay-to-top">
+                                    <p class="small margin-clear"><em>Some info <br> Lorem ipsum dolor sit</em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-md-pull-6">
+                            <div class="body text-right">
+                                <div class="pv-30 visible-lg"></div>
+                                <h3><?php echo $category['name'] ?></h3>
+                                <div class="separator-3"></div>
+                                <p class="margin-clear">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam atque ipsam nihialal. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam laudantium, provident culpa saepe.</p>
+                                <br>
+                                <a href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>" class="btn btn-gray-transparent btn-sm btn-animated margin-clear">
+                                    <?php echo $this->translate('View more')?><i class="fa fa-arrow-right pl-10"></i>
+                                </a>
+                            </div>
+                        </div>
+                    <?php endif ?>
+                    </div>
+                </div>
+                <?php endforeach ?> 
+
+
+            </div>
+            
+            <?php if (!empty($featuredBrands)) : ?> 		           
+            <div class="col-md-12"> 
+                <!-- section start -->
+                <!-- ================ -->
+                <section class="section clearfix">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!--
+                                <h3 class="logo-font"><?php echo $this->translate('Brands')?></h3>
+                                <div class="separator-2"></div>          
+                                -->
+                                <div class="clients-container">
+                                    <div itemscope itemtype="http://schema.org/Brand" class="clients">
+                                        <?php 
+                                        foreach ($featuredBrands as $brand) {                                             
+                                            $brand['url'] = $this->url(
+                                                'web/products', 
+                                                array(                                                  
+                                                    'name' => name_2_url($brand['name'])
+                                                )
+                                            );                                         
+                                            echo "
+                                            <div class=\"client-image object-non-visible animated object-visible fadeIn\" data-animation-effect=\"fadeIn\" data-effect-delay=\"100\">
+                                                <a itemprop=\"url\" href=\"{$brand['url']}\"><img itemprop=\"image\" src=\"{$brand['url_image']}\" alt=\"\"></a>
+                                            </div>
+                                            ";
+                                        }
+                                        ?>                                                                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- section end -->
+            </div>
+            <?php endif ?>
+            
+            <?php foreach ($blocks as $block) : ?> 
+			<div class="col-md-12 mb-10">
+                <?php if (!empty($block['products'])) : ?> 
+                 <div class="nav nav-tabs style-1" role="tablist">
+                    <div class="tab-title">                        
+                        <?php echo $block['name'] ?>                       
+                    </div>
+                    <?php if (!empty($block['url'])): ?>
+                    <div class="tab-more">
+                        <a itemprop="url" href="<?php echo $block['url']?>" class="pull-right margin-clear btn btn-sm btn-default-transparent btn-animated">
+                            &nbsp;<i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                    </div>
+                    <?php endif ?>                   
+                </div>
+                <!-- Tab panes -->
+				<div class="tab-content clear-style">
+					<div class="tab-pane active">
+						<div id="grid-4" class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+                        <?php       
+                            $products = $block['products'];
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper(); 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    echo $this->productItemHelper($product, 4);                                                                                                                    
+                                }
+                            }
+                        ?>  
+						</div>
+					</div>
+                </div>
+                <?php endif ?>                              
+			</div>
+            <?php endforeach ?>  
+		</div>
+	</div>
+</section>
+<!-- section end -->

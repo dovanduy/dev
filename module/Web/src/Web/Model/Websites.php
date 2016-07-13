@@ -18,7 +18,7 @@ class Websites
     
     public static function getDetail()
     {
-        $websiteId = WebModule::getConfig('website_id');        
+        $websiteId = WebModule::getConfig('website_id');     
         $key = WEBSITE_DETAIL . $websiteId;  
         if (!($data = Cache::get($key))) {
             $param = array(

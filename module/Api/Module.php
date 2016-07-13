@@ -2,6 +2,7 @@
 
 namespace Api;
 
+use Application\Lib\Log;
 use Api\Model;
 use Zend\Mvc\MvcEvent;
 
@@ -9,11 +10,11 @@ class Module {
 
     public function onBootstrap(MvcEvent $e) {
         $translator = $e->getApplication()->getServiceManager()->get('translator');         
-        $translator->setLocale('vi_VN');        
+        $translator->setLocale('vi_VN');
     }
 
     public function getConfig($name = '', $default = null) {
-        $config = include __DIR__ . '/config/module.config.php';
+        $config = include __DIR__ . '/config/module.config.php';        
         
         if (isset($_SERVER['SERVER_NAME']) && file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php')) {
             $domainConfig = include __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $_SERVER['SERVER_NAME'] . '.php';
@@ -174,6 +175,9 @@ class Module {
                 },               
                 'ContactLists' => function ($sm) {
                     return new Model\ContactLists($sm->get('db'), $sm);
+                },               
+                'BloggerPostIds' => function ($sm) {
+                    return new Model\BloggerPostIds($sm->get('db'), $sm);
                 },               
             ),
         );

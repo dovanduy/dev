@@ -15,8 +15,18 @@ return array(
     
     'log' => array(
         'path' => './data/vuongquocbalo/log/web',        
+    ),   
+    
+    'upload' => array(
+        'image' => array(
+            'path' => './data/vuongquocbalo/img/',
+            'url' => 'http://img.vuongquocbalo.com',
+            'size' => array('min' => 1*1024, 'max' => 20*1024*1024), // bytes
+            'extension' => array('jpeg', 'jpg', 'gif', 'png'),
+            'filename_prefix' => 'vuongquocbalo_',
+        )
     ),
-   
+    
     'cache' => array(
         'adapter' => array(
             'name' => 'filesystem',

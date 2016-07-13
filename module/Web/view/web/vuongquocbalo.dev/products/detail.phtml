@@ -93,20 +93,21 @@
                             </div>
                             <?php endif ?>
 							<div class="detail-price light-gray-bg p-20 bordered clearfix">
-                                <div class="product">                                
-                                    <i class="icon-tag pr-10"></i>
+                                <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="product">                                
+                                    <meta itemprop="priceCurrency" content="VND" />
+									<i class="icon-tag pr-10"></i>
                                     <span id="productPrice" itemprop="price" class="price">
-                                    <?php 	
-
+                                    <?php 
                                         if (!empty($data['price'])) {
-                                            echo app_money_format($data['price']); 
+                                            echo app_money_format($data['price'], false); 
                                         } else {
                                             echo $this->translate('Price contact');
                                         }                                    
                                     ?>
                                     </span>
+									<span class="price">VND</span>
                                     <?php if ($data['price'] < $data['original_price']):?>
-                                    <span id="originalPrice" itemprop="price" class="original-price">
+                                    <span id="originalPrice" class="original-price">
                                         <?php echo app_money_format($data['original_price'])?>
                                     </span>
                                     <?php endif?>
@@ -136,63 +137,12 @@
                             </div>
 						</form>
 					</div>
-                    <div class="col-md-3">                            
-                        <?php if (!empty($AppUI) && in_array($AppUI->id, \Web\Module::getConfig('admin_user_id'))): ?>                          
-                            <form method="post">
-                            <div class="form-group">                               
-                                <select                                 
-                                    name="add_block_id"                                  
-                                    data-url="<?php 
-                                    echo $this->url(
-                                        'web/ajax', 
-                                        array(
-                                            'action' => 'addproducttoblock'
-                                        ),
-                                        array(
-                                            'query' => array('product_id' => $data['product_id'])
-                                        )
-                                    )?>"
-                                    data-callback="                                          
-                                       alert('Added');
-                                    "                                 
-                                    class="form-control ajax-change">
-                                <option value="">[Admin] <?php echo $this->translate('Added to block') ?></option>
-                                <?php foreach ($website['blocks'] as $block): ?>
-                                    <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
-                                <?php endforeach ?>  
-                                </select>                                       
-                            </div>  
-                            <div class="form-group">                               
-                                <select                                 
-                                    name="remove_block_id"                                  
-                                    data-url="<?php 
-                                    echo $this->url(
-                                        'web/ajax', 
-                                        array(
-                                            'action' => 'removeproductfromblock'
-                                        ),
-                                        array(
-                                            'query' => array('product_id' => $data['product_id'])
-                                        )
-                                    )?>"
-                                    data-callback="                                          
-                                       alert('Removed');
-                                    "                                 
-                                    class="form-control ajax-change">
-                                <option value="">[Admin] <?php echo $this->translate('Remove from block') ?></option>
-                                <?php foreach ($website['blocks'] as $block): ?>
-                                    <option value="<?php echo $block['block_id'] ?>"><?php echo $block['name'] ?></option>
-                                <?php endforeach ?>  
-                                </select>                                       
-                            </div>
-                            </form>
-                        <?php endif ?>                
+                    <div class="col-md-3">
                         <div id="commitment_and_guide">    
                             <div class="commitment">   
                                 <div class="title">Chính sách bán hàng</div>
-                                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), xem thêm <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">Chính sách bán hàng</a></p>
-                                <p>✓ Thanh toán khi nhận hàng</p>
-                                <p>✓ Đổi trả trong <strong>7</strong> ngày</p>                               
+                                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">xem thêm</a></p>
+                                <p>✓ Thanh toán khi nhận hàng</p>                                                            
                                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               
                                 <p>✓ Cam kết hàng giống hình</p>                                               
                                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                                   
@@ -280,10 +230,10 @@
                     
                     <div class="tab-pane fade" id="h2tab3">
                         <!-- comments start -->
-                        <div itemprop="review" itemscope itemtype="http://schema.org/Review" class="comments margin-clear space-top" id="review-list">
+						<?php if (!empty($data['product_reviews'])): ?>
+                        <div itemscope itemtype="http://schema.org/Review" class="comments margin-clear space-top" id="review-list">
                             <!-- comment start -->
-                            <?php
-                            if (!empty($data['product_reviews'])) {
+                            <?php                            
                                 foreach ($data['product_reviews'] as $review) {
                                     $review['content'] = nl2br($review['content']);
                                     $time = app_datetime_format($review['created']);
@@ -302,22 +252,26 @@
                                         </div>
                                         -->
                                         <header>
-                                            <h3 itemprop=\"name\">{$review['name']}</h3>
-                                            <div class=\"comment-meta\"> 
+											<span itemprop=\"author\" itemscope itemtype=\"http://schema.org/Person\">
+												<h3 itemprop=\"name\">{$review['name']}</h3>
+                                            </span>
+											<div itemprop=\"reviewRating\" itemscope itemtype=\"http://schema.org/Rating\" class=\"comment-meta\"> 
                                                 <span itemprop=\"ratingValue\">{$rating}</span> | <span itemprop=\"datePublished\">{$time}</span>
                                             </div>
                                         </header>
                                         <div class=\"comment-content\">
                                             <div class=\"comment-body clearfix\">
-                                                <p itemprop=\"description\">{$review['content']}</p>                                                
+                                                <p itemprop=\"reviewBody\">{$review['content']}</p>                                                
                                             </div>
                                         </div>
                                     </div>";
-                                }
-                            }
+                                }                            
                             ?>                            
                             <!-- comment end -->
                         </div>
+						<?php else: ?>
+						<div class="comments margin-clear space-top" id="review-list"></div>
+						<?php endif ?>
                         <!-- comments end -->
 
                         <!-- comments form start -->
@@ -352,7 +306,7 @@
                                         )
                                     );
                                     $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
-                                    $product['price'] = app_money_format($product['price']);
+                                    $product['price'] = app_money_format($product['price'], false);									
                                     $product['name'] = truncate($product['name'], 60);
                                     echo "
                                     <div itemscope itemtype=\"http://schema.org/Product\" class=\"media margin-clear\">
@@ -369,9 +323,10 @@
                                         </div>
                                         <div class=\"media-body\">
                                             <h6 class=\"media-heading\"><a itemprop=\"url\" href=\"{$product['url']}\"><span itemprop=\"name\">{$product['name']}</span></a></a></h6>
-                                            <p>
-                                                <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
-                                                <span itemprop=\"price\" class=\"original-price\">{$product['original_price']}</span>
+                                            <p itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\">
+												<meta itemprop=\"priceCurrency\" content=\"VND\" />
+                                                <span itemprop=\"price\" class=\"price\">{$product['price']}</span><span class=\"price\">VND</span>
+                                                <span class=\"original-price\">{$product['original_price']}</span>
                                             </p>
                                         </div>
                                         <hr>

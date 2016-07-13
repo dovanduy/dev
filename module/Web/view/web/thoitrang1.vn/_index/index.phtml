@@ -1,0 +1,90 @@
+<?php
+    $website = $this->viewModel()->getRoot()->getVariable('website');
+    $banners = $website['banners'];
+    $categories = Web\Model\ProductCategories::getSubCategories($website['product_categories'], $lastLevel, 0, false);
+    $featuredBrands = $website['brand_featureds'];
+    
+    $featuredCategories = \Application\Lib\Arr::filter($website['product_categories'], 'featured', 1, false, false);
+    //p($featuredCategories, 1);
+;?>
+<div id="page-start"></div>
+<!-- section start -->
+<!-- ================ -->
+<section class="section light-gray-bg clearfix">
+	<div class="container">
+        <?php for ($offset = 0; $offset <= count($featuredCategories); $offset+=4): ?>
+        <div class="row">
+            <?php foreach (array_slice($featuredCategories, $offset, 4) as $category): ?>
+            <div class="col-sm-3">
+                <div class="image-box style-2  mb-20">
+                    <div class="overlay-container overlay-visible">
+                        <img src="<?php echo $category['url_image']?>" alt="">
+                        <a href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>" class="overlay-link">
+                            <i class="fa fa-link"></i>
+                        </a>
+                        <div class="overlay-bottom hidden-xs">
+                            <div class="text">
+                                <p class="lead margin-clear text-left"><?php echo $category['name'] ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="body padding-horizontal-clear">
+                        <p><div style="height:87px;">
+                            <?php //echo $category['short'] ?>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam atque ipsam nihil, adipisci rem minus? Voluptatem distinctio laborum porro aspernatur.
+                        </div></p>
+                        <a class="link-dark" itemprop="url" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                            <?php echo $this->translate('View more')?><i class="pl-5 fa fa-angle-double-right"></i>
+                        </a>
+                    </div>
+                    -->
+                </div>
+            </div>            
+            <?php endforeach ?>
+        </div>
+        <?php endfor ?>
+        
+        <div class="row">            
+            <?php foreach ($blocks as $block) : ?> 
+            <?php if (!empty($block['products'])): ?> 
+			<div class="col-md-12 mb-10">                
+                <div class="nav nav-tabs style-1" role="tablist">
+                    <div class="tab-title">
+                        <?php echo $block['name'] ?>
+                    </div>
+                    <?php if (!empty($block['url'])): ?>
+                    <div class="tab-more">
+                        <a itemprop="url" href="<?php echo $block['url']?>" class="pull-right margin-clear btn btn-sm btn-default-transparent btn-animated">
+                            <?php echo !empty($block['name_url']) ? $block['name_url'] : $this->translate('View more')?><i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                    </div>
+                    <?php endif ?>                   
+                </div>
+                
+                <!-- Tab panes -->
+				<div class="tab-content clear-style">
+					<div class="tab-pane active">
+						<div id="grid-4" class="row masonry-grid-fitrows grid-space-10" style="position: relative;">
+                        <?php       
+                            $products = $block['products'];
+                            $locales = \Application\Module::getConfig('general.locales');
+                            $request = $this->requestHelper(); 
+                            if (!empty($products)) {
+                                foreach ($products as $product) {
+                                    $product['block_id'] = $block['block_id'];
+                                    echo $this->productItemHelper($product, 4);                                                                                                                    
+                                }
+                            }
+                        ?>  
+						</div>
+					</div>
+                </div>
+                                            
+			</div>
+            <?php endif ?>  
+            <?php endforeach ?>  
+		</div>
+	</div>
+</section>
+<!-- section end -->

@@ -13,9 +13,9 @@ class ProductShares extends AbstractModel {
     protected static $properties = array(
         'id',     
         'product_id',
-        'owner_id',
-        'is_group',
-        'is_wall',
+        'user_id',
+        'facebook_id',
+        'group_id',       
         'social_id',
         'created',
         'updated',           
@@ -33,15 +33,24 @@ class ProductShares extends AbstractModel {
             ->from('product_shares') 
             ->where('product_id = ' . $param['product_id'])
             ->order('updated DESC');        
-        if (isset($param['is_wall']) && $param['is_wall'] !== '') {
-            $select->where('is_wall = ' . $param['is_wall']);
+        if (!empty($param['facebook_id'])) {
+            $select->where('facebook_id = ' . $param['facebook_id']);
         }
-        if (isset($param['is_group']) && $param['is_group'] !== '') {
-            $select->where('is_group = ' . $param['is_group']);
+        if (!empty($param['user_id'])) {
+            $select->where('user_id = ' . self::quote($param['user_id']));
         }
-        if (!empty($param['owner_id'])) {
-            $select->where('owner_id = ' . $param['owner_id']);
-        }        
+        if (!empty($param['group_id'])) {
+            $select->where('group_id = ' . self::quote($param['group_id']));
+        }
+        if (!empty($param['facebook_id'])) {
+            $select->where('facebook_id = ' . $param['facebook_id']);
+        } 
+        if (!empty($param['group_only'])) {
+            $select->where(new Expression("(group_id IS NOT NULL AND group_id <> '')"));
+        }
+        if (!empty($param['wall_only'])) {
+            $select->where(new Expression("(group_id IS NULL OR group_id = '')"));
+        }
         $data = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
@@ -52,16 +61,17 @@ class ProductShares extends AbstractModel {
     public function add($param = array())
     {
         if (empty($param['product_id']) 
-            || empty($param['owner_id']) 
+            || empty($param['facebook_id']) 
             || empty($param['social_id'])) {
             return false;
         }
         $values = array(
+            'website_id' => $param['website_id'],
             'social_id' => $param['social_id'],
-            'owner_id' => $param['owner_id'],
             'product_id' => $param['product_id'],
-            'is_wall' => !empty($param['is_wall']) ? 1 : 0,
-            'is_group' => !empty($param['is_group']) ? 1 : 0, 
+            'facebook_id' => $param['facebook_id'],            
+            'user_id' => !empty($param['user_id']) ? $param['user_id'] : 0,
+            'group_id' => !empty($param['group_id']) ? $param['group_id'] : null, 
             'created' => new Expression('UNIX_TIMESTAMP()'),
             'updated' => new Expression('UNIX_TIMESTAMP()'),
         );       

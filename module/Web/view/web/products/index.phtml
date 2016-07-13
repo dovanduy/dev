@@ -4,48 +4,29 @@
     $priceTo = $request->getQuery('price_to', '');    
     $categoryId = !empty($detailCategory['category_id']) ? $detailCategory['category_id'] : 0;
     $brandId = !empty($detailBrand['brand_id']) ? $detailBrand['brand_id'] : 0;
-?>		
+?>
 <div id="page-start"></div>
 <!-- section start -->
 <!-- ================ -->
 <section class="section light-gray-bg clearfix">
-	<div class="container">
-        <!--
-        <div class="row">
-            <div class="col-md-9">
-                <div class="slider-wrapper theme-default">
-                    <div id="slider" class="nivoSlider"> 
-                        <?php  foreach ($banners as $i => $banner) : ?>
-                            <a href="<?php echo $banner['url']?>">
-                                <img src="<?php echo $banner['url_image']?>" data-thumb="<?php echo $banner['url_image']?>" alt="" /> 
-                            </a> 
-                        <?php endforeach; ?>	                        
-                    </div>
-                    <div id="htmlcaption" class="nivo-html-caption"> <strong>This</strong> is an example of a <em>HTML</em> caption with <a href="#">a link</a>. </div>
-                </div>
-            </div>    
-            <div class="col-md-3">
-                <img src="/web/images/category-6.jpg" style="height:300px;" />
-            </div>  
-        </div>
-        -->
+	<div class="container">        
 		<div class="row">
             <div class="col-md-3">
-                <form>                
+                <form id="sidebar_products_index_form">                
                     <div class="sidebar">
-                        <?php if (!empty($subCategories)): ?>
+                        <?php if (!empty($filter['categories'])): ?>
                         <div class="block clearfix">
-                            <h3 class="title"><?php echo $this->translate('Products') ?></h3>
+                            <h3 class="title"><?php echo $this->translate('Catalog') ?></h3>
                             <div class="separator-2"></div>
                             <nav class="app-category">
                                 <ul itemscope itemtype="http://schema.org/Product" class="nav nav-pills nav-stacked nav-show">
-                                    <?php foreach ($subCategories as $category) : ?>  
+                                    <?php foreach ($filter['categories'] as $category) : ?>  
                                     <?php if (!empty($category['sub'])) : ?>  
                                         <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
-                                            <a itemprop="name" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <a style="border:0px;" itemprop="name" data-toggle="dropdown" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
                                                 <?php echo $category['name'] ?>
                                             </a>
-                                            <ul class="dropdown-menu">
+                                            <ul class="dropdown-menu" id="subCategory_<?php echo $category['category_id'];?>">
                                                 <?php foreach ($category['sub'] as $subCategory1) : ?> 
                                                 <?php if (!empty($subCategory1['sub'])) : ?>  
                                                 <li class="divider"></li>
@@ -78,49 +59,20 @@
                                 </ul>
                             </nav>
                         </div>
-                        <?php endif ?>
+                        <?php endif ?>                 
 
-                        <?php if (empty($subCategories) && !empty($filter['category'])): ?>
-                        <div class="block clearfix">
-                            <h3 class="title"><?php echo $this->translate('Products') ?></h3>
-                            <div class="separator-2"></div>
-                            <nav>
-                                <ul itemscope itemtype="http://schema.org/Product" class="nav nav-pills nav-stacked">
-                                    <?php foreach ($filter['category'] as $category) : ?>  
-                                    <li <?php if ($categoryId==$category['category_id']) echo ' class="active"'?>>
-                                        <a itemprop="name" href="
-                                            <?php
-                                                $routeUrl = array(
-                                                    'name' => name_2_url($category['category_name'])                                                   
-                                                ); 
-                                                if (!empty($detailBrand['name'])) {
-                                                    $routeUrl['brand_name'] = name_2_url($detailBrand['name']);
-                                                }
-                                                echo $this->url(
-                                                    'web/products', 
-                                                    $routeUrl
-                                                )
-                                            ?>">
-                                            <?php echo $category['category_name'] ?>
-                                        </a>
-                                    </li>
-                                    <?php endforeach ?>                                
-                                </ul>
-                            </nav>
-                        </div>
-                        <?php endif ?>                  
-
-                        <?php if (!empty($filter['brand'])): ?>
+                        <?php if (!empty($filter['brands'])): ?>
                         <div class="block clearfix">
                             <h3 class="title"><?php echo $this->translate('Brand') ?></h3>
                             <div class="separator-2"></div>
                             <nav>
                                 <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
-                                    <?php foreach ($filter['brand'] as $brand) : ?>  
+                                    <?php foreach ($filter['brands'] as $brand) : ?> 
+                                    <?php if (!empty($brand['brand_name'])): ?>
                                     <li<?php if ($brandId==$brand['brand_id']) echo ' class="active"'?>>
                                         <a href="<?php 
                                             $routerParam = array(
-                                                'brand_name' => name_2_url($brand['brand_name'])
+                                                'name2' => name_2_url($brand['brand_name'])
                                             );
                                             if (!empty($detailCategory['name'])) {
                                                 $routerParam['name'] = name_2_url($detailCategory['name']);
@@ -130,15 +82,49 @@
                                                 $routerParam
                                             )?>">
                                             <span itemprop="name"><?php echo $brand['brand_name'] ?></span>
-                                            (<?php echo $brand['count_product'] ?>)
                                         </a>
                                     </li>
+                                    <?php endif ?>                                
                                     <?php endforeach ?>                                
                                 </ul>
                             </nav>
                         </div>
                         <?php endif ?>
-
+                        
+                        <?php if (!empty($filter['attributes'])): ?>
+                        <?php foreach ($filter['attributes'] as $attribute) : ?> 
+                        <div class="block clearfix">
+                            <h3 class="title"><?php echo $attribute['name'] ?></h3>
+                            <div class="separator-2"></div>
+                            <nav class="attributes">
+                                <ul itemscope itemtype="http://schema.org/Brand" class="nav nav-pills nav-stacked">
+                                    <?php foreach ($attribute['value'] as $value): ?>                                    
+                                    <li<?php if ($optionId==$value) echo ' class="active"'?>>
+                                        <a href="<?php 
+                                            $routerParam = array(
+                                                'name3' => name_2_url($attribute['name'] . '-' . $value)
+                                            );
+                                            if (!empty($detailCategory['name'])) {
+                                                $routerParam['name'] = name_2_url($detailCategory['name']);
+                                            }
+                                            if (!empty($detailBrand['brand_name'])) {
+                                                $routerParam['name2'] = name_2_url($detailBrand['brand_name']);
+                                            }
+                                            echo $this->url(
+                                                'web/products', 
+                                                $routerParam
+                                            )?>">
+                                            <span itemprop="name"><?php echo $value ?></span>
+                                        </a>
+                                    </li>                                                           
+                                    <?php endforeach ?>                                
+                                </ul>
+                            </nav>
+                        </div>
+                        <?php endforeach ?>  
+                        <?php endif ?>
+                        
+                        <?php if (!empty($filter['price']['max'])): ?>
                         <div class="block clearfix">
                             <h3 class="title"><?php echo $this->translate('Price') ?></h3>
                             <div class="separator-2"></div>
@@ -153,11 +139,13 @@
                                     'price_to',
                                     $filter['price']['min'],
                                     $filter['price']['max'],
-                                    '50000',
+                                    '5000',
                                     $slideValue
                                 );
                             ?>                                                   
                         </div>
+                        <?php endif ?>
+                        
                     </div>
                 </form>
             </div>
@@ -174,57 +162,10 @@
                             $count = !empty($result['count']) ? $result['count'] : 0; 
                             if (!empty($products)) {
                                 foreach ($products as $product) {
-                                    $product['url'] = $this->url(
-                                        'web/products', 
-                                        array(
-                                            'name' => name_2_url($product['name'])
-                                        )
-                                    );
-                                    $product['url_add_to_cart'] = $this->url(
-                                        'web/carts', 
-                                        array(
-                                            'action' => 'additem',
-                                            'id' => $product['_id']
-                                        )
-                                    );     
-                                    $product['url_add_to_wishlist'] = '#';
-                                    $product['original_price'] = !empty($product['original_price']) ? app_money_format($product['original_price']) : '';
-                                    $product['price'] = app_money_format($product['price']);
-                                    $product['name'] = truncate($product['name'], 60);
-                                    $product['short'] = nl2br(truncate($product['short'], 80)); 
-                                    echo "
-                                        <div class=\"col-sm-6 col-lg-4 masonry-grid-item\">
-                                            <div itemscope itemtype=\"http://schema.org/Product\" class=\"listing-item white-bg bordered mb-20\">
-                                                <div class=\"overlay-container\">
-                                                    <div class=\"image\">
-                                                        <img itemprop=\"image\" alt=\"{$product['name']}\" src=\"{$product['url_image']}\" alt=\"\">
-                                                    </div>
-                                                    <a class=\"overlay-link popup-img-single\" href=\"{$product['url_image']}\"><i class=\"fa fa-search-plus\"></i></a>
-                                                    <div class=\"overlay-to-top links\">
-                                                        <span class=\"small\">
-                                                            <!--<a href=\"{$product['url_add_to_wishlist']}#\" class=\"btn-sm-link\"><i class=\"fa fa-heart-o pr-10\"></i>{$this->translate('Add to Wishlist')}</a>-->
-                                                            <a itemprop=\"url\" href=\"{$product['url']}\" class=\"btn-sm-link\"><i class=\"icon-link pr-5\"></i>{$this->translate('View Details')}</a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class=\"body\">
-                                                    <h3><a itemprop=\"url\" href=\"{$product['url']}\"><span itemprop=\"name\">{$product['name']}</span></a></h3>
-                                                    <div class=\"elements-list clearfix\">
-                                                        <span itemprop=\"price\" class=\"price\">{$product['price']}</span>
-                                                        <a  itemprop=\"url\" href=\"#\" 
-                                                            class=\"pull-right margin-clear btn btn-sm btn-default-transparent btn-animated ajax-submit\"                                                           
-                                                            data-url=\"{$product['url_add_to_cart']}\"
-                                                            data-callback=\"
-                                                                loadCart(1);                                    
-                                                                showMessage('{$this->translate('Added to cart')}')
-                                                            \">{$this->translate('Add to cart')} <i class=\"fa fa-shopping-cart\"></i>
-                                                        </a>                                                                
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ";                                                                                                                     
+                                    echo $this->productItemHelper($product);                                                                                                                    
                                 }
+                            } else {
+                                echo "<center class=\"not-found\">{$this->translate('Catelog is importing')}</center>";
                             }
                         ?>   
 						</div>
@@ -237,7 +178,8 @@
                                 echo $this->paginatorHelper(
                                     $params, 
                                     $count, 
-                                    $limit
+                                    $limit,
+                                    Web\Module::getConfig('display_page')
                                 );
                             }
                         ?>

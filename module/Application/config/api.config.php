@@ -8,7 +8,7 @@
  */
 
 return array(
-    'api' => array(
+    'api' => array(        
         'base_uri' => 'http://api.vuongquocbalo.com/',
         'oauth2_base_uri' => 'http://oauth2.vuongquocbalo.com/',
         'timeout' => 60,
@@ -33,6 +33,7 @@ return array(
         'url_images_detail' => array('images/detail', 'get'),
         'url_images_all' => array('images/all', 'get'),
         'url_images_allhascolor' => array('images/allhascolor', 'get'),
+        'url_images_upload' => array('images/upload'),
         
 		'url_services_lists' => 'services/lists',
         'url_services_add' => 'services/add',
@@ -185,6 +186,7 @@ return array(
         'url_products_addprice' => 'products/addprice',
         'url_products_saveprice' => 'products/saveprice',
         'url_products_delete' => 'products/delete',
+        'url_products_updatefbimage' => 'products/updatefbimage',
         
         'url_products_reviews_add' => 'productreviews/add',
         'url_products_reviews_lists' => 'productreviews/lists',
@@ -289,6 +291,9 @@ return array(
         'url_vouchers_check' => 'vouchers/check',
         
         'url_shareurls_add' => 'shareurls/add',
+        
+        'url_bloggerpostids_add' => 'bloggerpostids/add',
+        'url_bloggerpostids_all' => 'bloggerpostids/all',
     ),
 	
 );

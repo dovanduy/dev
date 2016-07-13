@@ -1,0 +1,70 @@
+<footer id="footer" class="clearfix">
+    <!-- .footer start -->
+    <!-- ================ -->
+    <?php if (!empty($website['footer_menus'])): ?>    
+    <div class="footer">       
+        <div itemscope itemtype="http://schema.org/ItemList" class="row">
+            <!-- accordion start -->
+            <!-- ================ -->
+            <div class="col-md-6">
+                <div class="panel-group collapse-style-1" id="accordion">
+                    <?php foreach ($website['footer_menus'] as $index => $menu) : ?>                                       
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 itemprop="name" class="panel-title">
+                                <a itemprop="url"  data-toggle="collapse" data-parent="#accordion" href="#collapse_<?php echo $index?>" aria-expanded="false" class="collapsed">
+                                    <span itemprop="name"><?php echo $menu['name']?></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_<?php echo $index?>" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                            <div class="panel-body">
+                                <nav class="mt-20">
+                                    <?php if (!empty($menu['sub'])) : ?> 
+                                    <ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
+                                    <?php foreach ($menu['sub'] as $subMenu) : ?>  
+                                        <li>
+                                            <?php if (!empty($subMenu['url'])): ?>
+                                            <a itemprop="url" href="<?php echo !empty($subMenu['url']) ? $subMenu['url'] : '#'?>">
+                                                <i class="fa fa-chevron-circle-right"></i> 
+                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
+                                            </a>                                                
+                                            <?php else: ?>
+                                            <div>
+                                                <i class="fa fa-chevron-circle-right"></i> 
+                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
+                                            </div>
+                                            <?php endif ?>
+                                        </li>
+                                    <?php endforeach ?>                                         
+                                    </ul>
+                                    <?php endif; ?>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach ?>
+                </div>
+            </div>            
+        </div>
+    </div>    
+    <?php endif ?>
+    <!-- .footer end -->
+
+    <!-- .subfooter start -->
+    <!-- ================ -->
+    <div class="subfooter">
+        <div class="container">
+            <div class="subfooter-inner">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="text-center">
+                            <?php echo $this->translate(Web\Module::getConfig('head_meta.copyright')) ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .subfooter end -->
+</footer>

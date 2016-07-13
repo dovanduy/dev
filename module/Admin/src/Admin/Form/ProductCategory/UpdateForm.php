@@ -72,7 +72,21 @@ class UpdateForm extends AbstractForm
                     'allow_empty' => true, // custom
                 ),
                 'validators' => \Admin\Module::getValidatorConfig('general.image')
-            ),            
+            ),
+            array(            
+                'name' => 'url',
+                'type' => 'Zend\Form\Element\Url',
+                'attributes' => array(
+                    'id' => 'url',
+                    'type' => 'text',
+                    'required' => false,
+                    'class' => 'form-control'
+                ),
+                'options' => array(
+                    'label' => 'Url',
+                ),
+                'validators' => \Admin\Module::getValidatorConfig('general.uri')
+            ),
         );
         $locales = \Application\Module::getConfig('general.locales');
         if (count($locales) == 1) { 

@@ -48,6 +48,7 @@ class SearchController extends AppController
         ));
         return $this->getViewModel(array(
                 'params' => $this->params()->fromQuery(),
+                'keyword' => $param['keyword'],
                 'result' => $result,                
             )
         ); 
