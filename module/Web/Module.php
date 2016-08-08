@@ -159,12 +159,18 @@ class Module {
         $controller = strtolower(array_pop(explode('\\', $matches->getParam('controller'))));
         $module = __NAMESPACE__;
 
-        // Set main layout         
-        $e->getTarget()->layout('web/layout');
+        // Set main layout 
+        switch ($action) {
+            case 'sendo':
+                $e->getTarget()->layout('web/layout/blank');
+                break;
+            default:
+                $e->getTarget()->layout('web/layout');
+        }
         $AppUI = $sm->get('auth')->getIdentity();
 
         $request = $e->getTarget()->getRequest();
-        if (empty($AppUI)) {
+        if (empty($AppUI) && 1==0) {
             $headCookie = $request->getHeaders()->get('Cookie');
             $remember = isset($headCookie->remember) ? unserialize($headCookie->remember) : array();
             if (!empty($remember['email'])) {

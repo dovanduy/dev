@@ -49,6 +49,7 @@ return array(
         'exception_template' => 'error/index',
         'template_map' => array(
             'web/layout' => __DIR__ . '/../view/layout/layout.phtml', 
+            'web/layout/blank' => __DIR__ . '/../view/layout/blank.phtml', 
             'web/layout/error' => __DIR__ . '/../view/layout/error.phtml',
             'web/ajax' => __DIR__ . '/../view/layout/ajax.phtml',
             'web/page' => __DIR__ . '/../view/layout/page.phtml',

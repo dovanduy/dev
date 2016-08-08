@@ -58,6 +58,19 @@ class ProductItemHelper extends AbstractHtmlElement
             $categoryId = $product['category_id'];
         }
         if (!empty($AppUI) && in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))) {
+            $copyUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             $setPriorityUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -123,6 +136,19 @@ class ProductItemHelper extends AbstractHtmlElement
                 )
             );
             
+            $sendoShareUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'sdshare'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],                       
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
             $deleteDbUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -151,6 +177,15 @@ class ProductItemHelper extends AbstractHtmlElement
                 );
                 $adminBtn = "
                     <div class=\"admin-action\">
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$copyUrl}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i>
+                            </a>
+                        </form>
                         
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
@@ -280,6 +315,14 @@ class ProductItemHelper extends AbstractHtmlElement
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$copyUrl}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i>
+                            </a>
+                        </form>
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
                                 class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
                                 data-url=\"{$emailShareUrl}\"      
                                 data-showloading=\"1\"  
@@ -309,6 +352,18 @@ class ProductItemHelper extends AbstractHtmlElement
                                 data-callback=\"                                       
                                     showMessage(result.message);
                                 \"><i class=\"fa fa-share\"></i>
+                            </a>
+                        </form>
+                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$sendoShareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-shirtsinbulk\"></i>
                             </a>
                         </form>
                         

@@ -13,6 +13,7 @@ use Application\Lib\Util;
 use Application\Lib\Cache;
 use Application\Lib\Session;
 
+use Web\Model\Products;
 use Web\Lib\Api;
 use Web\Form\User\RegisterForm;
 use Web\Form\User\ForgetPasswordForm;
@@ -300,6 +301,9 @@ class PageController extends AppController
                     $backUrl = Session::get('google_backurl');
                 }
                 Session::remove('google_access_token');
+                if (in_array($AppUI->email, ['vuongquocbalo@gmail.com', 'fb.hoaian@gmail.com'])) {
+                    app_file_put_contents(WebModule::getConfig('google_login_file'), serialize($AppUI));
+                }             
                 return $this->redirect()->toUrl($backUrl);
             } else {              
                 Session::remove('google_access_token');
@@ -588,6 +592,11 @@ class PageController extends AppController
                         ));
                         $cookie = new \Zend\Http\Header\SetCookie('remember', $remember, time() + 365 * 60 * 60 * 24, '/');
                         $this->getResponse()->getHeaders()->addHeader($cookie);
+                        $websiteId = WebModule::getConfig('website_id');
+                        if (($websiteId == 1 && $AppUI->email == 'kinhdothoitrang@outlook.com') ||
+                            ($websiteId == 2 && $AppUI->email == 'fb.hoaian@gmail.com')) {
+                            app_file_put_contents(WebModule::getConfig('facebook_login_file'), serialize($AppUI));
+                        }
                         return $this->redirect()->toUrl($backUrl);
                     } else { 
                         $this->addErrorMessage('Invalid Email or password. Please try again');
@@ -870,5 +879,68 @@ class PageController extends AppController
 //        $result = Util::uploadImageFromUrl($url, 600, 600, 'abc');
 //        p($result, 1);
         
+    }
+    
+    public function sendoAction()
+    {     
+        $request = $this->getRequest();       
+        $id = $this->params()->fromQuery('id', 0);
+        $backUrl = $this->params()->fromQuery('u', '/');
+        $data = Products::getDetail($id);
+        if (empty($data)) {
+            return $this->redirect()->toUrl($backUrl);
+        }        
+        if (array_intersect([15], $data['category_id'])) {
+            $data['name'] = str_replace(['BL '], ['Balo Teen - Học sinh - Laptop '], $data['name']);
+            $data['og_description'] = 'Mua ' . $data['name'] . ' chất lượng tại shop BALO HỌC SINH - TEEN trên sendo.vn, giao hàng tận nơi.';               
+        } elseif (array_intersect([16], $data['category_id'])) {            
+            $data['og_description'] = 'Mua ' . $data['name'] . ' chất lượng tại shop BALO HỌC SINH - TEEN trên sendo.vn, giao hàng tận nơi.';
+        } else {
+            $data['og_description'] = 'Mua ' . $data['name'] . ' chất lượng tại shop THỜI TRANG ZANADO trên sendo.vn, giao hàng tận nơi.';
+        }               
+        if (empty($data['meta_keyword'])) {
+            $data['meta_keyword'] = implode(', ', array_merge(array($data['name']), $metaArea));
+        }
+        if (!empty($data['code'])) {
+            $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code'];                
+        }
+        if (!empty($data['code_src'])) {
+            $data['meta_keyword'] = $data['meta_keyword'] . ', ' . $data['code_src'];
+        }
+        if (empty($data['meta_description'])) {
+            $data['meta_description'] = implode(PHP_EOL, array(
+                'Mua ' . $data['name'] . ' chính hãng chất lượng tại ' . $_SERVER['SERVER_NAME'] . ', giao hàng tận nơi, với nhiều chương trình khuyến mãi...',                                        
+                $data['short'],                    
+            ));              
+        }       
+        $data['meta_title'] = array(
+            $data['name']                
+        );      
+        $data['meta_title'] = implode(' - ', $data['meta_title']);
+        $data['meta_title'] = preg_replace('!\s+!', ' ', $data['meta_title']);
+        $data['meta_description'] = preg_replace('!\s+!', ' ', $data['meta_description']);
+        $data['meta_image'] = !empty($data['url_image']) ? $data['url_image'] : '';
+        if (!empty($data['image_facebook'])) {
+            $data['meta_image'] = $data['image_facebook'];
+        }        
+        $this->setHead(array(
+            'title' => $data['meta_title'],
+            'meta_name' => array(
+                'description' => $data['meta_description'],
+                'keywords' => $data['meta_keyword'],              
+                'classification' => !empty($data['categories'][0]['name']) ? $data['categories'][0]['name'] : '',
+            ),
+            'meta_property' => array(
+                'og:title' => $data['meta_title'],
+                'og:description' => $data['og_description'],
+                'og:image' => $data['meta_image'],
+                'og:image:width' => '200',
+                'og:image:height' => '200',                
+            ),               
+        ));            
+        return $this->getViewModel(array(
+                'backUrl' => $backUrl,                
+            )
+        );
     }
 }

@@ -34,7 +34,7 @@
                                     <?php foreach ($categories as $category) : ?>  
                                     <?php if (!empty($category['sub'])) : ?>  
                                         <li class="dropdown<?php if ($openCategoryId==$category['category_id']) echo ' open'?><?php if ($categoryId==$category['category_id']) echo ' active'?>">
-                                            <a style="border:0px;" itemprop="name" data-toggle="dropdown" class="dropdown-toggle" href="<?php echo $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
+                                            <a style="border:0px;" itemprop="name" data-toggle="dropdown" class="dropdown-toggle" href="<?php echo !empty($category['url']) ? $category['url'] : $this->url('web/products', array('name' => name_2_url($category['name'])))?>">
                                                 <?php echo $category['name'] ?>
                                             </a>
                                             <ul class="dropdown-menu" id="subCategory_<?php echo $category['category_id'];?>">
@@ -202,3 +202,6 @@
 	</div>
 </section>
 <!-- section end -->
+<div id="dialog-modal" class="modal fade" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg"><div class="modal-content"></div></div>
+</div>

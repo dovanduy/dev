@@ -28,6 +28,7 @@ return array(
     'facebook_admins' => '',
     'facebook_app_id' => '304999106503304',
     'facebook_app_secret' => '939d6213f1a40680aa55877b0ccd7931',
+    'facebook_login_file' => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize',
     'facebook_tag_ids' => array(),
     'facebook_group_ids' => [        
         '231774573605976',
@@ -41,8 +42,7 @@ return array(
     'google_app_id2' => '1027124832421-00lmm9qstsa4umk76bgr2hpcsfu2kgo2.apps.googleusercontent.com',
     'google_app_secret2' => 'EDfKgxjtBo-I_guWfg6y85YU',
     'google_app_redirect_uri2' => 'http://vuongquocbalo.dev/glogin2',
-    
-    'blogger_blog_id' => '7504283056362133341',
+    'google_login_file' => getcwd() . '/shell/vuongquocbalo/google_login.serialize',
     
     'admin_user_id' => array(103),
     
@@ -136,7 +136,9 @@ return array(
     'meta_head' => [
         'title' => 'Mua balo trực tuyến giá rẻ, đẹp, chất lượng, với nhiều chương trình khuyến mãi',
         'favicon' => 'favicon.ico'
-    ]
+    ],
+    
+    
     
     
 );

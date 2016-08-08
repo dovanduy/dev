@@ -251,10 +251,33 @@ class ProductsController extends AppController {
     
     public function allforbloggerAction()
     {
-        return \Api\Bus\Products\AddForBlogger::getInstance()->execute(
+        return \Api\Bus\Products\AllForBlogger::getInstance()->execute(
             $this->getServiceLocator()->get('Products'),
             $this->getParams()
         );
     }
     
+    public function updatesizeattrAction()
+    {
+        return \Api\Bus\Products\UpdateSizeAttr::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function allforfacebookAction()
+    {
+        return \Api\Bus\Products\AllForFacebook::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
+    
+    public function allforsendoAction()
+    {
+        return \Api\Bus\Products\AllForSendo::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
 }

@@ -150,7 +150,8 @@ class Products extends AbstractModel {
             'original_price',
 			'discount_percent',
             'discount_amount',
-            'priority'
+            'priority',
+            'url_other',
         );
         $select = $sql->select()
             ->from(static::$tableName) 
@@ -236,6 +237,7 @@ class Products extends AbstractModel {
             '_id', 
             'price',
             'original_price',
+            'url_other',
         );
         $select = $sql->select()
             ->from(static::$tableName) 
@@ -435,6 +437,7 @@ class Products extends AbstractModel {
             'discount_percent',
             'discount_amount',
             'priority',
+            'url_other',
         );
         $select = $sql->select()
             ->from(static::$tableName)   
@@ -1380,6 +1383,9 @@ class Products extends AbstractModel {
         if (!empty($param['product_id'])) {
             $where['product_id'] = $param['product_id'];
         }
+        if (!empty($param['code'])) {
+            $where['code'] = $param['code'];
+        }
         $self = self::find(
             array(            
                 'table' => 'products',
@@ -1461,7 +1467,7 @@ class Products extends AbstractModel {
                 $param['image_facebook'] = $uploadResult['image_facebook'];
             }
         } else {   
-            if (!empty($self['image_id']) && empty($param['image_id'])) {
+            if (!empty($self['image_id']) && isset($param['image_id']) && empty($param['image_id'])) {
                 $image->remove(array(
                     'id' => $self['image_id'],
                     'src' => 'products'
@@ -1483,22 +1489,26 @@ class Products extends AbstractModel {
                 ),
             )
         )) {
-            $locales = \Application\Module::getConfig('general.locales');
-            if (count($locales) == 1) {
-                $param['locale'] = array_keys($locales)[0];
-                $param['_id'] = $self['_id'];
-                self::addUpdateLocale($param);
+            if (isset($param['name'])) {
+                $locales = \Application\Module::getConfig('general.locales');
+                if (count($locales) == 1) {
+                    $param['locale'] = array_keys($locales)[0];
+                    $param['_id'] = $self['_id'];
+                    self::addUpdateLocale($param);
+                }            
             }
-            if (empty($param['category_id'])) {
-                $param['category_id'] = array();
+            if (isset($param['category_id'])) {
+                if (empty($param['category_id'])) {
+                   $param['category_id'] = array();
+                }
+                $productHasCategoriesModel = new ProductHasCategories();
+                $productHasCategoriesModel->addUpdate(
+                    array(
+                        'product_id' => $self['product_id'],
+                        'category_id' => $param['category_id']
+                    )
+                );
             }
-            $productHasCategoriesModel = new ProductHasCategories();
-            $productHasCategoriesModel->addUpdate(
-                array(
-                    'product_id' => $self['product_id'],
-                    'category_id' => $param['category_id']
-                )
-            );
             /*
             $hasSizeModel = new ProductHasSizes();
             $hasSizeModel->addUpdate(
@@ -2552,10 +2562,16 @@ class Products extends AbstractModel {
         return true;
     }
     
-    public static function updateCode($param) {
-        
-       
-        
+    public function updateSizeAttr($param) {
+        if (empty($param['field_id'])) {
+            $param['field_id'] = 7;
+        }
+        $hasField = new ProductHasFields;
+        return $hasField->addUpdateOne([
+            'product_id' => $param['product_id'],
+            'value' => $param['value'],           
+            'field_id' => $param['field_id'],            
+        ]); 
     }
 
     public static function updateFbImage($param) {          
@@ -2570,7 +2586,7 @@ class Products extends AbstractModel {
                         unlink($oldImage);
                     }
                 }
-                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300, $product['name']);
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 400, 400, $product['name']);
                 if (!empty($product['image_facebook'])) {
                     $ok = self::update([
                         'table' => 'products',
@@ -2712,7 +2728,7 @@ class Products extends AbstractModel {
             $param['locale'] = \Application\Module::getConfig('general.default_locale');
         }
         if (empty($param['limit'])) {
-            $param['limit'] = 30;
+            $param['limit'] = 5;
         }
         $sql = new Sql(self::getDb());
         $select = $sql->select()
@@ -2730,11 +2746,55 @@ class Products extends AbstractModel {
                 'priority',
                 'website_id'
             ))
+            ->where(static::$tableName . '.active = 1')
+            ->where(static::$tableName . '.website_id = '. self::quote($param['website_id']))
+            ->where(new Expression(
+                "NOT EXISTS (
+                    SELECT * 
+                    FROM blogger_post_ids 
+                    WHERE
+                        blog_id = " . self::quote($param['blog_id']) . " 
+                        AND blogger_post_ids.product_id = products.product_id)"
+            ));
+        $select->order(new Expression('RAND()'));
+        $select->limit($param['limit']);
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );
+        return $result;
+    }
+    
+    public function getForFacebook($param) {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        if (empty($param['limit'])) {
+            $param['limit'] = 5;
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns(array(                
+                'product_id',                
+                'code', 
+                'code_src', 
+                'price',
+                'original_price',
+                'discount_percent',
+                'discount_amount',
+                'sort',
+                'image_id',
+                'priority',
+                'image_facebook',
+                'website_id'
+            ))
             ->join(               
                 'product_locales',                    
                 static::$tableName . '.product_id = product_locales.product_id',
                 array(                   
                     'name',                     
+                    'short',                     
                 )
             )
             ->join(
@@ -2749,13 +2809,81 @@ class Products extends AbstractModel {
             ->where(new Expression(
                 "NOT EXISTS (
                     SELECT * 
-                    FROM blogger_post_ids 
+                    FROM product_shares 
                     WHERE
-                        blog_id = " . self::quote($param['blog_id']) . " 
-                        AND blogger_post_ids.product_id = products.product_id)"
+                        group_id = " . self::quote($param['group_id']) . " 
+                        AND product_shares.product_id = products.product_id)"
             ));
-        
-        if (!empty($param['category_id'])) {
+       
+        $select->order(new Expression('RAND()'));
+        $select->limit($param['limit']);
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );
+        foreach ($result as &$product) {
+            if (empty($product['image_facebook'])) {
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 300, 300, $product['name']);
+                self::update([
+                    'table' => 'products',
+                    'set' => [
+                        'image_facebook' => $product['image_facebook'] 
+                    ],
+                    'where' => [
+                        'website_id' => $product['website_id'], 
+                        'product_id' => $product['product_id'] 
+                    ],
+                ]);
+            }
+        }
+        return $result;
+    }
+    
+    public function getForSendo($param) {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        if (empty($param['limit'])) {
+            $param['limit'] = 5;
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns(array(                
+                'product_id',                
+                'code', 
+                'code_src', 
+                'price',
+                'original_price',
+                'discount_percent',
+                'discount_amount',
+                'sort',
+                'image_id',
+                'priority',
+                'image_facebook',
+                'url_other',
+                'website_id'
+            ))
+            ->join(               
+                'product_locales',                    
+                static::$tableName . '.product_id = product_locales.product_id',
+                array(                   
+                    'name',                     
+                    'short',                     
+                )
+            )
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.active = 1')        
+            ->where("product_locales.locale = ". self::quote($param['locale']))
+            ->where(new Expression(
+                "url_other <> '' AND url_other IS NOT NULL"
+            ));
+       if (!empty($param['category_id'])) {
             if (is_numeric($param['category_id'])) {
                 $categoryModel = new ProductCategories;
                 $categories = $categoryModel->getAll(array(
@@ -2777,14 +2905,34 @@ class Products extends AbstractModel {
                 ->where(new Expression(
                     "product_has_categories.category_id IN ({$param['category_id']})"
                 ));            
-        }      
-       
-        $select->order(static::$tableName . '.product_id DESC');
+        }
+        if (!empty($param['keyword'])) {
+            $param['keyword'] = strtolower($param['keyword']);
+            $select->where(new Expression("(
+                LOWER(product_locales.name) LIKE '%{$param['keyword']}%'                     
+            )"));
+        }
+        $select->order(new Expression('RAND()'));
         $select->limit($param['limit']);
         $result = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
-        );          
+        );
+        foreach ($result as &$product) {
+            if (empty($product['image_facebook'])) {
+                $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 400, 400, $product['name']);
+                self::update([
+                    'table' => 'products',
+                    'set' => [
+                        'image_facebook' => $product['image_facebook'] 
+                    ],
+                    'where' => [
+                        'website_id' => $product['website_id'], 
+                        'product_id' => $product['product_id'] 
+                    ],
+                ]);
+            }
+        }
         return $result;
     }
     

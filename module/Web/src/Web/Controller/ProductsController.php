@@ -13,7 +13,7 @@ use Application\Lib\Arr;
 use Application\Lib\Util;
 use Web\Lib\Api;
 use Web\Form\Product\ReviewForm;
-use Web\Form\Product\AdminActionForm;
+use Web\Form\Product\CopyForm;
 use Web\Model\ProductCategories;
 use Web\Model\Websites;
 use Web\Model\Products;
@@ -142,7 +142,7 @@ class ProductsController extends AppController
                         break;
                     }
                 }
-            }   
+            }
             return $this->getViewModel(array(
                     'params' => $this->params()->fromQuery(),                                             
                     'optionId' => $optionId,
@@ -169,7 +169,7 @@ class ProductsController extends AppController
             }
             
             // get detail             
-            $data = Products::getDetail($id, $param['force']);
+            $data = Products::getDetail($id, $param['force']); //p($data);
           
             // not found data
             if (empty($data)) {
@@ -279,8 +279,8 @@ class ProductsController extends AppController
                     'product:price:amount' => !empty($data['price']) ? number_format($data['price'], 0, ',', '.') : '0',
                     'og:price:currency' => 'VND',
                 ),               
-            ));           
-                      
+            ));
+            
             $reviewForm = new ReviewForm();  
             $reviewForm ->setController($this)
                         ->setAttribute('id', 'comment-form')
@@ -351,5 +351,7 @@ class ProductsController extends AppController
             );            
         }
     } 
+    
+    
     
 }

@@ -276,6 +276,17 @@ return array(
                     ),
                 ),
 
+                'sendo' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/sendo',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'sendo',
+                        ),
+                    ),
+                ),
+                
             ),
 
         ),            

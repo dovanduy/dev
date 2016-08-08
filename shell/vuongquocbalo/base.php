@@ -32,6 +32,11 @@ $config = [
         'base_uri' => 'http://api.vuongquocbalo.com',   
         'facebook_app_id' => '1679604478968266',
         'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+        
+        'google_app_id' => '692650781994-mv3unhde1gf92i26s3qajrrbrs9hbsae.apps.googleusercontent.com',
+        'google_app_secret' => 'kEAA8MNKgFbmhL3ZDU9U4eTp',
+        'google_app_redirect_uri' => 'http://vuongquocbalo.com/glogin2',
+        
         'img_domain' => 'http://img.vuongquocbalo.com',
     ]
 ];
@@ -113,9 +118,8 @@ function rand_post_time() {
 }
 
 function batch_info($message = '') {
-    echo PHP_EOL . $message;
+    echo PHP_EOL . '[' . date('Y-m-d H:i:s') . '] ' . $message;
 }
-
 
 $userIds = [
     '10206637393356602', // Thai Lai
@@ -150,42 +154,6 @@ $tagIds = [
     '1021398451274096', // Thuỷ Gumiho
     '126728971080640', // https://www.facebook.com/kinhdothoitrang.vn
 ];
-/*
-$commentList = [
-	'https://sc.mogicons.com/c/200.jpg' => 'Cafe thôi các bạn ơi',
-	'https://sc.mogicons.com/c/363.jpg' => 'Đáng yêu không nào các bạn',
-	'https://sc.mogicons.com/c/276.jpg' => 'Tặng  bạn một đoá hoa nè',
-	'https://sc.mogicons.com/c/217.jpg' => 'Khi người phụ nữ đang yêu',
-	'https://sc.mogicons.com/c/164.jpg' => 'Kissing',
-	'https://sc.mogicons.com/c/248.jpg' => 'Kisses',
-	'https://sc.mogicons.com/c/326.jpg' => 'Thumb up smiley',
-	'https://sc.mogicons.com/c/396.jpg' => 'Ngũ ngon nhe các tềnh yêu',
-	'https://sc.mogicons.com/c/191.jpg' => 'Kiss',
-	'https://sc.mogicons.com/c/210.jpg' => 'Happiness',
-	'https://sc.mogicons.com/c/283.jpg' => 'Thankful',
-	'https://sc.mogicons.com/c/241.jpg' => 'Beauty smile',
-	'https://sc.mogicons.com/c/266.jpg' => 'Brown Teddy',
-	'https://sc.mogicons.com/c/350.jpg' => 'Gift',
-	'https://sc.mogicons.com/c/274.jpg' => 'Zo zo zo...',
-];
-*/
-$commentList = [
-	'https://sc.mogicons.com/c/200.jpg' => 'cafe đi nào',
-	'https://sc.mogicons.com/c/363.jpg' => 'các bạn hãy cùng vuongquocbalo.com xem chú gấu này đáng yêu không nào',
-	'https://sc.mogicons.com/c/276.jpg' => 'vuongquocbalo.com cùng chú gấu đáng yêu tặng quy khách hàng môt đoá hoa hồng nè',
-	'https://sc.mogicons.com/c/217.jpg' => 'vẽ mặt của người phụ nữ khi đang yêu phải vậy không các bạn',
-	'https://sc.mogicons.com/c/164.jpg' => 'bạn có được như anh ấy chưa nhĩ',
-	'https://sc.mogicons.com/c/248.jpg' => '',
-	'https://sc.mogicons.com/c/326.jpg' => 'bà xã anh number one',
-	'https://sc.mogicons.com/c/396.jpg' => '',
-	'https://sc.mogicons.com/c/191.jpg' => '',
-	'https://sc.mogicons.com/c/210.jpg' => 'vuongquocbalo.com chúc quý khách hàng vui vẻ và hạnh phúc',
-	'https://sc.mogicons.com/c/283.jpg' => 'vuongquocbalo.com cám ơn quý khách hàng đã ủng hộ',
-	'https://sc.mogicons.com/c/241.jpg' => 'cười đẹp không nào các bạn ơi',
-	'https://sc.mogicons.com/c/266.jpg' => 'các bạn hãy cùng vuongquocbalo.com xem chú gấu này đáng yêu không nào',
-	'https://sc.mogicons.com/c/350.jpg' => '',
-	'https://sc.mogicons.com/c/274.jpg' => 'cheers, em ơi chiều nay 100%',
-];
 
 $fb = new \Facebook\Facebook([
     'app_id' => $config['facebook_app_id'],
@@ -193,6 +161,8 @@ $fb = new \Facebook\Facebook([
     'default_graph_version' => 'v2.6',
     //'default_access_token' => $user['access_token'], // optional
 ]);
+
+
 
 function postToWall($data, $accessToken, &$errorMessage = '') {
     global $fb;
@@ -323,6 +293,35 @@ function addPhotoToAlbum($albumId, $data, $accessToken, &$errorMessage = '') {
         $errorMessage = $e->getMessage();
 		batch_info($errorMessage);	
 		exit;
+    } catch (\Exception $e) {
+        $errorMessage = $e->getMessage();
+    }
+    return false;
+}
+
+function postToBlog($blogId, $data, $accessToken, &$errorMessage = '') {     
+    global $config;
+    try {        
+        $scopes = implode(' ' , [
+            \Google_Service_Oauth2::USERINFO_EMAIL, 
+            \Google_Service_Blogger::BLOGGER_READONLY,
+            \Google_Service_Blogger::BLOGGER
+        ]);
+        $client = new \Google_Client();
+        $client->setClientId($config['google_app_id']);
+        $client->setClientSecret($config['google_app_secret']);
+        $client->setRedirectUri($config['google_app_redirect_uri']);
+        $client->addScope($scopes);    
+        $client->setAccessToken($accessToken);
+        $service = new \Google_Service_Blogger($client); 
+        $bloggerPost = new \Google_Service_Blogger_Post();
+        $bloggerPost->setTitle($data['name']);
+        $bloggerPost->setContent($data['content']);            
+        $bloggerPost->setLabels($data['labels']);                  
+        $post = $service->posts->insert($blogId, $bloggerPost);
+        if ($postId = $post->getId()) {
+            return $postId;
+        }            
     } catch (\Exception $e) {
         $errorMessage = $e->getMessage();
     }

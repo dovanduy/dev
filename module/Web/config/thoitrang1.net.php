@@ -26,13 +26,19 @@ return array(
     'website_id' => 2,
     
     'facebook_admins' => '129746714106531',
-    'facebook_app_id' => '291514527862025',
-    'facebook_app_secret' => 'fd711d2381d4a75dffc8027bc76841b8',
+    'facebook_app_id' => '1017869161653955',
+    'facebook_app_secret' => 'e9f6b56a1a0de0210e3266625b327743',
+    'facebook_login_file' => getcwd() . '/shell/thoitrang1/facebook_login.serialize',
     
-    'google_app_id' => '262987808969-jbn8697q26rfdkj48uu71qeirhcpch7q.apps.googleusercontent.com',
-    'google_app_secret' => 'dk1V5W0lodxaD1xEXZYEeMfN',
+    'google_app_id' => '805351782449-ivf6n3p88791eh80rp3j8tasqg7l06s4.apps.googleusercontent.com',
+    'google_app_secret' => 'ioV9e4N7WiiFN9sKbRUgCEOM',
     'google_app_redirect_uri' => 'http://thoitrang1.net/glogin',
     
+    'google_app_id2' => '57520396243-61uormtrqgdjpa42nt98vb6de1q6nqar.apps.googleusercontent.com',
+    'google_app_secret2' => 'sWYrv92ElITxEL8rmC9AVApe',
+    'google_app_redirect_uri2' => 'http://thoitrang1.net/glogin2',
+    'google_login_file' => getcwd() . '/shell/thoitrang1/google_login.serialize',
+        
     'site_name' => 'thoitrang1.net',   
     'head_meta' => array(
         'owner' => 'thoitrang1.net',
@@ -46,7 +52,7 @@ return array(
             'name' => 'filesystem',
             'options' => array(
                 'dirLevel' => 2,
-                'cacheDir' => getcwd() . '/data/thoitrang1/cache',
+                'cacheDir' => getcwd() . '/data/thoitrang1/cache/web',
                 'dirPermission' => 0755,
                 'filePermission' => 0666,
                 'ttl' => 60*60,
@@ -117,7 +123,15 @@ return array(
     ),
     */
     'chat' => '', //<script>window._sbzq||function(e){e._sbzq=[];var t=e._sbzq;t.push(["_setAccount",41882]);var n=e.location.protocol=="https:"?"https:":"http:";var r=document.createElement("script");r.type="text/javascript";r.async=true;r.src=n+"//static.subiz.com/public/js/loader.js";var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(r,i)}(window);</script>',
-    'ga' => "",
+    'ga' => "<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-80707773-1', 'auto');
+        ga('send', 'pageview');
+      </script>
+    ",
     
     'meta_head' => [
         'title' => 'Mua thời trang trực tuyến giá rẻ, đẹp, chất lượng, với nhiều chương trình khuyến mãi',        

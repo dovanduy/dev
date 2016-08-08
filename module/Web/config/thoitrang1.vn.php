@@ -28,10 +28,16 @@ return array(
     'facebook_admins' => '129746714106531',
     'facebook_app_id' => '291514527862025',
     'facebook_app_secret' => 'fd711d2381d4a75dffc8027bc76841b8',
+    'facebook_login_file' => getcwd() . '/shell/thoitrang1/facebook_login.serialize',
     
-    'google_app_id' => '262987808969-jbn8697q26rfdkj48uu71qeirhcpch7q.apps.googleusercontent.com',
-    'google_app_secret' => 'dk1V5W0lodxaD1xEXZYEeMfN',
+    'google_app_id' => '160316380666-8o4egcn76afejg56hg86r56mnhdthjn1.apps.googleusercontent.com',
+    'google_app_secret' => 'BmbD_-n0wM-VY7pQHkd4pN60',
     'google_app_redirect_uri' => 'http://thoitrang1.vn/glogin',
+    
+    'google_app_id2' => '160316380666-8o4egcn76afejg56hg86r56mnhdthjn1.apps.googleusercontent.com',
+    'google_app_secret2' => 'BmbD_-n0wM-VY7pQHkd4pN60',
+    'google_app_redirect_uri2' => 'http://thoitrang1.vn/glogin2',    
+    'google_login_file' => getcwd() . '/shell/thoitrang1/google_login.serialize',
     
     'site_name' => 'thoitrang1.vn',   
     'head_meta' => array(

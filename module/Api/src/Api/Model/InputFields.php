@@ -331,6 +331,9 @@ class InputFields extends AbstractModel {
         if (!empty($param['_id'])) {
             $select->where(static::$tableName . "._id = ". self::quote($param['_id'])); 
         }
+        if (!empty($param['field_id'])) {
+            $select->where(static::$tableName . ".field_id = ". self::quote($param['field_id'])); 
+        }
         if (!empty($param['name'])) {
             $select->where("input_field_locales.name = ". self::quote($param['name'])); 
         }

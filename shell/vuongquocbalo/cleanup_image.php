@@ -8,7 +8,6 @@ $param = [
 ];
 $docRoot = dirname(dirname(getcwd()));
 $images = call('/images/allforbatch', $param);
-
 $dbImages = array();
 if (!empty($images)) {
     foreach ($images as $image) {
@@ -23,6 +22,10 @@ if (!empty($images)) {
             }
         } 
     }
+}
+if (empty($dbImages)) {
+    batch_info('Error get db images');
+    exit;
 }
 $imageForFaceboks = call('/products/all', $param);
 if (!empty($imageForFaceboks)) {

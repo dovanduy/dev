@@ -21,93 +21,15 @@ if (!empty($cartItems)) {
 	<div class="header-top dark ">
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-6 col-sm-6 col-md-9">
-					<!-- header-top-first start -->
-					<!-- ================ -->
-					<div class="header-top-first clearfix">
-						<ul class="social-links circle small clearfix hidden-xs">
-                            <?php if (!empty($website['facebook'])): ?>
-                            <li class="facebook"><a target="_blank" href="<?php echo $website['facebook']; ?>"><i class="fa fa-facebook"></i></a></li>
-                            <?php endif ?>
-
-                            <?php if (!empty($website['twitter'])): ?>
-                            <li class="twitter"><a target="_blank" href="<?php echo $website['twitter']; ?>"><i class="fa fa-twitter"></i></a></li>
-                            <?php endif ?>
-
-                            <?php if (!empty($website['linkedin'])): ?>
-                            <li class="linkedin"><a target="_blank" href="<?php echo $website['linkedin']; ?>"><i class="fa fa-linkedin"></i></a></li>
-                            <?php endif ?>
-
-                            <?php if (!empty($website['youtube'])): ?>
-                            <li class="youtube"><a target="_blank" href="<?php echo $website['youtube']; ?>"><i class="fa fa-youtube"></i></a></li>
-                            <?php endif ?>                                    
-						</ul>
-						
-                        <div class="social-links hidden-lg hidden-md hidden-sm circle small">
-                            <!--
-                            <div class="btn-group dropdown">
-                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share-alt"></i></button>
-                                <ul class="dropdown-menu dropdown-animation">
-                                    <?php if (!empty($website['facebook'])): ?>
-                                    <li class="facebook"><a target="_blank" href="<?php echo $website['facebook']; ?>"><i class="fa fa-facebook"></i></a></li>
-                                    <?php endif ?>
-
-                                    <?php if (!empty($website['twitter'])): ?>
-                                    <li class="twitter"><a target="_blank" href="<?php echo $website['twitter']; ?>"><i class="fa fa-twitter"></i></a></li>
-                                    <?php endif ?>
-
-                                    <?php if (!empty($website['linkedin'])): ?>
-                                    <li class="linkedin"><a target="_blank" href="<?php echo $website['linkedin']; ?>"><i class="fa fa-linkedin"></i></a></li>
-                                    <?php endif ?>
-
-                                    <?php if (!empty($website['youtube'])): ?>
-                                    <li class="youtube"><a target="_blank" href="<?php echo $website['youtube']; ?>"><i class="fa fa-youtube"></i></a></li>
-                                    <?php endif ?>
-                                </ul>
-                            </div>
-                            -->
-                        </div>
-                        
+				<div class="col-xs-12 col-sm-12 col-md-9">					
+					<div class="header-top-first clearfix fl">
 						<ul class="list-inline hidden-sm">
                             <li>                                
                                 <span itemprop="telephone">097 443 60 40</span>
                             </li>
-                            <?php if (!empty($website['address']) && 1==0): ?>  
-							<li>                                
-                                <i class="fa fa-map-marker pr-5 pl-10"></i>
-                                <a itemprop="address" itemscope itemtype="http://schema.org/PostalAddress" href="<?php echo $this->url('web/contact')?>">
-                                    <?php echo $website['address']; ?>
-                                </a>
-                            </li>
-							<?php endif ?>
-                            
-                            <?php if (!empty($website['phone']) && 1==0): ?> 
-                            <li>
-                                <i class="fa fa-phone pr-5 pl-10"></i>
-                                <span itemprop="telephone"><?php echo $website['phone']; ?></span>
-                            </li>
-							<?php endif ?>
-                            
-                            <?php if (!empty($website['email']) && 1==0): ?> 
-                            <li>                                
-                                <i class="fa fa-envelope-o pr-5 pl-10"></i>
-                                <a itemprop="email" href="mailto:<?php echo $website['email']?>">
-                                    <?php echo $website['email']; ?>
-                                </a>
-                            </li>
-                            <?php endif ?>
 						</ul>
-					</div>
-					<!-- header-top-first end -->
-				</div>
-				<div class="col-xs-6 col-sm-6 col-md-3">
-
-					<!-- header-top-second start -->
-					<!-- ================ -->
-					<div id="header-top-second" class="clearfix">
-
-						<!-- header top dropdowns start -->
-						<!-- ================ -->
+					</div>			
+                    <div style="margin-top:-2px;" id="header-top-second" class="clearfix">				
 						<div class="header-top-dropdown text-right">
                         <?php if (!empty($AppUI)): ?> 
                             <!-- User Account: style can be found in dropdown.less -->
@@ -169,24 +91,23 @@ if (!empty($cartItems)) {
                             </div>
                         <?php else: ?>                
 							<div class="btn-group">
-								<a itemprop="url" href="<?php echo $this->url('web/signup')?>" class="btn btn-default btn-sm">
+								<a style="padding:5px;" itemprop="url" href="<?php echo $this->url('web/signup')?>" class="btn btn-default btn-sm">
                                     <i class="fa fa-user pr-10"></i> 
                                     <span itemprop="name"><?php echo $this->translate('Sign up')?></span>
                                 </a>
 							</div>
 							<div class="btn-group">
-                                <a itemprop="url" href="<?php echo $this->url('web/login')?>" class="btn btn-default btn-sm">
+                                <a style="padding:5px;" itemprop="url" href="<?php echo $this->url('web/login')?>" class="btn btn-default btn-sm">
                                     <i class="fa fa-lock pr-10"></i> 
                                     <span itemprop="name"><?php echo $this->translate('Login')?></span>
                                 </a>								
                             </div>
 						<?php endif; ?>
                         </div>
-                        
-						<!--  header top dropdowns end -->
 					</div>
-					<!-- header-top-second end -->
+                    
 				</div>
+				
 			</div>
 		</div>
 	</div>

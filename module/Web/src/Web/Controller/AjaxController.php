@@ -17,6 +17,7 @@ use Web\Model\LocaleStates;
 use Web\Model\Products;
 use Web\Lib\Api;
 use Web\Lib\Fb;
+use Web\Lib\Blogger;
 use Web\Module as WebModule;
 
 class AjaxController extends AppController
@@ -474,7 +475,7 @@ class AjaxController extends AppController
                 'product_id' => $product['product_id'],
                 'group_only' => 1,
             ]);
-            $groupIds = Arr::rand(app_facebook_groups(), 2);
+            $groupIds = Arr::rand(app_facebook_groups(), 4);
             foreach ($groupIds as $groupId) {                
                 if ($groupId == '378628615584963' && !in_array($AppUI->facebook_id, ['103432203421638'])) {
                     continue;
@@ -1009,94 +1010,404 @@ class AjaxController extends AppController
             $product = Products::getDetail($param['product_id']);
             if (empty($product)) {
                 exit;
-            }         
-            $param['url'] = str_replace('.dev', '.com', $param['url']);
-            $product['url_image'] = str_replace('.dev', '.com', $product['url_image']);
-            $product['url'] = $param['url']  . '?utm_source=blogger&utm_medium=social&utm_campaign=product';
-            $product['content'] = strip_tags($product['content'], '<p><div><span><ul><li><strong><b><br><center>');
-            $product['content'] = str_replace(PHP_EOL, '<br/>', $product['content']);
-            if (!empty($product['images'])) {
-                foreach ($product['images'] as $image) { 
-                    $image['url_image'] = str_replace('.dev', '.com', $image['url_image']);
-                    $product['content'] .= "<center><p><img style=\"width:80%\" src=\"{$image['url_image']}\"/></p></center>";
-                }    
             }
-            $htmlCategories = '<center><table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="0" cellspacing="0" width="90%">   
-                <tr>
-                    <th colspan="2" align="center" bgcolor="#dedede"><strong><a href="http://vuongquocbalo.com?utm_source=blogger&utm_medium=social&utm_campaign=product">VUONGQUOCBALO.COM</a></strong></th>
-                </tr>
-                <tr>
-                    <td>
-                        <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%">   
-                            <tr><td><a href="http://vuongquocbalo.com/tui-xach-nu?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi xách nữ </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-nu?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô Nữ </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-nam?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô Nam </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/tui-xach-cap-tap-nam?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi xách, Cặp táp Nam </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-laptop?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô laptop </a></td></tr>                                                
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-gia-da?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô in giả da </a></td></tr>                                                
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-tui-xach-du-lich?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô, túi xách du lịch </a></td></tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table style="border:0px solid #eee;border-collapse: collapse;" cellpadding="3" cellspacing="0" width="100%"> 
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-mau-giao?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô mẫu giáo </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-1?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô học sinh cấp 1 </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-hoc-sinh-cap-2-3?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô học sinh cấp 2,3 </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/tui-cheo-sinh-vien?utm_source=blogger&utm_medium=social&utm_campaign=product"> Túi chéo sinh viên </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-sinh-vien?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô sinh viên </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-teen?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô teen </a></td></tr>
-                            <tr><td><a href="http://vuongquocbalo.com/ba-lo-in-day-rut?utm_source=blogger&utm_medium=social&utm_campaign=product"> Ba lô in dây rút </a></td></tr>
-                        </table>
-                    </td>
-                </tr>
-            </table></center>';            
-            $product['content'] = implode('<br/>', [
-                $product['short'],                 
-                $product['content'],          
-                "<span style=\"color:#D4232B;float:left;font-size:20px;\">💰 " . app_money_format($product['price']) . "</span><span style=\"text-decoration: line-through;float:left;margin-left:3px;\">" . app_money_format($product['original_price']) . "</span>",               
-                "✈ 🚏 🚕 🚄 Ship TOÀN QUỐC",
-                "<center><a href=\"{$product['url']}\"><img src=\"http://vuongquocbalo.com/web/images/buy-now.png\"/></a></center>",
-                $htmlCategories
-            ]);                
-            $scope = implode(' ' , [
-                \Google_Service_Oauth2::USERINFO_EMAIL, 
-                \Google_Service_Blogger::BLOGGER_READONLY,
-                \Google_Service_Blogger::BLOGGER
-            ]);     
-            $client = new \Google_Client();
-            $client->setClientId(WebModule::getConfig('google_app_id'));
-            $client->setClientSecret(WebModule::getConfig('google_app_secret'));
-            $client->setRedirectUri(WebModule::getConfig('google_app_redirect_uri'));
-            $client->addScope($scope);
-            try {
-                $client->setAccessToken($AppUI->google_access_token);
-                $service = new \Google_Service_Blogger($client);
-                $bloggerPost = new \Google_Service_Blogger_Post();
-                $bloggerPost->setTitle($product['name']);
-                $bloggerPost->setContent($product['content']);
-                $labels = [];
-                if (!empty($product['categories'])) {
-                    foreach ($product['categories'] as $category) {
-                        $labels[] = $category['name'];
-                    }
-                }             
-                $bloggerPostImage = new \Google_Service_Blogger_PostImages();
-                $bloggerPostImage->setUrl($product['url_image']);
-                $bloggerPost->setLabels($labels);                  
-                $bloggerPost->setImages($bloggerPostImage);
-                $post = $service->posts->insert(WebModule::getConfig('blogger_blog_id'), $bloggerPost);  
+            if (empty($AppUI->google_access_token) || strtotime($AppUI->access_token_expires_at) < time()) {
                 $result = array(
                     'status' => 'OK',
-                    'message' => $post->getId(),
+                    'message' => 'Invalid user or Token have been expired',
                 );
-                die(\Zend\Json\Encoder::encode($result));                
-            } catch (\Exception $e) {
-                $result = array(
-                    'status' => 'OK',
-                    'message' => $e->getMessage(),
-                );
-                die(\Zend\Json\Encoder::encode($result));
+                die(\Zend\Json\Encoder::encode($result));   
+            }
+            $data['name'] = $product['name'];
+            if ($product['website_id'] == 1) {
+                $siteUrl = 'http://vuongquocbalo.com';                
+                $product['url'] = $siteUrl . '/' . name_2_url($product['name']) . '?utm_source=blogger&utm_medium=social&utm_campaign=product';
+				$product['content'] = strip_tags($product['content'], '<p><div><span><ul><li><strong><b><br><center>');
+				if (!empty($product['images'])) {
+					foreach ($product['images'] as $image) { 
+						$image['url_image'] = str_replace('.dev', '.com', $image['url_image']);
+						$product['content'] .= "<center><p><img style=\"width:80%\" src=\"{$image['url_image']}\"/></p></center>";
+					}    
+				}
+			} else {
+                $siteUrl = 'http://thoitrang1.net';                
+                $product['url'] = $siteUrl . '/' . name_2_url($product['name']) . '?utm_source=blogger&utm_medium=social&utm_campaign=product';
+				$product['content'] = strip_tags($product['content'], '<p><div><span><ul><li><strong><b><br><center>');
+                if (!empty($product['images'])) {
+					foreach ($product['images'] as $image) { 
+						$image['url_image'] = str_replace('.vn', '.net', $image['url_image']);
+						$product['content'] .= "<center><p><img style=\"width:80%\" src=\"{$image['url_image']}\"/></p></center>";
+					}    
+				}
+            }
+            $blogs = [];
+            $labels = [];
+            if (!empty($product['categories'])) {
+                foreach ($product['categories'] as $category) {
+                    $labels[] = $category['name'];
+                    $blogId = app_bloggers($category['category_id']);
+					if (!empty($blogId)) {
+						$blogs = array_merge($blogs, $blogId);
+					}
+                }
             }            
+            if (array_intersect([15, 16], $product['category_id'])) {
+                $data['content'] = implode('<br/>', [                
+                        $product['content'],
+                        "<center style=\"width:100%;color:#D4232B;font-size:30px;padding:5px;\"> Giá: " . app_money_format($product['price']) . '</center>',               
+                        "<center><p><a href=\"{$product['url']}\"><img src=\"{$siteUrl}/web/images/buy_now.gif\"/></a></p></center>",		
+                    ]
+                );
+                if (!empty($product['attributes'])) {
+                    foreach ($product['attributes'] as $attribute) {
+                        if (!empty($attribute['value'])) {
+                            $labels[] = $attribute['value'];
+                        }
+                    } 
+                }
+            } else {
+                $data['content'] = implode('<br/>', [                
+                        $product['short'],
+                        $product['content'],
+                        "<center style=\"width:100%;color:#D4232B;font-size:30px;padding:5px;\"> Giá: " . app_money_format($product['price']) . '</center>',               
+                        "<center><p><a href=\"{$product['url']}\"><img src=\"http://vuongquocbalo.com/web/images/buy_now.gif\"/></a></p></center>",		
+                    ]
+                );
+            }
+            $data['labels'] = $labels;
+            $result = [];
+			if (!empty($blogs)) {
+				$blogs = array_unique($blogs);
+				foreach ($blogs as $blogId) {
+                    $check = Api::call('url_bloggerpostids_all', [
+                        'product_id' => $product['product_id'],
+                        'blog_id' => $blogId                
+                    ]);
+                    if (empty($check)) {
+                        $postId = Blogger::post($blogId, $data, $AppUI->google_access_token, $errorMessage);
+                        if (!empty($postId)) {
+                            $result[$blogId] = $postId;
+                            Api::call('url_bloggerpostids_add', [
+                                'product_id' => $product['product_id'],
+                                'blog_id' => $blogId,
+                                'post_id' => $postId,                
+                            ]);
+                        } else {
+                            $result[$blogId] = $errorMessage;
+                        }
+                    } else {
+                        $result[$blogId] = 'Posted';
+                    }
+				}
+				$result = array(
+					'status' => 'OK',
+					'message' => implode('<br/>', $result),
+				);
+			} else {
+				$result = array(
+					'status' => 'OK',
+					'message' => 'Not found Blog ID',
+				);
+			}
+            die(\Zend\Json\Encoder::encode($result));       
+        }
+        exit;
+    }
+    
+    /**
+     * Copy Product
+     *
+     * @return Zend\View\Model
+     */
+    public function copyproductAction()
+    {
+        include_once getcwd() . '/include/simple_html_dom.php';
+        $request = $this->getRequest();  
+        $param = $this->getParams(array(                      
+            'product_id' => 0,            
+            'category_id' => 0,            
+        ));
+        $id = $param['product_id'];
+        $data = Products::getDetail($id);
+        // not found data
+        if (empty($data)) {
+            return $this->notFoundAction();
+        }
+        $data['tags'] = [];
+        if (!empty($data['categories'])) {            
+            foreach ($data['categories'] as $category) {                
+                if ($data['website_id'] == 1) {      
+                    if ($category['category_id'] == 16) {          
+                        $category['name'] = 'Túi rút';
+                    }
+                    $category['name'] = str_replace('Ba Lô', 'balo', $category['name']);
+                }
+                $data['tags'][] = $category['name'];
+            }            
+        }
+        $size = '';
+        if (!empty($data['attributes'])) {            
+            foreach ($data['attributes'] as $attribute) {
+                if (in_array($attribute['field_id'], [7,9]) && empty($size)) {                                    
+                    $size = $attribute['value'];
+                }
+                if ($attribute['field_id'] == 1) {
+                    $data['tags'][] = $attribute['name'] . ' ' . $attribute['value'];
+                }
+            }
+        }
+        $data['tags'] = strtolower(implode(',', $data['tags'])); 
+        if (!empty($data['more']) && $data['website_id'] == 1) {            
+            $html = str_get_html($data['more']);
+            foreach($html->find('p') as $element) {
+                if (strpos(strtolower($element->innertext), 'cm') !== false) {
+                    $data['size'] = $element->innertext;
+                    $data['size'] = str_replace("&nbsp;", " ", $data['size']);
+                    $data['size'] = preg_replace("/\s+/", " ", $data['size']);
+                    $data['size'] = str_replace('Kích thước:', '', $data['size']);
+                    $data['size'] = str_replace('Kích thước', '', $data['size']);                    
+                    $data['size'] = trim(html_entity_decode($data['size']), " \t\n\r\0\x0B\xC2\xA0");
+                    $data['size'] = trim($data['size']);
+                    if ($data['size'] != $size) {
+                        if (Api::call('url_products_updatesizeattr', [
+                            'category_id' => $param['category_id'], 
+                            'product_id' => $id, 
+                            'field_id' => $data['website_id'] == 1 ? 7 : 9, 
+                            'value' => $data['size']])) {
+                            Products::removeCache($id);   
+                            $data = Products::getDetail($id);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        $data['name'] = str_replace(['&'], ['and'], $data['name']);        
+        if (array_intersect([15], $data['category_id'])) {      
+            $data['price'] = '187000';
+            $data['content'] = implode(PHP_EOL, [                
+                    '- Kích thước ngang 32 x cao 41.5 x rộng 14.5 (cm), có 2 ngăn để vừa laptop 14", có chổ để bình nước',
+                    '- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                    '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng'
+                ]
+            );
+            $data['size'] = 'Ngang 32 x cao 41.5 x rộng 14.5 (cm)';
+            $data['weight'] = '550';
+            $data['material'] = 'Simili';
+        } elseif (array_intersect([16], $data['category_id'])) {
+            $data['price'] = '69000';
+            $data['content'] = implode(PHP_EOL, [                
+                    '- Kích thước 29 x 40 (cm)',
+                    '- Ba lô dây rút hàng Việt Nam xuất khẩu, chất lượng đảm bảo',               
+                    '- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn',               
+                    '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng'
+                ]
+            );
+            $data['size'] = '29 x 40 (cm)';
+            $data['weight'] = '250';
+            $data['material'] = 'Simili';
+        } else {
+            $data['price'] = $data['price'] - round((5/100)*$data['price'], -3);
+            $data['content'] = strip_tags($data['content'], '<p><b><strong><div><span><br><ul><li>');
+        }
+        if (!empty($data['attributes'])) {         
+            if (!empty($data['attributes']) && !array_intersect([15, 16], $data['category_id'])) {  
+                if (!empty(strip_tags($data['content']))) {
+                    $data['content'] = '<strong>TÓM TẮC SẢN PHẨM:</strong><br>' . $data['content'];
+                    $data['content'] .= PHP_EOL;
+                } else {
+                    $data['content'] = '';
+                }
+                $data['content'] = '';
+                $data['content'] .= '<strong>THÔNG TIN SẢN PHẨM:</strong>' . PHP_EOL;
+                $data['content'] .= '<ul>';               
+                foreach ($data['attributes'] as $attribute) {
+                    if (!empty($attribute['value'])) {
+                        $data['content'] .= '<li>' . $attribute['name'] . ': ' . $attribute['value'] . '</li>'; 
+                    }
+                    if ($attribute['name'] == 'Kích Thước') {
+                        $data['size'] = $attribute['value'];
+                    }
+                    if ($attribute['name'] == 'Chất liệu') {
+                        $data['material'] = $attribute['value'];
+                    }
+                }
+                $data['content'] .= '</ul>';
+            } else {
+                $renamed = false;
+                foreach ($data['attributes'] as $attribute) {
+                    if ($renamed == false && array_intersect([15], $data['category_id']) && $attribute['field_id'] == 1) {
+                        $data['name'] = str_replace(['BL '], ['Balo Teen - Học sinh - Laptop '], $data['name']);
+                        $renamed = true;
+                    } elseif ($renamed == false && array_intersect([16], $data['category_id']) && $attribute['field_id'] == 1) {
+                        $data['name'] = str_replace(['Túi rút '], ['Balo dây rút - Túi rút ' . strtolower($attribute['value']) . ' '], $data['name']);
+                        if (strlen($data['name']) > 70) {
+                            $data['name'] = 'Balo dây rút - Túi rút ' .  strtolower($attribute['value']) . ' - ' . $data['code'];
+                        }
+                        $renamed = true;
+                    }
+                    if (!empty($attribute['value'])) {
+                        $data['content'] .= PHP_EOL . '- ' . $attribute['name'] . ': ' . $attribute['value']; 
+                    }
+                }
+            }
+        }      
+        if (!empty($data['more'])) {  
+            $data['weight'] = '700';
+            if (array_intersect([75, 76, 77, 78], $data['category_id'])) {
+                $data['weight'] = '400';
+            } elseif (array_intersect([20,21], $data['category_id'])) {
+                $data['weight'] = '200';
+            } elseif (array_intersect([66], $data['category_id'])) {
+                $data['weight'] = '450';
+            } elseif (array_intersect([65], $data['category_id'])) {
+                $data['weight'] = '400';
+            }
+            $data['more'] = preg_replace('#(<br */?>\s*)+#i', '<br>', $data['more']); 
+            $data['more'] = strip_tags($data['more'], '<br><p>');
+            $data['content'] .= PHP_EOL . '<strong>MÔ TẢ CHI TIẾT SẢN PHẨM ' . mb_strtoupper($data['name']) . ':</strong>' . PHP_EOL . $data['more'] . PHP_EOL;
+        }
+        /*
+        $data['content'] = preg_replace('/(\s\s+|\t)/', ' ',$data['content']);
+        $data['content'] = str_replace(['<br>','<p>','<p style="text-align: justify;">','<li style="text-align: justify;">','</p>'], [PHP_EOL,PHP_EOL,PHP_EOL,PHP_EOL,''], $data['content']);            
+        if (array_intersect([1,2,3,4,5,6], $data['category_id'])) { 
+            $data['weight'] = 400;
+            $data['seo'] = 'túi xách, cặp táp nam nữ, túi chéo, túi đeo chéo, túi chéo sinh viên, balo nam nữ, bóp ví nam nữ';           
+        } elseif (array_intersect([20,21], $data['category_id'])) {
+            $data['weight'] = 150;
+            $data['seo'] = 'túi xách, cặp táp nam nữ, túi chéo, túi đeo chéo, túi chéo sinh viên, balo nam nữ, bóp ví nam nữ';           
+        } elseif (array_intersect([69,70], $data['category_id'])) {
+            $data['weight'] = 300;
+            $data['seo'] = 'đầm suông, đầm xòe, đầm maxi, đầm ôm, đầm dạ hội, đầm xếp ly, đầm denim, đầm trễ vai, đầm hai dây';           
+        } */ 
+        $data['name'] = str_replace("'", '', $data['name']);
+        $data['name'] = preg_replace('/(\s\s+|\t|\n)/', ' ', $data['name']);
+        $data['content'] = str_replace(
+            [
+                'vuongquocbalo.com', 
+                'thoitrang1.net',
+                '<p></p>'
+            ], 
+            [
+                '<strong>vuongquocbalo.com</strong>', 
+                '<strong>thoitrang1.net</strong>',
+                ''
+            ], 
+            $data['content']
+        );
+        $data['content_html'] = str_replace([PHP_EOL,"'"], ['<br>',''], $data['content']);
+        $data['js'] = preg_replace('/(\s\s+|\t|\n)/', '', "$('#inputProductName').val('{$data['name']}');
+            $('#inputProductCode').val('{$data['code']}');
+            $('#inputProductPrice').val('{$data['price']}');
+            $('.for-dv select').val('Single').change();
+            $('.weight').eq(0).val('{$data['material']}');
+            $('.weight').eq(1).val('{$data['size']}');
+            $('.form-group-volume input').val('{$data['weight']}');            
+            if ($('.for-orig select').length > 0) {
+                $('.for-orig select').find('option[text=\"Việt Nam\"]').attr('selected', true);
+                $('.for-dv select').val('Single').change();
+            }
+            $('#inputProductName').trigger('change');
+            $('#inputProductCode').trigger('change');
+            $('#inputProductPrice').trigger('keyup');
+            $('#inputProductPrice').trigger('blur');
+            $('.for-dv select').trigger('change');
+            $('.weight').eq(0).trigger('change');
+            $('.weight').eq(1).trigger('change');
+            $('.form-group-volume input').trigger('blur');
+            tinyMCE.execCommand('fontSize', false, '12pt');
+            tinyMCE.activeEditor.setContent('<div style=\"font-size:14px\">{$data['content_html']}</div><br><br>');
+            $('html, body').animate({ scrollTop: 200}, 100);");
+        return $this->getViewModel(array(
+                'data' => $data
+            )
+        );  
+    }
+    
+    /**
+     * Ajax share to facecbook group
+     *
+     * @return Zend\View\Model
+     */
+    public function sdshareAction()
+    {   
+        set_time_limit(0);
+        if (!$this->isAdmin()) {
+            exit;
+        }       
+        $AppUI = $this->getLoginInfo(); 
+        $request = $this->getRequest();    
+        $param = $this->getParams();
+        if ($request->isXmlHttpRequest() 
+            && $request->isPost()
+            && !empty($param['url'])
+            && !empty($param['product_id'])
+            && !empty($AppUI->facebook_id)
+            && !empty($AppUI->fb_access_token)) {
+            $product = Products::getDetail($param['product_id']);
+            if (empty($product)) {
+                exit;
+            }            
+            if (empty($product['image_facebook']) || 1) {
+                Api::call('url_products_updatefbimage', [
+                    'products' => \Zend\Json\Encoder::encode([
+                        [
+                            'website_id' => $product['website_id'], 
+                            'product_id' => $product['product_id'], 
+                            'url_image' => $product['url_image'],
+                            'name' => $product['name'],
+                        ]
+                    ])
+                ]);
+                $product = Products::getDetail($product['product_id'], 1);
+            }           
+            if (empty($product['url_other'])) {
+                $product = Products::getDetail($param['product_id'], 1);
+                if (empty($product['url_other'])) {
+                    $result = array(
+                        'status' => 'OK',
+                        'message' => 'Not exist on sendo.vn',
+                    );
+                    die(\Zend\Json\Encoder::encode($result));
+                }
+            }               
+            $caption = 'sendo.vn - Shop Balo Học Sinh, Teen';
+            if (array_intersect([15], $product['category_id'])) { 
+                $product['price'] = '178000';                
+            } elseif (array_intersect([16], $product['category_id'])) {
+                $product['price'] = '69000';
+            } else { 
+                $product['price'] = $product['price'] - round((5/100)*$product['price'], -3);
+                $caption = 'sendo.vn - Shop Thời Trang Zanado';
+            }
+            $product['original_price'] = 0;
+            $track = 'utm_source=facebook&utm_medium=social&utm_campaign=product_sendo';
+            if ($product['website_id'] == 1) {        
+                $product['url'] = "http://vuongquocbalo.com/sendo?{$track}&id={$product['product_id']}&u={$product['url_other']}";                
+            } else {
+                $product['url'] = "http://thoitrang1.net/sendo?{$track}&id={$product['product_id']}&u={$product['url_other']}";        
+            }    
+            $product['short_url'] = Util::googleShortUrl($product['url']); 
+            $data = app_get_fb_share_content($product, $caption);
+            $result = [];           
+            //$groupIds = Arr::rand(app_facebook_groups(), 6);
+            $groupIds = app_facebook_groups();            
+            foreach ($groupIds as $groupId) {                
+                if ($groupId == '378628615584963' && !in_array($AppUI->facebook_id, ['103432203421638'])) {
+                    continue;
+                }
+                $id = Fb::postToGroup($groupId, $data, $AppUI->fb_access_token, $errorMessage);
+                if (!empty($id)) {
+                   $result[] = "Group:{$groupId} - Post:{$id}";             
+                } else {
+                    $result[] = "Group:{$groupId}: - Post:{$errorMessage}"; 
+                }
+            }
+            $result = array(
+                'status' => 'OK',
+                'message' => implode('<br/>', $result),
+            );
+            die(\Zend\Json\Encoder::encode($result));
         }
         exit;
     }

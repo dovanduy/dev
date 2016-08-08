@@ -28,6 +28,7 @@ return array(
     'facebook_admins' => '129746714106531',
     'facebook_app_id' => '1679604478968266',
     'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+    'facebook_login_file' => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize',
     
     'google_app_id' => '262987808969-jbn8697q26rfdkj48uu71qeirhcpch7q.apps.googleusercontent.com',
     'google_app_secret' => 'dk1V5W0lodxaD1xEXZYEeMfN',
@@ -37,9 +38,8 @@ return array(
 	'google_app_id2' => '692650781994-mv3unhde1gf92i26s3qajrrbrs9hbsae.apps.googleusercontent.com',
     'google_app_secret2' => 'kEAA8MNKgFbmhL3ZDU9U4eTp',
     'google_app_redirect_uri2' => 'http://vuongquocbalo.com/glogin2',
-    
-    'blogger_blog_id' => '7504283056362133341',
-	
+    'google_login_file' => getcwd() . '/shell/vuongquocbalo/google_login.serialize',
+   	
     'site_name' => 'vuongquocbalo',   
     'head_meta' => array(
         'owner' => 'vuongquocbalo',

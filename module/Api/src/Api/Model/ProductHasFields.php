@@ -280,4 +280,51 @@ class ProductHasFields extends AbstractModel {
         }
     }
     
+    public function addUpdateOne($param)
+    {   
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        $fieldModel = new InputFields;
+        $field = $fieldModel->getDetail([
+            'field_id' => $param['field_id']
+        ]);
+        if (empty($field)) {
+            self::errorNotExist('field_id');
+            return false;
+        }
+        if (empty($param['value'])) {
+            self::errorParamInvalid('value');
+            return false;
+        }
+        if (!empty($param['category_id'])) {
+            $categoryHasFieldModel = new ProductCategoryHasFields;
+            $categoryHasFieldModel->addField([
+                'category_id' => $param['category_id'],
+                'field_id' => $param['field_id'],
+            ]);
+        }
+        $param['value'] = trim($param['value']);
+        $value = [
+            'product_id' => $param['product_id'],
+            'field_id' => $param['field_id'],
+            'value' => $param['value'],
+            'created' => new Expression('UNIX_TIMESTAMP()'),
+            'updated' => new Expression('UNIX_TIMESTAMP()'),            
+        ];
+        if ($field['type'] == 'text') {
+            $value['value_id'] = 0; 
+        }        
+        $value['value_search'] = '[' . name_2_url($field['name'] . '-' . $param['value']) . ']';
+        if (self::batchInsert($value, [
+            'value_id' => new Expression('VALUES(`value_id`)'),
+            'value' => new Expression('VALUES(`value`)'),
+            'value_search' => new Expression('VALUES(`value_search`)'),
+            'updated' => new Expression('UNIX_TIMESTAMP()')])
+        ) {
+            return true;
+        }        
+        return false;        
+    }
+    
 }

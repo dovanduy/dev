@@ -908,7 +908,12 @@ class Users extends AbstractModel {
                 'mobile',   
             ))
             ->join(
-                'user_googles', 
+                array(
+                    'user_googles' => 
+                    $sql->select()
+                        ->from('user_googles')
+                        ->where("website_id = ". self::quote($param['website_id']))
+                ),
                 static::$tableName . '.user_id = user_googles.user_id',
                 array(
                     'google_id',
@@ -930,59 +935,16 @@ class Users extends AbstractModel {
             ->offset(0);
         $selectString = $sql->getSqlStringForSqlObject($select);
         $result = static::getDb()->query($selectString, Adapter::QUERY_MODE_EXECUTE); 
-        $user = self::response($result, self::RETURN_TYPE_ONE);   
-        $userGoogleModel = new UserGoogles;    
-        $image = new Images;
-        if (!empty($user['user_id'])) {
-            if (empty($user['google_email'])) {
-                $userGoogleModel->insert(array(
-                    'user_id' => $user['user_id'],
-                    'google_id' => $param['google_id'],
-                    'google_email' => $param['google_email'],
-                    'google_name' => $param['google_name'],
-                    'google_username' => $param['google_username'],                    
-                    'google_first_name' => $param['google_first_name'],
-                    'google_last_name' => $param['google_last_name'],
-                    'google_link' => $param['google_link'],
-                    'google_image' => $param['google_image'],
-                    'google_gender' => $param['google_gender'],
-                    'access_token' => $param['access_token'],
-                    'access_token_expires_at' => $param['access_token_expires_at'],
-                ));
-            } else {  
-                $set = [
-                    'google_id' => $param['google_id'],                            
-                    'google_email' => $param['google_email'],
-                    'google_name' => $param['google_name'],
-                    'google_username' => $param['google_username'],                    
-                    'google_first_name' => $param['google_first_name'],
-                    'google_last_name' => $param['google_last_name'],
-                    'google_link' => $param['google_link'],
-                    'google_image' => $param['google_image'],
-                    'google_gender' => $param['google_gender'],
-                ];
-                if (empty($user['access_token']) 
-                    || empty($user['access_token_expires_at'])
-                    || strtotime($user['access_token_expires_at']) < time()) {
-                    $set['access_token'] = $param['access_token'];
-                    $set['access_token_expires_at'] = $param['access_token_expires_at'];
-                } else {
-                    $param['access_token'] = $user['access_token'];
-                    $param['access_token_expires_at'] = $user['access_token_expires_at'];
-                }
-                $userGoogleModel->update(array(                        
-                    'set' => $set,
-                    'where' => array('user_id' => $user['user_id'])
-                ));
-            }
-        } else {
+        $user = self::response($result, self::RETURN_TYPE_ONE); 
+        if (empty($user['user_id'])) { 
+            $isFirstLogin = 1;
             if ($param['google_gender'] == 'male') {
                 $param['gender'] = 1;
             } elseif ($param['google_gender'] == 'female') {
                 $param['gender'] = 2;
             } else {
                 $param['gender'] = 0;
-            }
+            }            
             $param['name'] = array();
             if (!empty($param['google_last_name'])) {
                 $param['name'][] = $param['google_last_name'];
@@ -999,51 +961,168 @@ class Users extends AbstractModel {
                 'gender' => $param['gender'],
                 'website_id' => $param['website_id'],
             ), $user['user_id']);
-            if (!empty($user['user_id'])) {
-                $isFirstLogin = 1;
-                $param['image_id'] = $image->add(array(
-                    'src' => 'users',
-                    'src_id' => $user['user_id'],
-                    'url_image' => $param['google_image'],
-                    'is_main' => 1,
-                ));   
+            if (empty($user['user_id'])) {
+                return false;
+            }          
+        }
+        // no update new token
+        if (!empty($user['access_token']) 
+            && !empty($user['access_token_expires_at'])
+            && strtotime($user['access_token_expires_at']) > time()) {
+            unset($param['access_token']);
+            unset($param['access_token_expires_at']);
+        } else {
+            $user['access_token'] = $param['access_token'];
+            $user['access_token_expires_at'] = $param['access_token_expires_at'];
+        }
+        if (empty($user['image_id'])) {
+            $imageModel = new Images;
+            $imageId = $imageModel->add(array(
+                'src' => 'users',
+                'src_id' => $user['user_id'],
+                'url_image' => $param['google_image'],
+                'is_main' => 1,
+            ));
+            if (!empty($imageId)) {
                 self::update(array(
-                    'set' => array(
-                        'image_id' => $param['image_id']
-                    ),
-                    'where' => array('user_id' => $user['user_id'])
-                ));
-                $userGoogleModel->insert(array(
-                    'user_id' => $user['user_id'],
-                    'google_id' => $param['google_id'],
-                    'google_email' => $param['google_email'],
-                    'google_name' => $param['google_name'],
-                    'google_username' => $param['google_username'],                    
-                    'google_first_name' => $param['google_first_name'],
-                    'google_last_name' => $param['google_last_name'],
-                    'google_link' => $param['google_link'],
-                    'google_image' => $param['google_image'],
-                    'google_gender' => $param['google_gender'],
-                    'access_token' => $param['access_token'],
-                    'access_token_expires_at' => $param['access_token_expires_at'],
+                    'table' => 'users',
+                    'set' => ['image_id' => $imageId],
+                    'where' => ['user_id' => $user['user_id']]
                 ));
             }
-        }       
-        if (!empty($user['_id'])) {            
+        }
+        $param['user_id'] = $user['user_id'];
+        $userGoogleModel = new UserGoogles;  
+        if ($userGoogleModel->addUpdate($param)) {
             $websiteHasUserModel = new WebsiteHasUsers;
             $websiteHasUserModel->addUpdate(array(
                 'website_id' => $param['website_id'],
                 'user_id' => $user['user_id'],
             ));
-            $user = self::getLogin(array('_id' => $user['_id']));
-            $user['is_first_login'] = $isFirstLogin;
-            $user['google_id'] = $param['google_id'];
-            if (!empty($param['access_token']) && !empty($param['access_token_expires_at'])) {
-                $user['access_token'] = $param['access_token'];
-                $user['access_token_expires_at'] = $param['access_token_expires_at'];
+            $login = self::getLogin(array('user_id' => $user['user_id']));
+            $login['is_first_login'] = $isFirstLogin;
+            $login['google_id'] = $param['google_id'];
+            if (!empty($user['access_token']) && !empty($user['access_token_expires_at'])) {
+                $login['access_token'] = $user['access_token'];
+                $login['access_token_expires_at'] = $user['access_token_expires_at'];
             }
-            return $user;
+            return $login;
         }
+        
+//        
+//        $userGoogleModel = new UserGoogles;    
+//        $image = new Images;
+//        if (!empty($user['user_id'])) {
+//            if (empty($user['google_email'])) {
+//                $userGoogleModel->insert(array(
+//                    'user_id' => $user['user_id'],
+//                    'google_id' => $param['google_id'],
+//                    'google_email' => $param['google_email'],
+//                    'google_name' => $param['google_name'],
+//                    'google_username' => $param['google_username'],                    
+//                    'google_first_name' => $param['google_first_name'],
+//                    'google_last_name' => $param['google_last_name'],
+//                    'google_link' => $param['google_link'],
+//                    'google_image' => $param['google_image'],
+//                    'google_gender' => $param['google_gender'],
+//                    'access_token' => $param['access_token'],
+//                    'access_token_expires_at' => $param['access_token_expires_at'],
+//                ));
+//            } else {  
+//                $set = [
+//                    'google_id' => $param['google_id'],                            
+//                    'google_email' => $param['google_email'],
+//                    'google_name' => $param['google_name'],
+//                    'google_username' => $param['google_username'],                    
+//                    'google_first_name' => $param['google_first_name'],
+//                    'google_last_name' => $param['google_last_name'],
+//                    'google_link' => $param['google_link'],
+//                    'google_image' => $param['google_image'],
+//                    'google_gender' => $param['google_gender'],
+//                ];
+//                if (empty($user['access_token']) 
+//                    || empty($user['access_token_expires_at'])
+//                    || strtotime($user['access_token_expires_at']) < time()) {
+//                    $set['access_token'] = $param['access_token'];
+//                    $set['access_token_expires_at'] = $param['access_token_expires_at'];
+//                } else {
+//                    $param['access_token'] = $user['access_token'];
+//                    $param['access_token_expires_at'] = $user['access_token_expires_at'];
+//                }
+//                $userGoogleModel->update(array(                        
+//                    'set' => $set,
+//                    'where' => array('user_id' => $user['user_id'])
+//                ));
+//            }
+//        } else {
+//            if ($param['google_gender'] == 'male') {
+//                $param['gender'] = 1;
+//            } elseif ($param['google_gender'] == 'female') {
+//                $param['gender'] = 2;
+//            } else {
+//                $param['gender'] = 0;
+//            }
+//            $param['name'] = array();
+//            if (!empty($param['google_last_name'])) {
+//                $param['name'][] = $param['google_last_name'];
+//            }
+//            if (!empty($param['google_first_name'])) {
+//                $param['name'][] = $param['google_first_name'];
+//            }
+//            $param['name'] = !empty($param['name']) ? implode(' ', $param['name']) : '';
+//            $user['_id'] = self::add(array(              
+//                'email' => $param['google_email'],
+//                'username' => $param['google_username'],
+//                'display_name' => $param['google_name'],                                    
+//                'name' => $param['name'], 
+//                'gender' => $param['gender'],
+//                'website_id' => $param['website_id'],
+//            ), $user['user_id']);
+//            if (!empty($user['user_id'])) {
+//                $isFirstLogin = 1;
+//                $param['image_id'] = $image->add(array(
+//                    'src' => 'users',
+//                    'src_id' => $user['user_id'],
+//                    'url_image' => $param['google_image'],
+//                    'is_main' => 1,
+//                ));   
+//                self::update(array(
+//                    'set' => array(
+//                        'image_id' => $param['image_id']
+//                    ),
+//                    'where' => array('user_id' => $user['user_id'])
+//                ));
+//                $userGoogleModel->insert(array(
+//                    'user_id' => $user['user_id'],
+//                    'google_id' => $param['google_id'],
+//                    'google_email' => $param['google_email'],
+//                    'google_name' => $param['google_name'],
+//                    'google_username' => $param['google_username'],                    
+//                    'google_first_name' => $param['google_first_name'],
+//                    'google_last_name' => $param['google_last_name'],
+//                    'google_link' => $param['google_link'],
+//                    'google_image' => $param['google_image'],
+//                    'google_gender' => $param['google_gender'],
+//                    'access_token' => $param['access_token'],
+//                    'access_token_expires_at' => $param['access_token_expires_at'],
+//                ));
+//            }
+//        }       
+//        if (!empty($user['_id'])) {            
+//            $websiteHasUserModel = new WebsiteHasUsers;
+//            $websiteHasUserModel->addUpdate(array(
+//                'website_id' => $param['website_id'],
+//                'user_id' => $user['user_id'],
+//            ));
+//            $user = self::getLogin(array('_id' => $user['_id']));
+//            $user['is_first_login'] = $isFirstLogin;
+//            $user['google_id'] = $param['google_id'];
+//            if (!empty($param['access_token']) && !empty($param['access_token_expires_at'])) {
+//                $user['access_token'] = $param['access_token'];
+//                $user['access_token_expires_at'] = $param['access_token_expires_at'];
+//            }
+//            return $user;
+//        }
         return false;
     }
     

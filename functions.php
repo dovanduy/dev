@@ -540,7 +540,24 @@ function app_file_put_contents($targetFileName, $content, $echoFlag = false) {
     return $ok;
 }
 
-function app_get_fb_share_content($product) {    
+function app_get_fb_share_content($product, $caption = null) {  
+
+    if ($product['website_id'] == 1) {        
+        $siteUrl = 'http://vuongquocbalo.com';
+        if (empty($caption)) {
+            $caption = 'vuongquocbalo.com';
+        }
+		$icon = '💼';        
+    } else {
+        $siteUrl = 'http://thoitrang1.net';
+        if (empty($caption)) {
+            $caption = 'thoitrang1.net';
+        }
+		$icon = '👔';
+    }
+    if (!array_intersect([15, 16], $product['category_id'])) {
+        $icon .= ' [THỜI TRANG ZANADO]';
+    }
     $price = app_money_format($product['price']);
     if (!empty($product['original_price'])) {
         $price .= ' (giá trước đây ' . app_money_format($product['original_price']) . ')';
@@ -549,19 +566,27 @@ function app_get_fb_share_content($product) {
     if (in_array(substr($short, -1), ['.', ',', ';', '-', '_'])) {
         $short = substr($short, 0, strlen($short) - 1);
     }
+    if (empty($product['url'])) {
+        $product['url'] = $siteUrl . '/' . name_2_url($product['name']) . '?utm_source=facebook&utm_medium=social&utm_campaign=product';
+    }
+    if (empty($product['short_url'])) {
+        $product['short_url'] = app_short_url($product['url']);
+    } 
     $short .= " - chi tiết {$product['short_url']}";
     $data = [
         'message' => implode(PHP_EOL, [
-            "💼 {$product['name']}",
+            "{$icon} {$product['name']}",
             "💰 {$price}",             
-            "📞 097 443 60 40 - 098 65 60 997",                 
+            //"📞 097 443 60 40 - 098 65 60 997",                 
             "❝ {$short} ❞",
             "✈ 🚏 🚕 🚄 Ship TOÀN QUỐC",            
         ]),
-        'link' => $product['url'],
-        'picture' => $product['image_facebook'],
-        'caption' => 'vuongquocbalo.com'
+        'link' => $product['url'],        
+        'caption' => $caption
     ];
+    if (!empty($product['image_facebook'])) {
+        $data['picture'] = $product['image_facebook'];
+    }
     if (!empty($product['tags'])) {
         $data['tags'] = is_array($product['tags']) ? implode(',', $product['tags']) : $product['tags'];
     }
@@ -907,27 +932,27 @@ if (!function_exists('app_bloggers')) {
         $blogs = [
             '4029409002377533713' => [                
                 'url' => 'http://dolot-namnu.blogspot.com/',
-                'categories' => []
+                'categories' => [65, 66, 85, 86]
             ],
             '8354038990681577795' => [
                 'url' => 'http://balohs.blogspot.com/',
-                'categories' => []
+                'categories' => [8, 9, 10]
             ],
             '6785887626226742648' => [
                 'url' => 'http://balosv.blogspot.com/',
-                'categories' => []
+                'categories' => [12, 13]
             ],
             '6127647545379207498' => [
                 'url' => 'http://tuixach-nam.blogspot.com/',
-                'categories' => []
+                'categories' => [5, 6, 21]
             ],
             '7043789476566410639' => [
                 'url' => 'http://tuixach-nu.blogspot.com/',
-                'categories' => []
+                'categories' => [2, 3, 20]
             ],
             '3597765508119977852' => [
                 'url' => 'http://vaydam-nu.blogspot.com/',
-                'categories' => []
+                'categories' => [69, 70]
             ],
             '8682455286264257014' => [
                 'url' => 'http://vaydamteen.blogspot.com/',
@@ -935,15 +960,15 @@ if (!function_exists('app_bloggers')) {
             ],
             '356436408663739932' => [
                 'url' => 'http://ttnam.blogspot.com/',
-                'categories' => []
+                'categories' => [76, 77, 78, 80, 81, 82, 87, 5, 6, 21]
             ],
             '1186553982152317300' => [
                 'url' => 'http://ttnu.blogspot.com/',
-                'categories' => []
+                'categories' => [51, 52, 53, 54, 56, 57, 58, 60, 61, 62, 62, 69, 70, 2, 3, 20]
             ],
             '8907742852579159487' => [
                 'url' => 'http://balogiada.blogspot.com/',
-                'categories' => []
+                'categories' => [15]
             ],
             '5115517794363944463' => [
                 'url' => 'http://tuirutdep.blogspot.com/',
@@ -951,7 +976,7 @@ if (!function_exists('app_bloggers')) {
             ],
             '7504283056362133341' => [
                 'url' => 'http://vuongquocbalo.blogspot.com/',
-                'categories' => []
+                'categories' => [2, 3, 20, 5, 6, 21, 15, 16]
             ],                    
         ];        
         if (!empty($categoryId)) {
@@ -963,5 +988,39 @@ if (!function_exists('app_bloggers')) {
             return $result;
         }
         return $blogs;
+    }
+}
+
+if (!function_exists('app_short_url')) {
+    function app_short_url($longUrl = '') {        
+        $config = [
+            'url' => 'https://www.googleapis.com/urlshortener/v1/url',
+            'key' => 'AIzaSyDORv1kNObIyAhI9khTjsiX230_dL7xUI4',
+            'timeout' => 30,
+        ];
+        $url = $config['url'] . '?key=' . $config['key'];            
+        $param['longUrl'] = $longUrl;
+        $ch = curl_init();   
+        $options = array(   
+            CURLOPT_URL => $url,
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,              
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SAFE_UPLOAD => false,
+            CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($param),
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_VERBOSE => false,
+            CURLOPT_TIMEOUT => $config['timeout'],
+        );
+        curl_setopt_array($ch, $options); 
+        $jsonResponse = curl_exec($ch);
+        $response = json_decode($jsonResponse, true);
+        curl_close($ch);            
+        if (isset($response['id'])) {            
+            return $response['id'];
+        }
+        return $longUrl;
     }
 }

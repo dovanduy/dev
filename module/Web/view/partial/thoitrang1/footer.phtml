@@ -1,6 +1,5 @@
 <footer id="footer" class="clearfix">
-    <!-- .footer start -->
-    <?php if (!empty($website['footer_menus'])): ?>	
+    <!-- .footer start -->    
 	<!-- ================ -->
 	<div class="footer">
 		<!-- .footer start -->
@@ -8,63 +7,126 @@
         <div class="footer">
             <div class="container">
                 <div class="footer-inner">
-                    <div itemscope itemtype="http://schema.org/ItemList" class="row">                        
-                        <?php foreach ($website['footer_menus'] as $menu) : ?>                        
-                        <div class="col-md-3">
+                    <div itemscope itemtype="http://schema.org/ItemList" class="row"> 
+						
+						<div class="col-md-3">
                             <div class="footer-content">
-                                <h4 itemprop="name" class="title text-default"><?php echo $menu['name']?></h4>
-                                <nav class="mb-20">
-                                    <?php if (!empty($menu['sub'])) : ?> 
-                                    <ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
-                                    <?php foreach ($menu['sub'] as $subMenu) : ?>  
-                                        <li>
-                                            <?php if (!empty($subMenu['url'])): ?>
-                                            <a itemprop="url" href="<?php echo !empty($subMenu['url']) ? $subMenu['url'] : '#'?>">
-                                                <i class="fa fa-chevron-circle-right"></i> 
-                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
-                                            </a>                                                
-                                            <?php else: ?>
-                                            <div>
-                                                <i class="fa fa-chevron-circle-right"></i> 
-                                                <span itemprop="name"><?php echo $subMenu['name']?></span>
-                                            </div>
-                                            <?php endif ?>
-                                        </li>
-                                    <?php endforeach ?>                                         
-                                    </ul>
-                                    <?php endif; ?>
-                                </nav>                                
+                                <h4 itemprop="name" class="title text-default">Thông Tin Liên Hệ</h4>
+								<nav class="mb-20">
+									709/5C Đường Vườn Lài, An Phú Đông, Quận 12, Hồ Chí Minh<br>
+									<i class="fa fa-phone pr-10"></i>097 443 60 40<br>
+									<i class="fa fa-envelope-o pr-10"></i><a itemprop="email" href="mailto:hotro@thoitrang1.net"> hotro@thoitrang1.net</a><br>
+									<i class="fa fa-map pr-10"></i><a itemprop="url" href="http://thoitrang1.net/contact"><span itemprop="name">Liên Hệ</span></a>	
+								</nav>
                             </div>
                         </div>
-                        <?php endforeach ?>    
-                        <div class="col-md-3">
+						
+						<div class="col-md-3">
                             <div class="footer-content">
-                                <h4 itemprop="name" class="title text-default">Siêu thị Balo trực tuyến</h4>
-                                <nav class="mb-20">
-                                <?php if (!empty($website['address'])): ?>
-                                    <i class="fa fa-home pr-10"></i>
-                                    709/5C Đường Vườn Lài, An Phú Đông, Quận 12, Hồ Chí Minh<br/>
-                                <?php endif ?>
-
-                                <?php if (!empty($website['phone'])): ?>
-                                    <i class="fa fa-phone pr-10"></i>
-                                    <span itemprop="telephone"><?php echo $website['phone'] ?></span>
-                                <?php endif ?>
-
-                                <?php if (!empty($website['fax'])): ?>
-                                    <i class="fa fa-fax pr-10"></i>
-                                    <span itemprop="faxNumber"><?php echo $website['fax'] ?></span>
-                                <?php endif ?>
+                                <h4 itemprop="name" class="title text-default">Thông Tin Hổ Trợ</h4>
+                                <nav class="mb-20">        
+									<ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
+                                    <li>										
+										<a itemprop="url" href="http://thoitrang1.net/huong-dan-mua-hang.html">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Hướng dẫn mua hàng</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/chinh-sach-ban-hang.html">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Chính sách bán hàng</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/chinh-sach-bao-hanh.html">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Chính sách bảo hành</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/phuong-thuc-thanh-toan.html">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Phương thức thanh toán</span>
+										</a>
+									</li>																	
                                 </nav>
                             </div>
                         </div>
+						
+                        <div class="col-md-3">
+                            <div class="footer-content">
+                                <h4 itemprop="name" class="title text-default">Thời Trang Nam</h4>
+                                <nav class="mb-20">        
+									<ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
+                                    <li>										
+										<a itemprop="url" href="http://thoitrang1.net/ao-nam">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Áo Nam</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/quan-nam">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Quần Nam</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/do-lot-do-tam-nam">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Đồ Lót, Đồ Tắm Nam</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/do-the-thao-nam">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Đồ Thể Thao Nam</span>
+										</a>
+									</li>																	
+                                </nav>
+                            </div>
+                        </div>
+						
+						<div class="col-md-3">
+                            <div class="footer-content">
+                                <h4 itemprop="name" class="title text-default">Thời Trang Nữ</h4>
+                                <nav class="mb-20">        
+									<ul itemprop="itemListElement" class="nav nav-pills nav-stacked list-style-icons">
+                                    <li>										
+										<a itemprop="url" href="http://thoitrang1.net/ao-nu">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Áo Nữ</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/vay-dam-nu">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Váy, Đầm Nữ</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/do-lot-do-tam-nu">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Đồ Lót, Đồ Tắm Nữ</span>
+										</a>
+									</li>
+									<li>										
+										<a itemprop="url" href="http://thoitrang1.net/do-mac-nha-do-ngu-nu">
+											<i class="fa fa-chevron-circle-right"></i> 
+											<span itemprop="name">Đồ Mặc Nhà, Đồ Ngủ Nữ</span>
+										</a>
+									</li>																	
+                                </nav>
+                            </div>
+                        </div>
+						
                     </div>
                 </div>
             </div>
         </div>
         <!-- .footer end -->
 	</div>
-    <?php endif ?>
+  
 	<!-- .footer end -->
 
 	<!-- .subfooter start -->
