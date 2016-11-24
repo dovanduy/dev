@@ -62,6 +62,7 @@ class ListForm extends AbstractForm
     public function columns()
     {
         return array( 
+            /*
             array(            
                 'name' => 'buy',
                 'type' => 'link',
@@ -82,14 +83,16 @@ class ListForm extends AbstractForm
                         showMessage(\"" . $this->translate('Added to cart') . "\");
                     "                   
                 ),                             
-            ),           
+            ), 
+             * 
+             */          
             array(            
                 'name' => 'product_id',                
                 'title' => 'ID', 
                 'innerHtml' => '{product_id}',
                 'sort' => true,
                 'attributes' => array(
-                    
+                    'width' => 50
                 )
             ),           
             array(            
@@ -105,7 +108,12 @@ class ListForm extends AbstractForm
                 'name' => 'name',   
                 'type' => 'link',
                 'title' => 'Product name',  
-                'innerHtml' => '{name}', 
+                'innerHtml' => '
+                    {name}<br/>
+                    <a target="_blank" href="{url_other}">[SENDO] Xem</a><br/>
+                    <a target="_blank" href="{sendo_edit_url}">[SENDO] Sửa</a><br/>
+                    <a target="_blank" href="{url_src}">Link nguồn</a>
+                ',
                 'sort' => true,              
                 'attributes' => array(
                     'href' => $this->getController()->url()->fromRoute(
@@ -134,9 +142,10 @@ class ListForm extends AbstractForm
                 'title' => 'Price',
                 'sort' => true,
                 'attributes' => array(
-                    'number' => true
+                    'number' => true,
                 ),
-            ),            
+            ), 
+            /*
             array(
                 'name' => 'category_name',
                 'title' => 'Product Category List',                
@@ -145,6 +154,8 @@ class ListForm extends AbstractForm
                 'name' => 'brand_name',
                 'title' => 'Brand name',                
             ),            
+             * 
+             */
             array(
                 'name' => 'sort',
                 'type' => 'text',
@@ -157,6 +168,26 @@ class ListForm extends AbstractForm
                 ),
             ),
             array(
+                'name' => 'available',
+                'type' => 'toggle',
+                'title' => 'Available',   
+                'attributes' => array(
+                    'id' => "available",
+                    'value' => "{_id}",
+                    'data-field' => 'available'
+                ),                              
+            ),
+            array(
+                'name' => 'available_sendo',
+                'type' => 'toggle',
+                'title' => 'S-Available ',   
+                'attributes' => array(
+                    'id' => "available_sendo",
+                    'value' => "{_id}",
+                    'data-field' => 'available_sendo'
+                ),                              
+            ),
+            array(
                 'name' => 'active',
                 'type' => 'toggle',
                 'title' => 'Active',   
@@ -164,7 +195,7 @@ class ListForm extends AbstractForm
                     'id' => "active",
                     'value' => "{_id}"
                 ),                              
-            ),
+            ),            
             array(            
                 'name' => 'edit',
                 'type' => 'link',

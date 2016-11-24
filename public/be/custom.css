@@ -720,3 +720,39 @@ tfoot .total-money {
 .table  th  {
 	text-align: left;
 }
+table.dataTable thead th.th_sortArrow {
+	width: 10px;
+}
+table.dataTable thead th.th_product_id {
+	width: 30px;
+}
+table.dataTable thead th.th_price {
+	width: 60px;
+}
+table.dataTable thead th.th_sort {
+	width: 50px;
+}
+table.dataTable thead th.th_active {
+	width: 50px;
+}
+table.dataTable thead th.th_edit {
+	width: 50px;
+}
+table.dataTable thead th.th_available {
+	width: 50px;
+}
+table.dataTable thead th.th_available_sendo {
+	width: 70px;
+}
+#products_index table.dataTable thead th.th_name {
+	width: auto;
+}
+#vouchers_index table.dataTable thead th.th_code {
+	width: 100px;
+}
+#vouchers_index table.dataTable thead th.th_phone {
+	width: 100px;
+}
+#vouchers_index table.dataTable thead th.th_used {
+	width: 100px;
+}

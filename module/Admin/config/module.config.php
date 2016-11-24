@@ -51,6 +51,7 @@ return array(
             'Admin\Controller\Pages' => 'Admin\Controller\PagesController',
             'Admin\Controller\Blocks' => 'Admin\Controller\BlocksController',
             'Admin\Controller\Systems' => 'Admin\Controller\SystemsController',            
+            'Admin\Controller\Vouchers' => 'Admin\Controller\VouchersController',            
         ),
     ),
    

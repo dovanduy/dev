@@ -359,7 +359,7 @@ initJsAjaxSubmit = function (containerId) {
                         if ($('#modal-message').length > 0) {  
                             $('#modal-message').hide();
                         }						
-                        var error = JSON.parse(response);						
+                        var error = JSON.parse(response);							
                         $('#' + frm.attr('id') + ' .form-group').each(function() {
                             if ($(this).find('ul')) {
                                 $(this).find('ul').remove();
@@ -368,14 +368,13 @@ initJsAjaxSubmit = function (containerId) {
                         // add new error
                         $.each(error, function( index, value ) {
                             var element = $(frm).find('.form-group-'+index);
-                            if (element) {
-								console.log(value);
+                            if (element) {															
                                 if (!$('#'+index).hasClass('input-error')) {
                                     $('#'+index).removeClass('input-error');
                                 }
                                 if (element.find('ul')) {
                                     element.find('ul').remove();
-                                }
+                                } 
                                 element.append(value);
                             }
                         });

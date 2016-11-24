@@ -113,6 +113,7 @@
                                     <?php endif?>
                                 </div>
                                 <div class="product elements-list pull-right clearfix">
+                                    <?php if (!empty($data['available'])):?>
                                     <input 
                                         type="button" 
                                         value="<?php echo $this->translate('Add to cart') ?>" 
@@ -133,6 +134,9 @@
                                             }
                                         "
                                         class="margin-clear btn btn-default ajax-submit">
+                                    <?php else:?>
+                                    <input type="button" class="margin-clear btn" value="Hết hàng" >
+                                    <?php endif?>
                                 </div>
                             </div>
 						</form>
@@ -141,9 +145,9 @@
                         <div id="commitment_and_guide">    
                             <div class="commitment">   
                                 <div class="title">Chính sách bán hàng</div>
-                                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">xem thêm</a></p>
+                                <p>✓ Giao hàng TOÀN QUỐC <a target="_blank" href="http://vuongquocbalo.com/chinh-sach-ban-hang.html">xem thêm</a></p>
                                 <p>✓ Thanh toán khi nhận hàng</p>                                                            
-                                <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               
+                                <p>✓ Giao hàng từ <strong>2 - 3</strong> ngày</p>                               
                                 <p>✓ Cam kết hàng giống hình</p>                                               
                                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                                   
                             </div>

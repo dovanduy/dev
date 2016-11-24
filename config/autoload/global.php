@@ -14,7 +14,7 @@
 return array(
      'db' => array(
         'driver' => 'Pdo',
-        'dsn' => 'mysql:dbname=ken;host=localhost',
+        'dsn' => 'mysql:dbname=vuongquocbalo;host=localhost',
         'username' => 'root',
         'password' => '',
         'driver_options' => array(
@@ -23,7 +23,7 @@ return array(
     ),
     'db_oauth2' => array(
         'driver' => 'Pdo',
-        'dsn' => 'mysql:dbname=ken;host=localhost',
+        'dsn' => 'mysql:dbname=ken;vuongquocbalo=localhost',
         'username' => 'root',
         'password' => '',
         'driver_options' => array(

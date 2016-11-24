@@ -110,6 +110,9 @@ return array(
             'Api\Controller\Productshares' => 'Api\Controller\ProductsharesController',
             'Api\Controller\Contactlists' => 'Api\Controller\ContactlistsController',
             'Api\Controller\Bloggerpostids' => 'Api\Controller\BloggerpostidsController',
+            'Api\Controller\Productfacebookpageshares' => 'Api\Controller\ProductfacebookpagesharesController',
+            'Api\Controller\Facebookwallshares' => 'Api\Controller\FacebookwallsharesController',
+            'Api\Controller\Facebookgroupshares' => 'Api\Controller\FacebookgroupsharesController',
         ),
     ),
     'view_manager' => array(

@@ -157,6 +157,7 @@ class ProductHasColors extends AbstractModel {
                             'src_id' => $param['product_id'],
                             'url_image' => $imageUrl,
                             'is_main' => 0,
+                            'website_id' => $param['website_id']
                         ));
                     }
                 }

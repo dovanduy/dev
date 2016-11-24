@@ -63,6 +63,21 @@ return array(
                     ),
                 ),
 
+                'search2' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/search[/]',
+                        'constraints' => array(
+
+                        ),                            
+                        'defaults' => array(
+                            'module' => 'web',
+                            'controller' => 'search',
+                            'action' => 'index',
+                        ),
+                    ),
+                ),
+                
                 'isduplicatecode' => array(
                     'type'    => 'Segment',
                     'options' => array(
@@ -283,6 +298,28 @@ return array(
                         'defaults' => array(
                             'controller' => 'page',
                             'action' => 'sendo',
+                        ),
+                    ),
+                ),
+                
+                'privacy' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/privacy.html',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'privacy',
+                        ),
+                    ),
+                ),
+                
+                'policy' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/policy.html',                           
+                        'defaults' => array(
+                            'controller' => 'page',
+                            'action' => 'policy',
                         ),
                     ),
                 ),

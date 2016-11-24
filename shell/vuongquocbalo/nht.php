@@ -1,7 +1,10 @@
 <?php
-
+// php /home/vuong761/public_html/shell/vuongquocbalo/nht.php
 // php nht.php 15
 // php nht.php 16
+// php nht.php 99
+// php nht.php 101
+// php nht.php 8
 
 include_once 'base.php';
 include_once '../../include/simple_html_dom.php';
@@ -140,9 +143,9 @@ $productList = array(
         'url' => 'http://nguonhangtot.com/collections/balo-day-rut',
         'id' => '1000469360',
         'short' => implode(PHP_EOL, [
-            "Chất liệu simili 100%, không thấm nước, không bong tróc",
-            "Hàng Việt Nam xuất khẩu, chất lượng đảm bảo",
-            "Công nghệ in Nhật Bản cho hình in đẹp"
+            "Chất liệu simili 100%, không thấm nước, không bong tróc.",
+            "Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.",
+            "Công nghệ in Nhật Bản cho hình in đẹp."
         ]),
         'content' => implode(PHP_EOL, [
             "<p>- Kích thước 29 x 40 (cm)</p>",
@@ -153,11 +156,97 @@ $productList = array(
         'detail_url' => array(),
         'size_id' => array(),
         'max_images' => 4,
-        'price_src' => '79000',
-        'original_price' => '79000',
+        'price_src' => '99000',
+        'original_price' => '99000',
         'price' => '69000',
-        'discount_percent' => '13',
+        'discount_percent' => '30',
         'default_size_id' => '0',
+    ),
+    array(
+        'disable' => 0,
+        'category_id' => 99,
+        'url' => 'http://nguonhangtot.com/collections/tui-cheo-nu',
+        'id' => '1000469175',
+        'short' => implode(PHP_EOL, [            
+            "Chất liệu simili 100%, không thấm nước, không bong tróc",
+            "Hàng Việt Nam xuất khẩu, chất lượng đảm bảo",
+            "Công nghệ in Nhật Bản cho hình in đẹp"
+        ]),
+        'content' => implode(PHP_EOL, [
+            "<p>- <strong>Kích thước ngang 24 x 17 (cm)</strong></p>",
+            "<p>- Phù hợp đựng tiền, điện thoại, máy tính bảng nhỏ, sổ tay, đồ trang điểm, các vật dụng cá nhân cho nữ, ...</p>",
+            "<p>- <strong>Hàng Việt Nam xuất khẩu</strong>, chất lượng đảm bảo.</p>",  
+            "<p>- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.</p>",               
+            "<p>- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.</p>",
+        ]),
+        'detail_url' => array(),
+        'size_id' => array(),
+        'max_images' => 2,
+        'price_src' => '80000',
+        'original_price' => '80000',
+        'price' => '80000',
+        'discount_percent' => '0',
+        'default_size_id' => '0'
+    ),
+    array(
+        'disable' => 0,
+        'category_id' => 8,
+        'url' => 'http://nguonhangtot.com/collections/tui-cheo-hop',
+        'id' => '1000469402',
+        'short' => implode(PHP_EOL, [
+            "Thiết kế tiện dụng.",
+            "Chất liệu simili 100%, không thấm nước, không bong tróc.",
+            "Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.",
+            "Công nghệ in Nhật Bản cho hình in đẹp."
+        ]),
+        'content' => implode(PHP_EOL, [
+            "<p>- <strong>Túi chéo nhỏ kích thước ngang 34 x cao 25 x rộng 9 (cm)</strong></p>",
+            "<p>- Sử dụng đựng tập vở, tài liệu, giấy A4, Laptop 12\" hoặc máy tính bảng</p>", 
+            "<p>- Có 1 ngăn lớn, phù hợp đi học thêm, đi làm, đi chơi.</p>",
+            "",
+            "<p>- <strong>Túi chéo lớn kích thước ngang 39 x cao 30 x rộng 13 (cm)</strong></p>",
+            "<p>- Sử dụng đựng tập vở, tài liệu, giấy A4, Laptop 14\" hoặc máy tính bảng.</p>",
+            "<p>- Có 1 ngăn lớn và 1 ngăn riêng đựng Laptop riêng biệt, có chổ để bình nước, phù hợp đi học thêm, đi làm, đi chơi.</p>",
+            "",
+            "<p>- <strong>Hàng Việt Nam xuất khẩu</strong>, chất lượng đảm bảo.</p>",  
+            "<p>- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.</p>",               
+            "<p>- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.</p>",
+        ]),
+        'detail_url' => array(),
+        'size_id' => array(1, 2),
+        'max_images' => 4,
+        'price_src' => '185000',
+        'original_price' => '185000',
+        'price' => '185000',
+        'discount_percent' => '0',
+        'default_size_id' => '1'
+    ),
+    array(
+        'disable' => 0,
+        'category_id' => 102,
+        'url' => 'http://nguonhangtot.com/collections/goi-tron',
+        'id' => '1000469343',
+        'short' => implode(PHP_EOL, [
+            "Kích thước gối ngang 38 x cao 7 x rộng 38 (cm)",
+            "Chất liệu vải nhung mịn, ruột gối bên trong là gòn bi không xẹp, in hình độc đáo",
+            "Công nghệ in Nhật Bản, bền màu trong thời gian dài sử dụng"
+        ]),
+        'content' => implode(PHP_EOL, [
+            "<p>- Chiếc gối là một vật dụng thân thiết gắn liền với cuộc sống hằng ngày của chúng ta. Ngày nay kiểu dáng của những chiếc gối đã không còn nằm trong khuôn khổ cũ. Mẫu mã được thanh đổi liên tục và phù hợp với trào lưu. Gối in hình vừa có thể dùng vừa làm quà tặng tới bạn bè, người thân đều được!</p>",
+            "<p>- Giấc ngủ của bạn sẽ trở nên êm đềm hơn khi trên chiếc gối in hình ảnh mà bạn yêu thích. Hình những con vật dễ thương, những nhân vật hoạt hình mà bạn yêu thích, ca sĩ nhóm nhạc mà bạn thần tượng….. tất cả đều có thể in lên chiếc gối quen thuộc của bạn.</p>",
+            "",
+            "<p>- <strong>Kích thước gối ngang 38 x cao 7 x rộng 38 (cm)</strong></p>",
+            "<p>- Chất liệu vải nhung mịn, ruột gối bên trong là gòn bi không xẹp, in hình độc đáo</p>",             
+            "<p>- Công nghệ in Nhật Bản, bền màu trong thời gian dài sử dụng.</p>",
+        ]),
+        'detail_url' => array(),
+        'size_id' => array(),
+        'max_images' => 4,
+        'price_src' => '150000',
+        'original_price' => '150000',
+        'price' => '150000',
+        'discount_percent' => '0',
+        'default_size_id' => '0'
     ),
 );
 
@@ -185,7 +274,9 @@ if (file_exists($fileProductAttr)) {
     ];
     foreach ($importList as &$item) {
         foreach ($attrs['Phong cách'] as $attrName) {
-            $url = "http://nguonhangtot.com/search?q=filter=((collectionid:product={$item['id']})&&((tag:product=phongcach_" . urlencode($attrName) . ")))&sortby=manual";
+            $url = urlencode("http://nguonhangtot.com/search?q=filter=((collectionid:product={$item['id']})&&((tag:product=phongcach_" . urlencode($attrName) . ")))&sortby=manual");
+            $url = ("http://nguonhangtot.com/search?q=filter=((collectionid:product={$item['id']})&&((tag:product=phongcach_" . urlencode($attrName) . ")))");
+            //echo $url; exit;
             $content = app_file_get_contents($url);
             $content = strip_tags_content($content, '<script><style>', true);
             $html = str_get_html($content);
@@ -424,10 +515,15 @@ if (file_exists($fileProducts)) {
                     ];            
                 }       
             }   
-            if ($categoryId == 15) {
+            if ($categoryId == 15) { // Balo
                 $product['import_prices'] = [
                     ['color_id' => 0, 'size_id' => 1, 'price' => '205000'],
                     ['color_id' => 0, 'size_id' => 2, 'price' => '175000'],
+                ];
+            } else if ($categoryId == 8) { // Tui cheo hop
+                $product['import_prices'] = [
+                    ['color_id' => 0, 'size_id' => 1, 'price' => '185000'],
+                    ['color_id' => 0, 'size_id' => 2, 'price' => '130000'],
                 ];
             }
             $products[] = $product;
@@ -443,11 +539,14 @@ if (file_exists($fileFails)) {
     $products = unserialize(app_file_get_contents($fileFails));
 }
 batch_info('BEGIN: Import Product');
+
 batch_info('Total product: ' . count($products));
+
 $count = 1;
 $priority = count($products);
 $fails = [];
-foreach ($products as &$product) {
+
+foreach ($products as &$product) {    
     $product['website_id'] = $websiteId;
     $product['priority'] = $priority;
     $product['add_image_to_content'] = 1;
@@ -463,9 +562,24 @@ foreach ($products as &$product) {
     if (isset($product['import_prices'])) {
         $product['import_prices'] = serialize($product['import_prices']);
     }
-    if (empty($product['original_price'])) {
-        $product['original_price'] = ($categoryId == 15 ? 175000 : 79000);
-    }
+    //if (empty($product['original_price'])) {
+        switch ($categoryId) {
+            case 15:
+                $product['original_price'] = 175000;
+                break;
+            case 16:
+                $product['original_price'] = 99000;
+                break;
+            case 99: // Tui cheo mini
+                $product['name'] = str_replace(['Túi nữ', 'TC '], ['Túi chéo nữ ', 'Túi chéo '], $product['name']);
+                $product['original_price'] = 80000;
+                break;
+            case 8: // Tui cheo hop
+                $product['name'] = str_replace(['Túi nữ', 'TC '], ['Túi chéo nữ ', 'Túi chéo '], $product['name']);
+                $product['original_price'] = 185000;
+                break;
+        }        
+    //}
     if (empty($product['default_size_id']) && $categoryId == 15) {
         $product['default_size_id'] = 2;
     }
@@ -476,8 +590,9 @@ foreach ($products as &$product) {
                 break;
             }
         }
-    }
+    }    
     $_id = call('/products/add', $product);
+    
     if ($_id) {  
         batch_info ('[' . $count . '] ' . $product['code'] . ' Done');
     } else {

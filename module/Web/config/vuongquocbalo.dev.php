@@ -28,7 +28,11 @@ return array(
     'facebook_admins' => '',
     'facebook_app_id' => '304999106503304',
     'facebook_app_secret' => '939d6213f1a40680aa55877b0ccd7931',
-    'facebook_login_file' => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize',
+    'facebook_login_file' => [
+        23 => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize', // fb.khaai@gmail.com
+        25 => getcwd() . '/shell/vuongquocbalo/facebook_login2.serialize', // fb.hoaian@gmail.com
+        30 => getcwd() . '/shell/vuongquocbalo/facebook_login3.serialize', // kinhdothoitrang@outlook.com
+    ],
     'facebook_tag_ids' => array(),
     'facebook_group_ids' => [        
         '231774573605976',

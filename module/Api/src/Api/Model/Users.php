@@ -853,12 +853,14 @@ class Users extends AbstractModel {
                 'src_id' => $user['user_id'],
                 'url_image' => $param['facebook_image'],
                 'is_main' => 1,
+                'website_id' => $param['website_id'],
             ));
             if (!empty($imageId)) {
                 self::update(array(
                     'table' => 'users',
                     'set' => ['image_id' => $imageId],
-                    'where' => ['user_id' => $user['user_id']]
+                    'where' => ['user_id' => $user['user_id']],
+                    'website_id' => $param['website_id'],
                 ));
             }
         }

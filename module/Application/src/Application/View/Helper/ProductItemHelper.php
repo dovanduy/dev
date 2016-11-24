@@ -58,19 +58,6 @@ class ProductItemHelper extends AbstractHtmlElement
             $categoryId = $product['category_id'];
         }
         if (!empty($AppUI) && in_array($AppUI->id, \Application\Module::getConfig('admin_user_id'))) {
-            $copyUrl = $view->url(
-                'web/ajax', 
-                array(
-                    'action' => 'copyproduct'
-                ),
-                array(
-                    'query' => array(
-                        'category_id' => $categoryId,
-                        'product_id' => $product['product_id'],
-                    )
-                )
-            );
-            
             $setPriorityUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -136,6 +123,19 @@ class ProductItemHelper extends AbstractHtmlElement
                 )
             );
             
+            $sharePlusUrl = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'shareplus'
+                ),
+                array(
+                    'query' => array(
+                        'url' => $product['url'],                       
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );            
+           
             $sendoShareUrl = $view->url(
                 'web/ajax', 
                 array(
@@ -147,7 +147,7 @@ class ProductItemHelper extends AbstractHtmlElement
                         'product_id' => $product['product_id'],
                     )
                 )
-            );
+            );            
             
             $deleteDbUrl = $view->url(
                 'web/ajax', 
@@ -161,6 +161,110 @@ class ProductItemHelper extends AbstractHtmlElement
                     )
                 )
             );
+            
+            $lazadaCopyUrl1 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproductlzd'
+                ),
+                array(
+                    'query' => array(                        
+                        'lzd' => 1,
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );            
+            $lazadaCopyUrl2 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproductlzd'
+                ),
+                array(
+                    'query' => array(
+                        'small_size' => 1,
+                        'lzd' => 1,
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            
+            $sendoCopyUrl1 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            $sendoCopyUrl2 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(
+                        'small_size' => 1,
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            $sendoCopyUrl3 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(                        
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            $sendoCopyUrl4 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(
+                        'small_size' => 1,
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            $sendoCopyUrl5 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(                        
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );
+            $sendoCopyUrl6 = $view->url(
+                'web/ajax', 
+                array(
+                    'action' => 'copyproduct'
+                ),
+                array(
+                    'query' => array(
+                        'small_size' => 1,
+                        'category_id' => $categoryId,
+                        'product_id' => $product['product_id'],
+                    )
+                )
+            );            
             
             if (!empty($product['block_id'])) {
                 $removeUrl = $view->url(
@@ -310,51 +414,185 @@ class ProductItemHelper extends AbstractHtmlElement
                 }
                 $categoryOption = implode('', $categoryOption);
                 
-                $adminBtn = "
-                    <div class=\"admin-action\">
+                $adminBtn = "<div class=\"admin-action\">";
+                $link = [];
+                if (empty($product['url_lazada'])) {
+                    $adminBtn .= "                    
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
                                 class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
-                                data-url=\"{$copyUrl}\"  
-                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i>
+                                data-url=\"{$lazadaCopyUrl1}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +L
                             </a>
                         </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_lazada']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +L
+                            </a>
+                        </form>
+                    ";                                                    
+                }
+                if (empty($product['url_lazada2'])) {
+                    $adminBtn .= "                    
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"background:#eee;width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$lazadaCopyUrl2}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +L
+                            </a>
+                        </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_lazada2']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +L
+                            </a>
+                        </form>
+                    "; 
+                }
+                if (empty($product['url_sendo1'])) {
+                    $adminBtn .= "                    
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
-                                data-url=\"{$emailShareUrl}\"      
-                                data-showloading=\"1\"  
-                                data-callback=\"                                       
-                                    showMessage(result.message);
-                                \"><i class=\"fa fa-envelope-o\"></i>
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl1}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +V
                             </a>
                         </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo1']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +V
+                            </a>
+                        </form>
+                    ";
+                }
+                if (empty($product['url_sendo2'])) {
+                    $adminBtn .= "                    
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"background:#eee;width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl2}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +V
+                            </a>
+                        </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo2']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +V
+                            </a>
+                        </form>
+                    ";
+                }
+                if (empty($product['url_sendo3'])) {
+                    $adminBtn .= "                    
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
-                                data-url=\"{$fbShareUrl}\"    
-                                data-showloading=\"1\"
-                                data-callback=\"                                        
-                                    showMessage(result.message);
-                                \"><i class=\"fa fa-facebook\"></i>
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl3}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +S
                             </a>
                         </form>
-
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo3']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +S
+                            </a>
+                        </form>
+                    ";
+                }
+                if (empty($product['url_sendo4'])) {
+                    $adminBtn .= "                    
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"background:#eee;width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl4}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +S
+                            </a>
+                        </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo4']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +S
+                            </a>
+                        </form>
+                    ";
+                }
+                if (empty($product['url_sendo5'])) {
+                    $adminBtn .= "                    
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
-                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
-                                data-url=\"{$shareUrl}\"      
-                                data-showloading=\"1\"  
-                                data-callback=\"                                       
-                                    showMessage(result.message);
-                                \"><i class=\"fa fa-share\"></i>
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl5}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +Z
                             </a>
                         </form>
-                        
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo5']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +Z
+                            </a>
+                        </form>
+                    ";
+                }
+                if (empty($product['url_sendo6'])) {
+                    $adminBtn .= "                    
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"background:#eee;width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"show-model btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                data-url=\"{$sendoCopyUrl6}\"  
+                                data-modelid=\"#dialog-modal\"><i class=\"fa fa-copy\"></i> +Z
+                            </a>
+                        </form>
+                        ";
+                } else {
+                    $adminBtn .= "
+                        <form method=\"post\">
+                            <a  target=\"_blank\" itemprop=\"url\" href=\"{$product['url_sendo6']}\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent\"                                                           
+                                ><i class=\"fa fa-eye\"></i> +Z
+                            </a>
+                        </form>
+                    ";
+                }
+                $adminBtn .= "                    
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
@@ -366,7 +604,40 @@ class ProductItemHelper extends AbstractHtmlElement
                                 \"><i class=\"fa fa-shirtsinbulk\"></i>
                             </a>
                         </form>
-                        
+                        <!--
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$emailShareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-envelope-o\"></i>
+                            </a>
+                        </form>                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$fbShareUrl}\"    
+                                data-showloading=\"1\"
+                                data-callback=\"                                        
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-facebook\"></i>
+                            </a>
+                        </form>                        
+                        <form method=\"post\">
+                            <a  itemprop=\"url\" href=\"#\" 
+                                style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
+                                class=\"btn-adm pull-right margin-clear btn btn-sm btn-default-transparent ajax-submit\"                                                           
+                                data-url=\"{$shareUrl}\"      
+                                data-showloading=\"1\"  
+                                data-callback=\"                                       
+                                    showMessage(result.message);
+                                \"><i class=\"fa fa-share\"></i>
+                            </a>
+                        </form>
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
@@ -378,7 +649,7 @@ class ProductItemHelper extends AbstractHtmlElement
                                 \"><i class=\"fa fa-tag\"></i>
                             </a>
                         </form>
-                        
+                        -->                        
                         <form method=\"post\">
                             <a  itemprop=\"url\" href=\"#\" 
                                 style=\"width:24px;padding:4px 2px;float:right;margin-left:2px;\"
@@ -477,7 +748,7 @@ class ProductItemHelper extends AbstractHtmlElement
             $product['price'] = app_money_format($product['price'], false);        
             $product['original_price'] = app_money_format($product['original_price']);
         } else {
-            $product['price'] = app_money_format($product['price']);   
+            $product['price'] = app_money_format($product['price'], false);   
             $product['original_price'] = '';
         }
         $html = "

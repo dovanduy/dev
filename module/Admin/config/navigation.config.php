@@ -1,6 +1,29 @@
 <?php
 return array(  
-    'admin_navigation' => array(            
+    'admin_navigation' => array(    
+        array(
+            'id' => 'admin_vouchers_index',
+            'label' => 'Voucher',
+            'module' => 'admin',
+            'controller' => 'vouchers',
+            'action' => 'index',
+            'pages' => array(
+                array(
+                    'id' => 'admin_vouchers_add',
+                    'label' => 'Add Voucher',
+                    'module' => 'admin',
+                    'controller' => 'vouchers',
+                    'action' => 'add',
+                ),
+                array(
+                    'id' => 'admin_vouchers_update',
+                    'label' => 'Edit Voucher',
+                    'module' => 'admin',
+                    'controller' => 'vouchers',
+                    'action' => 'update',
+                ),
+            ),
+        ),
         array(
             'id' => 'admin_newscategories_index',
             'label' => 'News Category List',

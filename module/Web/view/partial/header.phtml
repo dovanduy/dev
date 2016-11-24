@@ -251,6 +251,7 @@ if (!empty($cartItems)) {
                                         <div class="form-group has-feedback">
                                             <input value="<?php if (isset($keyword)) echo $keyword;?>" id="q" name="q" type="text" class="form-control" placeholder="<?php echo $this->translate('Enter product name or brand name')?>">
                                             <i class="icon-search form-control-feedback"></i>
+                                            <input type="hidden" value="<?php echo $categoryId;?>" name="category_id" />
                                         </div>
                                     </form>
 									<!-- main-menu -->

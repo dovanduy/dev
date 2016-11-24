@@ -169,15 +169,17 @@ class Products
         return $result;
     }
     
-    public static function search($param)
+    public static function search($param, $force = 0)
     { 
         $key = implode('_', array(
             PRODUCT_LIST,
             'search',
             !empty($param['keyword']) ? $param['keyword'] : '',
             !empty($param['page']) ? $param['page'] : '1',
+            !empty($param['category_id']) ? $param['category_id'] : 0,
+            !empty($param['lazada']) ? $param['lazada'] : 0,
         ));
-        if (!($result = Cache::get($key))) {            
+        if (!($result = Cache::get($key)) || $force == 1) {            
             $result = Api::call('url_products_search', $param);
             if (!empty($result)) {               
                 Cache::set($key, $result);                
@@ -210,4 +212,10 @@ class Products
         return $result;
     }
     
+    public static function getSendoProduct($param)
+    {            
+        $param['limit'] = 300;
+        $result = Api::call('url_products_sendo', $param);           
+        return $result;
+    }
 }

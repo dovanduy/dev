@@ -4,6 +4,7 @@ namespace Api\Model;
 
 use Application\Lib\Arr;
 use Application\Lib\Util;
+use Application\Lib\Log;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Predicate\Expression;
 
@@ -23,6 +24,7 @@ class Vouchers extends AbstractModel {
         'min_total_money',
         'website_id',
         'user_id',
+        'phone',
     );
     
     protected static $primaryKey = 'voucher_id';
@@ -36,11 +38,21 @@ class Vouchers extends AbstractModel {
             ->from(static::$tableName)                       
             ->where(static::$tableName . '.website_id = ' . $param['website_id']);
         
+        if (isset($param['used']) && $param['used'] !== '') {        
+            if (!empty($param['used'])) {
+                $select->where(static::$tableName . '.used > 0');  
+            } else {
+                $select->where(static::$tableName . '.used = 0 OR ' . static::$tableName . '.used IS NULL');
+            }
+        }
         if (isset($param['active']) && $param['active'] !== '') {            
             $select->where(static::$tableName . '.active = '. $param['active']);  
         }
         if (!empty($param['code'])) {
             $select->where(new Expression("code LIKE '%{$param['code']}%'"));
+        }        
+        if (!empty($param['phone'])) {
+            $select->where(new Expression("phone LIKE '%{$param['phone']}%'"));
         }        
         if (!empty($param['limit'])) {
             $select->limit($param['limit']);
@@ -49,7 +61,7 @@ class Vouchers extends AbstractModel {
             }
         }
         if (!empty($param['sort'])) {
-            preg_match("/(code|used|type)-(asc|desc)+/", $param['sort'], $match);
+            preg_match("/(code|used|type|created|updated)-(asc|desc)+/", $param['sort'], $match);
             if (count($match) == 3) {
                 switch ($match[1]) {                                
                     default:
@@ -91,7 +103,7 @@ class Vouchers extends AbstractModel {
         );        
     }    
     
-    public function generateVoucherCode($userId)
+    public function generateVoucherCode($userId = null, $mobile = null)
     {
         do {
             $code = voucher_code();
@@ -110,15 +122,20 @@ class Vouchers extends AbstractModel {
     
     public function add($param)
     {
-        $param['code'] = $this->generateVoucherCode($param['user_id']);
+        if (empty($param['phone']) && empty($param['user_id'])) {
+            self::errorParamInvalid('phone_or_user_id');
+            return false;
+        }        
+        if (empty($param['code'])) {
+            $param['code'] = $this->generateVoucherCode($param['user_id'], $param['phone']);
+        }
         $_id = mongo_id();  // vouchers._id              
         $values = array(
             '_id' => $_id,
             'website_id' => $param['website_id'],             
             'amount' => Util::toPrice($param['amount']),
             'type' => $param['type'],
-            'code' => $param['code'],
-            'user_id' => $param['user_id'],
+            'code' => $param['code'],           
         );
         if (isset($param['used'])) {
             $values['used'] = $param['used'];
@@ -128,6 +145,12 @@ class Vouchers extends AbstractModel {
         }
         if (isset($param['min_total_money'])) {
             $values['min_total_money'] = $param['min_total_money'];
+        }
+        if (isset($param['user_id'])) {
+            $values['user_id'] = $param['user_id'];
+        }
+        if (isset($param['phone'])) {
+            $values['phone'] = $param['phone'];
         }
         if ($id = self::insert($values)) {
             return $_id;
@@ -198,7 +221,9 @@ class Vouchers extends AbstractModel {
                 'type', 
                 'used', 
                 'expired',
-                'min_total_money'
+                'min_total_money',
+                'phone',
+                'user_id',
             ))
             ->join(               
                 'websites',                    
@@ -230,9 +255,12 @@ class Vouchers extends AbstractModel {
             ->where("website_locales.locale = ". self::quote($param['locale']));
         if (!empty($param['website_id'])) {            
             $select->where(static::$tableName . '.website_id = '. self::quote($param['website_id']));  
-        }
+        }        
         if (!empty($param['user_id'])) {            
             $select->where(static::$tableName . '.user_id = '. self::quote($param['user_id']));  
+        }
+        if (!empty($param['phone'])) {            
+            $select->where(static::$tableName . '.phone = '. self::quote($param['phone']));  
         }
         if (!empty($param['_id'])) {            
             $select->where(static::$tableName . '._id = '. self::quote($param['_id']));  
@@ -246,8 +274,10 @@ class Vouchers extends AbstractModel {
         if (isset($param['active']) && $param['active'] !== '') {            
             $select->where(static::$tableName . '.active = '. self::quote($param['active']));  
         }
+        $sql = $sql->getSqlStringForSqlObject($select);
+        Log::info('SQL', $sql);
         $result = self::response(
-            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            static::selectQuery($sql), 
             self::RETURN_TYPE_ONE
         );        
         return $result;
@@ -257,22 +287,32 @@ class Vouchers extends AbstractModel {
         if (empty($param['voucher_code'])) {
             self::errorParamInvalid('voucher_code');
             return false;
-        }
-        $voucherDetail = $this->getDetail(array(
-            'website_id' => $param['website_id'],
-            'user_id' => $param['user_id'],
+        }    
+        $cond = [
+            'website_id' => $param['website_id'],            
             'code' => $param['voucher_code'],
             'active' => 1
-        ));
+        ];
+        if (!empty($param['phone'])) {
+            $cond['phone'] = $param['phone'];
+        } elseif (!empty($param['user_id'])) {
+            $cond['user_id'] = $param['user_id'];
+        }
+        $voucherDetail = $this->find([
+                'where' => $cond,
+                'order' => 'used ASC, expired ASC'
+            ],
+            self::RETURN_TYPE_ONE
+        );                  
         if (!empty($voucherDetail)) {
             if (!empty($voucherDetail['used'])) {
-                self::errorNotExist('voucher_code');
-                //self::errorOther(self::ERROR_CODE_OTHER_1, 'used', 'The voucher_code have been already used');
+                //self::errorNotExist('voucher_code');
+                self::errorOther(self::ERROR_CODE_OTHER_1, 'voucher_code', 'The voucher_code have been already used');
                 return false;
             }
             if (!empty($voucherDetail['expired']) && $voucherDetail['expired'] <= time()) {
                 self::errorNotExist('voucher_code');
-                //self::errorOther(self::ERROR_CODE_OTHER_2, 'expired');
+                self::errorOther(self::ERROR_CODE_OTHER_2, 'voucher_code');
                 return false;
             }
         } else {

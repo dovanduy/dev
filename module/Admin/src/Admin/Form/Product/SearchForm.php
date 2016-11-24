@@ -90,6 +90,32 @@ class SearchForm extends AbstractForm
             ),
             array(
                 'type' => 'Zend\Form\Element\Select',
+                'name' => 'available',
+                'options' => array(
+                    'label' => 'Available',
+                    'value_options' => Module::getConfig('search_active_value_options')
+                ),
+                'attributes' => array(
+                    'id' => 'available',
+                    'class' => 'form-control',
+                    'value' => ''
+                )
+            ),
+            array(
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'available_sendo',
+                'options' => array(
+                    'label' => 'S-Available',
+                    'value_options' => Module::getConfig('search_active_value_options')
+                ),
+                'attributes' => array(
+                    'id' => 'available_sendo',
+                    'class' => 'form-control',
+                    'value' => ''
+                )
+            ),
+            array(
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'sort',
                 'options' => array(
                     'label' => 'Sort',

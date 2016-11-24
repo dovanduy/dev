@@ -32,11 +32,13 @@ class SearchController extends AppController
     public function indexAction()
     {
         $param = $this->getParams(array(            
+            'lazada' => 0,
+            'category_id' => 0,
             'page' => 1,
             'limit' => 20,
             'keyword' => $this->params()->fromRoute('q', '')
         ));
-        $result = Products::search($param);         
+        $result = Products::search($param, 1);         
         $id = 'web_index_index';
         $page = $this->getServiceLocator()->get('web_navigation')->findBy('id', $id);
         if (!empty($page)) {
@@ -48,6 +50,7 @@ class SearchController extends AppController
         ));
         return $this->getViewModel(array(
                 'params' => $this->params()->fromQuery(),
+                'categoryId' => $param['category_id'],
                 'keyword' => $param['keyword'],
                 'result' => $result,                
             )

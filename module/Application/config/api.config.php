@@ -188,6 +188,7 @@ return array(
         'url_products_delete' => 'products/delete',
         'url_products_updatefbimage' => 'products/updatefbimage',
         'url_products_updatesizeattr' => 'products/updatesizeattr',
+        'url_products_sendo' => 'products/allforsendo',
         
         'url_products_reviews_add' => 'productreviews/add',
         'url_products_reviews_lists' => 'productreviews/lists',

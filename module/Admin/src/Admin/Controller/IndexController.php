@@ -24,4 +24,9 @@ class IndexController extends AppController
         
     }
     
+    public function voucherAction()
+    {        
+        return $this->getViewModel();
+    }
+    
 }

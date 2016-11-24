@@ -87,4 +87,10 @@ class TestController extends AppController
         ); 
     }
     
+    public function exportAction()
+    {
+        echo 1;
+        exit;
+    }
+    
 }

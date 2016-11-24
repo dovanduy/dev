@@ -1,0 +1,122 @@
+<?php
+$request = $this->requestHelper();
+?>
+<div class="modal-header">               
+    <h4 class="modal-title">
+        <?php echo $this->translate('Copy') ?>
+        <a  href='#'
+            style="margin-right: 5px;"
+            data-dismiss='modal'
+            class="pull-right">
+            <i class="fa fa-close"></i>
+        </a>  
+    </h4>
+</div>
+<div class="modal-body">
+    <section class="invoice" id="copy-detail">
+        <!-- Table row -->      
+        <div class="row">            
+            <table class='table cart table-bordered'>                
+                <tbody> 
+                     <tr>
+                        <td onclick="copy('copy-js');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-js');" align="right" width="140">Script</td>
+                        <td align="left">
+                            <textarea style="width:100%;" rows="2" id="copy-js"><?php echo $data['js'] ?></textarea>
+                        </td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-name');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-name');" align="right" width="140">Tên sản phẩm</td>
+                        <td align="left"><input type="text" value="<?php echo $data['name'] ?>" id="copy-name"></td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-code');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-code');" align="right">Mã sản phẩm</td>
+                        <td align="left"><input type="text" value="<?php echo $data['code_copy'] ?>" id="copy-code"></td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-price');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-price');" align="right">Giá</td>
+                        <td align="left"><input type="text" value="<?php echo $data['price'] ?>" id="copy-price"></td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-src-price');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-src-price');" align="right">Giá củ</td>
+                        <td align="left"><input type="text" value="<?php echo $data['price_src'] ?>" id="copy-src-price"></td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-weight');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-weight');" align="right">Khối lượng</td>
+                        <td align="left"><input type="text" value="<?php echo $data['weight'] ?>" id="copy-weight"></td>                                                
+                    </tr>
+                    <?php if (!empty($data['material'])):?>
+                    <tr>
+                        <td onclick="copy('copy-material');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-material');" align="right">Chất liệu</td>
+                        <td align="left"><input type="text" value="<?php echo $data['material'] ?>" id="copy-material"></td>                                                
+                    </tr>
+                    <?php endif ?>
+                    <?php if (!empty($data['size'])):?>
+                    <tr>
+                        <td onclick="copy('copy-size');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-size');" align="right">Kích thước</td>
+                        <td align="left"><input type="text" value="<?php echo $data['size'] ?>" id="copy-size"></td>                                                
+                    </tr>                              
+                    <?php endif ?>
+                    
+                    <?php                                 
+                        if (!empty($data['attributes'])) {
+                            foreach ($data['attributes'] as $attribute) {
+								$attribute['value'] = strip_tags($attribute['value']);
+                                if (!empty($attribute['value'])) {                                    
+                                    echo "<tr>";
+                                    echo "<td onclick=\"copy('copy-attr-{$attribute['field_id']}');\" align=\"right\"><i class=\"fa fa-copy\"></i></td>";
+                                    echo "<td onclick=\"copy('copy-attr-{$attribute['field_id']}');\" align=\"right\">{$attribute['name']}</td>";                                            
+                                    echo "<td align=\"left\"><input type=\"text\" value=\"{$attribute['value']}\" id=\"copy-attr-{$attribute['field_id']}\"></td>";                                            
+                                    echo "</tr>";
+                                }
+                            }
+                        }
+                    ?>
+                    <!--
+                    <tr>
+                        <td onclick="copy('copy-tags');" align="right"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-tags');" align="right">Tags</td>
+                        <td align="left"><input type="text" value="<?php echo $data['tags'] ?>" id="copy-tags"></td>                                                
+                    </tr>
+                    
+					<tr>
+                        <td onclick="copy('copy-short');" align="right"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-short');" align="right">Mô tả ngắn</td>                        
+                        <td align="left"><textarea id="copy-short" style="width:100%;" rows="2"><?php echo $data['short'] ?></textarea></td>                                                
+                    </tr>
+                    -->
+                    <tr>
+                        <td onclick="copy('copy-bosp');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-bosp');" align="right" width="140">Bộ sản phẩm</td>
+                        <td align="left"><textarea id="copy-bosp" style="width:100%;" rows="2"><?php echo $data['bo_san_pham'] ?></textarea></td>                                                
+                    </tr>
+                    <tr>
+                        <td onclick="copy('copy-short');" align="right" width="20"><i class="fa fa-copy"></i></td>
+                        <td onclick="copy('copy-short');" align="right" width="140">Mô tả ngắn</td>
+                        <td align="left"><textarea id="copy-short" style="width:100%;" rows="2"><?php echo $data['short'] ?></textarea></td>                                                
+                    </tr>
+					<tr>
+                        <td onclick="copy('copy-content');" align="right"><i class="fa fa-copy"></i></td>
+						<td onclick="copy('copy-content');" align="right">Mô tả</td>
+                        <td align="left"><textarea id="copy-content" style="width:100%;" rows="2"><?php echo $data['content'] ?></textarea></td>                                                
+                    </tr> 
+                    <?php if (!empty($data['seo'])):?>  
+                    <tr>
+                        <td onclick="copy('copy-seo');" align="right" width="20"><i class="fa fa-seo"></i></td>
+                        <td onclick="copy('copy-seo');" align="right">SEO</td>
+                        <td align="left"><input value="<?php echo $data['seo']?>" type="text" value="300" id="copy-seo"></td>                                                
+                    </tr>
+                    <?php endif ?>
+                </tbody>
+            </table>            
+        </div>        
+    </section>
+</div>
+<?php exit; ?>

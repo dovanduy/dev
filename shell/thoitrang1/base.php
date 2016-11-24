@@ -165,6 +165,30 @@ $fb = new \Facebook\Facebook([
 ]);
 
 
+function uploadUnpublishedPhoto($data, $accessToken, &$errorMessage = '') {
+    global $fb;
+    try {
+        $data['published'] = false;
+        $response = $fb->post("/me/photos", $data, $accessToken);
+        $graphNode = $response->getGraphNode();
+        if (!empty($graphNode['id'])) {
+            return $graphNode['id'];
+        }
+    } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info($errorMessage);	
+		exit;         
+    } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info($errorMessage);	
+		exit;   
+    } catch (\Exception $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info($errorMessage);
+    }
+    return false;
+}  
+
 
 function postToWall($data, $accessToken, &$errorMessage = '') {
     global $fb;
@@ -198,23 +222,51 @@ function postToGroup($groupId, $data, $accessToken, &$errorMessage = '') {
         }
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
         $errorMessage = $e->getMessage(); 
-		batch_info($errorMessage);	
+		batch_info($groupId . ': ' . $errorMessage);	
 		exit;
     } catch (Facebook\Exceptions\FacebookSDKException $e) {
         $errorMessage = $e->getMessage();
-		batch_info($errorMessage);	
+		batch_info($groupId . ': ' . $errorMessage);	
 		exit;
     } catch (\Exception $e) {
-        $errorMessage = $e->getMessage();
+        batch_info($groupId . ': ' . $errorMessage);	
     }
     return false;
 }
 
-function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
+function postToPage($pageId, $data, $accessToken, &$errorMessage = '') {
+    global $fb;    
+    try {
+        $pageResponse = $fb->get('/' . $pageId . '?fields=access_token', $accessToken);
+        if ($pageResponse) {   
+            $graphPage = $pageResponse->getGraphPage();
+            $pageAccessToken = $graphPage['access_token'];                
+            $response = $fb->post("/{$pageId}/feed", $data, $pageAccessToken);
+            $graphNode = $response->getGraphNode();
+            if (!empty($graphNode['id'])) {
+                return $graphNode['id'];
+            }
+        }        
+    } catch (Facebook\Exceptions\FacebookResponseException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info($pageId . ': ' . $errorMessage);
+		exit;
+    } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        $errorMessage = $e->getMessage();
+		batch_info($pageId . ': ' . $errorMessage);
+		exit;
+    } catch (\Exception $e) {
+        $errorMessage = $e->getMessage();
+        batch_info($pageId . ': ' . $errorMessage);
+    }
+    return false;
+}
+
+function commentToPost($postId, $data, $accessToken, &$errorMessage = '', &$errorCode = '') {
     global $fb;
     try {
         if (empty($data['message'])) {
-            $data['message'] = 'thoitrang1.net';
+            $data['message'] = 'vuongquocbalo.com';
         }       
         $response = $fb->post("/{$postId}/comments", $data, $accessToken);
         $graphNode = $response->getGraphNode();
@@ -222,15 +274,17 @@ function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
             return $graphNode['id'];
         }
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage(); 
-		batch_info($errorMessage);	
-		exit;
+        batch_info("{$postId}:{$errorCode}:{$errorMessage}");
     } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage();
-		batch_info($errorMessage);	
-		exit;
+		batch_info("{$postId}:{$errorCode}:{$errorMessage}");
     } catch (\Exception $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage();
+        batch_info("{$postId}:{$errorCode}:{$errorMessage}");	
     }
     return false;
 }

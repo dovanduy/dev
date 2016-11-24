@@ -27,8 +27,14 @@ return array(
     
     'facebook_admins' => '129746714106531',
     'facebook_app_id' => '1017869161653955',
-    'facebook_app_secret' => 'e9f6b56a1a0de0210e3266625b327743',
-    'facebook_login_file' => getcwd() . '/shell/thoitrang1/facebook_login.serialize',
+    'facebook_app_secret' => 'e9f6b56a1a0de0210e3266625b327743', 
+    'facebook_login_file' => [
+        23 => getcwd() . '/shell/thoitrang1/facebook_login.serialize', // fb.khaai@gmail.com
+        25 => getcwd() . '/shell/thoitrang1/facebook_login2.serialize', // fb.hoaian@gmail.com
+        30 => getcwd() . '/shell/thoitrang1/facebook_login3.serialize', // kinhdothoitrang@outlook.com
+        20 => getcwd() . '/shell/thoitrang1/facebook_login4.serialize', // mail.vuongquocbalo.com@gmail.com
+        49 => getcwd() . '/shell/thoitrang1/facebook_login5.serialize', // atem.vn@gmail.com
+    ], 
     
     'google_app_id' => '805351782449-ivf6n3p88791eh80rp3j8tasqg7l06s4.apps.googleusercontent.com',
     'google_app_secret' => 'ioV9e4N7WiiFN9sKbRUgCEOM',
@@ -75,7 +81,7 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú), <a target="_blank" href="http://thoitrang1.net/chinh-sach-ban-hang.html">Xem chính sách bán hàng</a></p>
+                <p>✓ Giao hàng TOÀN QUỐC</p>
                 <p>✓ Thanh toán khi nhận hàng</p>                
                 <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
@@ -88,9 +94,9 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
+                <p>✓ Giao hàng TOÀN QUỐC</p>
                 <p>✓ Thanh toán khi nhận hàng</p>                                         
-                <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               
+                <p>✓ Giao hàng từ <strong>2 - 3</strong> ngày</p>                               
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                                   
             </div>  

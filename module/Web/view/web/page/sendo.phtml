@@ -1,0 +1,17 @@
+<style type="text/css">
+html, body {
+    height: 100%;
+    background-size: cover;
+    background:url("<?php echo $data['images'][0]['url_image']; ?>") no-repeat center center fixed;
+}
+</style>
+<div id="fullscreen">  
+	<div class="fullscreen-content">
+		<img style="width:150px;height:150px;" src="/web/images/loading.gif" />
+	</div>  
+</div>
+<script>
+    setTimeout(function(){ 
+        location.href='<?php echo $backUrl?>';
+    }, 800);	
+</script>

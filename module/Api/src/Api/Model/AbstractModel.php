@@ -556,7 +556,7 @@ abstract class AbstractModel {
             }
         }
         if (empty($set) || empty($options['where'])) {
-            static::errorParamInvalid();
+            static::errorParamInvalid('set/where');
             return false;
         }        
         if (in_array('updated', static::$properties)) {

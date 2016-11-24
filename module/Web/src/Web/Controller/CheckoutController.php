@@ -479,7 +479,8 @@ class CheckoutController extends AppController
                 die($this->getErrorMessageForAjax($error)); 
             }
             $post['user_id'] = $AppUI->user_id;
-            $voucherDetail = Api::call('url_vouchers_check', $post); 
+            $post['phone'] = $AppUI->mobile;
+            $voucherDetail = Api::call('url_vouchers_check', $post);     
             $error = array(
                 array(
                     'field' => 'voucher_code',
@@ -490,8 +491,18 @@ class CheckoutController extends AppController
                     'field' => 'voucher_code',
                     'code' => 1010,
                     'message' => 'The voucher_code does not exist'
+                ),
+                array(
+                    'field' => 'voucher_code',
+                    'code' => 1021,
+                    'message' => 'The voucher_code have been already used'
+                ),
+                array(
+                    'field' => 'voucher_code',
+                    'code' => 1022,
+                    'message' => 'The voucher_code have been expired'
                 )
-            );           
+            );
             if (empty(Api::error()) && !empty($voucherDetail)) {                
                 switch ($voucherDetail['type']) {
                     case 0:  
@@ -511,8 +522,7 @@ class CheckoutController extends AppController
                 $result['status'] = 'OK';
                 
                 die(json_encode($result));
-            } 
-          
+            }             
             $checkoutInfo['last_total_money'] = ($totalMoney + $checkoutInfo['ship_money']);
             $checkoutInfo['discount'] = 0;
             $checkoutInfo['voucher_code'] = '';                

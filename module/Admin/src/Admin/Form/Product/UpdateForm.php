@@ -338,6 +338,20 @@ class UpdateForm extends AbstractForm
                         'validators' => \Admin\Module::getValidatorConfig('products.content')
                     ),
                     array(
+                        'name' => 'more',
+                        'type' => 'Application\Form\Element\CKEditor',
+                        'allow_empty' => true,
+                        'attributes' => array(
+                            'id' => 'content',
+                            'class' => 'form-control',
+                            'required' => false,
+                            'height' => 300
+                        ),
+                        'options' => array(
+                            'label' => 'More',
+                        ),                        
+                    ),
+                    array(
                         'name' => 'meta_keyword',
                         'attributes' => array(
                             'id' => 'meta_keyword',

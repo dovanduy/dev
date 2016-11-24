@@ -1,5 +1,5 @@
 <?php
-
+// php /home/vuong761/public_html/shell/thoitrang1/products.php
 // Áo Khoác Nữ: php products.php 51
 // Áo Sơ Mi Nữ: php products.php 52
 // Áo Thun Nữ: php products.php 53

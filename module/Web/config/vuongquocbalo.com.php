@@ -26,10 +26,20 @@ return array(
     'website_id' => 1,
     
     'facebook_admins' => '129746714106531',
-    'facebook_app_id' => '1679604478968266',
-    'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
-    'facebook_login_file' => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize',
+    //'facebook_app_id' => '1679604478968266',
+    //'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
     
+    'facebook_app_id' => '575135192674647',
+    'facebook_app_secret' => 'fdeb4ccfb7f28c96365cc6d91bebb6a4',
+    
+    'facebook_login_file' => [
+        23 => getcwd() . '/shell/vuongquocbalo/facebook_login.serialize', // fb.khaai@gmail.com
+        25 => getcwd() . '/shell/vuongquocbalo/facebook_login2.serialize', // fb.hoaian@gmail.com
+        30 => getcwd() . '/shell/vuongquocbalo/facebook_login3.serialize', // kinhdothoitrang@outlook.com
+        20 => getcwd() . '/shell/vuongquocbalo/facebook_login4.serialize', // mail.vuongquocbalo.com@gmail.com
+        49 => getcwd() . '/shell/vuongquocbalo/facebook_login5.serialize', // atem.vn@gmail.com
+        59 => getcwd() . '/shell/vuongquocbalo/facebook_login6.serialize', // nguyenthimytrang94@yahoo.com.vn
+    ],    
     'google_app_id' => '262987808969-jbn8697q26rfdkj48uu71qeirhcpch7q.apps.googleusercontent.com',
     'google_app_secret' => 'dk1V5W0lodxaD1xEXZYEeMfN',
     'google_app_redirect_uri' => 'http://vuongquocbalo.com/glogin',
@@ -76,9 +86,9 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
+                <p>✓ Giao hàng TOÀN QUỐC</p>
                 <p>✓ Thanh toán khi nhận hàng</p>                  
-                <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p> 
+                <p>✓ Giao hàng từ <strong>2 - 3</strong> ngày</p> 
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>
             </div>              
@@ -89,9 +99,9 @@ return array(
         <div id="commitment_and_guide">    
             <div class="commitment">   
                 <div class="title">Chính sách bán hàng</div>
-                <p>✓ Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ 150.000 VNĐ ở khu vực nội thành TP HCM</p>
+                <p>✓ Giao hàng TOÀN QUỐC</p>
                 <p>✓ Thanh toán khi nhận hàng</p>                                           
-                <p>✓ Giao hàng từ <strong>1 - 3</strong> ngày</p>                               
+                <p>✓ Giao hàng từ <strong>2 - 3</strong> ngày</p>                               
                 <p>✓ Cam kết hàng giống hình</p>                                               
                 <p>✓ Hàng chính hãng, giá luôn thấp hơn thị trường</p>                                   
             </div>  

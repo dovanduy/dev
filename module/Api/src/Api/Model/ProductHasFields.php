@@ -2,6 +2,7 @@
 
 namespace Api\Model;
 
+use Application\Lib\Log;
 use Application\Lib\Arr;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Predicate\Expression;
@@ -33,6 +34,23 @@ class ProductHasFields extends AbstractModel {
             'field_id', // field_id:key
             'type' // type:value
         );
+        
+        if (!empty($param['product_code'])) {            
+            $productModel = new Products;
+            $product = $productModel->find(
+                array(     
+                    'where' => array(
+                        'code' => $param['product_code']
+                    ),                
+                ),
+                self::RETURN_TYPE_ONE
+            );            
+            if (empty($product['product_id'])) {
+                self::errorNotExist('product_code');
+                return false;
+            }
+            $param['product_id'] = $product['product_id'];
+        }       
         $attributes = self::find(
             array(     
                 'where' => array(
@@ -76,7 +94,7 @@ class ProductHasFields extends AbstractModel {
                 false
             )
         ) {           
-            if (!empty($attributes)) {
+            if (!empty($attributes) && !isset($param['only_update'])) {
                 foreach ($attributes as $attribute) {                
                     if (!in_array($attribute['field_id'], array_keys($param['field']))) {
                         if (!self::delete(

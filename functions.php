@@ -36,6 +36,21 @@ if (!function_exists('app_array_field')) {
     }
 }
     
+if (!function_exists('app_array_rand')) {
+    function app_array_rand($arr, $num = 0) {
+        if ($num == 0) {
+            $num = count($arr);
+        }
+        $keys = array_keys($arr);
+        shuffle($keys);
+        $r = array();   
+        for ($i = 0; $i < $num; $i++) {
+            $r[] = $arr[$keys[$i]];
+        }
+        return $r;
+    }
+}
+    
 if (!function_exists('curl_file_create')) {
 
     function curl_file_create($filename, $mimetype = '', $postname = '') {
@@ -261,7 +276,7 @@ if (!function_exists('truncate')) {
 if (!function_exists('app_money_format')) {
     function app_money_format($value, $withCurrency = true) {        
         if (is_numeric($value)) {
-            return number_format($value, 0, ',', '.') . ($withCurrency ? ' VND' : '');
+            return number_format($value, 0, ',', '.') . ($withCurrency ? ' VNĐ' : '');
         }
         return $value;
     }
@@ -542,13 +557,15 @@ function app_file_put_contents($targetFileName, $content, $echoFlag = false) {
 
 function app_get_fb_share_content($product, $caption = null) {  
 
-    if ($product['website_id'] == 1) {        
+    if ($product['website_id'] == 1) {  
+        $phone = '098 65 60 943';
         $siteUrl = 'http://vuongquocbalo.com';
         if (empty($caption)) {
             $caption = 'vuongquocbalo.com';
         }
 		$icon = '💼';        
     } else {
+        $phone = '097 443 60 40';
         $siteUrl = 'http://thoitrang1.net';
         if (empty($caption)) {
             $caption = 'thoitrang1.net';
@@ -556,12 +573,12 @@ function app_get_fb_share_content($product, $caption = null) {
 		$icon = '👔';
     }
     if (!array_intersect([15, 16], $product['category_id'])) {
-        $icon .= ' [THỜI TRANG ZANADO]';
+        $icon .= '';        
     }
     $price = app_money_format($product['price']);
     if (!empty($product['original_price'])) {
         $price .= ' (giá trước đây ' . app_money_format($product['original_price']) . ')';
-    }   
+    }
     $short = str_replace(PHP_EOL, ' ', mb_ereg_replace('!\s+!', ' ', $product['short'])); 
     if (in_array(substr($short, -1), ['.', ',', ';', '-', '_'])) {
         $short = substr($short, 0, strlen($short) - 1);
@@ -577,7 +594,8 @@ function app_get_fb_share_content($product, $caption = null) {
         'message' => implode(PHP_EOL, [
             "{$icon} {$product['name']}",
             "💰 {$price}",             
-            //"📞 097 443 60 40 - 098 65 60 997",                 
+            "📞 {$phone}",                 
+            "Mã hàng: {$product['code']}",
             "❝ {$short} ❞",
             "✈ 🚏 🚕 🚄 Ship TOÀN QUỐC",            
         ]),
@@ -594,15 +612,6 @@ function app_get_fb_share_content($product, $caption = null) {
 }
 
 function app_get_fb_share_comment() { 
-//    $urls = [
-//        'http://www.webtretho.com/forum/f26/cong-nghe-trung-ga-nuong-sieu-ban-2278471/',
-//        'http://nld.com.vn/thoi-su-trong-nuoc/khiep-dam-cong-nghe-so-che-mang-thoi-su-dung-chat-gay-ung-thu-20160510103154348.htm',
-//        'http://nld.com.vn/thoi-su-trong-nuoc/moi-ngay-ban-gan-400-chai-giam-lam-tu-a-xit-va-nuoc-la-ra-thi-truong-20160408082101929.htm',
-//        'http://nld.com.vn/kinh-te/kinh-hoang-gio-cha-20150210215041.htm',
-//    ];
-//    return [
-//        'message' => app_random_value($urls)
-//    ];
     $files = array(
         'truyen-cuoi-gia-dinh.php',
         'truyen-cuoi-hoc-duong.php', 
@@ -896,11 +905,12 @@ if (!function_exists('app_facebook_tags')) {
 }
 
 if (!function_exists('app_facebook_groups')) {
-    function app_facebook_groups() {
-        return [
+    function app_facebook_groups($userId = null) {
+        $groups = [
+			//'283297721747122', //https://www.facebook.com/groups/Govapdistrict/
             //'170515796307593', //https://www.facebook.com/groups/170515796307593/ Shop xinh 2
              //'392392084295942', // https://www.facebook.com/groups/donnhahn18899/            
-            '1479744482314512', // https://www.facebook.com/groups/Thuducquan2quan9/
+            //'1479744482314512', // https://www.facebook.com/groups/Thuducquan2quan9/
             '795251457184853', // https://www.facebook.com/groups/24hmuabanraovat/
             '113462365452492', // https://www.facebook.com/groups/795251457184853/ HỘI MUA BÁN-RAO VẶT-GIAO LƯU KẾT BẠN TOÀN QUỐC           
             '538895742888736', //https://www.facebook.com/groups/baneverything/
@@ -908,9 +918,76 @@ if (!function_exists('app_facebook_groups')) {
             '292297640870438', //https://www.facebook.com/groups/292297640870438 Rao vặt Thủ Đức
             '378628615584963', //https://www.facebook.com/groups/bachhoa/
             '426697040774331', //https://www.facebook.com/groups/426697040774331/ Chợ Tốt - Cần Thơ
-            
+            '1435255933407205', //https://www.facebook.com/groups/1435255933407205 THANH LÝ QUẦN ÁO ĐẸP GIÁ RẺ TPHCM
+            '189344754587886', //https://www.facebook.com/groups/189344754587886/ Hội các mẹ săn đồ độc cho bé
+            '1434113756803902', //https://www.facebook.com/groups/cvt.vn Chợ Vũng Tàu
+            '417382065046598', //https://www.facebook.com/groups/417382065046598 Chợ Sinh Viên Sài Thành
+            '1030714580276558', //https://www.facebook.com/groups/1030714580276558/ Nhóm Buôn Bán-Rao Vặt Quận Tân Phú
+            '181455101986200', //https://www.facebook.com/groups/181455101986200/ Mua Bán Sỉ Lẻ
+            '1686355911586531', //https://www.facebook.com/groups/1686355911586531/ Thuận Mua Vừa Bán TP Hồ Chí Minh
+            '295886777270930', //https://www.facebook.com/groups/choraovatbariavungtau/
+            //'962781120447475', //https://www.facebook.com/groups/kinhdoanhbinhdinh/
+            '487699031377171', //https://www.facebook.com/groups/muabansaigoncholon/
+            '404003743046749', //https://www.facebook.com/groups/404003743046749/ Chợ Sinh Viên
+            //'1766326663590224', //https://www.facebook.com/groups/Congdongmangtphcm/            
+            '708023775962036', //https://www.facebook.com/groups/thichkinhdoanhonline.vui.khoe.coich/
+            '468321276613599', //https://www.facebook.com/groups/468321276613599/
+            '190283764491669', //https://www.facebook.com/groups/Hoicacbamemuahangthongminh/
+            '928701673904347', //https://www.facebook.com/groups/928701673904347/ Chợ Sinh Viên Giá Rẻ
+            '526485917480026', //https://www.facebook.com/groups/quangcao24g
+            '573192412807842', //https://www.facebook.com/groups/573192412807842 Nghề Sales - Nghề Bán Hàng
+            '1662537100646707', //https://www.facebook.com/groups/truongthanhlong
+            '265874406918396', //https://www.facebook.com/groups/bariavungtaupro
+            '462745467172169', //https://www.facebook.com/groups/462745467172169 rao vat sai gon
+            '464111493748420', //https://www.facebook.com/groups/464111493748420 Thanh Lý Đồ Đẹp Giá Rẻ Hố Nai
+            '106608662873011', //https://www.facebook.com/groups/muanhanhbannhanh.groups/
+            //'616153548465887', //https://www.facebook.com/groups/616153548465887 Hà Nội: Dọn nhà cho đỡ chật giá rẻ
+            '1476565155967706', //https://www.facebook.com/groups/1476565155967706 hội mua bán lẻ giá sỉ Sài Gòn-Bình Dương-Đồng Nai
+            '324405820993467', //https://www.facebook.com/groups/raovattailongan
+            '826084260826777', //https://www.facebook.com/groups/826084260826777 Chợ Thời Trang Online
+            '506665536087794', //https://www.facebook.com/groups/markettq/ Chợ Tuyên Quang
+            '1648395082048459', //https://www.facebook.com/groups/1648395082048459 Hội mua bán của các mẹ ở Gò vấp
+            '257852864342334', //https://www.facebook.com/groups/raovatmc/ Rao Vặt Móng Cái
+            '579491768861755', //https://www.facebook.com/groups/579491768861755 Hà Nội: Dọn nhà cho đỡ chật giá Sinh Viên
+            '994596223918899', //https://www.facebook.com/groups/994596223918899 Hà Nội : Mua Bán Online
+            '342076939300544', //https://www.facebook.com/groups/342076939300544 Hà Nội : Dọn Nhà Cho Đo Chật Sinh Viên
+            '320849298087603', //https://www.facebook.com/groups/dogiarebienhoa Thanh lý đồ với giá hạt dẻ tại Biên Hòa Đồng Nai
+            '1063633743711526', //https://www.facebook.com/groups/1063633743711526 Chợ cần thơ
+            //'860770637389247', //https://www.facebook.com/groups/860770637389247 RAO VẶT SỐ 1 MÊ LINH
         ];
-    }
+        if (!empty($userId)) {
+            $remove = array();
+            switch ($userId) {
+                case 20: // mail.vuongquocbalo.com@gmail.com
+                    $remove = [
+                        '342076939300544'
+                    ];
+                    break;
+                case 23: // fb.khaai@gmail.com
+                    $remove = [
+                        '506665536087794'
+                    ];                    
+                    break;
+                case 25: // fb.hoaian@gmail.com
+                    $remove = [
+                        '417382065046598',
+                        '404003743046749',
+                        '265874406918396',
+                    ];
+                    break;              
+                case 30: // kinhdothoitrang@outlook.com
+                    break;
+                case 49: // atem.vn@gmail.com
+                    $remove = [
+                        '1030714580276558',
+                        '1434113756803902',
+                    ];                    
+                    break;
+            }
+            $groups = array_diff($groups, $remove);
+        }
+        return $groups;        
+    }    
 }
     
 if (!function_exists('app_bloggers')) {
@@ -1022,5 +1099,23 @@ if (!function_exists('app_short_url')) {
             return $response['id'];
         }
         return $longUrl;
+    }
+}
+
+
+if (!function_exists('app_compress_content')) {
+    function app_compress_content($html) {
+        preg_match_all('!(<(?:code|pre|script).*>[^<]+</(?:code|pre|script)>)!', $html, $pre);
+        $html = preg_replace('!<(?:code|pre).*>[^<]+</(?:code|pre)>!', '#pre#', $html);
+        $html = preg_replace('#<!–[^\[].+–>#', '', $html);
+        $html = preg_replace('/[\r\n\t]+/', ' ', $html);
+        $html = preg_replace('/>[\s]+</', '><', $html);
+        $html = preg_replace('/[\s]+/', ' ', $html);
+        if (!empty($pre[0])) {
+            foreach ($pre[0] as $tag) {
+                $html = preg_replace('!#pre#!', $tag, $html, 1);
+            }
+        }
+        return $html;
     }
 }

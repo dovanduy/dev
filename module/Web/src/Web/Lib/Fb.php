@@ -72,6 +72,32 @@ class Fb {
         return false;
     }
 
+    public static function postToPage($pageId, $data, $accessToken, &$errorMessage = '') {
+       try {
+            $fb = static::instance();
+            $pageResponse = $fb->get('/' . $pageId . '?fields=access_token', $accessToken);
+            if ($pageResponse) {   
+                $graphPage = $pageResponse->getGraphPage();
+                $pageAccessToken = $graphPage['access_token'];                
+                $response = $fb->post("/{$pageId}/feed", $data, $pageAccessToken);
+                $graphNode = $response->getGraphNode();
+                if (!empty($graphNode['id'])) {
+                    return $graphNode['id'];
+                }
+            }
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $errorMessage = $e->getMessage();            
+            Log::warning("Page {$pageId} - {$errorMessage}");
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $errorMessage = $e->getMessage();
+            Log::warning("Page {$pageId} - {$errorMessage}");
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+            Log::warning("Page {$pageId} - {$errorMessage}");
+        }
+        return false;
+    }
+    
     public static function updatePost($postId, $data, $accessToken, &$errorMessage = '') {     
         try {           
             if (isset($data['link'])) {
@@ -197,5 +223,6 @@ class Fb {
             Log::warning($errorMessage);
         }
         return false;
-    }
+    }    
+    
 }

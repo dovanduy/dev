@@ -2031,8 +2031,7 @@ ul.step a:hover:after {
 	line-height: 700px;
 }
 #divLoading img {	
-    margin: auto;
-	
+    margin: auto;	
 	width: 200px;
 	vertical-align: middle;	
 }
@@ -2226,4 +2225,16 @@ ul.step a:hover:after {
 }
 .btn-adm  {
 	width: 44px !important;
+}
+.product-info {
+	float: left;
+	text-align: left;
+	width: 100%;
+	padding: 8px;
+}
+.image-list .image-item {
+	float: left;
+	text-align: center;
+	width: 100%;
+	padding: 8px;
 }

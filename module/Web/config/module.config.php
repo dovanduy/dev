@@ -217,35 +217,34 @@ return array(
     'admin_user_id' => array(13, 20, 27, 30),
     
     'ship_district' => array(
-        'VN.HC.QA' => 0, // Quận 1
-        'VN.HC.QB' => 0, // Quận 2
-        'VN.HC.QC' => 0, // Quận 3
-        'VN.HC.QD' => 0, // Quận 4
-        'VN.HC.QE' => 0, // Quận 5
-        'VN.HC.QF' => 0, // Quận 6
-        'VN.HC.QG' => 0, // Quận 7
-        'VN.HC.QH' => 0, // Quận 8
-        'VN.HC.QJ' => 0, // Quận 10
-        'VN.HC.QK' => 0, // Quận 11
-        'VN.HC.TB' => 0, // Tân Bình
-        'VN.HC.TP' => 0, // Tân Phú
-        'VN.HC.BH' => 0, // Bình Thạnh
-        'VN.HC.GV' => 0, // Gò Vấp
-        'VN.HC.PN' => 0, // Phú Nhuận
-        'VN.HC.QI' => 20000, // Quận 9
-        'VN.HC.QL' => 20000, // Quận 12
-        'VN.HC.TD' => 20000, // Thủ Đức
-        'VN.HC.BC' => 20000, // Bình Chánh
-        'VN.HC.BT' => 20000, // Bình Tân
-        'VN.HC.CC' => 20000, // Củ Chi
-        'VN.HC.HM' => 20000, // Hóc Môn
-        'VN.HC.NB' => 20000, // Nhà Bè
+        'VN.HC.QA' => 14000, // Quận 1
+        'VN.HC.QB' => 14000, // Quận 2
+        'VN.HC.QC' => 14000, // Quận 3
+        'VN.HC.QD' => 14000, // Quận 4
+        'VN.HC.QE' => 14000, // Quận 5
+        'VN.HC.QF' => 14000, // Quận 6
+        'VN.HC.QG' => 14000, // Quận 7
+        'VN.HC.QH' => 14000, // Quận 8
+        'VN.HC.QJ' => 14000, // Quận 10
+        'VN.HC.QK' => 14000, // Quận 11
+        'VN.HC.TB' => 14000, // Tân Bình
+        'VN.HC.TP' => 14000, // Tân Phú
+        'VN.HC.BH' => 14000, // Bình Thạnh
+        'VN.HC.GV' => 14000, // Gò Vấp
+        'VN.HC.PN' => 14000, // Phú Nhuận
+        'VN.HC.QI' => 14000, // Quận 9
+        'VN.HC.QL' => 14000, // Quận 12
+        'VN.HC.TD' => 14000, // Thủ Đức
+        'VN.HC.BC' => 14000, // Bình Chánh
+        'VN.HC.BT' => 14000, // Bình Tân
+        'VN.HC.CC' => 14000, // Củ Chi
+        'VN.HC.HM' => 14000, // Hóc Môn
+        'VN.HC.NB' => 14000, // Nhà Bè
     ),
     'ship_other' => 30000,    
     'ship_money' => "
-        <p>- Giao hàng TOÀN QUỐC. Free ship cho đơn hàng có giá trị từ <strong>100.000</strong> VNĐ ở khu vực nội thành TP HCM (các quận 1, 2, 3, 4 ,5 ,6 ,7 ,8 ,10, 11, Bình Thạnh, Gò Vấp, Phú Nhuận, Tân Bình, Tân Phú)</p>
-        <p>- Các Quận/huyện ngoại thành TP HCM (các quận 9, 12, Thủ Đức, Bình Tân, Nhà Bè, Bình Chánh, Hóc Môn, Củ Chi) phí giao hàng là <strong>20.000 VNĐ</strong></p>
+        <p>- Giao hàng TOÀN QUỐC</p>
+        <p>- TP HCM phí giao hàng là <strong>14.000 VNĐ</strong></p>
         <p>- Khu vực tỉnh khác TP HCM phí giao hàng là <strong>30.000 VNĐ</strong>
-        <p>- Trường hợp đơn hàng dưới <strong>100.000 VNĐ</strong>, khách hàng vui lòng trả thêm <strong>20.000 VNĐ</strong> khi nhận hàng
     "
 );

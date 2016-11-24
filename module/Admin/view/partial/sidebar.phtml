@@ -29,7 +29,7 @@
                         )
                     )) echo "active"?>">
                 <a href="#">
-                    <i class="fa fa-home"></i> <span><?php echo $this->translate('Homepage')?></span>
+                    <i class="fa fa-home"></i> <span><?php echo $this->translate('Dashboard')?></span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu"> 
@@ -47,6 +47,7 @@
                         array(
                             'admins',
                             'users', 
+                            'vouchers', 
                         )
                     )) echo "active"?>">
                 <a href="#">
@@ -58,6 +59,9 @@
                     <li<?php if ($controller == 'admins' && $action=='add') echo " class=\"active\""?>><a href="<?php echo $this->url('admin/admins', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Admin')?></a></li>
                     <li class="divider"></li>
                     <li<?php if ($controller == 'users' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/users')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Member List')?></a></li>                    
+                    <li class="divider"></li>
+                    <li<?php if ($controller == 'vouchers' && ($action=='index' || $action=='update')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/vouchers')?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Voucher List')?></a></li>                    
+                    <li<?php if ($controller == 'vouchers' && ($action=='add')) echo " class=\"active\""?>><a href="<?php echo $this->url('admin/vouchers', array('action' => 'add'))?>"><i class="fa fa-angle-double-right"></i> <?php echo $this->translate('Add Voucher')?></a></li>                    
                 </ul>
             </li>            
             

@@ -121,12 +121,16 @@ if (empty($data['shipping'])) {
                                 <td><?php echo app_money_format($data['tax']); ?></td>
                             </tr>
                             <tr>
-                                <th><?php echo $this->translate('Shipping') ?></th>
+                                <th><?php echo $this->translate('Discount') ?></th>
+                                <td><?php echo app_money_format($data['discount']); ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $this->translate('Ship money') ?></th>
                                 <td><?php echo app_money_format($data['shipping']); ?></td>
                             </tr>
                             <tr>
                                 <th><?php echo $this->translate('Total') ?></th>
-                                <td><?php echo app_money_format($data['total_money'] + $data['tax'] + $data['shipping']); ?></td>
+                                <td><?php echo app_money_format($data['total_money'] + $data['tax'] + $data['shipping'] - $data['discount']); ?></td>
                             </tr>
                         </tbody></table>
                 </div>

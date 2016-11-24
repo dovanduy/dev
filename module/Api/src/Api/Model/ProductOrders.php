@@ -406,25 +406,15 @@ class ProductOrders extends AbstractModel {
         // check voucher valid
         $voucher = new Vouchers();
         if (!empty($param['voucher_code'])) {            
-            $voucherDetail = $voucher->getDetail(array(
+            $voucherDetail = $voucher->check(array(
                 'website_id' => $param['website_id'],
                 'user_id' => $param['user_id'],
-                'code' => $param['voucher_code'],
-                'active' => 1
+                'voucher_code' => $param['voucher_code'],
+                'phone' => $param['user_mobile'],
             ));
-            if (!empty($voucherDetail)) {
-                if (!empty($voucherDetail['used'])) {
-                    self::errorNotExist('voucher_code');
-                    return false;
-                }
-                if (!empty($voucherDetail['expired']) && $voucherDetail['expired'] <= time()) {
-                    self::errorNotExist('voucher_code');
-                    return false;
-                }                  
-            } else {
-                self::errorNotExist('voucher_code');
+            if (self::error()) {
                 return false;
-            }
+            }            
         }
         
         if ($id = self::insert($values)) { 
@@ -438,6 +428,7 @@ class ProductOrders extends AbstractModel {
                 if (!empty($voucherDetail)) { 
                     $voucher->updateInfo(array(
                         '_id' => $voucherDetail['_id'],
+                        'user_Id' => $param['user_id'],
                         'used' => new Expression('UNIX_TIMESTAMP()')
                     ));
                     switch ($voucherDetail['type']) {

@@ -35,6 +35,9 @@ class AttributeForm extends AbstractForm
         $elements = array();
         $dataset = $this->getDataset();
         foreach ($dataset as $row) {
+            if (empty($row['active'])) {
+                continue;
+            }
             $fieldId = $row['field_id'];
             $type = 'text';            
             $options = array(
@@ -43,7 +46,7 @@ class AttributeForm extends AbstractForm
             $class = 'form-control';
             switch ($row['type']) {
                 case 'select':
-                    $type = 'Zend\Form\Element\Select';                    
+                    $type = 'Zend\Form\Element\Select';                        
                     $options = $row['options'];
                     $options['value_options'] = array('' => '--Select one--') + $options['value_options'];
                     break;

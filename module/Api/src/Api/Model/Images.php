@@ -21,7 +21,9 @@ class Images extends AbstractModel {
         'created',
         'updated',
         'active',
+        'website_id',
     );
+    
     protected static $tableName = 'news_category_images';
 
     public static function getTableName($param) {
@@ -68,8 +70,9 @@ class Images extends AbstractModel {
     }
 
     public static function add($param) {
-        if (empty($param['src']) || empty($param['url_image'])) {
-            self::errorParamInvalid('src/url_image');
+        if (empty($param['src']) || empty($param['url_image']) || empty($param['website_id'])) {
+            Log::error('Invalid param', $param);
+            self::errorParamInvalid('src/url_image/website_id');
             return false;
         }
         $tableName = self::getTableName($param);
@@ -120,12 +123,14 @@ class Images extends AbstractModel {
                 if (!empty($param['remove_url_image' . $i])) { // delete
                     self::delete(array(
                         'where' => array(
+                            'website_id' => $param['website_id'],
                             'src_id' => $param['src_id'],
                             'image_id' => $imageId
                         )
                     ));
                     $hasColorModel->delete(array(
                         'where' => array(
+                            'website_id' => $param['website_id'],
                             'product_id' => $param['src_id'],
                             'image_id' => $imageId
                         )
@@ -140,6 +145,7 @@ class Images extends AbstractModel {
                     self::update(array(
                         'set' => $set,
                         'where' => array(
+                            'website_id' => $param['website_id'],
                             'src_id' => $param['src_id'],
                             'image_id' => $imageId
                         )
@@ -157,7 +163,7 @@ class Images extends AbstractModel {
                         $values[] = array(
                             'image_id' => $imageId,
                             'color_id' => $colorId,
-                            'product_id' => $param['src_id'],
+                            'product_id' => $param['src_id'],                           
                             'created' => new Expression('UNIX_TIMESTAMP()'),
                             'updated' => new Expression('UNIX_TIMESTAMP()'),
                         );
@@ -166,16 +172,19 @@ class Images extends AbstractModel {
             } elseif (!empty($uploadResult['url_image' . $i])) { // new image 
                 $isMain = ($param['is_main'] == 'url_image' . $i) ? 1 : 0;
                 $imageId = self::add(array(
-                            'src' => $param['src'],
-                            'src_id' => $param['src_id'],
-                            'url_image' => $uploadResult['url_image' . $i],
-                            'is_main' => $isMain
-                ));
+                        'src' => $param['src'],
+                        'src_id' => $param['src_id'],
+                        'website_id' => $param['website_id'],
+                        'url_image' => $uploadResult['url_image' . $i],
+                        'is_main' => $isMain
+                    )
+                );
                 if (!empty($imageId) && $isMain == 1) {
                     $productModel->update(array(
                         'set' => array('image_id' => $imageId),
                         'where' => array(
-                            'product_id' => $param['src_id']
+                            'product_id' => $param['src_id'],
+                            'website_id' => $param['website_id'],
                         )
                     ));
                 }
@@ -187,6 +196,7 @@ class Images extends AbstractModel {
                         'product_id' => $param['src_id'],
                         'created' => new Expression('UNIX_TIMESTAMP()'),
                         'updated' => new Expression('UNIX_TIMESTAMP()'),
+                        
                     );
                 }
             }
@@ -197,7 +207,7 @@ class Images extends AbstractModel {
                         'product_id' => new Expression('VALUES(`product_id`)'),
                         'color_id' => new Expression('VALUES(`color_id`)'),
                         'image_id' => new Expression('VALUES(`image_id`)'),
-                        'updated' => new Expression('UNIX_TIMESTAMP()')
+                        'updated' => new Expression('UNIX_TIMESTAMP()'),                       
                     ), false, 'product_has_colors'
                 );
             }
@@ -229,7 +239,8 @@ class Images extends AbstractModel {
                     self::updateInfo(array(
                         'src' => $param['src'],
                         'id' => $param['update'][$name],
-                        'url_image' => $urlImage
+                        'url_image' => $urlImage,
+                        'website_id' => $param['website_id']
                     ));
                 } else {
                     self::add(array(
@@ -237,6 +248,7 @@ class Images extends AbstractModel {
                         'src_id' => $param['src_id'],
                         'url_image' => $urlImage,
                         'is_main' => 0,
+                        'website_id' => $param['website_id']
                     ));
                 }
             }
@@ -297,14 +309,15 @@ class Images extends AbstractModel {
         $sql = new Sql(self::getDb());
         $select = $sql->select()
                 ->from(static::$tableName)
-                ->columns($columns)
-                ->order('is_main DESC');
+                ->columns($columns)                
+                ->order(static::$tableName . '.is_main DESC, ' . static::$tableName . '.created ASC');
         $select->where(static::$tableName . '.active = 1');
         if (!empty($param['src_id'])) {
             $select->where(static::$tableName . '.src_id = ' . $param['src_id']);
         }
         return self::response(
-                        static::selectQuery($sql->getSqlStringForSqlObject($select)), self::RETURN_TYPE_ALL
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
         );
     }
 
@@ -325,22 +338,26 @@ class Images extends AbstractModel {
         );
         $sql = new Sql(self::getDb());
         $select = $sql->select()
-                ->from(static::$tableName)
-                ->columns($columns)
-                ->join(
-                        'product_has_colors', static::$tableName . '.image_id = product_has_colors.image_id', array(
+            ->from(static::$tableName)
+            ->columns($columns)
+            ->join(
+                'product_has_colors', 
+                static::$tableName . '.image_id = product_has_colors.image_id',                     
+                array(                
                     'color_id'
-                        ), \Zend\Db\Sql\Select::JOIN_LEFT
+                ), 
+                \Zend\Db\Sql\Select::JOIN_LEFT
+            )
+            ->where(
+                array(
+                    static::$tableName . '.src_id' => $param['src_id'],
+                    static::$tableName . '.active' => 1
                 )
-                ->where(
-                        array(
-                            static::$tableName . '.src_id' => $param['src_id'],
-                            static::$tableName . '.active' => 1
-                        )
-                )
-                ->order('is_main DESC');
+            )
+            ->order(static::$tableName . '.is_main DESC, ' . static::$tableName . '.created ASC');
         return self::response(
-                        static::selectQuery($sql->getSqlStringForSqlObject($select)), self::RETURN_TYPE_ALL
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
         );
     }
 

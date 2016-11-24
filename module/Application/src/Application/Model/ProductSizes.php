@@ -40,7 +40,7 @@ class ProductSizes
            $data = Arr::keyValue(
                 $data, 
                 'size_id', 
-                'short'
+                'name'
             );
         }
         return $data;

@@ -280,4 +280,12 @@ class ProductsController extends AppController {
             $this->getParams()
         );
     }
+    
+     public function allforupdateavailableAction()
+    {
+        return \Api\Bus\Products\AllForUpdateAvailable::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
 }

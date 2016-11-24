@@ -1,11 +1,13 @@
 <?php
 
+// php /home/vuong761/public_html/shell/vuongquocbalo/products.php
 // php products.php 3
 // php products.php 2
 // php products.php 20
 // php products.php 6
 // php products.php 5
 // php products.php 21
+// php products.php 12
 
 include_once 'base.php';
 include_once '../../include/simple_html_dom.php';
@@ -78,6 +80,17 @@ $productList = array(
         'disable' => 0,
         'category_id' => 21,
         'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=35&sortlist=product_new_desc',
+        'detail_url' => array(),
+        'size_id' => array(),
+        'max_images' => 10,
+        'discount_percent' => 35,
+        'website_discount_percent' => 5,
+    ),
+    // Giầy Dép Nam
+    array(
+        'disable' => 0,
+        'category_id' => 12,
+        'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=33&brand=192&sortlist=product_new_desc',
         'detail_url' => array(),
         'size_id' => array(),
         'max_images' => 10,
@@ -300,7 +313,6 @@ if (file_exists($fileProducts)) {
     app_file_put_contents($fileProducts, serialize($products));
 }
 batch_info('END: Parse Product Detail');
-exit;
 if (file_exists($fileFails)) {
     $products = unserialize(app_file_get_contents($fileFails));
 }

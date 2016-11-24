@@ -322,4 +322,12 @@ return array(
     'send_email_file' => getcwd() . '/data/email.serialize',
     'fbshare_file' => getcwd() . '/data/fbshare.serialize',
     
+    'voucher' => [
+        'code' => 'V' . date('Y'),
+        'type' => '0',
+        'amount' => '10',
+        'min_total_money' => '0',
+        'expired' => strtotime(date('Y/m/d', strtotime('+3 months')) . ' 23:59:00'),
+    ]
+    
 );

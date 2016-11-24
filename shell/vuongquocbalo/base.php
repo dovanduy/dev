@@ -18,8 +18,8 @@ $config = [
         'timeout' => 30*60,       
         'base_uri' => 'http://api.vuongquocbalo.dev',    
         
-        'facebook_app_id' => '261013080913491',
-        'facebook_app_secret' => '0eb33476da975933077a4d4ad094479b',
+        'facebook_app_id' => '304999106503304',
+        'facebook_app_secret' => '939d6213f1a40680aa55877b0ccd7931',
         
         'google_app_id' => '1027124832421-00lmm9qstsa4umk76bgr2hpcsfu2kgo2.apps.googleusercontent.com',
         'google_app_secret' => 'EDfKgxjtBo-I_guWfg6y85YU',
@@ -30,8 +30,12 @@ $config = [
     'production' => [
         'timeout' => 30*60,
         'base_uri' => 'http://api.vuongquocbalo.com',   
-        'facebook_app_id' => '1679604478968266',
-        'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+        
+        //'facebook_app_id' => '1679604478968266',
+        //'facebook_app_secret' => '53bbe4bab920c2dd3bb83855a4e63a94',
+        
+        'facebook_app_id' => '575135192674647',
+        'facebook_app_secret' => 'fdeb4ccfb7f28c96365cc6d91bebb6a4',
         
         'google_app_id' => '692650781994-mv3unhde1gf92i26s3qajrrbrs9hbsae.apps.googleusercontent.com',
         'google_app_secret' => 'kEAA8MNKgFbmhL3ZDU9U4eTp',
@@ -58,6 +62,20 @@ function call($url, $param = array(), &$errors = null) {
 	}
 	try {		
         $param['website_id'] = $websiteId;
+        foreach ($param as $name => $value) {
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    if (is_scalar($v)) {
+                        $param["{$name}[{$k}]"] = $v;
+                    } elseif (is_array($v)) {
+                        foreach ($v as $k2 => $v2) {
+                            $param["{$name}[{$k}][{$k2}]"] = $v2;
+                        }                                    
+                    }
+                }
+                unset($param[$name]);
+            }                
+        } //p($param, 1);
 		$headers = array("Content-Type:multipart/form-data");
 		$url = $config['base_uri'] . $url;
 		$ch = curl_init();
@@ -84,7 +102,7 @@ function call($url, $param = array(), &$errors = null) {
                 case 'ERROR_VALIDATION':                                         
                 case 'ERROR':
                     $errors = $result['results'];    
-                    p($errors);
+                    //p($errors);
                     return false;
             }
             return $result;
@@ -162,6 +180,29 @@ $fb = new \Facebook\Facebook([
     //'default_access_token' => $user['access_token'], // optional
 ]);
 
+function uploadUnpublishedPhoto($data, $accessToken, &$errorMessage = '') {
+    global $fb;
+    try {
+        $data['published'] = false;
+        $response = $fb->post("/me/photos", $data, $accessToken);
+        $graphNode = $response->getGraphNode();
+        if (!empty($graphNode['id'])) {
+            return $graphNode['id'];
+        }
+    } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info('1-' . $errorMessage);	
+		exit;         
+    } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info('2-' . $errorMessage);	
+		exit;   
+    } catch (\Exception $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info('3-' . $errorMessage);
+    }
+    return false;
+}  
 
 
 function postToWall($data, $accessToken, &$errorMessage = '') {
@@ -196,19 +237,47 @@ function postToGroup($groupId, $data, $accessToken, &$errorMessage = '') {
         }
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
         $errorMessage = $e->getMessage(); 
-		batch_info($errorMessage);	
+		batch_info($groupId . ': ' . $errorMessage);	
 		exit;
     } catch (Facebook\Exceptions\FacebookSDKException $e) {
         $errorMessage = $e->getMessage();
-		batch_info($errorMessage);	
+		batch_info($groupId . ': ' . $errorMessage);	
 		exit;
     } catch (\Exception $e) {
-        $errorMessage = $e->getMessage();
+        batch_info($groupId . ': ' . $errorMessage);	
     }
     return false;
 }
 
-function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
+function postToPage($pageId, $data, $accessToken, &$errorMessage = '') {
+    global $fb;    
+    try {
+        $pageResponse = $fb->get('/' . $pageId . '?fields=access_token', $accessToken);
+        if ($pageResponse) {   
+            $graphPage = $pageResponse->getGraphPage();
+            $pageAccessToken = $graphPage['access_token'];                
+            $response = $fb->post("/{$pageId}/feed", $data, $pageAccessToken);
+            $graphNode = $response->getGraphNode();
+            if (!empty($graphNode['id'])) {
+                return $graphNode['id'];
+            }
+        }        
+    } catch (Facebook\Exceptions\FacebookResponseException $e) {
+        $errorMessage = $e->getMessage(); 
+		batch_info($pageId . ': ' . $errorMessage);
+		exit;
+    } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        $errorMessage = $e->getMessage();
+		batch_info($pageId . ': ' . $errorMessage);
+		exit;
+    } catch (\Exception $e) {
+        $errorMessage = $e->getMessage();
+        batch_info($pageId . ': ' . $errorMessage);
+    }
+    return false;
+}
+
+function commentToPost($postId, $data, $accessToken, &$errorMessage = '', &$errorCode = '') {
     global $fb;
     try {
         if (empty($data['message'])) {
@@ -220,15 +289,17 @@ function commentToPost($postId, $data, $accessToken, &$errorMessage = '') {
             return $graphNode['id'];
         }
     } catch (Facebook\Exceptions\FacebookResponseException $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage(); 
-		batch_info($errorMessage);	
-		exit;
+        batch_info("{$postId}:{$errorCode}:{$errorMessage}");
     } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage();
-		batch_info($errorMessage);	
-		exit;
+		batch_info("{$postId}:{$errorCode}:{$errorMessage}");
     } catch (\Exception $e) {
+        $errorCode = $e->getCode(); 
         $errorMessage = $e->getMessage();
+        batch_info("{$postId}:{$errorCode}:{$errorMessage}");	
     }
     return false;
 }

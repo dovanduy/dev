@@ -256,9 +256,11 @@ class PageController extends AppController
         $backUrl = $this->params()->fromQuery('backurl', '/'); 
         $param = $this->getParams();  
         $scope = implode(' ' , [
+            \Google_Service_Oauth2::PLUS_LOGIN, 
             \Google_Service_Oauth2::USERINFO_EMAIL,            
             \Google_Service_Blogger::BLOGGER_READONLY,
-            \Google_Service_Blogger::BLOGGER
+            \Google_Service_Blogger::BLOGGER,      
+            \Google_Service_Plus::PLUS_ME
         ]);       
         $client = new \Google_Client();
         $client->setClientId(WebModule::getConfig('google_app_id2'));
@@ -267,6 +269,10 @@ class PageController extends AppController
         $client->addScope($scope);
 		$client->setAccessType('offline');
 		$client->setApprovalPrompt('force');
+        $client->setRequestVisibleActions([
+            'http://schemas.google.com/AddActivity',
+			'http://schemas.google.com/ReviewActivity'
+        ]);
 		/*
 		if ($client->isAccessTokenExpired()) {
 			$newToken = json_decode(json_encode($client->getAccessToken()));
@@ -548,7 +554,11 @@ class PageController extends AppController
                     'updated_time',
                     'verified'
                 ];
-                $accessTokenExpiresAt = date('Y-m-d H:i:s', $accessToken->getExpiresAt()->getTimestamp());               
+                if ($accessToken->getExpiresAt() !== null) {
+					$accessTokenExpiresAt = date('Y-m-d H:i:s', $accessToken->getExpiresAt()->getTimestamp());               
+				} else {
+					$accessTokenExpiresAt = date('Y-m-d H:i:s', strtotime("+5 month"));
+				}  
                 $accessTokenValue = $accessToken->getValue();                  
                 $response = $fb->get('/me?fields=' . implode(',', $fields), $accessToken);
                 $graphNode = $response->getGraphNode();
@@ -564,7 +574,7 @@ class PageController extends AppController
                         'gender' => !empty($graphNode['gender']) ? $graphNode['gender'] : '',               
                         'accessToken' => $accessTokenValue,               
                         'access_token_expires_at' => $accessTokenExpiresAt,               
-                    );     
+                    );    
                     $successMessage = 'Account registed successfully';
                     $registerVoucher = WebModule::getConfig('vouchers.register');
                     if (!empty($registerVoucher)) {
@@ -593,9 +603,14 @@ class PageController extends AppController
                         $cookie = new \Zend\Http\Header\SetCookie('remember', $remember, time() + 365 * 60 * 60 * 24, '/');
                         $this->getResponse()->getHeaders()->addHeader($cookie);
                         $websiteId = WebModule::getConfig('website_id');
-                        if (($websiteId == 1 && $AppUI->email == 'kinhdothoitrang@outlook.com') ||
-                            ($websiteId == 2 && $AppUI->email == 'fb.hoaian@gmail.com')) {
-                            app_file_put_contents(WebModule::getConfig('facebook_login_file'), serialize($AppUI));
+                        if (!empty(WebModule::getConfig('facebook_login_file')[$AppUI->user_id]) && 
+                            in_array($AppUI->email, [
+                                'atem.vn@gmail.com', //49
+                                'mail.vuongquocbalo.com@gmail.com', //20
+                                'fb.khaai@gmail.com',
+                                'fb.hoaian@gmail.com', 
+                                'kinhdothoitrang@outlook.com'])) {
+                            app_file_put_contents(WebModule::getConfig('facebook_login_file')[$AppUI->user_id], serialize($AppUI));                            
                         }
                         return $this->redirect()->toUrl($backUrl);
                     } else { 
@@ -623,7 +638,8 @@ class PageController extends AppController
                 'user_likes',
                 'manage_pages',
                 'user_managed_groups',
-                'publish_actions'
+                'publish_actions',
+                'publish_pages',
             ]; // Optional permissions
             $authUrl = $helper->getLoginUrl(
                 $this->url()->fromRoute(
@@ -891,7 +907,13 @@ class PageController extends AppController
             return $this->redirect()->toUrl($backUrl);
         }        
         if (array_intersect([15], $data['category_id'])) {
-            $data['name'] = str_replace(['BL '], ['Balo Teen - Học sinh - Laptop '], $data['name']);
+            if (!empty($data['url_sendo1'])) {
+                $data['price'] = '159000';
+                $data['name'] = str_replace([$data['code'], 'BL ',], ['S' . $data['code_src'], 'Balo Ipad - Học thêm - Đi chơi '], $data['name']);
+            } else {
+                $data['price'] = '187000';
+                $data['name'] = str_replace(['BL '], ['Balo Teen - Học sinh - Laptop '], $data['name']);
+            }
             $data['og_description'] = 'Mua ' . $data['name'] . ' chất lượng tại shop BALO HỌC SINH - TEEN trên sendo.vn, giao hàng tận nơi.';               
         } elseif (array_intersect([16], $data['category_id'])) {            
             $data['og_description'] = 'Mua ' . $data['name'] . ' chất lượng tại shop BALO HỌC SINH - TEEN trên sendo.vn, giao hàng tận nơi.';
@@ -937,10 +959,218 @@ class PageController extends AppController
                 'og:image:width' => '200',
                 'og:image:height' => '200',                
             ),               
-        ));            
+        ));      
         return $this->getViewModel(array(
+                'data' => $data,                
                 'backUrl' => $backUrl,                
             )
         );
     }
+    
+    public function exportAction() {
+        include_once getcwd() . '/include/PhpExcelComponent.php';
+        $categoryId = $this->params()->fromQuery('categoryId', 0);
+        $keyword = $this->params()->fromQuery('keyword', '');
+        $shopeeCategoryId = 1;
+        $weight = 1;
+        if (empty($categoryId)) {
+            exit;
+        }
+        /*
+         * 78: Ao khoác Nam
+         */
+        $param = [
+            'category_id' => $categoryId,
+            'keyword' => $keyword,           
+            'get_attributes' => 1,
+            'option_id' => 0,
+            'small_size' => 0,
+            'no_create_image_facebook' => 1,
+        ];
+        $products = Products::getSendoProduct($param); //p($products, 1);
+        $excel = new \PhpExcelComponent();
+        $excel->createWorksheet()
+                ->setDefaultFont('Calibri', 12);  
+        $header = array(
+            array('label' => 'ID danh mục'),            
+            array('label' => 'Tên sản phẩm'),
+            array('label' => 'Mô tả sản phẩm'),
+            array('label' => 'Giá'),
+            array('label' => 'Kho'),
+            array('label' => 'Khối lượng sản phẩm'),
+            array('label' => 'Thương hiệu'),
+            array('label' => '-'),            
+            array('label' => 'Loại hàng 1: Tên loại'),
+            array('label' => 'Loại hàng 1: Giá'),
+            array('label' => 'Loại hàng 1: Kho'),
+            array('label' => 'Loại hàng 2: Tên loại'),
+            array('label' => 'Loại hàng 2: Giá'),
+            array('label' => 'Loại hàng 2: Kho'),
+            array('label' => 'Loại hàng 3: Tên loại'),
+            array('label' => 'Loại hàng 3: Giá'),
+            array('label' => 'Loại hàng 3: Kho'),
+            array('label' => 'Loại hàng 4: Tên loại'),
+            array('label' => 'Loại hàng 4: Giá'),
+            array('label' => 'Loại hàng 4: Kho'),
+            array('label' => 'Loại hàng 5: Tên loại'),
+            array('label' => 'Loại hàng 5: Giá'),
+            array('label' => 'Loại hàng 5: Kho'),
+            array('label' => 'Loại hàng 6: Tên loại'),
+            array('label' => 'Loại hàng 6: Giá'),
+            array('label' => 'Loại hàng 6: Kho'),
+        );
+        $sheet = $excel->addSheet('Products');
+        $sheet->addTableHeader($header, array('name' => 'Cambria', 'bold' => true));
+        $sheet->getDefaultStyle()->getAlignment()->setWrapText(true);
+        //$sheet->getActiveSheet()->getColumnDimension('B')->setWidth(40);
+        //$sheet->getActiveSheet()->getColumnDimension('C')->setWidth(400);
+        foreach ($products as $product) {
+            $phongcachAttr = '';
+            foreach ($product['attributes'] as $attribute) {            
+                if ($attribute['field_id'] == 1 && !empty($attribute['value'])) {
+                    $phongcachAttr = $attribute['value'];
+                }
+            }
+            if ($categoryId == 15) {
+                if (!empty($phongcachAttr)) {
+                    $product['name'] = str_replace(['BL '], ['Balo Teen ' . ($phongcachAttr) . ' '], $product['name']);
+                }
+                $phongcachAttr = str_no_vi(strtolower($phongcachAttr), 100, '');
+                $param['keyword'] = str_no_vi(strtolower($param['keyword']), 100, '');
+                $content = implode(PHP_EOL, [                        
+                        '- Balo lớn kích thước ngang 32 x cao 41.5 x rộng 14.5 (cm).',                        
+                        '- Có 2 ngăn để vừa laptop 14", có chổ để bình nước.',               
+                        '- Phù hợp đựng tập vở cho học sinh cấp 1, cấp 2, cấp 3, đựng đồ đi chơi.',
+                        '- Chất liệu simili 100% giả da, không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Balo có 1 mặt in như hình và 1 mặt trơn màu đen sang trọng.',
+                        '- Hàng Việt Nam xuất khẩu, công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '',
+                        "#baloteen #balohocsinh #balolaptop #{$phongcachAttr} #" . preg_replace('/\s+/', '', $param['keyword']),
+                    ]
+                );                
+                $product['price'] = 189000;
+                $row = [
+                    $shopeeCategoryId,
+                    $product['name'],
+                    $content,
+                    $product['price'],
+                    '10',
+                    '0.55',             
+                    !empty($product['brand_name']) ? $product['brand_name'] : '',            
+                    '',
+                ];                              
+            } elseif ($categoryId == 16) {
+                $content = implode(PHP_EOL, [                    
+                        '- Kích thước ngang 29 x cao 40 (cm).',
+                        '- Phù hợp đựng tập vở đi học thêm, đựng đồ đi chơi.',                                                                       
+                        '- Túi có 1 mặt in như hình và 1 mặt trơn màu đen sang trọng.',
+                        '- Chất liệu simili 100% giả da, không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Hàng Việt Nam xuất khẩu, công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '- Lưu ý: Màu dây giao ngẫu nhiên, có 2 màu đen hoặc trắng.',
+                        '',
+                        '#baloteen #balodayrut #tuirut #' . preg_replace('/\s+/', '', $param['keyword']),
+                    ]
+                );
+                $row = [
+                    $shopeeCategoryId,
+                    $product['name'],
+                    $content,
+                    $product['price'],
+                    '10',
+                    '0.5',            
+                    !empty($product['brand_name']) ? $product['brand_name'] : '',            
+                    '',
+                ];
+            } elseif ($categoryId == 99) {
+                $content = implode(PHP_EOL, [                    
+                        '- Túi chéo nữ mini kích thước ngang 24 x cao 17 (cm).',    
+                        '- Phù hợp đựng tiền, điện thoại, máy tính bảng nhỏ, sổ tay, đồ trang điểm, các vật dụng cá nhân cho nữ, ...',    
+                        '- Chất liệu simili 100% giả da, không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Hàng Việt Nam xuất khẩu, công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '',
+                        '#tuicheo #tuicheomini #tuideocheo #tuidienthoai #' . preg_replace('/\s+/', '', $param['keyword']),
+                    ]
+                );
+                $product['price'] = 79000;
+                $row = [
+                    $shopeeCategoryId,
+                    $product['name'],
+                    $content,
+                    $product['price'],
+                    '10',
+                    '0.5',            
+                    !empty($product['brand_name']) ? $product['brand_name'] : '',            
+                    '',
+                ];                
+            } else {
+                $content = [];
+                $content[] = $product['short'];           
+                $content[] = '';           
+                $content[] = 'Thông tin sản phẩm';          
+                foreach ($product['attributes'] as $attribute) {
+                    if (!empty($attribute['value'])) {
+                        $content[] = $attribute['name'] . ': ' . $attribute['value']; 
+                    }                
+                }
+                $content[] = '';
+                $content[] = 'Liên hệ: 098 65 60 943 hoặc để lại bình luận Tên + Số ĐT + Địa chỉ nhận hàng';
+                $content = implode(PHP_EOL, $content);
+                $product['price'] = $product['price'] - round((5/100)*$product['price'], -3);
+                $row = [
+                    $shopeeCategoryId,
+                    $product['name'],
+                    $content,
+                    $product['price'],
+                    '',
+                    '',            
+                    !empty($product['brand_name']) ? $product['brand_name'] : '',            
+                    '',
+                ];
+                $color = [];
+                foreach ($product['attributes'] as $attribute) { 
+                    if ($attribute['field_id'] == 8) {
+                        $color = explode(',', $attribute['value']);
+                        foreach ($color as $colorText) { 
+                            $row[] = trim($colorText);
+                            $row[] = $product['price'];
+                            $row[] = 10;
+                        }
+                    }
+                }
+                if (count($color) < 6) {
+                    for ($i = count($color); $i < 6; $i++) {
+                        $row[] = '';
+                        $row[] = '';
+                        $row[] = '';
+                    }
+                } 
+            }            
+            //$content = str_replace(['<br/>','<br>','<p>','</p>'], [PHP_EOL,PHP_EOL,PHP_EOL.PHP_EOL,''], strip_tags($product['more'], '<br><p>'));
+            //$content = preg_replace('/(<p(>|\s+[^>]*>))/i', PHP_EOL.PHP_EOL, $content);
+            // normalize newlines
+            //preg_replace('/(\r\n|\r|\n)+/', "\n", $content);
+            // replace whitespace characters with a single space
+            //preg_replace('/\s+/', ' ', $content); 
+            $sheet->addTableRow($row); 
+        }
+        $fileName = "export_category_{$categoryId}.xls";
+        $excel->addTableFooter()
+                ->output($fileName, 'Excel5');
+        exit;
+    }
+    
+    public function policyAction() {
+        return $this->getViewModel(array(
+                          
+            )
+        );
+    }
+    
+    public function privacyAction() {
+        return $this->getViewModel(array(
+                          
+            )
+        );
+    }
+
 }

@@ -377,6 +377,20 @@ return array (
                         ),
                     ),
                 ),
+                
+                'vouchers' => array(
+                    'type'    => 'Segment',
+                    'options' => array(
+                        'route' => '/vouchers[/:action][/:id]',
+                        'constraints' => array(
+                            'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        ),
+                        'defaults' => array(
+                            'controller' => 'vouchers',
+                            'action' => 'index',
+                        ),
+                    ),
+                ),
 
             ),
         ),            

@@ -86,11 +86,23 @@ class ProductsController extends AppController
         $searchForm ->setController($this)
                     ->create('get')
                     ->bindData($param);
+        
         // create list form
+        $result = Api::call('url_products_lists', $param);
+        if (!empty($result['data'])) {
+            foreach ($result['data'] as &$row) {
+                $row['sendo_edit_url'] = '';
+                if (!empty($row['url_other'])) {
+                    $sendoUrl = explode('-', $row['url_other']);
+                    $sendoId = (int)end($sendoUrl);                    
+                    $row['sendo_edit_url'] = 'https://ban.sendo.vn/shop#product/detail/' . $sendoId;
+                }
+            }
+        }
         $listForm = new ListForm();
         $listForm   ->setAttribute('sortable', true)
                     ->setController($this)
-                    ->setDataset(Api::call('url_products_lists', $param))
+                    ->setDataset($result)
                     ->create();
         return $this->getViewModel(array(
                 'searchForm' => $searchForm,
@@ -598,6 +610,7 @@ class ProductsController extends AppController
                 foreach ($attributes as $attribute) {
                     switch ($attribute['type']) {
                         case 'select':                            
+                            $attribute['value'] = $attribute['value_id'];
                             break;
                         case 'checkbox':
                             $attribute['value'] = explode(',', $attribute['value_id']);

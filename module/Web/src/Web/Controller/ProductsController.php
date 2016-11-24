@@ -343,6 +343,79 @@ class ProductsController extends AppController
                     }
                 }
             }
+            
+            $data['content'] = '';
+            if (array_intersect([15], $data['category_id'])) { 
+                $data['content'] = implode(PHP_EOL, [                     
+                        '- Balo lớn kích thước ngang 32 x cao 41.5 x rộng 14.5 (cm).',                        
+                        '- Có 2 ngăn để vừa laptop 14", có chổ để bình nước.',               
+                        '- Phù hợp đựng tập vở cho học sinh cấp 1, cấp 2, cấp 3, đựng đồ đi chơi.',
+                        '',
+                        '- Balo nhỏ xinh xắn, kích thước ngang 26 x cao 32 x rộng 9 (cm).',                       
+                        '- Có 1 ngăn lớn và ngăn đựng vừa Laptop 12"/Ipad',
+                        '- Phù hợp đựng tập vở, tài liệu, giấy A4, Laptop 12"/Ipad đi học thêm, đi làm, đi chơi, đựng đồ cho bé đi nhà trẻ, mẫu giáo',
+                        '- Dây đeo tháo rời, thiết kế 2 trong 1 tiện lợi, vừa có thể đeo vai như balo vừa có thể đeo chéo.',
+                        '',
+                        '- Balo giả da simili hàng Việt Nam xuất khẩu, chất lượng đảm bảo không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',                                       
+                        '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng',                                          
+                        '- Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.',                        
+                    ]
+                );
+                $data['more_images'] = [                     
+                    'http://img.vuongquocbalo.com/model/balo_lon_1.png',
+                    'http://img.vuongquocbalo.com/model/balo_lon_2.png',
+                    'http://img.vuongquocbalo.com/model/balo_lon_3.png',
+                    'http://img.vuongquocbalo.com/model/balo_nho_1.png',
+                    'http://img.vuongquocbalo.com/model/balo_nho_2.png',
+                    'http://img.vuongquocbalo.com/model/balo_nho_3.png',
+                    'http://img.vuongquocbalo.com/model/balo_lon_4.png',
+                ];
+            } elseif (array_intersect([16], $data['category_id'])) {                        
+                $data['content'] = implode(PHP_EOL, [                                               
+                        '- Kích thước 29 x 40 (cm).',
+                        '- Phù hợp đựng tập vở đi học thêm hoặc đựng đồ đi chơi.',                               
+                        '- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '- Màu dây giao ngẫu nhiên, có 2 màu đen hoặc trắng.',
+                        '- Balo có 1 mặt in như hình và 1 mặt trơn màu đen sang trọng.',
+                        '- Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.',    
+                    ]
+                );  
+                $data['more_images'] = [                     
+                    'http://img.vuongquocbalo.com/model/tui_rut_1.png',
+                    'http://img.vuongquocbalo.com/model/tui_rut_2.png',
+                    'http://img.vuongquocbalo.com/model/tui_rut_3.png',
+                ];                
+            } elseif (array_intersect([99], $data['category_id'])) {                
+                $data['content'] = implode(PHP_EOL, [                         
+                        '- <strong>Túi chéo nữ mini kích thước ngang 24 x 17 (cm)</strong>.',    
+                        '- Phù hợp đựng tiền, điện thoại, máy tính bảng nhỏ, sổ tay, đồ trang điểm, các vật dụng cá nhân cho nữ, ...',    
+                        '- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '- Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.',    
+                    ]
+                );  
+                $data['more_images'] = [                     
+                    'http://img.vuongquocbalo.com/model/tui_cheo_mini_1.png',
+                    'http://img.vuongquocbalo.com/model/tui_cheo_mini_2.png',
+                    'http://img.vuongquocbalo.com/model/tui_cheo_mini_3.png',
+                ];
+             } elseif (array_intersect([8], $data['category_id'])) {
+                $data['content'] = implode(PHP_EOL, [                         
+                        '- <strong>Túi chéo kích thước ngang 34 x cao 25 x rộng 9 (cm)</strong>.',    
+                        '- Sử dụng đựng tập vở, tài liệu, giấy A4 hoặc máy tính bảng.',    
+                        '- Có 1 ngăn lớn, phù hợp đi học thêm, đi làm, đi chơi.',                                                       
+                        '- Chất liệu simili 100% không thấm nước, không bong tróc. Bạn sẽ yên tâm đi mưa & dễ lau chùi khi bị bẩn.',               
+                        '- Công nghệ in Nhật Bản cho hình in đẹp, đặc biệt mặt in còn được phủ lên lớp màng chống trầy xước và phai màu nên bạn hoàn toàn yên tâm khi sử dụng.',
+                        '- Hàng Việt Nam xuất khẩu, chất lượng đảm bảo.',    
+                    ]
+                );  
+                $data['more_images'] = [                     
+                    'http://img.vuongquocbalo.com/model/tui_cheo_1.png',
+                    'http://img.vuongquocbalo.com/model/tui_cheo_2.png',
+                ];
+            }
+            $data['content'] = str_replace([PHP_EOL,"'"], ['<br>',''], $data['content']);
             return $this->getViewModel(array(
                     'data' => $data,
                     'reviewForm' => $reviewForm,

@@ -179,6 +179,15 @@ class Module {
                 'BloggerPostIds' => function ($sm) {
                     return new Model\BloggerPostIds($sm->get('db'), $sm);
                 },               
+                'ProductFacebookPageShares' => function ($sm) {
+                    return new Model\ProductFacebookPageShares($sm->get('db'), $sm);
+                },               
+                'FacebookWallShares' => function ($sm) {
+                    return new Model\FacebookWallShares($sm->get('db'), $sm);
+                },               
+                'FacebookGroupShares' => function ($sm) {
+                    return new Model\FacebookGroupShares($sm->get('db'), $sm);
+                },               
             ),
         );
     }

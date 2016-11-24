@@ -36,7 +36,7 @@ class RenderEventListener {
             'AppUI' => $sm->get('auth')->getIdentity(),
             'website' => \Web\Model\Websites::getDetail(),
         ));
-
+		
         $error = $e->getError();
         switch ($error) {
             case 'error-router-no-match': // not found url format in router config

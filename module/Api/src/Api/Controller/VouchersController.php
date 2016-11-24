@@ -16,5 +16,21 @@ class VouchersController extends AppController {
             $this->getParams()
         );
     }
+    
+    public function listsAction()
+    {
+        return \Api\Bus\Vouchers\Lists::getInstance()->execute(
+            $this->getServiceLocator()->get('Vouchers'),
+            $this->getParams()
+        );
+    }
+    
+    public function addAction()
+    {
+        return \Api\Bus\Vouchers\Add::getInstance()->execute(
+            $this->getServiceLocator()->get('Vouchers'),
+            $this->getParams()
+        );
+    }
 
 }
