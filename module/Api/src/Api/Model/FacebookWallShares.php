@@ -17,6 +17,8 @@ class FacebookWallShares extends AbstractModel {
         'user_id',
         'facebook_id',        
         'social_id',
+        'website_id',
+        'site',
         'created',
         'updated',           
     );
@@ -61,6 +63,9 @@ class FacebookWallShares extends AbstractModel {
         if (!empty($param['user_id'])) {
             $select->where('facebook_wall_shares.user_id = ' . self::quote($param['user_id']));
         }
+        if (!empty($param['site'])) {
+            $select->where('facebook_wall_shares.site = ' . self::quote($param['site']));
+        }
         Log::info($sql->getSqlStringForSqlObject($select));
         $data = self::response(
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
@@ -76,12 +81,16 @@ class FacebookWallShares extends AbstractModel {
             || empty($param['social_id'])) {
             return false;
         }
+        if (empty($param['site'])) {
+            $param['site'] = 'sendo.vn';
+        }
         $values = array(
             'website_id' => $param['website_id'],
             'facebook_id' => $param['facebook_id'],            
             'user_id' => !empty($param['user_id']) ? $param['user_id'] : 0,     
             'keyword' => $param['keyword'],
             'social_id' => $param['social_id'],                      
+            'site' => $param['site'],                      
             'created' => new Expression('UNIX_TIMESTAMP()'),
             'updated' => new Expression('UNIX_TIMESTAMP()'),
         );

@@ -288,4 +288,12 @@ class ProductsController extends AppController {
             $this->getParams()
         );
     }
+    
+    public function allforlazadaAction()
+    {
+        return \Api\Bus\Products\AllForLazada::getInstance()->execute(
+            $this->getServiceLocator()->get('Products'),
+            $this->getParams()
+        );
+    }
 }

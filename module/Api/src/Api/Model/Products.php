@@ -1482,18 +1482,17 @@ class Products extends AbstractModel {
         }
         if (!empty($param['product_id'])) {
             $where['product_id'] = $param['product_id'];
-        }
-        if (!empty($param['code'])) {
+        } elseif (!empty($param['code'])) {
             $where['code'] = $param['code'];
         }     
-        //Log::info('Test', $param);
+        Log::info('Test', $where);
         $self = self::find(
             array(            
                 'table' => 'products',
                 'where' => $where
             ),
             self::RETURN_TYPE_ONE
-        );   
+        );
         if (empty($self)) {
             self::errorNotExist('product_id_or_id');
             return false;
@@ -1550,6 +1549,9 @@ class Products extends AbstractModel {
         if (isset($param['url_lazada'])) {
             $set['url_lazada'] = $param['url_lazada'];
         }  
+        if (isset($param['url_lazada2'])) {
+            $set['url_lazada2'] = $param['url_lazada2'];
+        }  
         if (isset($param['url_sendo2'])) {
             $set['url_adayroi'] = $param['url_adayroi'];
         }
@@ -1570,7 +1572,7 @@ class Products extends AbstractModel {
         }
         if (isset($param['provider_id'])) {
             $set['provider_id'] = $param['provider_id'];
-        } 
+        }
         $image = new Images();
         if ($_FILES) {            
             $uploadResult = Util::uploadImage();
@@ -3109,10 +3111,10 @@ class Products extends AbstractModel {
                 array('url_image'),
                 \Zend\Db\Sql\Select::JOIN_LEFT    
             )
-            ->where(static::$tableName . '.active = 1')        
-            ->where(static::$tableName . '.available = 1')        
-            ->where(static::$tableName . '.available_sendo = 1')     
-            ->where("product_locales.locale = ". self::quote($param['locale']));
+            ->where(static::$tableName . '.active = 1');        
+//            ->where(static::$tableName . '.available = 1')        
+//            ->where(static::$tableName . '.available_sendo = 1')     
+//            ->where("product_locales.locale = ". self::quote($param['locale']));
 //            ->where(new Expression("    
 //                IFNULL(url_src, '') <> ''
 //                AND (IFNULL(url_other, '') <> '' OR IFNULL(url_sendo1, '') <> '')
@@ -3311,6 +3313,172 @@ class Products extends AbstractModel {
             static::selectQuery($sql->getSqlStringForSqlObject($select)), 
             self::RETURN_TYPE_ALL
         );       
+        return $result;
+    }
+    
+    
+    public function getForLazada($param) {
+        if (empty($param['locale'])) {
+            $param['locale'] = \Application\Module::getConfig('general.default_locale');
+        }
+        if (empty($param['limit'])) {
+            $param['limit'] = 5;
+        }
+        $localeField = [
+            'name',                     
+            'short',        
+        ];
+        if (!empty($param['get_content'])) {
+            $localeField[] = 'more';
+        }
+        $sql = new Sql(self::getDb());
+        $select = $sql->select()
+            ->from(static::$tableName)  
+            ->columns(array(                
+                'product_id',                
+                'code', 
+                'code_src', 
+                'price',
+                'original_price',
+                'discount_percent',
+                'discount_amount',
+                'sort',
+                'image_id',
+                'priority',
+                'image_facebook',
+                'url_lazada',
+                'url_lazada2',
+                'website_id'
+            ))
+            ->join(               
+                'product_locales',                    
+                static::$tableName . '.product_id = product_locales.product_id',
+                $localeField
+            )              
+            ->join(
+                'product_images', 
+                static::$tableName . '.image_id = product_images.image_id',
+                array('url_image'),
+                \Zend\Db\Sql\Select::JOIN_LEFT    
+            )
+            ->where(static::$tableName . '.active = 1')
+            ->where(new Expression("                    
+                (IFNULL(url_lazada, '') <> '' OR IFNULL(url_lazada2, '') <> '')
+            "));
+       
+       if (!empty($param['category_id'])) {
+            if (is_numeric($param['category_id'])) {
+                $categoryModel = new ProductCategories;
+                $categories = $categoryModel->getAll(array(                    
+                    'locale' => $param['locale'],
+                    'parent_id' => $param['category_id'],
+                ));
+                if (!empty($categories)) {
+                    $param['category_id'] = Arr::field($categories, 'category_id');
+                }
+            } else {
+                $param['category_id'] = explode(',', $param['category_id']);
+            } 
+            $param['category_id'] = (array) $param['category_id'];
+            $param['category_id'] = implode(',', $param['category_id']);
+            $select->join(               
+                array(
+                    'product_has_categories' => 
+                    $sql->select()
+                        ->columns(array(
+                            'product_id',
+                            'category_id' => new Expression('GROUP_CONCAT(product_has_categories.category_id SEPARATOR  \',\')')
+                        ))
+                        ->from('product_has_categories')                        
+                        ->where(new Expression(
+                            "product_has_categories.category_id IN ({$param['category_id']})"
+                        ))
+                        ->group('product_id')
+                ),                 
+                static::$tableName . '.product_id = product_has_categories.product_id',
+                array(
+                    'category_id'
+                )               
+            );       
+        }        
+        if (!empty($param['option_id'])) {   
+            if (is_array($param['option_id'])) {
+                $param['option_id'] = implode(',', $param['option_id']);
+            }
+            $select->join(
+                'product_has_fields', 
+                'products.product_id = product_has_fields.product_id',
+                array(
+                    'field_id'                   
+                )
+            );
+            $select->where(new Expression("LOCATE('[{$param['option_id']}]', product_has_fields.value_id) > 0"));
+            $select->where('product_has_fields.active = 1');
+        } elseif (!empty($param['keyword'])) {
+            $param['keyword'] = strtolower($param['keyword']);
+            $select->where(new Expression("(
+                LOWER(product_locales.name) LIKE '%{$param['keyword']}%'                     
+            )"));
+        }
+        if (!empty($param['not_in_product_id'])) {
+            $select->where(new Expression(
+                static::$tableName .  ".product_id NOT IN ({$param['not_in_product_id']})"
+            ));
+        }       
+        if (!empty($param['page_id'])) { // facebook_page_id
+            $select->where(new Expression(
+                "NOT EXISTS (
+                    SELECT * 
+                    FROM product_facebook_page_shares 
+                    WHERE
+                        page_id = " . self::quote($param['page_id']) . " 
+                        AND product_facebook_page_shares.product_id = products.product_id)"
+            ));
+        }
+        if (!empty($param['for_wall'])) { //
+            $select->where(new Expression(
+                "NOT EXISTS (
+                    SELECT * 
+                    FROM product_facebook_page_shares 
+                    WHERE
+                        user_id = " . self::quote($param['user_id']) . " 
+                        AND IFNULL(product_facebook_page_shares.page_id, '') = ''
+                        AND product_facebook_page_shares.product_id = products.product_id)"
+            ));
+        }
+        $select->order(new Expression('RAND()'));
+        $select->limit($param['limit']);
+        Log::info($sql->getSqlStringForSqlObject($select));
+        $result = self::response(
+            static::selectQuery($sql->getSqlStringForSqlObject($select)), 
+            self::RETURN_TYPE_ALL
+        );
+        if (!isset($param['no_create_image_facebook'])) { //
+            foreach ($result as &$product) {
+                if (empty($product['image_facebook'])) {
+                    $product['image_facebook'] = Util::uploadImageFromUrl($product['url_image'], 400, 400, $product['name']);
+                    $productModel = new Products;
+                    $productModel->update([
+                        'table' => 'products',
+                        'set' => [
+                            'image_facebook' => $product['image_facebook'] 
+                        ],
+                        'where' => [
+                            //'website_id' => $product['website_id'], 
+                            'product_id' => $product['product_id'] 
+                        ],
+                    ]);
+                }
+            }
+        }
+        if (isset($param['get_attributes'])) {
+            $hasFieldModel = new ProductHasFields;
+            foreach ($result as &$product) {
+                $product['attributes'] = $hasFieldModel->getAll(array(
+                    'product_id' => $product['product_id']                
+                ));
+            }
+        }
         return $result;
     }
     
