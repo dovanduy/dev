@@ -86,7 +86,7 @@ function call($url, $param = array(), &$errors = null) {
 			CURLOPT_HTTPHEADER => $headers,
 			CURLOPT_POSTFIELDS => $param,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_SAFE_UPLOAD => false,
+			//CURLOPT_SAFE_UPLOAD => false,
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_TIMEOUT => $config['timeout'],
 		);
@@ -191,7 +191,7 @@ function uploadUnpublishedPhoto($data, $accessToken, &$errorMessage = '') {
         }
     } catch (\Facebook\Exceptions\FacebookResponseException $e) {
         $errorMessage = $e->getMessage(); 
-		batch_info('1-' . $errorMessage);	
+		batch_info('1-' . $errorMessage);
 		exit;         
     } catch (\Facebook\Exceptions\FacebookSDKException $e) {
         $errorMessage = $e->getMessage(); 

@@ -13,7 +13,7 @@ include_once 'base.php';
 include_once '../../include/simple_html_dom.php';
 
 $websiteId = 1;
-$categoryId = $argv[1];
+$categoryId = $argv[1] = 100;
 $fileProductAttr = $categoryId . '_product_attrs.serialize';
 $fileProductUrl = $categoryId . '_product_urls.serialize';
 $fileProducts = $categoryId . '_products.serialize';
@@ -97,6 +97,17 @@ $productList = array(
         'discount_percent' => 35,
         'website_discount_percent' => 5,
     ),
+     // Áo Khoác Nam
+    array(   
+        'disable' => 0,
+        'category_id' => 100,                         
+        'url' => 'http://chothoitrang.com/home/index/ajaxcathome?id=51&sortlist=product_new_desc',                               
+        'detail_url' => array(),
+        'size_id' => array(),
+        'max_images' => 10,
+        'discount_percent' => 25,
+        'website_discount_percent' => 0,
+    ),
 );
 $importList = array();
 foreach ($productList as $item) {
@@ -111,9 +122,32 @@ if (empty($importList)) {
 
 // get detail url list
 batch_info('BEGIN: Get Detail Url');
-if (file_exists($fileProductUrl)) {
+
+$importList = [
+    [
+        'category_id' => 100,
+        'detail_url' => [
+            'http://chothoitrang.com/ao-khoac-ni-nam-al-thoi-trang-zid49356/',
+            'http://chothoitrang.com/ao-khoac-nam-black-sboss-zid29021/'
+        ],
+        'max_images' => 10,
+        'discount_percent' => 25,
+        'website_discount_percent' => 0,
+    ],
+    [
+        'category_id' => 101,
+        'detail_url' => [
+            'http://chothoitrang.com/ao-khoac-nu-phoi-bo-thoi-trang-zid37176/',
+        ],
+        'max_images' => 10,
+        'discount_percent' => 25,
+        'website_discount_percent' => 0,
+    ],   
+];
+ 
+if (file_exists($fileProductUrl) && empty($importList)) {
     $importList = unserialize(app_file_get_contents($fileProductUrl));
-} else {
+} elseif (empty($importList)) {
     foreach ($importList as &$item) {
         $page = 1;
         $stop = false;
@@ -238,10 +272,10 @@ if (file_exists($fileProducts)) {
                     $subHtml = str_get_html($element->innertext);
                     foreach ($subHtml->find('div[class=block-primg]') as $element1) {
                         if (!empty($element1->innertext)) {
-                            $product['more'] = strip_tags($element1->innertext, '<p><div><span><ul><li><strong><b><br><center>');
-                            $product['more'] = str_replace(['Zanado.com', 'zanado.com', 'Zanado', 'zanado'], '<a href="http://vuongquocbalo.com">vuongquocbalo.com</a>', $product['more']);
-                            $product['more'] = str_replace(['<p><span></span></p>', '<p></p>', '<p> </p>', '<p><strong><em></em></strong></p>'], '', $product['more']);
-                            $product['more'] = str_replace(['<div style="clear:both;margin: 10px auto;width: 80%;border-top: 1px solid #ddd;"></div>'], '<div style="clear:both;margin: 10px auto;width: 100%;border-top: 1px solid #ddd;"></div>', $product['more']);
+                            $product['content'] = strip_tags($element1->innertext, '<p><div><span><ul><li><strong><b><br><center>');
+                            $product['content'] = str_replace(['Zanado.com', 'zanado.com', 'Zanado', 'zanado'], '<a href="http://vuongquocbalo.com">vuongquocbalo.com</a>', $product['content']);
+                            $product['content'] = str_replace(['<p><span></span></p>', '<p></p>', '<p> </p>', '<p><strong><em></em></strong></p>'], '', $product['content']);
+                            $product['content'] = str_replace(['<div style="clear:both;margin: 10px auto;width: 80%;border-top: 1px solid #ddd;"></div>'], '<div style="clear:both;margin: 10px auto;width: 100%;border-top: 1px solid #ddd;"></div>', $product['content']);
                             break;
                         }
                     }
@@ -314,17 +348,20 @@ if (file_exists($fileProducts)) {
 }
 batch_info('END: Parse Product Detail');
 if (file_exists($fileFails)) {
-    $products = unserialize(app_file_get_contents($fileFails));
+    //$products = unserialize(app_file_get_contents($fileFails));
 }
 batch_info('BEGIN: Import Product');
-batch_info('Total product: ' . count($products));
+batch_info('Total product: ' . count($products)); 
+
 $count = 1;
 $priority = count($products);
 $fails = [];
-foreach ($products as $product) {
+
+foreach ($products as $product) {    
+    batch_info($product['code']);   
     $product['website_id'] = $websiteId;
     $product['priority'] = $priority;
-    $product['add_image_to_content'] = 1;                    
+    //$product['add_image_to_content'] = 1;                    
     $_id = call('/products/add', $product, $errors);
     if ($_id) {
         batch_info('[' . $count . '] ' . $product['code'] . ' Done');

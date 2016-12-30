@@ -9,9 +9,6 @@ $url = 'http://www.lazada.vn/vuong-quoc-balo';
 $page = 1;
 $limit = 36;
 $totalPage = 7;
-$count = 1;
-$browser = isset($argv[1]) ? $argv[1] : 'opera'; // chrome.exe,opera.exe,firefox.exe
-$browser .= '.exe';
 do {    
 	$content = app_file_get_contents($url . "/?itemperpage={$limit}&page={$page}");	
 	$content = strip_tags_content($content, '<script><style><noscript>', true);
@@ -32,15 +29,7 @@ do {
 			foreach ($subHtml->find('a') as $element1) {
                 $detailUrl = str_replace('?mp=1', '', trim($element1->href));
 				if (!empty($detailUrl)) {
-					batch_info('[' . $count . '] ' . $detailUrl);
-					shell_exec("start {$browser} {$detailUrl}");							
-					sleep(rand(20, 30));	
-					$ps = shell_exec("TASKLIST /FI \"IMAGENAME eq {$browser}\"");	
-					preg_match("/(\d+)/", $ps, $match);
-					if (isset($match[0])) {
-						shell_exec("TASKKILL /F /PID {$match[0]}");						
-					}
-					$count++;
+					$urls[] = $detailUrl;					
 					break;
 				}				
 			}
@@ -54,5 +43,22 @@ do {
 	}
 	$page++;
 } while($page <= $totalPage);
+
+$browser = isset($argv[1]) ? $argv[1] : 'opera'; // chrome.exe,opera.exe,firefox.exe
+$browser .= '.exe';
+$urls = [];
+$count = 1;
+shuffle($urls);
+foreach ($urls as $detailUrl) {
+	batch_info('[' . $count . '] ' . $detailUrl);
+	shell_exec("start {$browser} {$detailUrl}");							
+	sleep(rand(20, 30));	
+	$ps = shell_exec("TASKLIST /FI \"IMAGENAME eq {$browser}\"");	
+	preg_match("/(\d+)/", $ps, $match);
+	if (isset($match[0])) {
+		shell_exec("TASKKILL /F /PID {$match[0]}");						
+	}
+	$count++;	
+}
 batch_info('Done');
 exit;
