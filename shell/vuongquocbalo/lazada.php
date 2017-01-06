@@ -52,21 +52,22 @@ if (file_exists($fileUrls)) {
 	app_file_put_contents($fileUrls, serialize($urls));
 }
 
-$browser = isset($argv[1]) ? $argv[1] : 'opera'; // chrome.exe,opera.exe,firefox.exe
+$browser = isset($argv[1]) ? $argv[1] : 'chrome'; // chrome.exe,opera.exe,firefox.exe
 $browser .= '.exe';
-$urls = [];
 $count = 1;
-shuffle($urls);
-foreach ($urls as $detailUrl) {
-	batch_info('[' . $count . '] ' . $detailUrl);
-	shell_exec("start {$browser} {$detailUrl}");							
-	sleep(rand(20, 30));	
-	$ps = shell_exec("TASKLIST /FI \"IMAGENAME eq {$browser}\"");	
-	preg_match("/(\d+)/", $ps, $match);
-	if (isset($match[0])) {
-		shell_exec("TASKKILL /F /PID {$match[0]}");						
+do {
+	shuffle($urls);
+	foreach ($urls as $detailUrl) {
+		batch_info('[' . $count . '] ' . $detailUrl);
+		shell_exec("start {$browser} {$detailUrl}");							
+		sleep(rand(20, 30));	
+		$ps = shell_exec("TASKLIST /FI \"IMAGENAME eq {$browser}\"");	
+		preg_match("/(\d+)/", $ps, $match);
+		if (isset($match[0])) {
+			shell_exec("TASKKILL /F /PID {$match[0]}");						
+		}
+		$count++;	
 	}
-	$count++;	
-}
-batch_info('Done');
+	batch_info('Done');
+} while(1);
 exit;
